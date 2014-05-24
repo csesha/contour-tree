@@ -1,0 +1,537 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage[dvipsnames,usenames]{color}
+\usepackage{amsfonts,amsmath,amssymb,amsthm,mathtools}
+\usepackage{paralist}
+\usepackage{algorithmic,algorithm}
+\usepackage{bm}
+\usepackage{xspace}
+\usepackage{centernot}
+\usepackage{fancybox}
+\usepackage{framed}
+
+%\usepackage{mathabx}
+\usepackage[pagebackref,letterpaper=true,colorlinks=true,pdfpagemode=none,urlcolor=blue,linkcolor=blue,citecolor=BrickRed,pdfstartview=FitH]{hyperref}
+\usepackage{xspace,prettyref}
+\usepackage{color}
+\usepackage{graphics}
+%\usepackage{MnSymbol}
+%% For hyperlinks. Should always be the last package.
+%\usepackage[colorlinks,urlcolor=blue,citecolor=blue,linkcolor=blue]{hyperref}
+\let\pref=\prettyref
+\newcommand{\mathcalavehyperref}[2]{\texorpdfstring{\hyperref[#1]{#2}}{#2}}
+\newcommand{\comment}[1]{ {\color{BrickRed} \footnotesize[#1]}\marginpar{\footnotesize\textbf{\color{red} To Do!}}}
+\newcommand{\ignore}[1]{}
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemmata}[theorem]{Lemmata}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{subclaim}{Subclaim}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{question}[theorem]{Question}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\newtheorem{observation}{Observation}
+
+
+\newcommand{\EPSfigure}[5]{
+
+        % #1 = File name and other arguments to \psfig macro
+        % #2 = Caption Text
+        % #3 = Positioning Letters: h, t|b|p
+        % #4 = {*} causes double column figure, {} for single
+        % #5 = Label to apply to figure
+
+        \begin{figure#4}[#3]
+                \centering
+                \ \psfig{file=#1}
+%               \label{#5}
+%
+                \ \caption{{\em #2}\label{#5}}\hfill\break
+
+        \end{figure#4}
+}
+
+\newcommand{\innbd}{\Gamma^-}
+\newcommand{\nbd}{\Gamma}
+\newcommand{\outnbd}{\Gamma^+}
+
+\newcommand{\bT}{{\bf T}}
+\newcommand{\cS}{{\cal S}}
+\newcommand{\cB}{{\cal B}}
+\newcommand{\cC}{{\cal C}}
+\newcommand{\cD}{{\cal D}}
+\newcommand{\cE}{{\cal E}}
+\newcommand{\cF}{{\cal F}}
+\newcommand{\cG}{{\cal G}}
+\newcommand{\cH}{{\cal H}}
+\newcommand{\cL}{{\cal L}}
+\newcommand{\cP}{{\cal P}}
+\newcommand{\cV}{{\cal V}}
+
+\newcommand{\LL}{\mathbb{L}}
+\newcommand{\MM}{\mathbb{M}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\SSS}{\mathbb{S}}
+
+
+
+\newcommand{\bmu}{\overline{\mu}}
+\newcommand{\poly}{\textrm{poly}}
+\newcommand{\mymod}{\textrm{mod} \ }
+\newcommand{\otilde}{\widetilde{O}}
+%\newcommand{\qed}{\hfill $\Box$}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\fu}{\varphi}
+\newcommand{\restr}[1]{{|_{{\textstyle #1}}}}
+\newcommand{\proj}{\mbox{\rm proj}}
+\newcommand{\vol}{\mbox{\tt vol}\,}
+\newcommand{\area}{\mbox{\tt area}\,}
+\newcommand{\conv}{\mbox{\tt conv}\,}
+\newcommand{\diam}{\hbox{\tt diam}\,}
+\newcommand{\hdisc}{\mbox{\rm herdisc}}
+\newcommand{\ldisc}{\mbox{\rm lindisc}}
+\newcommand{\EX}{\hbox{\bf E}}
+\newcommand{\prob}{{\rm Prob}}
+\newcommand{\proofend}{{\medskip\medskip}}
+%\newcommand{\proof}{{\noindent\bf Proof: }}
+%\newcommand{\reals}{{\rm I\!\hspace{-0.025em} R}}
+%\newcommand{\dist}{\hbox{dist}}
+\newcommand{\defeq}{\mbox{\,$\stackrel{\rm def}{=}$\,}}
+\newcommand{\boxalg}[1]
+{\begin{center}\fbox{\parbox{\columnwidth}{\tt
+\begin{tabbing}
+\=mm\=mm\=mm\=mm\=mm\=mm\=mm\=mm\=mm\kill
+#1
+\end{tabbing} } } \end{center} }
+
+%% HYPER-LINKED REFERENCES
+\newcommand{\Sec}[1]{\hyperref[sec:#1]{\S\ref*{sec:#1}}} %section
+\newcommand{\Eqn}[1]{\hyperref[eqn:#1]{(\ref*{eqn:#1})}} %equation
+\newcommand{\Clm}[1]{\hyperref[clm:#1]{Claim~\ref*{clm:#1}}} %claim
+\newcommand{\Fig}[1]{\hyperref[fig:#1]{Figure~\ref*{fig:#1}}} %figure
+\newcommand{\Tab}[1]{\hyperref[tab:#1]{Table~\ref*{tab:#1}}} %table
+\newcommand{\Thm}[1]{\hyperref[thm:#1]{Theorem~\ref*{thm:#1}}} %theorem
+\newcommand{\Lem}[1]{\hyperref[lem:#1]{Lemma~\ref*{lem:#1}}} %lemma
+\newcommand{\Prop}[1]{\hyperref[prop:#1]{Proposition~\ref*{prop:#1}}} %property
+\newcommand{\Cor}[1]{\hyperref[cor:#1]{Corollary~\ref*{cor:#1}}} %corollary
+\newcommand{\Def}[1]{\hyperref[def:#1]{Definition~\ref*{def:#1}}} %definition
+\newcommand{\Alg}[1]{\hyperref[alg:#1]{Algorithm~\ref*{alg:#1}}} %algorithm
+\newcommand{\Ex}[1]{\hyperref[ex:#1]{Example~\ref*{ex:#1}}} %example
+
+%% Comments to ourselves
+\newcommand{\Reminder}[1]{{\color{red}#1}}
+\newcommand{\Sesh}[1]{\Reminder{Sesh interjects: #1}}
+
+%%Ben Added
+\DefineNamedColor{named}{RedViolet} {cmyk}{0.07,0.90,0,0.34}
+\providecommand{\AlgorithmI}[1]{{\textcolor[named]{RedViolet}{\texttt{\bf{#1}}}}}
+\providecommand{\Algorithm}[1]{{\AlgorithmI{#1}\index{algorithm!#1@{\AlgorithmI{#1}}}}}
+\newcommand{\zip}{\Algorithm{ZIP}}
+\newcommand{\link}{\Algorithm{LINK}}
+\newcommand{\sizes}{\Algorithm{SIZES}}
+\newcommand{\AMT}{\ensuremath{\mathsf{AMT}}\xspace}
+\newcommand{\MT}{\ensuremath{\mathsf{MT}}\xspace}
+\newcommand{\BCS}{\ensuremath{\mathsf{BCS}}\xspace}
+\newcommand{\sub}{\mathsf{sub}}
+\newcommand{\Merge}{\mathsf{Merge}}
+\newcommand{\stack}{\mathsf{S}}
+\newcommand{\AQ}{\mathsf{AQ}}
+
+\newcommand{\cut}{{\tt cut}}
+\newcommand{\cont}{\psi}
+\newcommand{\lift}{{\tt lift}}
+\newcommand{\paint}{{\tt paint}}
+\newcommand{\rain}{{\tt rain}}
+\newcommand{\reeb}{R}
+\newcommand{\surgery}{{\tt surgery}}
+\newcommand{\wet}{{\tt wet}}
+
+\newcommand{\MTAlg}{\Algorithm{MTAlg}\xspace}
+\newcommand{\Init}{\Algorithm{Init}\xspace}
+
+\newcommand{\CodeComment}[1]{\textcolor{blue}{\texttt{#1}}}
+
+
+
+\author{}
+
+\title{Follow the Flow of Rain and Paint: An Instance Optimal Contour Tree Algorithm}
+\date{}
+
+
+\begin{document}
+
+\maketitle
+
+
+
+\section{Preliminaries}
+Consider a piecewise-linear (PL) $2$-manifold $\MM$ with boundaries.
+This is represented by a triangulation (given as a DCEL) where edges
+can be oriented and the boundary of a face is always counterclockwise. Some faces will \emph{not}
+be triangular, and each of these corresponds to a \emph{boundary face}.
+Let $G(\MM) = (V,E)$ denote this triangulation. 
+We will assume that $\MM$ is embedding in $\RR^d$.
+The manifold within each face is just linear.
+We define a \emph{height function} on $\MM$, $f:\MM \mapsto \RR$. For each point in $x \in \MM$, let $f(x)$ simply be the value of $x_1$.
+We distinguish between vertices and points in $\MM$. A point simply denotes any $x \in \MM$. A vertex is a point
+corresponding to some vertex of the triangulation $G(\MM)$.
+
+The ``status" of an internal point is decided by the gradient at that point. Points of zero gradient are deemed \emph{critical};
+all other points are regular.
+For PL manifolds, we need a discrete version of this definition.
+For vertex $v$, we use $\nbd(v)$ to denote the neighborhood of $v$ in $M$. Let $\outnbd(v) := \{ w | f(v) > f(w), w \in \Gamma(v)\}$
+and $\innbd(v) := \{w | f(v) < f(w), w \in \Gamma(v)\}$. 
+%It is convenient to define $D(\MM)$, a directed variant of $G(\MM)$,
+%where edges are directed from higher to lower $f$-value. So $\outnbd(v)$ and $\innbd(v)$ are exactly the out- and in-neighborhoods
+%of $v$. A vertex in $v \in V$ can be classified in four types.
+\smallskip
+\begin{asparaenum}
+	\item Regular: Both $\outnbd(v)$ and $\innbd(v)$ are non-empty and are contiguous in $\nbd(v)$.
+	\item Maxima: $\nbd(v) = \outnbd(v)$.
+	\item Minima: $\nbd(v) = \innbd(v)$.
+	\item Saddle: Both $\outnbd(v)$ and $\innbd(v)$ are not contiguous in $\nbd(v)$.
+\end{asparaenum}
+\smallskip
+Because $\MM$ is PL, the gradient at all non-vertex points of $\MM$ is zero.
+So all non-vertex points are regular. We will assume that $f$ is Morse, so the function value on all critical points is distinct. We will assume the stronger condition that all internal
+vertices have distinct function values.
+A value $t$ is \emph{non-critical} if there exists no critical point $x$ such that $f(x) = t$.
+
+Furthermore, the boundary vertices have special properties, encapsulated in the following definition.
+
+\begin{definition} \label{def:bound} A manifold is \emph{boundary critical} if the following holds.
+Consider a boundary face $F$. All vertices in $F$ have the same function value. Furthermore, all
+internal neighbors of $F$ either have function values strictly greater (or strictly less)
+than this value.
+\end{definition}
+
+In other words, the vertices in a boundary face collectively behave like a maximum or minimum. 
+Abusing notation, the term ``critical point", ``maxima", and ``minima" will also refer to boundaries.
+Critical values include these boundary values.
+
+\begin{definition} \label{def:desc} A \emph{descending path} in $\MM$ is a continuous function $\lambda:[0,1] \mapsto \MM$
+such that for all $a < b$, $f(\lambda(a)) \geq f(\lambda(b))$. A \emph{PL descending path} from $x$ to $y$ is a sequence
+of points $x = s_0, s_1, s_2, \ldots, s_k = y$ with the following properties: for all $s_i$ but the first and last,
+$s_i$ lies on an edge of $\MM$. $s_i$ and $s_{i+1}$ lie in the same face of $\MM$. 
+For $i < j$, $f(s_i) \geq f(s_j)$.
+\end{definition}
+
+Since $\MM$ is PL, if there is a descending path from $x$ to $y$, it must be PL. So we will always refer to
+PL descending paths.
+
+\begin{definition} \label{def:cont} A \emph{contour} in $\MM$ is a continuous function $\phi:\SSS^1 \mapsto \MM$
+such that $\forall a, b \in \SSS^1$, $f(\phi(a)) = f(\phi(b))$. This is called a \emph{$t$-contour} if $f(\lambda(a)) = t$.
+A contour is \emph{simple} if $\forall a, b \in \SSS^1$, $\lambda(a) \neq \lambda(b)$. 
+\end{definition}
+
+Just as in the case of paths, contours are also PL and have a corresponding discrete representation.
+
+\begin{claim} \label{clm:cont} If two distinct contours intersect, then the intersection point
+is critical.
+\end{claim} 
+
+\begin{proof} Consider the intersection point $x$. It cannot be internal to a face, otherwise $\MM$ self-intersects.
+By the distinctness of the contours, there must be $4$ faces incident to $x$, where each face
+has vertex with a larger function value.
+It cannot be internal to an edge, otherwise this edge would participate in $4$ faces. So it must be a vertex. 
+These $4$ faces lead to at least $2$ neighbors of $x$ with higher function value. One can also show the existence of $2$
+interleaved neighbors with lower function value. So $x$ is critical.
+\end{proof}
+
+Note that there is a unique contour containing a regular point, motivating the following definition.
+\begin{definition} \label{def:p-cont}
+For regular point $x$, $\cont(x)$ denotes the unique contour containing $x$.
+\end{definition}
+
+By the Morse property of distinct critical values, we get the following important lemma.
+
+\begin{lemma} \label{lem:cont} Let $t$ be a non-critical value. The set of $t$-contours is a set
+of disjoint simple PL contours.
+\end{lemma}
+
+We can use contours to classify saddle points. For a saddle point, we call two increasing (or decreasing) neighbors \emph{opposite}
+if they lie in disjoint part of $\Gamma^+(w)$ (or $\Gamma^-(w)$).
+
+\begin{definition} \label{def:merge} Consider two increasing (resp. decreasing) opposite edges incident to saddle point $x$,
+and let $y$ and $z$ be points on these edges such that $f(y) = f(z) = f(x) + \eps$ (resp. $=f(x) - \eps$).
+If $\cont(y)$ and $\cont(z)$ are disjoint, then $x$ is called a \emph{merge} (resp. \emph{split}) vertex.
+\end{definition}
+
+\begin{claim} \label{clm:saddle} Every saddle is either a merge or a split, but not both.
+\end{claim}
+
+
+\subsection{The L-homotopy} \label{sec:l-hom}
+We need a specific notion of homotopy between contours. The L below stands for ``level".
+
+\begin{definition} \label{def:cont-hom} Two simple contours $\phi_0, \phi_1$ are \emph{L-homotopic}
+if: there exists a continuous function $H:\SSS^1 \times [0,1] \mapsto \MM$
+such that $H(\SSS^1,0) = \phi_0$, $H(\SSS^1,1) = \phi_1$, and $\forall a \in [0,1]$,
+$H(\SSS^1,a)$ is a contour.
+\end{definition}
+
+\begin{claim} \label{clm:non-hom} Consider a critical point $x$. Take an increasing edge incident to $x$
+and let $y$ be a point on this edge within an $\eps$-ball of $x$. Similarly, take a decreasing edge
+and point $z$ on this edge. The contours through $y$ and $z$ are not L-homotopic.
+\end{claim}
+
+\begin{proof} If the contours are L-homotopic, the homotopy must ``pass through" a contour $\phi$ at $x$.
+There are two distinct simple contours through $x$, and there are three possible choices for $\phi$. None of these
+choices can work.
+\end{proof}
+
+\begin{definition} \label{def:hom-mono} Two simple contours are $\phi_0, \phi_1$ are \emph{monotonically L-homotopic}
+if the $L$-homotopy $H$ has the following property. Consider function $\alpha:[0,1] \mapsto \RR$
+where $\alpha(a) = f^{-1}(H(\SSS^1,a))$. The function $\alpha$ is strictly increasing or strictly decreasing.
+\end{definition}
+
+\begin{claim} \label{clm:mono} If two simple contours are L-homotopic, then they are monotonically L-homotopic.
+\end{claim}
+
+\begin{proof} Consider some L-homotopy $H$. We can assume wlog that for all $a \neq b$, $H(\SSS^1,a) \neq H(\SSS^1,b)$.
+(Otherwise, one could simplify $H$ and ``shortcut" between $a$ and $b$.)
+By continuity of $H$, the function $\alpha$ is continuous. Hence, if it is not strictly
+increasing or decreasing, $\alpha$ attains its maximum at some $a \in (0,1)$. There exist $a_1 = a - \eps_1$
+and $a_2 = a + \eps_2$ (for small appropriate small values $\eps_1, \eps_2$) such that $\alpha(a_1) = \alpha(a_2)$.
+Furthermore, $H(\SSS^1,a_1)$ and $H(\SSS^1,a_2)$ intersect (and are distinct). By \Clm{cont}, $\alpha(a_1)$
+is a critical value. 
+\end{proof}
+
+\begin{claim} \label{clm:reg} Consider a contour $\phi$ containing only regular points. 
+Take the edge cut by $\phi$ whose upper endpoint $x$ has minimum value, and let $e$
+denote the portion about $\phi$. Then $\phi$ is L-homotopic to the contour
+through any point in this interior of $e$. If $x$ is regular, then $\phi$ is L-homotopic
+to the contour through $x$.
+\end{claim}
+
+\begin{proof} One should able to explicit construct the L-homotopy as a piecewise linear map.
+\end{proof}
+
+\subsection{Reeb graphs} \label{sec:reeb}
+
+Now we get to the real definitions. Call a contour regular if it only contains regular points.
+
+\begin{definition} \label{def:rel} Define a relation $\sim$ between regular contours, so $\phi \sim \phi'$ if $\phi$
+is L-homotopic to $\phi$'.
+\end{definition}
+
+It is easy to check that $\sim$ is an equivalence relation, so the set of regular contours
+is partitioned into equivalence classes. All contours in a class are L-homotopic to each other.
+
+\begin{claim} \label{clm:equiv} Consider such an equivalence class $\Phi$. Then $f(\Phi)$
+is an open interval $(a,b)$, where $a$ and $b$ are critical values.
+\end{claim}
+
+\begin{proof} \Clm{mono} should help us argue that for distinct $\phi, \phi' \in \Phi$,
+for any $t \in [f(\phi),f(\phi')]$, there exists $\phi'' \in \Phi$ such that $f(\phi'') = t$.
+So $f(\Phi)$ is an interval. \Clm{reg} should tell us that this interval must be open
+with critical value endpoints.
+\end{proof}
+
+We can now define the Reeb Graph $\reeb(\MM)$. We use the fact that critical points 
+have distinct values. (Technically, the Reeb Graph depends on the function $f$.
+Because it is implicit by the embedding of $\MM$, we will remove it from the notation.)
+
+\begin{definition} \label{def:reeb} The \emph{Reeb Graph} $\reeb(\MM)$ has as vertex set
+the set of critical points. The edge $(x,y)$ is present if there exists equivalence class
+$\Phi$ such that $f(\Phi) = [f(x),f(y)]$.
+\end{definition}
+
+We define a ``cut" operation on manifolds that cuts along a contour to create
+a manifold with a new boundary. Intuitively, any cut creates two disjoint boundaries, one
+above and one below.
+
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
+{\bf $\cut(\MM,\phi)$}
+
+\smallskip
+\begin{asparaenum}
+	\item Insert the vertices of $\phi$ in $\MM$.
+	\item Take an arbitrary edge $e$ intersecting $\phi$.
+	\item Take a point $x$ (resp. $y$) on $e$ at distance $\eps$ above (resp. below) $\phi$.
+	\item Let $\phi_x$ be the contour through $x$, and analogously define $\phi_y$. Insert the vertices
+	of these contours in the manifold. Triangulate all new faces.
+	\item Delete the vertices (and incident edges, faces, etc.) of $\phi$ from the manifold.
+\end{asparaenum}
+\end{minipage}}
+
+\medskip
+This results in a new manifold that is also boundary critical. There are two new disjoint
+boundary faces added. The manifold may be disconnected. Abusing notation, we use $\cut(\MM,\Phi)$
+for a set $\Phi$ of contours to mean the manifold obtained by cutting along all contours in $\Phi$.
+
+We now describe a procedure that converts the Reeb Graph of $\cut(\MM,\phi)$ to the Reeb Graph of $\MM$.
+
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
+{\bf $\surgery(\MM,\phi)$}
+
+\smallskip
+\begin{asparaenum}
+	\item Let $\MM' = \cut(\MM,\phi)$.
+	\item Construct $\reeb(\MM')$ and let $B, C$ be the vertices corresponding to the new boundaries created
+	in $\MM'$. (One is a minima and the other is maxima.)
+	\item Since $B, C$ are leaves, they each have unique neighbors $B'$ and $C'$, respectively. Insert
+	edge $(B',C')$ and delete $B,C$ to obtain a new graph.
+\end{asparaenum}
+\end{minipage}}
+
+\medskip
+\begin{lemma} \label{lem:surgery} For any regular contour $\phi$, the output of $\surgery(\MM,\phi)$ is $\reeb(\MM)$.
+\end{lemma}
+
+\begin{proof} The only difference between $\reeb(\MM)$ and $\reeb(\cut(\MM,\phi))$ is in the equivalence
+class corresponding to $\phi$. This class is split into two classes in $\cut(\MM,\phi)$, which are joined
+back by $\surgery(\MM,\phi)$.
+\end{proof}
+
+\section{Raining to partition $\MM$} \label{sec:rain}
+
+In this section, we assume that $\MM$ is homeomorphic to $\SSS^2$ with boundaries. 
+
+\begin{definition} \label{def:dom} A manifold is \emph{extremum dominant} if there exists
+a maximum (resp. minimum) $x$ such that every non-maximal (resp. non-minimal) \emph{vertex} in the manifold has an increasing (resp. decreasing) path to $x$.
+\end{definition}
+
+We will describe a linear time algorithm that partitions $\MM$ into a set of extremum dominant manifolds.
+The first part of this requires a ``raining" procedure. Start at some point $x \in \MM$ and imagine rain at $x$.
+The water will flow downwards along descending paths and ``wet" all the points encountered.
+
+\begin{definition} \label{def:wet} The set of points $y$ such that there is a descending path from $x$ to $y$
+is denoted by $\wet(x,\MM)$. A point $z$ is on the \emph{interface} of $\wet(x,\MM)$ if every neighbor
+has non-trivial intersection with $\wet(x,\MM)$.
+\end{definition}
+
+\begin{claim} \label{clm:inter} For any $x$, the interface of $\wet(x,\MM)$ is a set of disjoint, simple, non-regular contours.
+Furthermore, each such contour contains a merge vertex.
+\end{claim}
+
+\begin{proof} If $y \in \wet(x,\MM)$, then any contour containing $y$ is also in $\wet(x,\MM)$.
+Consider a $y$ in the interface. We argue that all points in a contour $\phi$ containing $y$
+are also in the interface. If such a contour is regular, we can find a contour just above it that
+is also wet. 
+
+If two simple contours intersect, the intersection point $y$ is critical. We can argue that the only
+way to reach $y$ from a descending path is reach one of the contours and then follow it to get to $y$.
+But that would imply the existence of another critical point on this contour, violating the Morse condition.
+
+Let us argue that $y$ is a merge vertex. Consider the descending path from $x$ to $y$. The final edge
+that reaches $y$ is obviously all wet, and is an increasing edge from $y$. Consider an opposite increasing
+edge. Take two point in these edges that are infinitesimally higher than $y$ and show that the contours
+through them as disjoint. So $y$ is a merge.
+\end{proof}
+
+We will define a \lift{} operation on the interface contours. Consider such a contour $\phi$ containing
+merge vertex $y$. Take any dry increasing edge incident to $y$, and pick the point $z$ on this edge at height
+$f(y) + \eps$. Let $\lift(y) = \cont(z)$.
+
+\begin{claim} \label{clm:cut-int} Let $\phi$ be an interface contour. Then $\cut(\MM,\lift(\phi))$
+results in two disjoint manifolds, one consisting entirely of dry points, and the other containing
+all wet points.
+\end{claim}
+
+\begin{proof} Note that $\lift(\phi)$ is a closed, dry curve. But the Jordan Curve Theorem,
+$\cut(\MM,\lift(\phi))$ results in two disjoint manifolds. Let $\NN$ be the manifold containing
+the point $x$, and $\NN'$ be the other manifold. If there exists a wet point $z$ in $\NN'$,
+then there exists a descending path from $x$ to $z$ intersecting $\phi$ (Jordan Curve Theorem again).
+That contradicts the fact that $\phi$ is dry.
+\end{proof}
+
+We now define the main partitioning procedure that cuts up a manifold $\NN$ homeomorphic to $\SSS^2$ with boundaries into a series of extremum
+dominant manifolds. It takes as input the manifold and a maximum $x$. To initialize,
+we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum.
+
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
+{\bf $\rain(x,\NN)$}
+
+\smallskip
+\begin{compactenum}
+	\item Compute the interface of $\wet(x,\NN)$. 
+	\item If the interface is empty, simply output $\NN$. Otherwise, denote the contours by $\phi_1, \phi_2, \ldots, \phi_k$, and set $\phi'_i = \lift(\phi_i)$.
+	\item Initialize $\NN_1 = \NN$.
+	\item For $i$ from $1$ to $k$: 
+	\begin{compactenum}
+		\item Construct $\cut(\phi'_i,\NN_1)$ to get the dry manifold $\LL_i$ and wet manifold $\NN_{i+1}$.
+		\item Let the new boundary of $\LL_i$ be $B_i$. Invert $\LL_i$ so that $B_i$ is a maximum. Recursively
+		call $\rain(B_i,\LL_i)$.
+	\end{compactenum}
+	\item Output $\NN_{k+1}$.
+\end{compactenum}
+\end{minipage}}
+
+\medskip
+For convenience, denote the total output of $\rain(x,\MM)$ by $\MM_1, \MM_2, \ldots, \MM_r$.
+
+\begin{lemma} \label{lem:rain-1} Each output manifold $\MM_i$ is extremum dominant.
+\end{lemma}
+
+\begin{proof} Consider a call to $\rain(x,\NN)$. If the interface is empty, then all of $\NN$
+is in $\wet(x,\NN)$, so $\NN$ is trivially extremum dominant. So suppose the interface
+is non-empty and consists of $\phi_1, \phi_2, \ldots, \phi_k$ (as denoted in the procedure).
+By repeated applications of \Clm{cut-int}, $\NN_{k+1}$ consists of wet points. 
+Consider $\wet(x,\NN_{k+1})$. The interface must exactly be $\phi_1, \phi_2, \ldots, \phi_k$.
+So the only dry vertices are those in the boundaries $B_1, B_2, \ldots, B_k$. But these
+boundaries are maxima.
+\end{proof}
+
+\begin{lemma} \label{lem:rain-time} The total running time of $\rain(x,\MM)$ is $O(n)$.
+\end{lemma}
+
+\begin{proof} Consider some invocation to $\rain(x,\NN)$. The total running time to determine
+$\wet(x,\NN)$ (and the interface) is at most the number of vertices in $\wet(x,\NN)$. Note that
+this includes original vertices in $\NN$ as well as new vertices created by constructing
+$\phi_1, \phi_2, \ldots, \phi_k$. Essentially, we can bound the total time by $O(n)$ plus
+the total sizes of all the interface boundaries ever constructed (during recursive calls).
+
+To bound the latter quantity, we will simply argue that any edge contains at most
+one boundary vertex. Consider some edge $e$ and take the first time a boundary vertex is created in $e$.
+This happens when some contour $\phi$ intersects $e$. On applying $\cut(\NN,\lift(\phi))$,
+consider the dry manifold $\LL$ and wet manifold $\MM$ constructed. The edge $e$ is split into two parts, the dry and wet part.
+The wet part is in $\MM$ and will never be involved in any recursive call.
+
+The dry part of $e$ (call it $e'$) needs to be considered.
+A boundary vertex $v$ (an new endpoint of $e$) is created, which is part of the boundary $B$ in $\LL$,
+such that $\rain(B,\LL)$ is called to the inverted $\LL$. In this call, since the water starts from $v$,
+all of $e'$ becomes wet. So there is no further interface contour that can intersect this portion of $e'$.
+\end{proof}
+
+\begin{claim} \label{clm:rain-reeb} Given $\reeb(\MM_1), \reeb(\MM_2), \ldots, \reeb(\MM_r)$,
+$\reeb(\MM)$ can be computed in $O(n)$ time.
+\end{claim}
+
+\begin{proof} Basically apply the $\surgery$ procedure, and invoke \Lem{surgery}.
+\end{proof}
+
+\section{Painting to compute contour trees} \label{sec:paint}
+
+What the previous section allows us to restrict attention to extremum dominant manifolds.
+We will orient so that the extremum in question is a \emph{minimum}.
+We will fix such a manifold $\MM$, with the dominant minimum $x$. 
+
+We begin by associating a color with each maximum. If the set of maxima is $S$,
+this is simply an arbitrary bijection $c:S \mapsto [|S|]$. Imagine there being a large
+can of paint of color $c(y)$ at maxima $y$. We will spill different paint from each maximum and watch it flow down.
+This is analogous to the raining in the previous section, but paint is a much more viscous liquid.
+\emph{So paint only flows down edges, and it does not color the interior of faces.} Furthermore, paints
+do not mix, so eventually, every vertex and edge of $\MM$ gets a unique color.
+
+We begin with the procedure \paint. We can think of this procedure as extending the map $c:S \mapsto [|S|]$
+to $c:G(\MM) \mapsto [|S|]$.
+
+\end{document}
+
