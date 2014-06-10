@@ -146,14 +146,19 @@
 \newcommand{\stack}{\mathsf{S}}
 \newcommand{\AQ}{\mathsf{AQ}}
 
+\newcommand{\col}{col}
+\newcommand{\mcol}{mcol}
 \newcommand{\cut}{{\tt cut}}
 \newcommand{\cont}{\psi}
 \newcommand{\lift}{{\tt lift}}
 \newcommand{\paint}{{\tt paint}}
 \newcommand{\rain}{{\tt rain}}
 \newcommand{\reeb}{R}
+\newcommand{\rep}{rep}
+\newcommand{\st}{K}
 \newcommand{\surgery}{{\tt surgery}}
 \newcommand{\touch}{T}
+\newcommand{\update}{{\tt update}}
 \newcommand{\wet}{{\tt wet}}
 
 \newcommand{\MTAlg}{\Algorithm{MTAlg}\xspace}
@@ -519,10 +524,9 @@ $\reeb(\MM)$ can be computed in $O(n)$ time.
 \end{proof}
 
 \section{Painting to compute contour trees} \label{sec:paint}
-
-What the previous section allows us to restrict attention to extremum dominant manifolds.
+The previous section allows us to restrict attention to extremum dominant manifolds.
 We will orient so that the extremum in question is a \emph{minimum}.
-We will fix such a manifold $\MM$, with the dominant minimum $x$. 
+We will fix such a manifold $\MM$, with the dominant minimum $u$. 
 
 We begin by associating a color with each maximum. If the set of maxima is $S$,
 this is simply an arbitrary bijection $\chi:S \mapsto [|S|]$. Imagine there being a large
@@ -541,17 +545,126 @@ with the following properties. (Remember that $G(\MM) = (V,E)$.)
 \end{asparaitem}
 \end{definition}
 %
-Note that paintings are not unique. It is straightforward to construct a painting of $\MM$ in $O(n)$ time, using a descending BFS from
-each maximum. 
-%
+Note that paintings are not unique. It is straightforward to construct a painting of $\MM$ in $O(n)$ time, using a descending BFS from each maximum. 
+
+\subsection{The data structures} \label{sec:struct}
+
+{\bf The binomial heaps $\touch(c)$:} For each color $c$, we store a binomial
+heap $T(c)$ of non-extremal critical points.
+
 \begin{definition} \label{def:color-set} Fix a painting $\chi$, and a color $c$.
-A critical point $x$ is \emph{$c$-touched} if $x$ is incident to a $c$-colored
-increasing edge. The set of $c$-touched critical points is denoted $\touch(c)$.
+A critical point $x$ is \emph{touched by $c$} if $x$ is incident to a $c$-colored
+increasing edge. The set of non-extremal critical points touched by $c$ is denoted $\touch(c)$.
+For $x$, $\col(x)$ is the set of colors that touch $x$.
 \end{definition}
 %
-We will store each set $\touch(c)$ in a binomial heap. Abusing notation, $\touch(c)$ refers
+We will store each set $\touch(c)$ in a binomial heap, keyed by the heights. 
+Abusing notation, $\touch(c)$ refers
 both to the set and the data structure used to store it.
+
+\medskip
+\noindent
+{\bf The union-find data structure on colors:} We will repeatedly perform unions
+of classes of colors, and this will be maintained as a standard union-find data structure.
+For any color $c$, $\rep(c)$ denotes the representative of its class. We initialize
+by simply setting $\rep(c) = c$ for all colors.
+
+
+\medskip
+\noindent
+{\bf The stack $\st$:} This consists of non-extremal critical points with the following structure.
+Each point $x \in \st$ has an associated subset of $\col(x)$, denoted $\mcol(x)$.
+Both $\mcol(x)$ and its complement are stored as hash table. So lookups, inserts, and deletes
+are in these sets are all constant time operations. The stack is guaranteed to satisfy 
+the following invariants.
+\begin{asparaitem}
+	\item For every $x \in \st$: For every $c \in \mcol(x)$, $x$ is the highest element
+	in $T(c)$. Furthermore, $c = \rep(c)$.
+	\item Consider $x, y \in \st$ such that $y$ was pushed on $x$. There exists $c \in \col(x) \setminus
+	\mcol(x)$ such that $c \in \col(y)$.
+\end{asparaitem}
+
+\subsection{Updating the stack} \label{sec:stack}
+
+We have a simple, but critical, procedure that updates the stack $\st$ by pushing
+points on to it.
+
+
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
+{\bf $\update(\st)$}
+
+\smallskip
+\begin{compactenum}
+	\item Let $h$ be head of $\st$.
+	\item While $\col(h) \setminus \mcol(h)$ non-empty:
+	\begin{compactenum}
+		\item Pick some $c \in \col(h) \setminus \mcol(h)$. Replace it by $c' = \rep(c)$.
+		\item Obtain highest point $x$ in $T(c')$. 
+		\item If $x = h$, put $c'$ in $\mcol(h)$. Otherwise ($x \neq h$), push $x$ onto stack
+		and set $\mcol(x) = \{c'\}$.
+		\item Let $h$ be new head of $\st$.
+	\end{compactenum}
+\end{compactenum}
+\end{minipage}}
+
+\medskip
+When $\update(\st)$ terminates, the head $h$ has the following property. For every $c \in \col(h)$,
+$h$ is the highest point in $\touch(c)$. 
+
+\begin{claim} \label{clm:cont} Consider an increasing path from $h$ to some maxima $x$.
+For any $y$ in this path, $\cont(y)$ only contains points of color $c(x)$.
+Furthermore, for all vertices on $\cont(y)$, their increasing edges are colored $c(x)$.
+\end{claim}
+
+\begin{proof} Consider this increasing path, and think of moving $y$ continuously downwards from $x$
+to $h$. Initially (when $y = x$), the lemma is trivially true. Consider the first $y$
+when the condition fails. We have $\cont(y)$ only containing points of color $c(x)$,
+but there is a vertex $z \in \cont(y)$ that has increasing edges of a different color $c'$.
+All the increasing edges of $z$ that are colored $c(x)$ are contiguous (since we can construct
+a contour intersecting all of them). Thus, there are two disjoint increasing neighborhoods for $z$,
+and $z$ is a saddle point. But that contradicts the fact that $h$ is the highest saddle point
+of color $c(x)$.
+
+So, as $y$ decreases, for all vertices on $\cont(y)$, their increasing edges are colored $c(x)$.
+This also means that $\cont(y)$ only contains points of color $c(x)$.
+\end{proof}
+
+We have important lemmas characterizing $|\col(h)|$.
+
+\begin{lemma} \label{lem:mono} If $h$ is a merge vertex, then $|\col(h)| > 1$.
+\end{lemma}
+
+\begin{proof} Suppose not. Consider the edges incident to $h$ in circular order. There exist (at least) $2$
+disjoint contiguous stretches of edges that are increasing. 
+All these edges have the same color $c$, associated with some maximum $x$. Consider two neighbors $y,z$
+that lie in different stretches. By the definition of a painting, there exist descending paths (along
+edges) from $x$ to $y$ and $x$ to $z$. We can construct a Jordan curve $C$ from $x \rightarrow y
+\rightarrow h \rightarrow z \rightarrow x$. All points in this curve except $h$ have 
+heights larger than $f(h)$. By the Jordan Curve Theorem, this partitions $\MM$ into
+an ``inside" and an ``outside". 
+
+One of the lower neighbors of $h$ (say $p$) is inside, and another (say $q$) is outside.
+Because $h$ is a merge, neither of these can a minimum other than the dominant minimum $u$.
+Hence, both $p$ and $q$ have descending paths to $u$. So there is a path from $p$
+to $q$ where all heights are strictly less than $f(h)$. But this path must intersect $C$.
+Contradiction.
+\end{proof}
+
+\begin{lemma} \label{lem:col} If $h$ is a merge vertex, $|\col(h)| = 2$.
+If $h$ is a split vertex, $|\col(h)| = 1$.
+\end{lemma}
+
+\begin{proof} Consider one contiguous sequence of increasing edges from $h$.
+There exists a contour intersecting all of these edges. By \Clm{cont}, they all
+must have the same color. There are two such contiguous sequences.
+
+If $h$ is a merge vertex, then $|\col(h)| = 2$ by \Lem{mono}. If $h$ is a split vertex,
+there is a single contour passing through all increasing edges. By \Clm{cont}, they
+all have the same color.
+\end{proof}
+
 
 
 \end{document}
-
