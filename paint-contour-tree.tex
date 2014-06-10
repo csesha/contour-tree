@@ -153,6 +153,7 @@
 \newcommand{\rain}{{\tt rain}}
 \newcommand{\reeb}{R}
 \newcommand{\surgery}{{\tt surgery}}
+\newcommand{\touch}{T}
 \newcommand{\wet}{{\tt wet}}
 
 \newcommand{\MTAlg}{\Algorithm{MTAlg}\xspace}
@@ -524,14 +525,33 @@ We will orient so that the extremum in question is a \emph{minimum}.
 We will fix such a manifold $\MM$, with the dominant minimum $x$. 
 
 We begin by associating a color with each maximum. If the set of maxima is $S$,
-this is simply an arbitrary bijection $c:S \mapsto [|S|]$. Imagine there being a large
+this is simply an arbitrary bijection $\chi:S \mapsto [|S|]$. Imagine there being a large
 can of paint of color $c(y)$ at maxima $y$. We will spill different paint from each maximum and watch it flow down.
 This is analogous to the raining in the previous section, but paint is a much more viscous liquid.
 \emph{So paint only flows down edges, and it does not color the interior of faces.} Furthermore, paints
 do not mix, so eventually, every vertex and edge of $\MM$ gets a unique color.
+%
+\begin{definition} \label{def:paint} A  \emph{painting} of $\MM$ is a map $\chi:V \cup E \mapsto [|S|]$
+with the following properties. (Remember that $G(\MM) = (V,E)$.)
+\begin{asparaitem}
+	\item The restriction $c:S \mapsto [|S|]$ is a bijection.
+	\item Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
+	consisting of edges in $E$, such that all edges and vertices along this path have the same color. (The maximum $x$
+	is well-defined to be the unique maximum with the same color as $e$.)
+\end{asparaitem}
+\end{definition}
+%
+Note that paintings are not unique. It is straightforward to construct a painting of $\MM$ in $O(n)$ time, using a descending BFS from
+each maximum. 
+%
+\begin{definition} \label{def:color-set} Fix a painting $\chi$, and a color $c$.
+A critical point $x$ is \emph{$c$-touched} if $x$ is incident to a $c$-colored
+increasing edge. The set of $c$-touched critical points is denoted $\touch(c)$.
+\end{definition}
+%
+We will store each set $\touch(c)$ in a binomial heap. Abusing notation, $\touch(c)$ refers
+both to the set and the data structure used to store it.
 
-We begin with the procedure \paint. We can think of this procedure as extending the map $c:S \mapsto [|S|]$
-to $c:G(\MM) \mapsto [|S|]$.
 
 \end{document}
 
