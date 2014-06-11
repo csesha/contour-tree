@@ -146,11 +146,14 @@
 \newcommand{\stack}{\mathsf{S}}
 \newcommand{\AQ}{\mathsf{AQ}}
 
+\newcommand{\build}{{\tt build}}
 \newcommand{\col}{col}
-\newcommand{\mcol}{mcol}
 \newcommand{\cut}{{\tt cut}}
 \newcommand{\cont}{\psi}
+\newcommand{\h}{high}
 \newcommand{\lift}{{\tt lift}}
+\newcommand{\mcol}{mcol}
+\newcommand{\onestep}{{\tt piece}}
 \newcommand{\paint}{{\tt paint}}
 \newcommand{\rain}{{\tt rain}}
 \newcommand{\reeb}{R}
@@ -185,7 +188,8 @@ Consider a piecewise-linear (PL) $2$-manifold $\MM$ with boundaries.
 This is represented by a triangulation (given as a DCEL) where edges
 can be oriented and the boundary of a face is always counterclockwise. Some faces will \emph{not}
 be triangular, and each of these corresponds to a \emph{boundary face}.
-Let $G(\MM) = (V,E)$ denote this triangulation. 
+Let $G(\MM) = (V,E)$ denote this triangulation. We assume this triangulation
+has bounded degree.
 We will assume that $\MM$ is embedding in $\RR^d$.
 The manifold within each face is just linear.
 We define a \emph{height function} on $\MM$, $f:\MM \mapsto \RR$. For each point in $x \in \MM$, let $f(x)$ simply be the value of $x_1$.
@@ -584,6 +588,12 @@ the following invariants.
 	\mcol(x)$ such that $c \in \col(y)$.
 \end{asparaitem}
 
+\medskip
+\noindent
+{\bf Highest points $\h(c)$:} For each color $c$, we maintain a special critical point $\h(c)$ of this color.
+It is supposed to denote the ``highest" point of color $c$, but the notion of highest evolves
+with the algorithm. 
+
 \subsection{Updating the stack} \label{sec:stack}
 
 We have a simple, but critical, procedure that updates the stack $\st$ by pushing
@@ -597,6 +607,8 @@ points on to it.
 
 \smallskip
 \begin{compactenum}
+	\item If $K$ is empty, pick arbitrary $c$. Let $x$ be the highest point in $T(c)$.
+	Push $x$ onto stack and set $\mcol(x) = \{c\}$.
 	\item Let $h$ be head of $\st$.
 	\item While $\col(h) \setminus \mcol(h)$ non-empty:
 	\begin{compactenum}
@@ -665,6 +677,49 @@ there is a single contour passing through all increasing edges. By \Clm{cont}, t
 all have the same color.
 \end{proof}
 
+\subsection{Constructing $\reeb(\MM)$} \label{sec:const}
 
+The main construction procedure is $\onestep(\MM)$. It pieces together $\reeb(\MM)$
+incrementally. 
+
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
+{\bf $\onestep(\MM)$}
+
+\smallskip
+\begin{compactenum}
+	\item Run $\update(\st)$. Pop $\st$ to get $h$.
+	\item Suppose $\mcol(h) = \{c\}$ (so $h$ is split). 
+	\begin{compactenum}
+		\item Connect $h$ (in $\reeb(\MM)$) to $\h(C)$ and the unique minimum corresponding to split $h$. 
+		\item Delete $h$ from $T(c)$, set $\h(C) = h$.
+		\item End procedure.
+	\end{compactenum}
+	\item Let $\mcol(h) = \{c_1, c_2\}$ (so $h$ is merge).
+	\item Connect $h$ in $\reeb(\MM)$ to $\h(c_1)$ and $\h(c_2)$.
+	\item Delete all copies of $h$ from $T(c_1)$ and $T(c_2)$.
+	\item Perform union of colors $c_1$ and $c_2$ (denote merged color as $c$). Merge heaps
+	to get $T(c) = T(c_1) \cup T(c_2)$.
+	\item Set $\h(c) = h$.	
+\end{compactenum}
+\end{minipage}}
+
+\medskip
+\begin{theorem} \label{thm:piece} Consider the very first call to $\onestep(\MM)$. Let $y$ be a point
+infinitesimally below $h$ on a decreasing edge. Consider $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$ (the upper and lower manifolds). Then $\onestep(\MM)$
+outputs $\reeb(\MM_u)$ and implicitly gives a valid painting of $\MM_\ell$.
+\end{theorem}
+
+We have an important lemma that helps to bound the running time.
+
+\begin{lemma} \label{lem:tree} For every color $c$, all points in $T(c)$ lie along a monotone path in 
+$\reeb(\MM)$.
+\end{lemma}
+
+\begin{proof} Prove by induction of the number of edges in $\reeb(\MM)$. Consider the head $h$ of $\st$ in the first call to $\onestep(\MM)$,
+and the contour $\cont(y)$ as defined in \Thm{piece}. Take $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$. Apply induction
+hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in the original manifold.
+\end{proof}
 
 \end{document}
