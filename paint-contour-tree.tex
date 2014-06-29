@@ -409,19 +409,19 @@ is partitioned into equivalence classes. All contours in a class are L-homotopic
 is an open interval $(a,b)$, where $a$ and $b$ are critical values.
 \end{claim}
 
-\begin{proof} \Clm{mono} should help us argue that for distinct $\phi, \phi' \in \Phi$,
+\begin{proof} \Clm{mono} and continuity of L-homotopy immediately imply that for $\phi, \phi' \in \Phi$,
 for any $t \in [f(\phi),f(\phi')]$, there exists $\phi'' \in \Phi$ such that $f(\phi'') = t$.
-So $f(\Phi)$ is an interval. \Clm{reg} should tell us that this interval must be open
-with critical value endpoints.
+So $f(\Phi)$ is an interval. As equivalence classes are defined over only regular contours, \Clm{reg} 
+tells us that this interval must be open with critical value endpoints.
 \end{proof}
 
 We can now define the Reeb Graph $\reeb(\MM)$. We use the fact that critical points 
 have distinct values. (Technically, the Reeb Graph depends on the function $f$.
 Because it is implicit by the embedding of $\MM$, we will remove it from the notation.)
 
-\begin{definition} \label{def:reeb} The \emph{Reeb Graph} $\reeb(\MM)$ has as vertex set
+\begin{definition} \label{def:reeb} The \emph{Reeb Graph} $\reeb(\MM)$ has as a vertex set
 the set of critical points. The edge $(x,y)$ is present if there exists equivalence class
-$\Phi$ such that $f(\Phi) = [f(x),f(y)]$.
+$\Phi$ such that $f(\Phi) = (f(x),f(y))$.
 \end{definition}
 
 We define a ``cut" operation on manifolds that cuts along a contour to create
@@ -436,7 +436,7 @@ above and one below.
 \smallskip
 \begin{asparaenum}
 %	\item Insert the vertices of $\phi$ in $\MM$.
-	\item Take an arbitrary edge $e$ intersecting $\phi$.
+	\item Take an arbitrary edge $e$ whose interior intersect $\phi$.
 	\item Take a point $x$ (resp. $y$) on $e$ at distance $\eps$ above (resp. below) $\phi$.
 	\item Let $\phi_x$ be the contour through $x$, and analogously define $\phi_y$. Insert a vertex
 	at each intersection point of these contours with edges of the manifold. Triangulate all new faces.
@@ -445,9 +445,9 @@ above and one below.
 \end{minipage}}
 
 \medskip
-This results in a new manifold that is also boundary critical. There are two new disjoint
-boundary faces added. The manifold may be disconnected. Abusing notation, we use $\cut(\MM,\Phi)$
-for a set $\Phi$ of contours to mean the manifold obtained by cutting along all contours in $\Phi$.
+This results in a new manifold which is boundary critical if the input manifold was. There are two new disjoint
+boundary faces added. The manifold may be disconnected. Abusing notation, we use $\cut(\MM,\Psi)$
+for a set $\Psi$ of contours to mean the manifold obtained by cutting along all contours in $\Psi$.
 
 We now describe a procedure that converts the Reeb Graph of $\cut(\MM,\phi)$ to the Reeb Graph of $\MM$.
 
@@ -488,7 +488,7 @@ The first part of this requires a ``raining" procedure. Start at some point $x \
 The water will flow downwards along descending paths and ``wet" all the points encountered.
 
 \begin{definition} \label{def:wet} The set of points $y$ such that there is a descending path from $x$ to $y$
-is denoted by $\wet(x,\MM)$. A point $z$ is on the \emph{interface} of $\wet(x,\MM)$ if every neighbor
+is denoted by $\wet(x,\MM)$. A point $z$ is on the \emph{interface} of $\wet(x,\MM)$ if every neighborhood of $z$
 has non-trivial intersection with $\wet(x,\MM)$.
 \end{definition}
 
@@ -498,35 +498,55 @@ Note that $\wet(x,\MM)$ (and its interface) can easily be computed in linear tim
 Furthermore, each such contour contains a merge vertex.
 \end{claim}
 
-\begin{proof} If $y \in \wet(x,\MM)$, then any contour containing $y$ is also in $\wet(x,\MM)$.
-Consider a $y$ in the interface. We argue that all points in a contour $\phi$ containing $y$
-are also in the interface. If such a contour is regular, we can find a contour just above it that
-is also wet. 
-
-If two contours intersect, the intersection point $y$ is critical. We can argue that the only
-way to reach $y$ from a descending path is reach one of the contours and then follow it to get to $y$.
-But that would imply the existence of another critical point on this contour, violating the Morse condition.
-
-Let us argue that $y$ is a merge vertex. Consider the descending path from $x$ to $y$. The final edge
-that reaches $y$ is obviously all wet, and is an increasing edge from $y$. Consider an opposite increasing
-edge. Take two point in these edges that are infinitesimally higher than $y$ and show that the contours
-through them as disjoint. So $y$ is a merge.
+\begin{proof}
+ First observe that any point which in the interface must be wet.  Second, for $y \in \wet(x,\MM)$, all the points in any contour containing $y$ are also in $\wet(x,\MM)$, 
+ as one can follow the descending path to $y$ and then walk along the contour.
+ 
+ So let $y$ be a point in the interface.
+ For $\eps$ sufficiently small, the points in any $\eps$ neighborhood of $y$ that lie below $y$ must have a descending path from $y$ and hence must be wet.
+ Therefore in order for $y$ to have non-trivial intersection with $\wet(x,\MM)$ for any arbitrarily small $\eps$ there must be a dry point which lies 
+ strictly above $y$.  In particular, this implies there must be an entire dry contour which lies just above $y$.
+ 
+ However, since $y$ is in the interface, it is also wet.  Therefore for any contour $\phi$ which contains $y$, for any arbitrarily small $\eps$ there is 
+ a wet point which lies above $\phi$ and has a descending path of length at most $\eps$ to $\phi$.
+ This implies there is some contour which lies just 
+ above $y$ which is wet.  So any contour $\phi$ containing $y$ has two contours which lie just above it, one which is dry, and one which is wet.  
+ This can only happen if $\phi$ contains a merge vertex, because otherwise all contours which lie just above would be in the same L-homotopy equivalence class and so by 
+ \Clm{mono}, if one is wet, all below it are wet.
+ 
+ By similar logic one can argue that of the two contours through a given merge vertex at most one can contain interface points other than the merge vertex, 
+ and that if one of the contours does contain such interface points, then the entire contour consists of interface points.
 \end{proof}
 
+% \begin{proof} If $y \in \wet(x,\MM)$, but not in the interface, then any contour containing $y$ is also in $\wet(x,\MM)$.
+% So consider a point $y$ in the interface. We argue that all points in a contour $\phi$ containing $y$
+% are also in the interface. If such a contour is regular, we can find a contour just above it that
+% is also wet. 
+% 
+% If two contours intersect, the intersection point $y$ is critical. We can argue that the only
+% way to reach $y$ from a descending path is reach one of the contours and then follow it to get to $y$.
+% But that would imply the existence of another critical point on this contour, violating the Morse condition.
+% 
+% Let us argue that $y$ is a merge vertex. Consider the descending path from $x$ to $y$. The final edge
+% that reaches $y$ is obviously all wet, and is an increasing edge from $y$. Consider an opposite increasing
+% edge. Take two point in these edges that are infinitesimally higher than $y$ and show that the contours
+% through them as disjoint. So $y$ is a merge.
+% \end{proof}
+
 We will define a \lift{} operation on the interface contours. Consider such a contour $\phi$ containing
-merge vertex $y$. Take any dry increasing edge incident to $y$, and pick the point $z$ on this edge at height
+a merge vertex $y$. Take any dry increasing edge incident to $y$, and pick the point $z$ on this edge at height
 $f(y) + \eps$. Let $\lift(y) = \cont(z)$.
 
 \begin{claim} \label{clm:cut-int} Let $\phi$ be an interface contour. Then $\cut(\MM,\lift(\phi))$
-results in two disjoint manifolds, one consisting entirely of dry points, and the other containing
-all wet points.
+results in two disjoint manifolds, one consisting entirely of dry points.
 \end{claim}
 
-\begin{proof} Note that $\lift(\phi)$ is a closed, dry curve. But the Jordan Curve Theorem,
+\begin{proof} Note that $\lift(\phi)$ is a closed, dry curve. By the Jordan Curve Theorem,
 $\cut(\MM,\lift(\phi))$ results in two disjoint manifolds. Let $\NN$ be the manifold containing
-the point $x$, and $\NN'$ be the other manifold. If there exists a wet point $z$ in $\NN'$,
-then there exists a descending path from $x$ to $z$ intersecting $\phi$ (Jordan Curve Theorem again).
-That contradicts the fact that $\phi$ is dry.
+the point $x$ that we called $\wet(x,\MM)$ from, and let $\NN'$ be the other manifold. 
+If there exists a wet point $z$ in $\NN'$, then there exists a descending path from $x$ to $z$. 
+As $x$ is in $\NN$ and $z$ is in $\NN'$, again by the Jordan Curve Theorem this path must intersect $\phi$, 
+contradicting the fact that $\phi$ is dry.
 \end{proof}
 
 We now define the main partitioning procedure that cuts up a manifold $\NN$ homeomorphic to $\SSS^2$ with boundaries into a series of extremum
@@ -545,7 +565,7 @@ we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum.
 	\item Initialize $\NN_1 = \NN$.
 	\item For $i$ from $1$ to $k$: 
 	\begin{compactenum}
-		\item Construct $\cut(\phi'_i,\NN_1)$ to get the dry manifold $\LL_i$ and wet manifold $\NN_{i+1}$.
+		\item Call $\cut(\phi'_i,\NN_1)$ to get the dry manifold $\LL_i$ and wet manifold $\NN_{i+1}$.
 		\item Let the new boundary of $\LL_i$ be $B_i$. Invert $\LL_i$ so that $B_i$ is a maximum. Recursively
 		call $\rain(B_i,\LL_i)$.
 	\end{compactenum}
