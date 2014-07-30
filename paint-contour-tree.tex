@@ -126,6 +126,7 @@
 \newcommand{\Def}[1]{\hyperref[def:#1]{Definition~\ref*{def:#1}}} %definition
 \newcommand{\Alg}[1]{\hyperref[alg:#1]{Algorithm~\ref*{alg:#1}}} %algorithm
 \newcommand{\Ex}[1]{\hyperref[ex:#1]{Example~\ref*{ex:#1}}} %example
+\newcommand{\Obs}[1]{\hyperref[obs:#1]{Observation~\ref*{obs:#1}}} %observation
 
 %% Comments to ourselves
 \newcommand{\Reminder}[1]{{\color{red}#1}}
@@ -145,6 +146,8 @@
 \newcommand{\Merge}{\mathsf{Merge}}
 \newcommand{\stack}{\mathsf{S}}
 \newcommand{\AQ}{\mathsf{AQ}}
+
+\newcommand{\etal}{\textit{et~al.}\xspace}
 
 \newcommand{\build}{{\tt build}}
 \newcommand{\col}{col}
@@ -171,15 +174,83 @@
 
 
 
-\author{}
+\author{
+  Seshadhri Comandur
+  \and
+  Kashyap Dixit
+  \and
+  Benjamin Raichel
+}
 
 \title{Follow the Flow of Rain and Paint: \break An Output Sensitive Contour Tree Algorithm}
-\date{}
+%\date{}
 
 
 \begin{document}
 
 \maketitle
+
+\begin{abstract}
+Reeb graphs are a fundamental topological structure which tracks the evolution of levels sets of a real valued function over a manifold.  In the case when this graph is loop free it is called a contour tree.  Due to the use of the contour trees in practice on large data sets, there has been significant previous work on algorithms for their efficient computation. 
+
+Some of these previous results are describe as optimal, however they are only worst case optimal.  Here we present an output sensitive approach to computing contour trees.  Our approach leads to a faster algorithm when the contour tree is nicely behaved (i.e. more balanced), yet is still optimal in the worst case.  Our approach is novel and we believe will lead to faster algorithms for other applications as well.
+\end{abstract}
+
+
+\section{Introduction}
+Describe what reeb graphs and contour trees are.
+
+\medskip
+\noindent
+Explain why useful:  Lets you know the ``shape of your date''.  Map of the critical points where contours change.  Fast extraction of seed sets in a small sized structure, which can let you do threshold queries.
+
+\medskip
+\noindent
+Paragraph on specific applications.  Scientific visualization, in particular combustion research.  GIS.
+
+\subsection{Previous Work}
+
+\paragraph{Contour Trees.}
+As the application areas of contour trees usually involve very large data sets, highly efficient algorithms are not only desirable but often necessary.  As such there have been a long sequence of papers with improved running times for computing contour trees.  Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D meshes and an $O(N^2)$ algorithm for higher dimensions, where $N$ is the number of simplices in the mesh. Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case by making several passes over the input.
+
+Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N)$, where $n$ is the number of mesh vertices.  Their algorithm works in 3 simple stages.  The first stage consist of a top down sweep to compute what is known as the merge (or join) tree, which tracks the evolution of super-level sets (whereas the contour tree tracks level sets).  Similarly, the second stage does a bottom up sweep to compute the split tree, which tracks sub-level sets.  Their main contribution is the third and final step where 
+they present an $O(n)$ time algorithm to merge together the merge and split trees to get the contour tree.  Chiang \etal \cite{cllr-sooscctmp-05} 
+have since 
+
+%The most expensive part of the Carr \etal algorithm comes from sorting.  They sort all vertices of the mesh to facilitate an easing sweeping of the mesh.
+%asdfas \cite{} improve the running to $O()$ by sorting only critical points of the mesh.  However, without looking at the non-critical points in the mesh 
+%one does not know how the critical points connect to each other in the contour tree.  To overcome this \cite{} use ``mountain climbers'' from each saddle 
+%to determine which critical points they belong to above.
+
+\paragraph{Output Sensitivity.}
+Let $t$ be the number of critical points in the input mesh.  There is room to improve the results of Carr \etal, as $t$ could potentially be much smaller than $n$.  In particular, Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provide an $O(n+t\log n)$ time algorithm for the case of 3 dimensional structured meshes.  Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t\log t)$ which works for structured or unstructured meshes in any dimension.  
+
+As the the authors point out in \cite{cllr-sooscctmp-05}, by reduction from sorting, one can show that any algorithm to compute the contour tree in the worst case takes $\Omega(N+t\log t)$ time.  However, this lower bound only holds when the contour tree is very unbalanced (i.e. long and skinny) and therefore contains a sorted path with a large fraction of the vertices.  Therefore the bound of $\Omega(N+t\log t)$ is only worst case optimal.  In this paper we will consider an output sensitive approach which takes into account the shape of the contour tree.
+
+
+\paragraph{Reeb Graphs.} UNDER CONSTRUCTION.
+There have also been a number of result for the more general Reeb graph, i.e. when the loopless assumption is removed.  Shinagawa and Kunii \cite{sk-crgacs-91} provided the first provably correct algorithm for the case of triangulated $2$-manifolds. Cole-McLaughlin \etal \cite{cehnp-lrbm-03} later improved the running time to $O(n\log n)$.
+
+
+\subsection{Our Approach and Contribution.}
+
+
+\paragraph{To Sort or not to Sort.}
+As discussed above, the algorithm of Carr \etal \cite{csa-cctad-00} computes the contour tree by first constructing the merge and split trees. 
+As vertices appear in sorted order in any root to leaf path in either tree, sorting the input vertices is a natural step.  However, not all vertices must be sorted together.  In particular, Chiang \etal \cite{cllr-sooscctmp-05} improved the running time by observing that as the merge and split tree only consists of critical points, it suffices to only sort critical points.  
+%
+%However, without looking at the non-critical points in the mesh 
+%one does not know how the critical points connect to each other in the contour tree.  \cite{} easily overcome this by sending out increasing monotone paths (i.e. ``mountain climbers'') from each critical point to determine which critical points they connect to above.
+%
+If a large fraction of the vertices appear in a single root to leaf path in the merge or split tree, paying to sort all the critical 
+points is unavoidable in order to compute the merge and split trees.  However, if the merge and split trees are balanced then sorting all the critical points is potentially very costly.
+
+There is also a more fundamental problem with the now standard approach of first computing the merge and split trees in order to compute the contour tree.  In particular, this approach can never lead to an algorithm that is optimal with respect to the shape of the contour tree.  This is because it is possible to have merge and split trees which are long and skinny (i.e. costly to compute) whereas the contour tree is balanced.  For example consider the case when the mesh looks like two (thickened) balanced binary trees, one upside down, and joined at their roots.  In this case the contour tree is potentially cheap to compute as there is no long sorted path.  However, the merge and split trees will have long sorted tails (consisting of the vertices in the bottom and top balanced trees, respectively), and therefore require $\Omega(n\log n)$ time to compute.  
+
+\paragraph{Our Contribution.} UNDER CONSTRUCTION.
+Give a high level overview.  Emphasize the spilling partitioning scheme used to avoid sorting, and say it may be useful else where.  State our running time.  Say it may be optimal (we still need to investigate).  It matches previous on worst case (i.e. optimal in worst case).
+
+
 
 
 
@@ -838,5 +909,177 @@ $\reeb(\MM)$.
 and the contour $\cont(y)$ as defined in \Thm{piece}. Take $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$. Apply induction
 hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in the original manifold.
 \end{proof}
+
+
+
+\pagebreak
+\section{Lower Bound}
+First we setup some basic terminology.
+Any tree $T$ considered in this section will be a rooted full binary tree where the height of a vertex is its distance 
+from the root $r$.  As such, the children of a vertex $v\in T$ are the adjacent vertices of larger height
+(and $v$ is the parent of such vertices).  Then the subtree rooted at $v$, denoted $T_v$ consists of the graph induced on all 
+vertices which are descendants of $v$ (including $v$ itself).  For two vertices $v$ and $w$ in $T$ let $d(v,w)$ denote the 
+length of the path between $v$ and $w$.
+
+\begin{definition}
+ A coloring of a tree $T$ is any function $\chi:L(T)\times E \rightarrow [n]$, where $L(T)$ is the set of leaves of $T$ and $n = |L(T)|$.  
+ We say a coloring is valid if
+ \begin{itemize}
+  \item The restriction $\chi:L(T) \rightarrow [n]$ is a bijection.
+  \item Let $e$ be any edge in $E$ and let $u$ be its higher endpoint, then $\chi(e) \in \chi(L(T_u))$. 
+ \end{itemize}
+ We consider each internal vertex as having two colors, namely the colors of the two edges for which it is a lower endpoint.
+\end{definition}
+
+For a vertex $v\in T$, let $H_v$ be the subset of 
+vertices along the path from the root to $v$ such that one of the two colors of each vertex is in $\chi(L(T_v))$.
+We will refer to $H_v$ as the \emph{heap} at $v$.
+Then define the \emph{algorithm} cost function as $f_{alg}(\chi(T)) = \sum_{v\in T} \log |H_v|$.
+
+\begin{lemma}
+\label{lem:algCost}
+NEEDS TO BE WRITTEN:
+Here we need a lemma showing that the running time of our algorithm is $O(f_{alg}(\chi(T)))$, where $T$ is the merge tree of the given input, 
+and $\chi$ is any valid coloring of $T$.  (maybe add one in the definition of $H_v$ so that $\log |H_v|$ is always $>1$).
+\end{lemma}
+
+
+\subsection{Path Decomposition Background}
+We now introduce the concept of path decompositions and their cost.  In the next subsection we then relate this to the
+running time of our algorithm.
+
+\begin{definition}
+ Let $T$ be a rooted binary tree.  We call a path $p$ in $T$ a \emph{leaf path} if $p$ contains a leaf of $T$ and 
+ is a contiguous sub-path of a root to leaf path in $T$.  A \emph{path decomposition}, $P(T)$, is a partition of $T$ into 
+ a set of vertex disjoint leaf paths.  Note that the number of paths in $P(T)$ must equal the number of leaves in $T$.
+ For $p\in P(T)$, we use $r_p$ to denote the lowest vertex in $p$ (i.e. its root) and 
+ $|p|$ to denote its length.
+ 
+ We define the cost of a particular path decomposition, $P(T)$, as $f_{path}(P(T)) = \sum_{p\in P(T)} |p| \log |p|$.
+\end{definition}
+
+% \begin{observation}
+% DELETE IF NOT NEEDED:
+% Note that $f_{path}(P(T)) = \Theta( \sum_{v\in V} l_v )$, where $l_v$ is the distance from $v$ to the leaf of its containing path in $P(T)$.  
+% That is, conceptually we can think of each vertex as charging the $\log$ of the length to its path's leaf.
+% \end{observation}
+
+\begin{definition}
+ Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.  
+ For $p\in P(T)$, we say that $p$ is \emph{light} if $4 |p| < |H_{r_p}|$, and we say it is \emph{heavy} otherwise.
+\end{definition}
+
+\begin{observation}
+\label{obs:decrease}
+ Let $v$ be a vertex in $T$ and let $w$ be its parent.  Then $|H_w| \geq |H_v| -1$, as $L(T_v) \subseteq L(T_w)$ and the path from 
+ $w$ to the root has one less vertex than the path from $v$ to the root.
+ 
+ In particular, we have the following more general property.
+ Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $u$ is lower than $v$.  
+ Then $|H_v| \leq |H_u| + d(u,v)$. 
+\end{observation}
+
+
+\begin{lemma}
+\label{lem:pathBounds}
+ Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
+ Then, 
+ \begin{compactenum}
+  \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
+  \item for any light path $p\in P(T)$, $\sum_{v\in P} |H_v| = O(|p| \log |H_{r_p}|)$.
+ \end{compactenum}
+\end{lemma}
+\begin{proof}
+ By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{r_p}| + |p|$ (as $r_p$ lies below $v$ on $p$).
+ As such, 
+ \[
+ \sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{r_p}| + |p|)  = |p| \log (|H_{r_p}| + |p|).
+ \]
+ If $p$ is a heavy path then $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |p|)$, and if $p$ is light then 
+ $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |H_{r_p}| )$.
+\end{proof}
+
+\begin{definition}
+ We say two paths $p,q \in P(T)$ are adjacent if in $T$ there is an edge between a vertex in $p$ and a vertex in $q$.  
+Note that as $p$ and $q$ are vertex disjoint leaf paths, it follows that this edge must be between the root of either 
+$p$ or $q$ and its parent vertex in $T$.  wlog suppose this edge is between the root of $p$ and its parent in $q$. 
+Then we call this parent vertex the \emph{connection} of $p$ and refer to it as $c_p$.
+\end{definition}
+
+The following lemma can be thought of as a generalization of $\Obs{decrease}$.
+
+\begin{lemma}
+\label{lem:adjacent}
+ Let $T$ be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
+ Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
+ 
+ Let $H_i$ be the heap at $r_{q_i}$ and let $H_0$ be the heap at $r_p$.  Then $\sum_{i=1}^k |H_i| \leq |H_0|+|p|$.
+ %Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$
+\end{lemma}
+\begin{proof}
+ %Let $c_1, \dots, c_k$ be the connections of the paths $q_1, \dots, q_k$ to the path $p$, and let $c_0=r_p$.  
+ %Let $d_i = d(c_i, c_{i+1})$, and let $d_k$ be the distance from $c_k$ to the leaf of $p$.  
+ %Observe that $\sum_{i=0}^k d_i = l_p$.
+ %
+ % 
+ %Let $H_i$ be the heap at $r_{q_i}$, and let $H_0$ be the heat to $r_p$.  
+ First observe that for all $i$, $r_{q_i}$ lies above $r_p$ on some root to leaf path. 
+ Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_0$, as $L(T_{r_{q_i}})\subseteq L(T_{r_p})$.
+  
+ Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{q_i}$ and $r_{q_j}$ are not on the same root to leaf path.
+ In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=1}^k |H_i\setminus H_i'| \leq |p|$ 
+ as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
+ Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_0$ we have $\sum_{i=1}^k |H_i'|\leq |H_0|$.
+ Putting these together gives
+ \[
+  \sum_{i=1}^k |H_i| = \sum_{i=1}^k |H_i'| + \sum_{i=1}^k |H_i\setminus H_i'| \leq |H_0|+|p|.
+ \]
+\end{proof}
+
+\begin{corollary}
+ Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
+ Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$.
+\end{corollary}
+\begin{proof}
+ Let $H_i$ be as defined in \Lem{adjacent}.  By \Lem{pathBounds}, for all $1\leq i\leq k$, 
+ $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
+ Now by \Lem{adjacent}, $\sum_{i=1}^k |H_i| \leq |H_0|+|p| = O(|p|)$, as $p$ is a heavy path. 
+ Therefore, as $x\log x$ is a convex function, Jensen's inequality implies the claim.
+ 
+\end{proof}
+
+
+
+
+
+
+
+\subsection{Lower Bound by Path Decomposition}
+
+\begin{lemma}
+\label{lem:pathDecomp}
+NEEDS TO BE WRITTEN:
+Have a lemma here showing that our algorithm must pay at least the cost of any valid path decomposition.
+\end{lemma}
+
+For a given coloring $\chi$ of a merge tree $T$, we now describe a particular path decomposition such that 
+$f_{alg}(\chi(T)) = \Theta(f_{path}(P(T)))$.  By \Lem{algCost} and \Lem{pathDecomp} this will imply the running time of our algorithm 
+is optimal with respect to the shape of the merge tree.
+
+
+
+
+
+
+
+
+%We define two cost functions over validly colored trees.  To do so, we first define two quantities for each vertex $v\in T$.  
+%First let $P_v$ be the longest path from $v$ to a descendant leaf of $v$.  Second, let $H_v$ be the subset of 
+%vertices along the path from the root to $v$ such that one of the two colors  is in $\chi(L(T_v))$.
+
+
+
+\bibliographystyle{alpha}
+\bibliography{contour}
 
 \end{document}
