@@ -943,6 +943,9 @@ Here we need a lemma showing that the running time of our algorithm is $O(f_{alg
 and $\chi$ is any valid coloring of $T$.  (maybe add one in the definition of $H_v$ so that $\log |H_v|$ is always $>1$).
 \end{lemma}
 
+Now that we have a simple expression upper bounding the running time of our algorithm, we spend the remainder 
+of this section proving that this running time is optimal.
+
 
 \subsection{Path Decomposition Background}
 We now introduce the concept of path decompositions and their cost.  In the next subsection we then relate this to the
@@ -986,7 +989,7 @@ running time of our algorithm.
  Then, 
  \begin{compactenum}
   \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-  \item for any light path $p\in P(T)$, $\sum_{v\in P} |H_v| = O(|p| \log |H_{r_p}|)$.
+  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{r_p}|)$.
  \end{compactenum}
 \end{lemma}
 \begin{proof}
@@ -1013,7 +1016,8 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
  Let $T$ be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
  Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
  
- Let $H_i$ be the heap at $r_{q_i}$ and let $H_0$ be the heap at $r_p$.  Then $\sum_{i=1}^k |H_i| \leq |H_0|+|p|$.
+ For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
+ Then $\sum_{i=1}^k |H_i| \leq |H_p|+|p|$, where $H_p = H_{r_p}$.
  %Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$
 \end{lemma}
 \begin{proof}
@@ -1023,16 +1027,16 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
  %
  % 
  %Let $H_i$ be the heap at $r_{q_i}$, and let $H_0$ be the heat to $r_p$.  
- First observe that for all $i$, $r_{q_i}$ lies above $r_p$ on some root to leaf path. 
- Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_0$, as $L(T_{r_{q_i}})\subseteq L(T_{r_p})$.
+ First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
+ Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
   
- Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{q_i}$ and $r_{q_j}$ are not on the same root to leaf path.
+ Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e. $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
  In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=1}^k |H_i\setminus H_i'| \leq |p|$ 
  as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
- Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_0$ we have $\sum_{i=1}^k |H_i'|\leq |H_0|$.
+ Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=1}^k |H_i'|\leq |H_p|$.
  Putting these together gives
  \[
-  \sum_{i=1}^k |H_i| = \sum_{i=1}^k |H_i'| + \sum_{i=1}^k |H_i\setminus H_i'| \leq |H_0|+|p|.
+  \sum_{i=1}^k |H_i| = \sum_{i=1}^k |H_i'| + \sum_{i=1}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
  \]
 \end{proof}
 
@@ -1043,7 +1047,7 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
 \begin{proof}
  Let $H_i$ be as defined in \Lem{adjacent}.  By \Lem{pathBounds}, for all $1\leq i\leq k$, 
  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
- Now by \Lem{adjacent}, $\sum_{i=1}^k |H_i| \leq |H_0|+|p| = O(|p|)$, as $p$ is a heavy path. 
+ Now by \Lem{adjacent}, $\sum_{i=1}^k |H_i| \leq |H_p|+|p| = O(|p|)$, as $p$ is a heavy path. 
  Therefore, as $x\log x$ is a convex function, Jensen's inequality implies the claim.
  
 \end{proof}
@@ -1062,20 +1066,71 @@ NEEDS TO BE WRITTEN:
 Have a lemma here showing that our algorithm must pay at least the cost of any valid path decomposition.
 \end{lemma}
 
-For a given coloring $\chi$ of a merge tree $T$, we now describe a particular path decomposition such that 
-$f_{alg}(\chi(T)) = \Theta(f_{path}(P(T)))$.  By \Lem{algCost} and \Lem{pathDecomp} this will imply the running time of our algorithm 
-is optimal with respect to the shape of the merge tree.
+For a given valid coloring $\chi$ of a tree $T$, we now describe a particular path decomposition for which 
+we can prove $f_{alg}(\chi(T)) = O(f_{path}(P(T)))$ using the observations about decompositions from the 
+previous subsection.  By the above lemma this will imply $f_{alg}(\chi(T)) = \Theta(f_{path}(P(T)))$.
+
+\begin{definition}
+ Let $\chi(T)$ be a valid coloring of a binary tree $T$.  We define a set of disjoint paths over the vertices of 
+ $T$ as follows.  For each internal vertex $v\in T$ add the edge from $v$ to $\arg \max_{v_l, v_r} \{|H_{v_l}|, |H_{v_r}|\}$ 
+ where $v_l$ and $v_r$ are the children of $v$ (if $|H_{v_l}|=|H_{v_r}|$ then pick one arbitrarily).
+ The corresponding collection of paths that all such edges correspond to is a path decomposition of $T$, which 
+ we refer to as a \emph{maximum} path decomposition, and is denoted by $\mathcal{P}(T)$.  
+\end{definition}
+
+\begin{definition}
+ Let $p$ be a path in a path decomposition $P(T)$.  Call a light path in $P(T)$ reachable from $p$ if there is a path in the tree
+ $T$ from some vertex in $p$ which only moves to vertices of larger height and only vertices which lie in light paths.
+ Call this set of reachable paths the \emph{light path tree} of $p$.  Naturally this set can be viewed as a tree 
+ (i.e. $p$ is the root of this tree and each other path has a well defined depth from $p$).
+\end{definition}
+
+\begin{lemma}
+ Let $\chi(T)$ be a valid coloring of a tree $T$, and let $\mathcal{P}(T)$ be the corresponding maximum path decomposition.
+ Let $p$ be a light path in $\mathcal{P}(T)$ and let $LPT(p)$ be the light path tree of $p$.
+ 
+ Then $\sum_{q\in L(p)} \sum_{v\in q} \log |H_v| = |H_p|\log |H_p|$.
+\end{lemma}
+\begin{proof}UNDER CONSTRUCTION / NOTES:
+
+ Claim: Let $q$ be some path of depth $i$ in $LPT(p)$, and let $H_q$ be the heap at the root of this path.
+ Then $|H_q|< |H_p|/c^i$ for some constant $c>1$.  This should follow from using a maximum path decomposition.
+ 
+ This claim would imply the depth of the tree is $O(\log |H_p|)$ and the total number of paths in the tree is $O(|H_p|)$, 
+ thought I am not sure if either of these statements are useful.
+\end{proof}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Junk, don't read}
+The following can be viewed as stronger version of \Lem{adjacent}, which is possible as the path is now assumed to be maximum.
+
+\begin{lemma}
+ Let $\chi(T)$ be a valid coloring of a tree $T$, and let $\mathcal{P}(T)$ be the corresponding maximum path decomposition.
+ Let $p$ be a light path in $\mathcal{P}(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
+ 
+ For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
+  Then $\sum_{i=1}^k |H_i| \leq |H_p|/c$ for some constant $c>1$, where $H_p = H_{r_p}$.
+\end{lemma}
+
+
+% \begin{proof}UNDER CONSTRUCTION: 
+% For simplicity, let $H_{k+1}$ denote the heap at the leaf vertex of $p$.  As the $H_k+1$ is disjoing from all other $H_{i}$, \Lem{adjacent} implies that 
+% $H_p > \sum_{j=1}^{k+1} H_i - |p|$.  
+% 
+% Let $x$ be the largest index such that $H_x > H_p / 3$.
+% By the above observation and since $p$ is a light path we have 
+% \[
+%  H_p > \sum_{j=1}^{k} H_i + H_{k+1} - |p|
+% \] 
+% \end{proof}
 
 
 
 
-
-
-
-
-%We define two cost functions over validly colored trees.  To do so, we first define two quantities for each vertex $v\in T$.  
-%First let $P_v$ be the longest path from $v$ to a descendant leaf of $v$.  Second, let $H_v$ be the subset of 
-%vertices along the path from the root to $v$ such that one of the two colors  is in $\chi(L(T_v))$.
 
 
 
