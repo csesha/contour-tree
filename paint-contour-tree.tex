@@ -955,8 +955,7 @@ running time of our algorithm.
  Let $T$ be a rooted binary tree.  We call a path $p$ in $T$ a \emph{leaf path} if $p$ contains a leaf of $T$ and 
  is a contiguous sub-path of a root to leaf path in $T$.  A \emph{path decomposition}, $P(T)$, is a partition of $T$ into 
  a set of vertex disjoint leaf paths.  Note that the number of paths in $P(T)$ must equal the number of leaves in $T$.
- For $p\in P(T)$, we use $r_p$ to denote the lowest vertex in $p$ (i.e. its root) and 
- $|p|$ to denote its length.
+ For $p\in P(T)$, we use $|p|$ to denote its length and $r_p$ to denote the lowest vertex in $p$, which we call the \emph{root} of $p$.
  
  We define the cost of a particular path decomposition, $P(T)$, as $f_{path}(P(T)) = \sum_{p\in P(T)} |p| \log |p|$.
 \end{definition}
@@ -969,7 +968,7 @@ running time of our algorithm.
 
 \begin{definition}
  Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.  
- For $p\in P(T)$, we say that $p$ is \emph{light} if $4 |p| < |H_{r_p}|$, and we say it is \emph{heavy} otherwise.
+ For $p\in P(T)$, we say that $p$ is \emph{light} if $|p| < \sqrt{|H_{r_p}|}/100$, and we say it is \emph{heavy} otherwise.
 \end{definition}
 
 \begin{observation}
@@ -1003,22 +1002,32 @@ running time of our algorithm.
 \end{proof}
 
 \begin{definition}
- We say two paths $p,q \in P(T)$ are adjacent if in $T$ there is an edge between a vertex in $p$ and a vertex in $q$.  
-Note that as $p$ and $q$ are vertex disjoint leaf paths, it follows that this edge must be between the root of either 
-$p$ or $q$ and its parent vertex in $T$.  wlog suppose this edge is between the root of $p$ and its parent in $q$. 
-Then we call this parent vertex the \emph{connection} of $p$ and refer to it as $c_p$.
+Let $P(T)$ be a path decomposition of $T$.  Then the paths in $P(T)$ naturally define a tree\footnote{Please excuse the 
+overloading of the term 'tree', it is the most natural term to use here.} of there own.  Specifically, in the original 
+tree $T$ contract each path down to its root.  Call the resulting tree the \emph{path tree} of $T$, corresponding to 
+the path decomposition $P(T)$.
+
+We say two path in $P(T)$ are adjacent if their corresponding vertices are adjacent in the path tree.  Similarly, for 
+two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the path tree. 
 \end{definition}
+
+%\begin{definition}
+%We say two paths $p,q \in P(T)$ are adjacent if in $T$ there is an edge between a vertex in $p$ and a vertex in $q$.  
+%Note that as $p$ and $q$ are vertex disjoint leaf paths, it follows that this edge must be between the root of either 
+%$p$ or $q$ and its parent vertex in $T$.  wlog suppose this edge is between the root of $p$ and its parent in $q$. 
+%Then we call this parent vertex the \emph{connection} of $p$ and refer to it as $c_p$.
+%\end{definition}
 
 The following lemma can be thought of as a generalization of $\Obs{decrease}$.
 
 \begin{lemma}
 \label{lem:adjacent}
  Let $T$ be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
- Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
- 
+ Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all adjacent child paths of $p$.
  For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
- Then $\sum_{i=1}^k |H_i| \leq |H_p|+|p|$, where $H_p = H_{r_p}$.
- %Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$
+ Also, let $H_0$ denote the heap at the leaf of $p$.
+ 
+ Then $\sum_{i=0}^k |H_i| \leq |H_p|+|p|$, where $H_p = H_{r_p}$.
 \end{lemma}
 \begin{proof}
  %Let $c_1, \dots, c_k$ be the connections of the paths $q_1, \dots, q_k$ to the path $p$, and let $c_0=r_p$.  
@@ -1031,16 +1040,35 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
  Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
   
  Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e. $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
- In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=1}^k |H_i\setminus H_i'| \leq |p|$ 
+ In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
  as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
- Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=1}^k |H_i'|\leq |H_p|$.
+ Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
  Putting these together gives
  \[
-  \sum_{i=1}^k |H_i| = \sum_{i=1}^k |H_i'| + \sum_{i=1}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
+  \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
  \]
 \end{proof}
 
+Using the notation defined in the above lemma, we have the following crucial lemma, which we will use to 
+argue we can charge that cost of all paths in $P(T)$ to the cost of the heavy paths.
+
+THERE IS A PROBLEM in the following lemma.
+
+\begin{lemma}
+Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be any set of light paths in $P(T)$ such that 
+$\sum_{i=1}^k |H_i| = O(H_p)$.  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$
+\end{lemma}
+\begin{proof}
+By \Lem{pathBounds}, for all $1\leq i\leq k$, 
+ $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
+ By assumption $\sum_{i=1}^k |H_i| = O(|H_p|)$, 
+ As $x\log x$ is a convex function, Jensen's inequality then implies 
+ $\sum_{i=1}^{k} |H_i|\log |H_i| = O(|H_p| \log |H_p|) = O(|p|\log |p|)$, since $p$ is a heavy path.
+\end{proof}
+
+
 \begin{corollary}
+\label{cor:heavyLight}
  Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$.
 \end{corollary}
@@ -1081,9 +1109,44 @@ previous subsection.  By the above lemma this will imply $f_{alg}(\chi(T)) = \Th
 \begin{definition}
  Let $p$ be a path in a path decomposition $P(T)$.  Call a light path in $P(T)$ reachable from $p$ if there is a path in the tree
  $T$ from some vertex in $p$ which only moves to vertices of larger height and only vertices which lie in light paths.
- Call this set of reachable paths the \emph{light path tree} of $p$.  Naturally this set can be viewed as a tree 
- (i.e. $p$ is the root of this tree and each other path has a well defined depth from $p$).
+ Call this set of reachable paths the \emph{light path set} of $p$.  
+ Consider the natural tree over the paths in the light path set of $p$, where each vertex in the tree is a light path 
+ $p$ is the root.  We call this tree the \emph{light path tree} of $p$
 \end{definition}
+
+Let $\mathcal{L}$ be a light path tree of some light path $p$ in a maximum path decomposition $\mathcal{P}(T)$.
+For a path $v\in \mathcal{L}$, let $H_v$ denote the heap at the root of $v$, and let $H_{v_f}$ denote the heap 
+at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $T$
+(i.e. $S_l(v)$ are the children of $v$ in $\mathcal{L}$).  Then define the cost of $v$ as 
+$c(v) = H_{v_f}+\sum_{i\in S_h(v)} H_i$.
+
+We now define a weighted version of $\mathcal{L}$ based on these cost.  First we augment $\mathcal{L}$ by attaching one 
+leaf to each vertex in $\mathcal{L}$.  Now for each newly created leaf (which are the only leaves now) assign the cost 
+$c(v)$ defined above, where $v$ is that leaf's corresponding parent.  Now for any vertex $u$ in this tree, define 
+its weight to be the sum of the weights of its children (where at the leaves the weights are just the costs).  
+To simplify notation, we will also refer to this new weighted tree as $\mathcal{L}$.
+
+As the weight $w(v)$ includes the sizes of the heaps of all leaves in the subtree rooted at $v$, we have the following.
+
+\begin{claim}
+For any $v\in \mathcal{L}$, $w(v)\geq |H_v|$
+\end{claim}
+
+Let $W= \sum_{v\in \mathcal{L}} w(v)$.  Suppose one could prove $W=O(H_r)$, where $r$ is the root of $\mathcal{L}$.  
+Then by the above claim, 
+$\sum_{v\in \mathcal{L}} H_v = O(H_r)$, and so by convexity and \Cor{heavyLight}, we could argue the entire cost 
+of all light paths in the light path tree can be charge to a heavy path.  So proving $W=O(H_r)$ is our new goal.
+
+
+
+
+
+
+
+
+
+\pagebreak
+\subsection{Junk, don't read}
 
 \begin{lemma}
  Let $\chi(T)$ be a valid coloring of a tree $T$, and let $\mathcal{P}(T)$ be the corresponding maximum path decomposition.
@@ -1104,8 +1167,8 @@ previous subsection.  By the above lemma this will imply $f_{alg}(\chi(T)) = \Th
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{More Junk}
 
-\subsection{Junk, don't read}
 The following can be viewed as stronger version of \Lem{adjacent}, which is possible as the path is now assumed to be maximum.
 
 \begin{lemma}
