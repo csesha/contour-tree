@@ -173,6 +173,18 @@
 \newcommand{\CodeComment}[1]{\textcolor{blue}{\texttt{#1}}}
 
 
+\newcommand{\XSays}[2]{{
+      {$\rule[-0.12cm]{0.2in}{0.5cm}$\fbox{\tt
+            #1:} }
+      \textcolor{red}{#2}
+      \marginpar{\textcolor{blue}{#1}}
+      {$\rule[0.1cm]{0.3in}{0.1cm}$\fbox{\tt
+            end}$\rule[0.1cm]{0.3in}{0.1cm}$}
+      }
+   }
+\newcommand{\Ben}[1]{{\XSays{Ben}{#1}}}
+
+
 
 \author{
   Seshadhri Comandur
@@ -914,6 +926,24 @@ hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in t
 
 \pagebreak
 \section{Lower Bound}
+
+In this section we prove a lower bound on the time it takes to compute a merge tree.
+
+\begin{definition}
+ We say that a contour tree of a $2$-manifold is a \emph{merge tree} if it has a well defined root vertex such that height values 
+ strictly increase along any root to leaf path.
+\end{definition}
+
+\begin{observation}
+ The contour tree of an minimum dominant manifold (see \Def{dom}) is close to a merge tree.  Specifically, there is a root such that on any root 
+ to leaf path height values strictly increase, with the only exception being potentially at the leaves themselves.  As such, up to constant 
+ factors, any lower bound for computing the merge tree is a lower bound for computing the contour tree of a minimum dominant
+ manifold (i.e. intuitively just clip off the leaves or shift them to lie above their parent).
+\end{observation}
+
+
+
+
 First we setup some basic terminology.
 Any tree $T$ considered in this section will be a rooted full binary tree where the height of a vertex is its distance 
 from the root $r$.  As such, the children of a vertex $v\in T$ are the adjacent vertices of larger height
@@ -936,6 +966,7 @@ vertices along the path from the root to $v$ such that one of the two colors of 
 We will refer to $H_v$ as the \emph{heap} at $v$.
 Then define the \emph{algorithm} cost function as $f_{alg}(\chi(T)) = \sum_{v\in T} \log |H_v|$.
 
+\Ben{The following lemma should be immediate once previous section is written properly.}
 \begin{lemma}
 \label{lem:algCost}
 NEEDS TO BE WRITTEN:
@@ -948,6 +979,7 @@ of this section proving that this running time is optimal.
 
 
 \subsection{Path Decomposition Background}
+\label{sec:background}
 We now introduce the concept of path decompositions and their cost.  In the next subsection we then relate this to the
 running time of our algorithm.
 
@@ -1001,11 +1033,12 @@ running time of our algorithm.
  $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |H_{r_p}| )$.
 \end{proof}
 
+\newcommand{\pathTree}{P_{\mathcal{T}}}
 \begin{definition}
-Let $P(T)$ be a path decomposition of $T$.  Then the paths in $P(T)$ naturally define a tree\footnote{Please excuse the 
+Let $P(T)$ be a path decomposition of $T$.  Then the paths in $P(T)$ naturally defines a tree\footnote{Please excuse the 
 overloading of the term 'tree', it is the most natural term to use here.} of there own.  Specifically, in the original 
-tree $T$ contract each path down to its root.  Call the resulting tree the \emph{path tree} of $T$, corresponding to 
-the path decomposition $P(T)$.
+tree $T$ contract each path down to its root.  Call the resulting tree the \emph{path tree} of $T$ corresponding to 
+the path decomposition $P(T)$, and denote it by $\pathTree(T)$.
 
 We say two path in $P(T)$ are adjacent if their corresponding vertices are adjacent in the path tree.  Similarly, for 
 two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the path tree. 
@@ -1052,7 +1085,7 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
 Using the notation defined in the above lemma, we have the following crucial lemma, which we will use to 
 argue we can charge that cost of all paths in $P(T)$ to the cost of the heavy paths.
 
-THERE IS A PROBLEM in the following lemma.
+\Ben{There is a fundamental flaw in the following lemma and corollary.}
 
 \begin{lemma}
 Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be any set of light paths in $P(T)$ such that 
@@ -1087,16 +1120,89 @@ By \Lem{pathBounds}, for all $1\leq i\leq k$,
 
 
 \subsection{Lower Bound by Path Decomposition}
+We say two path trees $T_1$ and $T_2$ (of merge trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
+between the two trees such that for any node $v\in T_1$ corresponding to a path of size $|p_v|$, $f(v)$ also corresponds to a path of size $|p_v|$.
+For the purposes of the next lemma, we say two 2-manifolds are different, if their corresponding contour trees are the different.  
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.15\linewidth]{figs/diamond}\hspace{2cm}
+    \includegraphics[width=.125\linewidth]{figs/topView}\hspace{2cm}
+    \includegraphics[width=.095\linewidth]{figs/sideView}
+    \caption{From left to right: the cone portion of a diamond; the top down view and then the side view of a cone face with a platform added.}
+    \label{fig:diamond}
+\end{figure}
 
 \begin{lemma}
 \label{lem:pathDecomp}
-NEEDS TO BE WRITTEN:
-Have a lemma here showing that our algorithm must pay at least the cost of any valid path decomposition.
+Let $T$ be a merge tree, $P = P(T)$ any path decomposition of $T$, and $\pathTree$ the corresponding path tree.  
+Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an equivalent path tree.
 \end{lemma}
+\begin{proof}
+ We describe a simple input mesh, with heights specified for all vertices except for the saddles.  The main idea is that 
+ this mesh will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of merge trees 
+ whose size is that described in the lemma statement.
+ 
+ First, we describe the basic building block of this input mesh, which roughly speaking corresponds to a fixed path $p\in P$.  
+ Specifically, we say a \emph{diamond} of size $m$ is the following mesh.  To start, construct a cycle 
+ of length $m$, where the height of the $i$th vertex in the cycle is say $i/2m$.  Next, create an apex vertex at height 
+ $\infty$ (or any appropriately large finite height), and add an edge between this vertex and each vertex in the cycle.  At this point 
+ we have built an upside down cone with $m$ triangular faces (see \Fig{diamond}). To make this cone a closed surface we add a triangular cap at the bottom. 
+ Specifically, add a $3$ cycle of vertices at heights $0$, $1/20m$, and $1/10m$, and connect each vertex of this $3$-cycle to an arbitrary distinct 
+ vertex on the $m$ cycle (with matching cyclic ordering), and triangulate all remaining faces.  For consistency, if the size $m$ is $\leq 3$, the diamond 
+ will be just a tetrahedron.
+ 
+ Now above each face of the cone of the diamond, we will create a triangular ``platform'', which will act as the location to glue on other (shrunken) diamonds, 
+ and whose highest point of connection to the face below will be a saddle vertex.  Specifically the heights of the vertices of the triangle will be $h$, $h-\eps$, and $h-2\eps$, where 
+ $h$ is some unspecified height value.  This near horizontal platform is then connected to its respective face with vertical edges down to the face. See \Fig{diamond}.
+ %
+ %The vertex at height $h$ will lie in the plane of the respective face of the cone, and the other two will lie above the face, 
+ %with edges connecting down to the face, hence creating an actual ``platform''.
+ 
+ At this point we can construct the entire input mesh, by gluing together diamonds.  Specifically, for each path $p_i\in P$ we create a diamond of size $p_i$.
+ Now we glue together diamonds of different paths in the same way the paths are connected in $\pathTree$.  Specially, for two paths $p,q\in P$ where 
+ $p$ is the parent of $q$ in $\pathTree$, we glue the bottom triangular cap of the diamond for $q$ onto the triangular ``platform'' of some face of the diamond for $p$.
+ (Naturally for this construction to work, diamonds for a given path will be scaled down relative to the size of the diamond of their parent).
+ 
+ Observe now that the only saddle points in this construction are the highest connecting point on a face of an edge from the platform above.  Moreover, the only maxima are the apexes of the 
+ diamonds, and there is exactly one minima corresponding to the bottom cap of the diamond representing the root of $\pathTree$.  Therefore, the saddles on a given 
+ diamond will appear contiguously on a root to leaf path in the merge tree of the mesh, where the leaf corresponds to the maxima of the diamond 
+ (since all these saddles have a direct line of sight to this apex).  In particular, 
+ this implies that, regardless of the heights assigned to the platforms, the merge tree of this mesh has a path decomposition whose corresponding path 
+ tree is equivalent to $\pathTree$.  
+ 
+ Now there is a valid instantiation of this described mesh for any relative ordering of the heights of the saddles on a given diamond.  In particular, 
+ there are $|p|!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} |p_i|!$ possible instantiations of 
+ the mesh overall.  Also, each one of these instantiations will result in a different merge.  Specifically, a permutation of the heights on a given diamond 
+ corresponds to a permutation of the vertices along a path in $P$, as by construction all saddles on a given diamond will appear in sorted order in the merge tree.
+\end{proof}
 
-For a given valid coloring $\chi$ of a tree $T$, we now describe a particular path decomposition for which 
-we can prove $f_{alg}(\chi(T)) = O(f_{path}(P(T)))$ using the observations about decompositions from the 
-previous subsection.  By the above lemma this will imply $f_{alg}(\chi(T)) = \Theta(f_{path}(P(T)))$.
+
+
+\begin{corollary}
+ Let $A(S)$ be any algorithm to compute the merge tree of any input surface $S$ (whose contour tree is a merge tree).  
+ Then the running time of $A(S)$ is $\Omega(f_{path}(P))=\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$ where $P$ is any path decomposition of the 
+ merge tree of $S$.
+\end{corollary}
+\begin{proof}
+ Given an input surface $S$ whose merge tree has a particular path decomposition $P$, by the above lemma, there are $\Pi_{p_i\in P} |p_i|!$ other surfaces 
+ with distinct merge trees, all of which have a path tree equivalent to $\pathTree$.  Therefore, any algorithm which computes the merge tree must distinguish between 
+ these possibilities, and therefore its corresponding decision tree must have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, 
+ this decision tree must have depth $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
+\end{proof}
+
+
+
+
+
+\subsection{Upper Bound by Path Decomposition}
+\Ben{This section needs revision.}
+
+From the previous section we now have a lower bound of $\Omega(f_{path}(P))$ for computing the merge tree in terms of any path decomposition $P$. 
+We now show that the running time of our algorithm for computing the merge tree is upper bounded by this expression for a particular path decomposition.
+
+Specifically, for a given valid coloring $\chi$ of a tree $T$, we describe a path decomposition for which 
+we can prove $f_{alg}(\chi(T)) = O(f_{path}(P(T)))$ using the observations about path decompositions from 
+\Sec{background}, which will then imply $f_{alg}(\chi(T)) = \Theta(f_{path}(P(T)))$.
 
 \begin{definition}
  Let $\chi(T)$ be a valid coloring of a binary tree $T$.  We define a set of disjoint paths over the vertices of 
