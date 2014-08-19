@@ -183,6 +183,7 @@
       }
    }
 \newcommand{\Ben}[1]{{\XSays{Ben}{#1}}}
+\newcommand{\pth}[2][\!]{#1\left({#2}\right)}
 
 
 
@@ -1034,6 +1035,7 @@ running time of our algorithm.
 \end{proof}
 
 \newcommand{\pathTree}{P_{\mathcal{T}}}
+\newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{T}}}
 \begin{definition}
 Let $P(T)$ be a path decomposition of $T$.  Then the paths in $P(T)$ naturally defines a tree\footnote{Please excuse the 
 overloading of the term 'tree', it is the most natural term to use here.} of there own.  Specifically, in the original 
@@ -1212,36 +1214,145 @@ we can prove $f_{alg}(\chi(T)) = O(f_{path}(P(T)))$ using the observations about
  we refer to as a \emph{maximum} path decomposition, and is denoted by $\mathcal{P}(T)$.  
 \end{definition}
 
+We now prove that in a maximum path decomposition, when going between adjacent light paths, the heap size decreases by a constant fraction.
+
+\begin{lemma}
+\label{lem:geometric}
+ Let $p$ and $q$ be two light paths such that $p$ is the parent of $q$ in the path tree $\pathTreeA$.  
+ Then $|H_q|\leq \frac{3}{5} |H_p|$, where $H_p$ and $H_q$ are the heaps at the roots of $p$ and $q$, respectively. 
+\end{lemma}
+\begin{proof}
+ Let $w$ be the vertex in the path $p$ to which the root of the path $q$ is adjacent to in $T$, 
+ i.e. $w$ is the parent of $r_q$ in $T$.  Let $c$ be the other child of $w$, which lies in $p$.
+ As $\mathcal{P}(T)$ is a maximum path decomposition of $T$ and $c$ rather than $r_q$ is in 
+ the same path as $w$, we have $|H_q|\leq |H_c|$.  Therefore, $|H_w|\geq |H_q|+|H_c|-1\geq 2|H_q|-1$. 
+ Therefore, by \Obs{decrease}, $|H_p|+ d(r_p, w) \geq |H_w|\geq 2|H_q|-1$.  
+ Since $p$ is a light path, $d(r_p, w)\leq \sqrt{|H_p|}/100$ and so we have $|H_p|+\sqrt{|H_p|}/100\geq 2|H_q|-1$.
+ Assuming $|H_p|>11$ (and we can safely assume $|H_p|$ is bigger than any constant), this yields $\frac{3}{5} |H_p| \geq |H_q|$
+\end{proof}
+
+Naturally, this geometric series behavior can be extended to more than two adjacent light paths, thus motivating 
+the following definition.
+
 \begin{definition}
- Let $p$ be a path in a path decomposition $P(T)$.  Call a light path in $P(T)$ reachable from $p$ if there is a path in the tree
- $T$ from some vertex in $p$ which only moves to vertices of larger height and only vertices which lie in light paths.
- Call this set of reachable paths the \emph{light path set} of $p$.  
- Consider the natural tree over the paths in the light path set of $p$, where each vertex in the tree is a light path 
- $p$ is the root.  We call this tree the \emph{light path tree} of $p$
+ Let $p$ be a path in a path decomposition $P(T)$, whose corresponding path tree is $\pathTree$.
+ Call a light path $q\in P(T)$ light reachable from $p$ if the path from $q$ to $p$ in $\pathTree$ 
+ contains only vertices which correspond to light paths.  Call the subtree of $\pathTree$ consisting 
+ of all light reachable paths from $p$ the \emph{light path tree} of $p$.
 \end{definition}
 
-Let $\mathcal{L}$ be a light path tree of some light path $p$ in a maximum path decomposition $\mathcal{P}(T)$.
+
+Let $\mathcal{L}$ be a light path tree of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
+Our goal is to use \Lem{geometric}  to show that $\sum_{v\in \mathcal{L}} |H_v| = O(|H_r|)$, namely the total sum of the sizes of the heaps 
+at the roots of all paths in the light path tree is on the order of the size of the heap at the root of $r$.  
+ADD THE ARGUMENT saying how this fact will be used.
+
 For a path $v\in \mathcal{L}$, let $H_v$ denote the heap at the root of $v$, and let $H_{v_f}$ denote the heap 
-at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $T$
-(i.e. $S_l(v)$ are the children of $v$ in $\mathcal{L}$).  Then define the cost of $v$ as 
-$c(v) = H_{v_f}+\sum_{i\in S_h(v)} H_i$.
+at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $\mathcal{L}$.
 
-We now define a weighted version of $\mathcal{L}$ based on these cost.  First we augment $\mathcal{L}$ by attaching one 
+We want to understand how the heap size changes as we move around the paths in $\mathcal{L}$.  Specifically, there are 
+three places the vertices in the heap along a light path can come from; adjacent light paths, adjacent heavy paths, and the initial heap at the leaf of the path.  
+Given this observation we now define a weight function which upper bounds the size of the heap at the root of any path in $\mathcal{L}$.
+
+First, for all $v\in \mathcal{L}$ we define the local cost function $c(v) = H_{v_f}+\sum_{i\in S_h(v)} H_i$, this is the addition to the heap at $v$ which 
+was not already charged to descendant light paths.  We now define a weighted version of $\mathcal{L}$ based on these costs.  
+To do so, we first we augment $\mathcal{L}$ by attaching one 
 leaf to each vertex in $\mathcal{L}$.  Now for each newly created leaf (which are the only leaves now) assign the cost 
-$c(v)$ defined above, where $v$ is that leaf's corresponding parent.  Now for any vertex $u$ in this tree, define 
-its weight to be the sum of the weights of its children (where at the leaves the weights are just the costs).  
-To simplify notation, we will also refer to this new weighted tree as $\mathcal{L}$.
+$c(v)$ defined above, where $v$ is that leaf's corresponding parent.  
+Now we can define a weight function $w(u)$ over any node $u$ in the tree, which is defined to be the total cost of all leaves in its subtree.   
+To simplify notation, we now use $\mathcal{L}$ to refer to this new weighted tree (rather than its unweighted counterpart).
 
-As the weight $w(v)$ includes the sizes of the heaps of all leaves in the subtree rooted at $v$, we have the following.
+As the weight $w(v)$ includes the sizes of the heaps of all contributing heavy paths and leaves in the subtree rooted at $v$, we have the following.
 
 \begin{claim}
-For any $v\in \mathcal{L}$, $w(v)\geq |H_v|$
+For any $v\in \mathcal{L}$, $w(v)\geq |H_v|$.
 \end{claim}
 
-Let $W= \sum_{v\in \mathcal{L}} w(v)$.  Suppose one could prove $W=O(H_r)$, where $r$ is the root of $\mathcal{L}$.  
-Then by the above claim, 
-$\sum_{v\in \mathcal{L}} H_v = O(H_r)$, and so by convexity and \Cor{heavyLight}, we could argue the entire cost 
-of all light paths in the light path tree can be charge to a heavy path.  So proving $W=O(H_r)$ is our new goal.
+Let $W= \sum_{v\in \mathcal{L}} w(v) \geq \sum_{v\in \mathcal{L}} |H_v|$.  Suppose we could show that conversely $W=O(H_r)$.  
+Then we would have $\sum_{v\in \mathcal{L}} H_v = O(H_r)$, which was our original goal.  So proving $W=O(H_r)$ is now our new goal.
+
+To this end, first observe that $|H_r|\geq w(r)-\sum_{v\in \mathcal{L}} |v|$.  This holds by the same argument as in \Lem{adjacent}, namely, 
+$w(r)$ by definition counts all the contributing heavy path heaps and initial leaf heaps that contribute to the heap at $r$ and $\sum_{v\in \mathcal{L}} |v|$
+is an upper bound on the number of vertices that could have been removed from one of these heaps before reach the root of $r$ (since a vertex in a heap can only 
+get removed if it appears on one of the paths).  
+
+As all paths in $\mathcal{L}$ are light, we thus have the following.
+
+\begin{claim}
+$|H_r|\geq w(r)-\sum_{v\in \mathcal{L}} \sqrt{H_v}/100 \geq w(r)-\sum_{v\in \mathcal{L}} \sqrt{w(v)}/100$
+\end{claim}
+
+We will need the following lemma.
+
+\begin{lemma}
+\label{lem:distribution}
+Let $C\subseteq \mathcal{P}$ be the subset of paths that are leaves in $\mathcal{L}$.
+
+Then $\sum_{v\in \mathcal{P}} \sqrt{w(v)}/100 \leq \sum_{c\in C} \sqrt{w(c)}/20$
+\end{lemma}
+
+\begin{proof}
+The idea is to recursively redistribute the contribution to the sum of each internal vertex to its children, until all the weight sits on the children.
+Specifically, let $v$ be some path in $\mathcal{L}$.  Its contribution to the sum is $\sqrt{w(v)}/100$, which we will call the value at $v$.  
+We redistribute this value to its children, 
+in proportion by the weight of each child.  For example, if $v$ has a child $x$ then the fraction it gets assigned is $w(x)/w(v)$ 
+(recall that by definition $w(v)$ is the sum of the weights of its children and so the total value will get reassigned to the children).
+
+Suppose we keep redistributing the value of $v$ until it reaches the leaves of $\mathcal{L}$.  Let's see how much gets assigned to a given leaf.
+Specifically, let $u_0, u_1, \ldots, u_k$ be a path in $\mathcal{L}$ (of paths from the set $\mathcal{P}$), such that $v=u_0$,
+$u_{i+1}$ is child of $u_i$ for all $i$, and $u_k$ is a leaf of $\mathcal{L}$.  
+
+Then the total value from $u_0$ that ends up at $u_k$ is 
+\[
+\frac{\sqrt{w(u_0)}}{100} \pth{ \frac{w(u_1)}{w(u_0)} \frac{w(u_2)}{w(u_1)} \cdots \frac{w(u_k)}{w(u_{k-1})} }
+= \frac{\sqrt{w(u_0)}}{100} \pth{ \frac{w(u_k)}{w(u_0)} } = \frac{w(u_k)}{100\sqrt{w(u_0)}}
+\]
+
+For a given leaf in $\mathcal{L}$, we can calculate the total value reassigned to it from it its ancestors.
+Specifically, let $u_0, u_1, u_2, \dots, u_m$ be a root to leaf path in $\mathcal{L}$ (i.e. $u_0$ is the root $r$ of $\mathcal{L}$).
+
+Then by the above calculation and \Lem{geometric}, the total reassigned to $u_m$ is 
+
+\Ben{There is an issue here.  \Lem{geometric} is in terms of the heaps not the weights.}
+
+\[
+ \sum_{i=0}^m \frac{w(u_m)}{100\sqrt{w(u_i)}} \leq \frac{w(u_m)}{100} \sum_{i=0}^m 1 \Big/ \sqrt{\pth{\frac{5}{3}}^iw(u_m)} 
+ \leq \frac{\sqrt{w(u_m)}}{100} \sum_{i=0}^{\infty} \pth{\frac{3}{5}}^{i/2} \leq \frac{\sqrt{w(u_m)}}{20}
+\]
+
+The claim now follows by summing this quantity over the children of $\mathcal{L}$.
+\end{proof}
+
+By definition, $w(r) = \sum_{c\in C} w(c)$, where $C$ is the subset of leaves of $\mathcal{L}$.  
+Therefore combining the above lemma and claim gives the following.
+
+\begin{claim}
+ $|H_r|\geq w(r)/2$
+\end{claim}
+
+
+
+
+
+\begin{lemma}
+ $W=O(H_r)$
+\end{lemma}
+\begin{proof}
+MISSING.  Is this what we are claiming?  I don't see the proof.
+\end{proof}
+%
+%
+% So $w(r)$ upper bound $H_r$, but by how much?  Consider a path $v\in \mathcal{L}$.  
+% As we move from the leaf to the root of $v$ we now want to understand 
+% how the heap can decreases.  Now the only way a vertex in the heap can leave that 
+% heap is if that vertex is one of the vertices we traverse in $v$, i.e. the total 
+% loss in vertices from the heap along $v$ is bounded by $|v|$.  
+% Therefore, $|H_r|\geq W-\sum_{v\in \mathcal{L}} |v|$.  
+% (This is an extension of \Lem{adjacent}, and probably should be merged with it.)
+% As $\mathcal{L}$ consists of only light paths we have $|v|\leq \sqrt{|H_v|}/100 \leq \sqrt{w(v)}/100$, 
+% and therefore $|H_r|\geq W-\sum_{v\in \mathcal{L}} \sqrt{w(v)}/100$.
+
+
 
 
 
