@@ -1243,9 +1243,12 @@ the following definition.
 
 
 Let $\mathcal{L}$ be a light path tree of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
-Our goal is to use \Lem{geometric}  to show that $\sum_{v\in \mathcal{L}} |H_v| = O(|H_r|)$, namely the total sum of the sizes of the heaps 
-at the roots of all paths in the light path tree is on the order of the size of the heap at the root of $r$.  
-ADD THE ARGUMENT saying how this fact will be used.
+We now define a weight function $w(v)$ for all $v\in \mathcal{L}$.  Such that $w(v)=\Theta(|H_v|)$.  
+For this alternative quantity we will be able to show BLAH BLAH BLAH.
+
+%Our goal is to use \Lem{geometric}  to show that $\sum_{v\in \mathcal{L}} |H_v| = O(|H_r|)$, namely 
+%the total sum of the sizes of the heaps at the roots of all paths in the light path tree is on the 
+%order of the size of the heap at the root of $r$.  ADD THE ARGUMENT saying how this fact will be used.
 
 For a path $v\in \mathcal{L}$, let $H_v$ denote the heap at the root of $v$, and let $H_{v_f}$ denote the heap 
 at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $\mathcal{L}$.
@@ -1268,39 +1271,57 @@ As the weight $w(v)$ includes the sizes of the heaps of all contributing heavy p
 For any $v\in \mathcal{L}$, $w(v)\geq |H_v|$.
 \end{claim}
 
-Let $W= \sum_{v\in \mathcal{L}} w(v) \geq \sum_{v\in \mathcal{L}} |H_v|$.  Suppose we could show that conversely $W=O(H_r)$.  
-Then we would have $\sum_{v\in \mathcal{L}} H_v = O(H_r)$, which was our original goal.  So proving $W=O(H_r)$ is now our new goal.
+%Let $W= \sum_{v\in \mathcal{L}} w(v) \geq \sum_{v\in \mathcal{L}} |H_v|$.  
+%Suppose we could show that conversely $W=O(H_r)$.  Then we would have 
+%$\sum_{v\in \mathcal{L}} H_v = O(H_r)$, which was our original goal.  
+%So proving $W=O(H_r)$ is now our new goal.
 
-To this end, first observe that $|H_r|\geq w(r)-\sum_{v\in \mathcal{L}} |v|$.  This holds by the same argument as in \Lem{adjacent}, namely, 
-$w(r)$ by definition counts all the contributing heavy path heaps and initial leaf heaps that contribute to the heap at $r$ and $\sum_{v\in \mathcal{L}} |v|$
-is an upper bound on the number of vertices that could have been removed from one of these heaps before reach the root of $r$ (since a vertex in a heap can only 
-get removed if it appears on one of the paths).  
+We now would like to show conversely that $w(v)= O(|H_v|)$.  
+To do so we first introduce some notation.  
+Let $C\subseteq \mathcal{P}$ be the subset of paths that are leaves in $\mathcal{L}$.
+For any path $v$, let $\mathcal{L}_v$ (resp. $C_v$) be the subset of paths in $\mathcal{L}$ (resp $C$) 
+that are contained in the subtree of $\mathcal{L}$ which is rooted at $v$.
+
+First, observe that $|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} |u|$.  
+This holds by the same argument as in \Lem{adjacent}, namely, $w(u)$ by definition 
+counts all the contributing heavy path heaps and initial leaf heaps that contribute 
+to the heap at $v$ and $\sum_{u\in \mathcal{L}_v} |u|$ is an upper bound on the number 
+of vertices that could have been removed from one of these heaps before reaching the 
+root of $v$ (since a vertex in a heap can only get removed if it appears on one of 
+the paths).  
 
 As all paths in $\mathcal{L}$ are light, we thus have the following.
 
 \begin{claim}
-$|H_r|\geq w(r)-\sum_{v\in \mathcal{L}} \sqrt{H_v}/100 \geq w(r)-\sum_{v\in \mathcal{L}} \sqrt{w(v)}/100$
+$|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{|H_u|}/100 \geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100$
 \end{claim}
 
-We will need the following lemma.
+By the above claim, if we can prove $\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100 \leq w(v)/c$ for some constant $c>1$, 
+then we will have proven that $|H_v| = \Theta(w(v))$.  
+
+Recall that \Lem{geometric} told us that that $|H_{u}|\leq (3/5) |H_{u'}|$, if $u'$ is the parent $u$ in $\mathcal{L}$. 
+The following lemma shows that if we had a similar statement in terms of the weights rather than the heap sizes, 
+then we get the desired bound on the sum.
 
 \begin{lemma}
 \label{lem:distribution}
-Let $C\subseteq \mathcal{P}$ be the subset of paths that are leaves in $\mathcal{L}$.
-
-Then $\sum_{v\in \mathcal{P}} \sqrt{w(v)}/100 \leq \sum_{c\in C} \sqrt{w(c)}/20$
+Let $v$ be a path in $\mathcal{L}$.  Suppose that for any two paths $x,y\in \mathcal{L}_v$ 
+such that $y$ is the parent of $x$, $w(x)\leq (4/5) w(y)$.
+Then $\sum_{u\in \mathcal{P}_v} \sqrt{w(u)}/100 \leq \sum_{c\in C_v} \sqrt{w(c)}/20$
 \end{lemma}
 
 \begin{proof}
-The idea is to recursively redistribute the contribution to the sum of each internal vertex to its children, until all the weight sits on the children.
-Specifically, let $v$ be some path in $\mathcal{L}$.  Its contribution to the sum is $\sqrt{w(v)}/100$, which we will call the value at $v$.  
-We redistribute this value to its children, 
-in proportion by the weight of each child.  For example, if $v$ has a child $x$ then the fraction it gets assigned is $w(x)/w(v)$ 
-(recall that by definition $w(v)$ is the sum of the weights of its children and so the total value will get reassigned to the children).
+The idea is to recursively redistribute the contribution to the sum of each internal vertex to its children, 
+until all the weight sits on the leaves.  Specifically, let $v$ be some path in $\mathcal{L}$.  Its 
+contribution to the sum is $\sqrt{w(v)}/100$, which we will call the value at $v$.  We redistribute this 
+value to its children, in proportion by the weight of each child.  For example, if $v$ has a child $x$ then 
+the fraction it gets assigned is $w(x)/w(v)$ (recall that by definition $w(v)$ is the sum of the weights of 
+its children and so the total value will get reassigned to the children).
 
-Suppose we keep redistributing the value of $v$ until it reaches the leaves of $\mathcal{L}$.  Let's see how much gets assigned to a given leaf.
-Specifically, let $u_0, u_1, \ldots, u_k$ be a path in $\mathcal{L}$ (of paths from the set $\mathcal{P}$), such that $v=u_0$,
-$u_{i+1}$ is child of $u_i$ for all $i$, and $u_k$ is a leaf of $\mathcal{L}$.  
+Suppose we keep redistributing the value of $v$ until it reaches the leaves of its subtree in $\mathcal{L}$.  
+Let's see how much gets assigned to a given leaf.  Specifically, let $u_0, u_1, \ldots, u_k$ 
+be a path in $\mathcal{L}$ (of paths from the set $\mathcal{P}_v$), such that $v=u_0$, $u_{i+1}$ 
+is child of $u_i$ for all $i$, and $u_k$ is a leaf of $\mathcal{L}$.  
 
 Then the total value from $u_0$ that ends up at $u_k$ is 
 \[
@@ -1309,37 +1330,53 @@ Then the total value from $u_0$ that ends up at $u_k$ is
 \]
 
 For a given leaf in $\mathcal{L}$, we can calculate the total value reassigned to it from it its ancestors.
-Specifically, let $u_0, u_1, u_2, \dots, u_m$ be a root to leaf path in $\mathcal{L}$ (i.e. $u_0$ is the root $r$ of $\mathcal{L}$).
+Specifically, let $u_0, u_1, u_2, \dots, u_m$ be a root to leaf path in $\mathcal{L}$ 
+(i.e. $u_0$ is the root $r$ of $\mathcal{L}$).
 
-Then by the above calculation and \Lem{geometric}, the total reassigned to $u_m$ is 
-
-\Ben{There is an issue here.  \Lem{geometric} is in terms of the heaps not the weights.}
+By assumption from the lemma statement we have $w(u_{i+1})\leq (3/5) w(u_i)$.  Therefore by the above calculation, 
+the total reassigned to $u_m$ is 
 
 \[
  \sum_{i=0}^m \frac{w(u_m)}{100\sqrt{w(u_i)}} \leq \frac{w(u_m)}{100} \sum_{i=0}^m 1 \Big/ \sqrt{\pth{\frac{5}{3}}^iw(u_m)} 
  \leq \frac{\sqrt{w(u_m)}}{100} \sum_{i=0}^{\infty} \pth{\frac{3}{5}}^{i/2} \leq \frac{\sqrt{w(u_m)}}{20}
 \]
 
-The claim now follows by summing this quantity over the children of $\mathcal{L}$.
+The claim then follows by summing this quantity over the children of $\mathcal{L}$.
 \end{proof}
 
-By definition, $w(r) = \sum_{c\in C} w(c)$, where $C$ is the subset of leaves of $\mathcal{L}$.  
-Therefore combining the above lemma and claim gives the following.
+By combining the above lemma and claim we have the following.
 
 \begin{claim}
- $|H_r|\geq w(r)/2$
+For any path $v\in \mathcal{L}$ if it holds that 
+$w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$, then 
+
+\[
+|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100 \geq w(v)- \sum_{c\in C_v} \sqrt{w(c)}/20 \geq \frac{4}{5} w(v)
+\]
 \end{claim}
 
 
 
-
-
 \begin{lemma}
- $W=O(H_r)$
+Let $\mathcal{L}$ be the light path tree of some path $r$.  
+Then for any $v\in \mathcal{L}$, we have $|H_v|\geq \frac{4}{5} w(v)$.
 \end{lemma}
 \begin{proof}
-MISSING.  Is this what we are claiming?  I don't see the proof.
+We will actually prove the stronger statement that for any $v\in \mathcal{L}$, 
+we have $|H_v|\geq \frac{4}{5} w(v)$ and $w(v)\leq (4/5) w(p)$ for any two paths 
+$x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$.
+
+Suppose otherwise, and let $v$ be the lowest path in $\mathcal{L}$ such that this fails 
+(i.e. the statement holds for all descendants of $v$ in $\mathcal{L}$).  Then for any 
+two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$, 
+we have that $w(x)\leq (4/5) w(y)$ and so by \Lem{geometric}, 
+
 \end{proof}
+
+
+
+
+
 %
 %
 % So $w(r)$ upper bound $H_r$, but by how much?  Consider a path $v\in \mathcal{L}$.  
