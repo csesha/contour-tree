@@ -927,8 +927,8 @@ hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in t
 
 
 \pagebreak
-\newcommand{\pathTree}{P_{\mathcal{T}}}
-\newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{T}}}
+\newcommand{\pathTree}{P_{\mathcal{S}}}
+\newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
 \section{Lower Bound}
 
 In this section we prove a lower bound on the time it takes to compute a merge tree.
@@ -939,13 +939,11 @@ In this section we prove a lower bound on the time it takes to compute a merge t
 \end{definition}
 
 \begin{observation}
- The contour tree of an minimum dominant manifold (see \Def{dom}) is close to a merge tree.  Specifically, there is a root such that on any root 
+ The contour tree of a minimum dominant manifold (see \Def{dom}) is close to a merge tree.  Specifically, there is a root such that on any root 
  to leaf path height values strictly increase, with the only exception being potentially at the leaves themselves.  As such, up to constant 
  factors, any lower bound for computing the merge tree is a lower bound for computing the contour tree of a minimum dominant
  manifold (i.e. intuitively just clip off the leaves or shift them to lie above their parent).
 \end{observation}
-
-
 
 
 First we setup some basic terminology.
@@ -982,7 +980,7 @@ Now that we have a simple expression upper bounding the running time of our algo
 of this section proving that this running time is optimal.
 
 To do so, we now introduce the concept of path decompositions and their cost.  Then in the following two subsections 
-we then relate path decompositions costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
+we relate path decomposition costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
 
 \begin{definition}
 \label{def:path}
@@ -995,12 +993,12 @@ we then relate path decompositions costs (defined below) to the running time of 
 \end{definition}
 
 Let $P(T)$ be a path decomposition of $T$.  Then the paths in $P(T)$ naturally define a tree\footnote{Please excuse the 
-overloading of the term 'tree', it is the most natural term to use here.} of there own.  Specifically, in the original 
-tree $T$ contract each path down to its root.  Call the resulting tree the \emph{path tree} of $T$ corresponding to 
+overloading of the term 'tree', it is the most natural term to use here.} of their own.  Specifically, in the original 
+tree $T$ contract each path down to its root.  Call the resulting tree the \emph{shrub} of $T$ corresponding to 
 the path decomposition $P(T)$, and denote it by $\pathTree(T)$.
 
-We say two paths in $P(T)$ are adjacent if their corresponding vertices are adjacent in the path tree.  Similarly, for 
-two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the path tree. 
+We say two paths in $P(T)$ are adjacent if their corresponding vertices are adjacent in the shrub.  Similarly, for 
+two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the shrub. 
 
 \remove{
 \Ben{Maybe move the remainder of this subsection to 5.3 since heavy and light paths and not used until then}
@@ -1110,9 +1108,9 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
 
 In this section we show that any algorithm for computing the merge tree $T$ must pay at least $f_{path}(P(T))$ (see \Def{path}) for any path decomposition $P(T)$.
 
-We say two path trees $T_1$ and $T_2$ (of merge trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
-between the two trees such that for any node $v\in T_1$ corresponding to a path of size $|p_v|$, $f(v)$ also corresponds to a path of size $|p_v|$.
-For the purposes of the next lemma, we say two 2-manifolds are different, if their corresponding contour trees are the different.  
+We say two shrubs $S_1$ and $S_2$ (of merge trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
+between the two shrubs such that for any node $v\in S_1$ corresponding to a path of size $|v|$, $f(v)$ also corresponds to a path of size $|v|$.
+For the purposes of the next lemma, we say two $2$-manifolds are different, if their corresponding contour trees are the different.  
 
 \begin{figure}[h]\centering
     \includegraphics[width=.15\linewidth]{figs/diamond}\hspace{2cm}
@@ -1124,8 +1122,8 @@ For the purposes of the next lemma, we say two 2-manifolds are different, if the
 
 \begin{lemma}
 \label{lem:pathDecomp}
-Let $T$ be a merge tree, $P = P(T)$ any path decomposition of $T$, and $\pathTree$ the corresponding path tree.  
-Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an equivalent path tree.
+Let $T$ be a merge tree, $P = P(T)$ any path decomposition of $T$, and $\pathTree$ the corresponding shrub.  
+Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an equivalent shrub.
 \end{lemma}
 \begin{proof}
  We describe a simple input mesh, with heights specified for all vertices except for the saddles.  The main idea is that 
@@ -1157,8 +1155,7 @@ Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an eq
  diamonds, and there is exactly one minima corresponding to the bottom cap of the diamond representing the root of $\pathTree$.  Therefore, the saddles on a given 
  diamond will appear contiguously on a root to leaf path in the merge tree of the mesh, where the leaf corresponds to the maxima of the diamond 
  (since all these saddles have a direct line of sight to this apex).  In particular, 
- this implies that, regardless of the heights assigned to the platforms, the merge tree of this mesh has a path decomposition whose corresponding path 
- tree is equivalent to $\pathTree$.  
+ this implies that, regardless of the heights assigned to the platforms, the merge tree of this mesh has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
  
  Now there is a valid instantiation of this described mesh for any relative ordering of the heights of the saddles on a given diamond.  In particular, 
  there are $|p|!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} |p_i|!$ possible instantiations of 
@@ -1175,7 +1172,7 @@ Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an eq
 \end{corollary}
 \begin{proof}
  Given an input surface $S$ whose merge tree has a particular path decomposition $P$, by the above lemma, there are $\Pi_{p_i\in P} |p_i|!$ other surfaces 
- with distinct merge trees, all of which have a path tree equivalent to $\pathTree$.  Therefore, any algorithm which computes the merge tree must distinguish between 
+ with distinct merge trees, all of which have a shrub equivalent to $\pathTree$.  Therefore, any algorithm which computes the merge tree must distinguish between 
  these possibilities, and therefore its corresponding decision tree must have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, 
  this decision tree must have depth $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
 \end{proof}
@@ -1194,6 +1191,8 @@ Specifically, for a given valid coloring $\chi$ of a tree $T$, we will prove tha
 %using the observations about path decompositions from 
 %\Sec{background}, which will then imply $f_{alg}(\chi(T)) = \Theta(f_{path}(P(T)))$.
 
+Throughout this section, for a path $p\in P(T)$, we use the notation $H_p$ to refer to the heap at the root of $p$, i.e. $H_p = H_{r_p}$.
+
 \subsubsection{Heavy and light paths}
 
 Before describing the maximum path decomposition, we introduce the notion of heavy and light paths 
@@ -1204,23 +1203,47 @@ or more specifically $\sum_{v\in T} \log |H_v| = O(\sum_{p\in P} |p| \log |p|)$.
 show for each path $p\in P$ that $\sum_{v\in p} \log |H_v|= |p|\log|p|$ then we would be done.
 In other words we can think of each path as having a budget of $|p|\log|p|$, and ideally the budget 
 of each path will pay for the algorithm's cost due to this path.  This is too good to hope for, so instead 
-we will divide paths into two categories, called heavy and light, which we show below in \Lem{pathBounds} roughly corresponds 
+we will divide paths into two categories, called heavy and light, which as we show below in \Lem{pathBounds} roughly corresponds 
 to whether a path can pay for itself or not.
 
 \begin{definition}
  Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.  
- For $p\in P(T)$, we say that $p$ is \emph{light} if $|p| < \sqrt{|H_{r_p}|}/100$, and we say it is \emph{heavy} otherwise.
+ For $p\in P(T)$, we say that $p$ is \emph{light} if $|p| < \sqrt{|H_{p}|}/100$, and we say it is \emph{heavy} otherwise.
 \end{definition}
 
 \begin{observation}
 \label{obs:decrease}
  Let $v$ be a vertex in $T$ and let $w$ be its parent.  Then $|H_w| \geq |H_v| -1$, as $L(T_v) \subseteq L(T_w)$ and the path from 
  $w$ to the root has one less vertex than the path from $v$ to the root.
- 
  In particular, we have the following more general property.
- Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $u$ is lower than $v$.  
+ Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $v$ is a descendant of $u$.  
  Then $|H_v| \leq |H_u| + d(u,v)$. 
 \end{observation}
+
+The following can be thought of as a generalization of the above observation, and will be useful in later sections.
+
+\begin{lemma}
+\label{lem:adjacent}
+ Let $T$ be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
+ Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all adjacent child paths of $p$ in $\pathTree(T)$.
+ For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
+ Also, let $H_0$ denote the heap at the leaf of $p$.
+ 
+ Then $\sum_{i=0}^k |H_i| \leq |H_p|+|p|$, where $H_p = H_{r_p}$.
+\end{lemma}
+\begin{proof} 
+ First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
+ Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
+  
+ Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e. $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
+ In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
+ as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
+ Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
+ Putting these together gives
+ \[
+  \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
+ \]
+\end{proof}
 
 The following lemma demonstrates that heavy paths can ``pay'' for themselves.
 
@@ -1230,20 +1253,24 @@ The following lemma demonstrates that heavy paths can ``pay'' for themselves.
  Then, 
  \begin{compactenum}
   \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{r_p}|)$.
+  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{p}|)$.
  \end{compactenum}
 \end{lemma}
 \begin{proof}
- By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{r_p}| + |p|$ (as $r_p$ lies below $v$ on $p$).
+ By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{p}| + |p|$ (as $v$ is a descendant of $r_p$ along $p$).
  As such, 
  \[
- \sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{r_p}| + |p|)  = |p| \log (|H_{r_p}| + |p|).
+ \sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{p}| + |p|)  = |p| \log (|H_{p}| + |p|).
  \]
- If $p$ is a heavy path then $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |p|)$, and if $p$ is light then 
- $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |H_{r_p}| )$.
+ If $p$ is a heavy path then $|p| \log (|H_{p}| + |p|) = O(|p| \log |p|)$, and if $p$ is light then 
+ $|p| \log (|H_{p}| + |p|) = O(|p| \log |H_{p}| )$.
 \end{proof}
 
-We are now ready to define the maximum path decomposition, which will allow us to recharge the light paths to heavy paths.
+For a light path $p$ we can think of the quantity $|p|(\log |H_p| - \log |p|)$ as the excess of $p$, i.e. what was not ``paid for'' locally by $p$.
+Our eventual goal will be to show that by choosing the right path decomposition, this excess 
+can be recharged to heavy paths. In the next couple sections we introduce the appropriate path decomposition and prove 
+some useful facts about it.  Then given these facts, in \Sec{} we are able to make the recharging argument.
+
 
 
 \subsubsection{The decomposition and its main property}
@@ -1260,7 +1287,7 @@ We now prove that in a maximum path decomposition, when going between adjacent l
 
 \begin{lemma}
 \label{lem:geometric}
- Let $p$ and $q$ be two light paths such that $p$ is the parent of $q$ in the path tree $\pathTreeA$.  
+ Let $p$ and $q$ be two light paths such that $p$ is the parent of $q$ in the shrub $\pathTreeA$.  
  Then $|H_q|\leq \frac{3}{5} |H_p|$, where $H_p$ and $H_q$ are the heaps at the roots of $p$ and $q$, respectively. 
 \end{lemma}
 \begin{proof}
@@ -1277,24 +1304,25 @@ Naturally, this geometric series behavior can be extended to more than two adjac
 the following definition.
 
 \begin{definition}
- Let $p$ be a path in a path decomposition $P(T)$, whose corresponding path tree is $\pathTree$.
- Call a light path $q\in P(T)$ light reachable from $p$ if the path from $q$ to $p$ in $\pathTree$ 
+ Let $p$ be a path in a path decomposition $P(T)$, with corresponding shrub $\pathTree$.
+ Call a light path $q\in P(T)$ light reachable from $p$ if the path from $p$ to $q$ in $\pathTree$ 
  contains only vertices which correspond to light paths.  Call the subtree of $\pathTree$ consisting 
- of all light reachable paths from $p$ the \emph{light path tree} of $p$, and denote is $\mathcal{L}(p)$.
+ of all light reachable paths from $p$ the \emph{light shrub} of $p$, and denote it $\mathcal{L}(p)$.
 \end{definition}
 
-In the following subsection we show how to exploit this geometric series behavior in light path trees.
+In the following subsection we show how to exploit this geometric series behavior of light shrubs.
 
 
 \subsubsection{An asymptotically equivalent weight function}
-Let $\mathcal{L} = \mathcal{L}(r)$ be a light path tree of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
-The intuitive idea is that due to the geometric decreasing behavior of light path trees described in the previous subsection, 
-one can show that for the entire light path tree our algorithm pays roughly the cost due to the root path $r$.  This argument 
+\label{sec:weight}
+Let $\mathcal{L} = \mathcal{L}(r)$ be a light shrub of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
+The intuitive idea is that due to the geometric decreasing behavior of light shrubs described in the previous subsection, 
+one can show that for the entire light shrub our algorithm pays roughly the cost due to the root path $r$.  This argument 
 is hard to make directly, so instead we define an alternative quantity for which we can make the argument.
 Specifically, we now define a weight function $w(v)$ for all $v\in \mathcal{L}$, and show that $w(v)=\Theta(|H_v|)$.  
 
 For a path $v\in \mathcal{L}$, let $H_v$ denote the heap at the root of $v$, and let $H_{v_f}$ denote the heap 
-at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $\mathcal{L}$.
+at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $\pathTreeA(T)$.
 
 We want to understand how the heap size changes as we move around the paths in $\mathcal{L}$.  Specifically, there are 
 three places the vertices in the heap along a light path can come from; adjacent light paths, adjacent heavy paths, and the initial heap at the leaf of the path.  
@@ -1302,16 +1330,16 @@ Given this observation we now define a weight function which upper bounds the si
 
 First, for all $v\in \mathcal{L}$ we define the local cost function $c(v) = H_{v_f}+\sum_{i\in S_h(v)} H_i$, this is the addition to the heap at $v$ which 
 was not already charged to descendant light paths.  We now define a weighted version of $\mathcal{L}$ based on these costs.  
-To do so, we first we augment $\mathcal{L}$ by attaching one 
+To do so, we first augment $\mathcal{L}$ by attaching one 
 leaf to each vertex in $\mathcal{L}$.  Now for each newly created leaf (which are the only leaves now) assign the cost 
 $c(v)$ defined above, where $v$ is that leaf's corresponding parent.  
 Now we can define a weight function $w(u)$ over any node $u$ in the tree, which is defined to be the total cost of all leaves in its subtree.   
 To simplify notation, we now use $\mathcal{L}$ to refer to this new weighted tree (rather than its unweighted counterpart).
 
-As the weight $w(v)$ includes the sizes of the heaps of all contributing heavy paths and leaves in the subtree rooted at $v$, we have the following.
+As the weight $w(p$ includes the sizes of the heaps of all contributing heavy paths and leaves in the subtree rooted at $p$, we have the following.
 
 \begin{claim}
-For any $v\in \mathcal{L}$, $w(v)\geq |H_v|$.
+For any $p\in \mathcal{L}$, $w(p)\geq |H_p|$.  Moreover, for any $v\in p$, $w(p)\geq |H_v|$.
 \end{claim}
 
 %Let $W= \sum_{v\in \mathcal{L}} w(v) \geq \sum_{v\in \mathcal{L}} |H_v|$.  
@@ -1323,10 +1351,10 @@ We now would like to show conversely that $w(v)= O(|H_v|)$.
 To do so we first introduce some notation.  
 Let $C\subseteq \mathcal{P}$ be the subset of paths that are leaves in $\mathcal{L}$.
 For any path $v$, let $\mathcal{L}_v$ (resp. $C_v$) be the subset of paths in $\mathcal{L}$ (resp $C$) 
-that are contained in the subtree of $\mathcal{L}$ which is rooted at $v$.
+that are in the subtree of $\mathcal{L}$ which is rooted at $v$.
 
 First, observe that $|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} |u|$.  
-This holds by the same argument as in \Lem{adjacent}, namely, $w(u)$ by definition 
+This holds by the same argument as in \Lem{adjacent}, namely, $w(v)$ by definition 
 counts all the contributing heavy path heaps and initial leaf heaps that contribute 
 to the heap at $v$ and $\sum_{u\in \mathcal{L}_v} |u|$ is an upper bound on the number 
 of vertices that could have been removed from one of these heaps before reaching the 
@@ -1401,7 +1429,7 @@ $w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is 
 
 
 \begin{lemma}
-Let $\mathcal{L}$ be the light path tree of some path $r$.  
+Let $\mathcal{L}$ be the light shrub of some path $r$.  
 Then for any $v\in \mathcal{L}$, we have $|H_v|\geq \frac{4}{5} w(v)$.
 \end{lemma}
 % \begin{proof}
@@ -1435,80 +1463,193 @@ fractional decrease always holds implying the claim always holds.
 \end{proof}
 
 \begin{corollary}
- Let $\mathcal{L}$ be a light path tree of a light path $r$.  Then for any $v\in \mathcal{L}$, $w(v) = O(|H_v|)$.
+\label{cor:equivalent}
+ Let $\mathcal{L}$ be a light shrub of a light path $r$.  Then for any $v\in \mathcal{L}$, $|H_v| \leq w(v) \leq \frac{5}{4} |H_v|$.
 \end{corollary}
 
+Now we are finally ready to make use of the properties we have proven about the weight function we introduced.
 
-
-
-
-%
-%
-% So $w(r)$ upper bound $H_r$, but by how much?  Consider a path $v\in \mathcal{L}$.  
-% As we move from the leaf to the root of $v$ we now want to understand 
-% how the heap can decreases.  Now the only way a vertex in the heap can leave that 
-% heap is if that vertex is one of the vertices we traverse in $v$, i.e. the total 
-% loss in vertices from the heap along $v$ is bounded by $|v|$.  
-% Therefore, $|H_r|\geq W-\sum_{v\in \mathcal{L}} |v|$.  
-% (This is an extension of \Lem{adjacent}, and probably should be merged with it.)
-% As $\mathcal{L}$ consists of only light paths we have $|v|\leq \sqrt{|H_v|}/100 \leq \sqrt{w(v)}/100$, 
-% and therefore $|H_r|\geq W-\sum_{v\in \mathcal{L}} \sqrt{w(v)}/100$.
-
-
-
-
-
-
-
-
-
-
-
-\pagebreak
-\subsection{Junk, don't read}
+\Ben{The constant in the lemmas below, but it is no more than twice that.}
 
 \begin{lemma}
- Let $\chi(T)$ be a valid coloring of a tree $T$, and let $\mathcal{P}(T)$ be the corresponding maximum path decomposition.
- Let $p$ be a light path in $\mathcal{P}(T)$ and let $LPT(p)$ be the light path tree of $p$.
- 
- Then $\sum_{q\in L(p)} \sum_{v\in q} \log |H_v| = |H_p|\log |H_p|$.
+\label{lem:lightCost}
+ Let $\mathcal{L}$ be a light shrub of a light path $r$.  Let $V$ be the set of heavy paths from the full shrub which are adjacent to paths in $\mathcal{L}$.  
+  Then $\sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q| \leq \frac{4}{3} |H_r|\log |H_r|$
 \end{lemma}
-\begin{proof}UNDER CONSTRUCTION / NOTES:
+\begin{proof}
+\Ben{
+The following is a proof for $\frac{3}{2}+\eps$, rather than $\frac{4}{3}$.  The discrepancy is due to a corrected calculation error.  
+4/3 can be achieved by tightening constants above, and is left in the lemma statement as it is used later.
+}
 
- Claim: Let $q$ be some path of depth $i$ in $LPT(p)$, and let $H_q$ be the heap at the root of this path.
- Then $|H_q|< |H_p|/c^i$ for some constant $c>1$.  This should follow from using a maximum path decomposition.
- 
- This claim would imply the depth of the tree is $O(\log |H_p|)$ and the total number of paths in the tree is $O(|H_p|)$, 
- thought I am not sure if either of these statements are useful.
+Recall that in a proper coloring of a binary tree $T$, the color of any vertex must be the color of one of its descendants.  
+Therefore, any vertex in the light path shrub must appear in the heap of either the root of an adjacent 
+path from the full shrub or from the heap of a leaf of a path in $\mathcal{L}$.  
+Also note $|H_r|$ precisely counts sum of the number of vertices from these heaps that do not appear in $\mathcal{L}$.
+As there are no adjacent light paths to a light shrub, the total number of vertices over all paths in $\mathcal{L}$ is at most 
+$m = \sum_{p\in \mathcal{L}} |H_{p_f}| +\sum_{q\in V} |H_q| - |H_r| = w(r)-|H_r|$, where $H_{p_f}$ is the heap at the leaf of $p$. 
+
+Using this observation and \Cor{equivalent} we then have, 
+\begin{align*}
+ \sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q|
+ &\leq \sum_{p\in \mathcal{L}}\sum_{v\in p} \log(w(r)) + \sum_{q\in V} |H_q|\log(w(r))\\
+ &\leq \log(w(r))\pth{ w(r)-|H_r| } + \log(w(r))w(r)\\ 
+ &= (2w(r)-|H_r|)\log(w(r)) \leq \pth{\frac{5}{2}|H_r|-|H_r|}\log\pth{\frac{5}{4}|H_r|}\\
+ &= \frac{3}{2}|H_r|\log\pth{\frac{5}{4}|H_r|}
+\end{align*}
 \end{proof}
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{More Junk}
+\subsubsection{Paying it down the line}
 
-The following can be viewed as stronger version of \Lem{adjacent}, which is possible as the path is now assumed to be maximum.
+% \begin{claim}
+% \label{clm:sizes}
+%  Let $p$ be a path in a maximum path decomposition, such that $|H_p|>c|p|$ for some constant $c> 6$.
+%  Let $H_f$ denote the heap at the leaf of $p$.  We then have the following
+%  \begin{compactenum}
+%   \item $|H_f|\leq (1+1/c)|H_p|$
+%   \item $|H_f|\geq |H_p|/3$
+%   \item For any path $q$ adjacent to $p$ in the shrub, $|H_q|<\frac{2}{3}|H_p|$
+%  \end{compactenum} 
+% \end{claim}
+% \begin{proof}
+%   For any vertex $v\in p$ \Obs{decrease} implies that $|H_v|\leq |H_p| + |p| < (1+1/c) |H_p|$.
+%   First observe that by setting $v=f$ this immediately implies the first part of the claim.
+%  % By a similar argument, $|H_f|\geq |H_p| - |p| > (1-1/c)|H_p|$.
+%   
+%   To prove the last part of the claim, suppose otherwise that $|H_q|\geq \frac{2}{3}|H_p|$ for some 
+%   adjacent path $q$.  As this is a maximum path decomposition, this implies that there is some 
+%   $v\in p$ such that $|H_v|\geq \frac{4}{3}|H_p|-1$.
+%   By \Obs{decrease} we then have, 
+%    $|H_p| \geq |H_v| - |p|\geq \frac{4}{3}|H_p| - 1 - |H_p|/c \geq (4/3-1/c)|H_p|-1$.
+%   When rearranged this gives $1\geq (1/3-1/c)|H_p|$.  As $c>6$ we have $1\geq |H_p|/6$, 
+%   which is a contradiction as $|H_p|>c|p|>6$.
+% \end{proof}
+
+\Ben{I had originally thought the following claim would be useful in proving the lemma below.}
+\begin{claim}
+\label{clm:sizes}
+ Let $p$ be a path in a maximum path decomposition, such that $|H_p|>c|p|$ for some constant $c> 6$.
+ We then have the following
+% \begin{compactenum}
+%  \item 
+  For any path $q$ adjacent to $p$ in the shrub, $|H_q|<\frac{2}{3}|H_p|$
+%  \item If there does not exist and adjacent path $q$ such $H_q\geq H_p/3$, then $|H_f|\geq |H_p|/3$
+% \end{compactenum} 
+\end{claim}
+\begin{proof}
+  To prove the claim, suppose otherwise that $|H_q|\geq \frac{2}{3}|H_p|$ for some 
+  adjacent path $q$.  As this is a maximum path decomposition, this implies that there is some 
+  $v\in p$ such that $|H_v|\geq \frac{4}{3}|H_p|-1$.
+  By \Obs{decrease} we then have, 
+   $|H_p| \geq |H_v| - |p|\geq \frac{4}{3}|H_p| - 1 - |H_p|/c \geq (4/3-1/c)|H_p|-1$.
+  When rearranged this gives $1\geq (1/3-1/c)|H_p|$.  As $c>6$ we have $1\geq |H_p|/6$, 
+  which is a contradiction as $|H_p|>c|p|>6$.  
+\end{proof}
 
 \begin{lemma}
- Let $\chi(T)$ be a valid coloring of a tree $T$, and let $\mathcal{P}(T)$ be the corresponding maximum path decomposition.
- Let $p$ be a light path in $\mathcal{P}(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
- 
- For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
-  Then $\sum_{i=1}^k |H_i| \leq |H_p|/c$ for some constant $c>1$, where $H_p = H_{r_p}$.
-\end{lemma}
+\label{lem:excess}
+ Let $p$ be a heavy path, and let $S_1, \dots S_k$ and $R_1, \dots, R_l$ be the sizes of the heaps at the roots of the light and heavy children of $p$, respectively, in the shrub.  
+ Let $H_f$ be the heap at the leaf of the path $p$.
+ Then,  $|H_p| \log |H_p|   \geq  \sum_{v\in p} \log|H_v| + \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i  -  c|p|\log |p|$, for some sufficiently large constant $c$
+ \end{lemma}
+\begin{proof}
+ First observe that the lemma holds for $|H_p|$ less than any fixed constant, since otherwise \Lem{adjacent} implies we can choose $c$ 
+ large enough such that $c|p|\log|p|$ will dominate all other terms.
+ Next, observe that $\sum_{v\in p} \log|H_v| \leq \sum_{v\in p} \log(|H_v|+|p|) = |p|\log(|H_v|+|p|) = O(|p|\log|p|)$, as $p$ is a heavy path.  
+ Therefore, in the remainder of the proof  we can safely ignore the $\sum_{v\in p} \log|H_v|$ term as we can choose $c$ large enough to cover it.  
+ That is we now instead prove the inequality,
+ \[
+  |H_p| \log |H_p|   \geq \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i  -  c|p|\log |p|
+ \]
+ To do so we  break the analysis into two case based on the relative size of $|p|$ and $|H_p|$. 
+ In the following, $\alpha>10$ is some yet to be determined constant.  
+
+\paragraph{Case 1, $|p|\geq |H_p|/\alpha$:\\}
+First observe that by \Lem{adjacent}, $|H_p|+|p| \geq \sum_{i=1}^k S_i+ \sum_{i=1}^l R_i$.
+By choosing $c$ large enough we therefore have,
+\begin{align*}
+ c|p|\log|p| &\geq 2(1+\alpha)^2 |p|\log |p| \geq 2(1+\alpha)|p| \log((1+\alpha)|p|)\\
+             &\geq 2(|H_p|+|p|)\log(|H_p|+|p|) \geq 2\log(|H_p|+|p|) \pth{\sum_{i=1}^k S_i + \sum_{i=1}^l R_i}\\
+             &\geq \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i 
+\end{align*}
 
 
-% \begin{proof}UNDER CONSTRUCTION: 
-% For simplicity, let $H_{k+1}$ denote the heap at the leaf vertex of $p$.  As the $H_k+1$ is disjoing from all other $H_{i}$, \Lem{adjacent} implies that 
-% $H_p > \sum_{j=1}^{k+1} H_i - |p|$.  
+
+In this case $\log(|H_p|+|p|)\leq \log(2|p|) \leq 1+\log(|p|)$ (where $\log$ is base $2$).
+Therefore, assuming $|p|>1$, we have 
+\[
+(|H_p|+|p|)\log(|H_p|+|p|)\leq (1+c)|p|\log((1+c)|p|) %(|H_p|+|p|)(1+\log |p|) \leq 2(1+c)|p|\log |p|
+\]
+which when combined with the inequality from \Lem{adjacent} gives, 
+\[
+ 4(1+c)|p|\log |p| \geq 2(|H_p|+|p|)\log(|H_p|+|p|)\geq \pth{|H_f| + \frac{4}{3}\sum_{i=1}^k S_i + \sum_{i=1}^l R_i}\log(|H_p|+|p|).
+\]
+This easily implies the desired inequality as $\log(H_p+p)$ is larger than any other $\log$ term in the inequality.
+
+\paragraph{Case 2, $|p|< |H_p|/\alpha$:\\}
+
+\Ben{Was not able to handle this case.}
+
+%  First, lets assume we can show $\sum_{i=1}^k S_i + \sum_{i=1}^l R_i \leq \frac{3}{4}|H_p|$.  
+%  In this case, using the last part of \Clm{sizes}, we can prove the desired inequality as follows.
+%  
+%  \begin{align*}
+%   \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i  &\leq  \frac{4}{3} \pth{\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i} \\
+%   &\leq  \frac{4}{3} \log |H_p| \pth{\sum_{i=1}^k S_i + \sum_{i=1}^l R_i}  \leq  |H_p| \log |H_p|
+%  \end{align*}
+%  
+%  Finally, to complete the proof we must prove our assumption that $\sum_{i=1}^k S_i + \sum_{i=1}^l R_i \leq \frac{3}{4}|H_p|$.
+%  By \Lem{adjacent} and \Clm{sizes} we have, 
+%  \[
+%  \sum_{i=1}^k S_i + \sum_{i=1}^l R_i 
+%  \leq |H_p|+|p|-|H_f| 
+%  \leq (1+1/\alpha-1/3)|H_p| = (2/3+1/\alpha)|H_p|
+%  \]
+%  
+%  Therefore $\sum_{i=1}^k S_i + \sum_{i=1}^l R_i \leq \frac{3}{4}|H_p|$ if $(2/3 + 1/\alpha)\leq 3/4$, which rearranged gives $\alpha \geq 12$
+\end{proof}
+
+
+
+
+
+\remove{
+% \subsubsection{Paying it down the line}
 % 
-% Let $x$ be the largest index such that $H_x > H_p / 3$.
-% By the above observation and since $p$ is a light path we have 
+% \begin{lemma}
+% \label{lem:excess}
+%  Let $p$ be a heavy path, and let $S_1, \dots S_k$ and $R_1, \dots, R_l$ be the sizes of the heaps at the roots of the light and heavy children of $p$, respectively, in the shrub.  
+%  Let $H_f$ be the size of the heap at the leaf of the path $p$, and let $X = \sum_{i=0}^k H_i \log H_i$.  
+%  Then,  $|H_p| \log |H_p|   \geq  H_f\log H_f + \sum_{i=0}^k S_i \log S_i + \sum_{i=0}^l R_i \log R_i  -  c|p|\log |p|$, for some sufficiently large constant $c$
+%  \end{lemma}
+% \begin{proof}
+% By \Lem{adjacent} we know that $|H_p|+|p| \geq  H_f + \sum_{i=0}^k S_i + \sum_{i=0}^l R_i$.  
+% %Now as $p$ is a heavy path we have $|p|\geq \sqrt{|H_p|}/100$, and so, $(|H_p|+|p|)\log(|H_p|+|p|)$
+% 
+% We  break the analysis into two case based on the relative size of $|p|$ and $|H_p|$.  In the following $c$ is some yet to be determined constant greater than $1$.
+% 
+% \paragraph{Case 1, $|p|\geq |H_p|/c$:}  
+% In this case $\log(|H_p|+|p|)\leq \log(2|p|) \leq 1+\log(|p|)$ (where $\log$ is base $2$).
+% Therefore, assuming $|p|>1$, we have 
 % \[
-%  H_p > \sum_{j=1}^{k} H_i + H_{k+1} - |p|
-% \] 
+% (|H_p|+|p|)\log(H_p+p)\leq (|H_p|+|p|)(1+\log |p|) \leq (2|p|)(2\log |p|)\leq 4|p|\log |p|
+% \]
+% which when combined with the inequality from \Lem{adjacent} gives, 
+% \[
+%  4|p|\log |p| \geq (|H_p|+|p|)\log(|H_p|+|p|)\geq \pth{H_f + \sum_{i=0}^k S_i + \sum_{i=0}^l R_i}\log(|H_p|+|p|).
+% \]
+% This easily implies the claim as $\log(H_p+p)$ is larger than any other $\log$ term in the inequality.
+% 
+% \paragraph{Case 2, $|p|< |H_p|/c$:}
 % \end{proof}
+}
+
+
+Define the crust of the shrub to be the first (i.e. closest to the root) layer of light paths in the shrub.  Apply \Lem{lightCost} to each of the light paths in the crust and then 
+say by \Lem{excess} and since the root heap goes to zero we are done.
+
 
 
 
