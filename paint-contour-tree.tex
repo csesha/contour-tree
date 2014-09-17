@@ -153,11 +153,13 @@
 \newcommand{\col}{col}
 \newcommand{\cut}{{\tt cut}}
 \newcommand{\cont}{\psi}
+\newcommand{\cost}{\mathop{cost}}
 \newcommand{\h}{high}
 \newcommand{\lift}{{\tt lift}}
 \newcommand{\mcol}{mcol}
 \newcommand{\onestep}{{\tt piece}}
 \newcommand{\paint}{{\tt paint}}
+\newcommand{\pmax}{P_{\max}}
 \newcommand{\rain}{{\tt rain}}
 \newcommand{\reeb}{R}
 \newcommand{\rep}{rep}
@@ -927,9 +929,9 @@ hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in t
 \pagebreak
 \newcommand{\pathTree}{P_{\mathcal{S}}}
 \newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
-\section{Lower Bound}
+\section{Leaf assignments and path decompositions}
 
-In this section we prove a lower bound on the time it takes to compute a merge tree.
+In this section, we set up a framework to analyze the time taken to compute a merge tree.
 
 \begin{definition}
  We say that a contour tree of a $2$-manifold is a \emph{merge tree} if it has a well defined root vertex such that height values 
@@ -944,59 +946,269 @@ In this section we prove a lower bound on the time it takes to compute a merge t
 \end{observation}
 
 
-First we setup some basic terminology.
 Any tree $T$ considered in this section will be a rooted full binary tree where the height of a vertex is its distance 
 from the root $r$.  As such, the children of a vertex $v\in T$ are the adjacent vertices of larger height
 (and $v$ is the parent of such vertices).  Then the subtree rooted at $v$, denoted $T_v$ consists of the graph induced on all 
 vertices which are descendants of $v$ (including $v$ itself).  For two vertices $v$ and $w$ in $T$ let $d(v,w)$ denote the 
 length of the path between $v$ and $w$.
+We use $A(v)$ to denote the set of ancestors of $v$.
+For set of nodes $U$, $A(U) = \bigcup_{u \in U} A(u)$.
+
 
 \begin{definition}
- A coloring of a tree $T$ is any function $\chi:L(T)\times E \rightarrow [n]$, where $L(T)$ is the set of leaves of $T$ and $n = |L(T)|$.  
- We say a coloring is valid if
- \begin{itemize}
-  \item The restriction $\chi:L(T) \rightarrow [n]$ is a bijection.
-  \item Let $e$ be any edge in $E$ and let $u$ be its higher endpoint, then $\chi(e) \in \chi(L(T_u))$. 
- \end{itemize}
- We consider each internal vertex as having two colors, namely the colors of the two edges for which it is a lower endpoint.
+ A \emph{leaf assignment} $\chi$ of a tree $T$ assigns \emph{two} distinct leaves in each internal vertex $v$,
+ one from the left and one from the right subtree of $v$.
 \end{definition}
 
-For a vertex $v\in T$, let $H_v$ be the subset of 
-vertices along the path from the root to $v$ such that one of the two colors of each vertex is in $\chi(L(T_v))$.
-We will refer to $H_v$ as the \emph{heap} at $v$.
-Then define the \emph{algorithm} cost function as $f_{alg}(\chi(T)) = \sum_{v\in T} \log |H_v|$.
+For a vertex $v\in T$, we use $H_v$ to denote the \emph{heap} at $v$.
+Formally, $H_v = \{u | u \in A(v), \chi(u) \cap L(T_v) \neq \emptyset\}$.
+In words, $H_v$ is the set of ancestors of $v$ which are colored by some leaf in $T_v$.
+The following lemma should justify these technical definitions.
 
-\Ben{The following lemma should be immediate once previous section is written properly.}
 \begin{lemma}
-\label{lem:algCost}
-NEEDS TO BE WRITTEN:
-Here we need a lemma showing that the running time of our algorithm is $O(f_{alg}(\chi(T)))$, where $T$ is the merge tree of the given input, 
-and $\chi$ is any valid coloring of $T$.  (maybe add one in the definition of $H_v$ so that $\log |H_v|$ is always $>1$).
+The running time of our algorithm is $O(\sum_{v \in T} \log |H_v|)$.
+% where $T$ is the merge tree of the given input, 
+%and $\chi$ is any valid coloring of $T$.  (maybe add one in the definition of $H_v$ so that $\log |H_v|$ is always $>1$).
 \end{lemma}
 
-Now that we have a simple expression upper bounding the running time of our algorithm, we spend the remainder 
-of this section proving that this running time is optimal.
+\begin{proof} \Sesh{add}
 
-To do so, we now introduce the concept of path decompositions and their cost.  Then in the following two subsections 
-we relate path decomposition costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
+\end{proof}
+
+%vertices along the path from the root to $v$ such that one of the two colors of each vertex is in $L(T_v)$.
+%We will refer to $H_v$ as the \emph{heap} at $v$.
+%Then define the \emph{algorithm} cost function as $f_{alg}(\chi(T)) = \sum_{v\in T} \log |H_v|$.
+%
+%\begin{lemma}
+%\label{lem:algCost}
+%NEEDS TO BE WRITTEN:
+%Here we need a lemma showing that the running time of our algorithm is $O(f_{alg}(\chi(T)))$, where $T$ is the merge tree of the given input, 
+%and $\chi$ is any valid coloring of $T$.  (maybe add one in the definition of $H_v$ so that $\log |H_v|$ is always $>1$).
+%\end{lemma}
+%
+%Now that we have a simple expression upper bounding the running time of our algorithm, we spend the remainder 
+%of this section proving that this running time is optimal.
+
+We introduce the concept of path decompositions. A \emph{leaf path} is simply a contiguous path in $T$
+containing a leaf.
+% Then in the following two subsections 
+%we relate path decomposition costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
 
 \begin{definition}
-\label{def:path}
- Let $T$ be a rooted binary tree.  We call a path $p$ in $T$ a \emph{leaf path} if $p$ contains a leaf of $T$ and 
- is a contiguous sub-path of a root to leaf path in $T$.  A \emph{path decomposition}, $P(T)$, is a partition of $T$ into 
+\label{def:path} A \emph{path decomposition}, $P(T)$, is a partition of $T$ into 
  a set of vertex disjoint leaf paths.  Note that the number of paths in $P(T)$ must equal the number of leaves in $T$.
- For $p\in P(T)$, we use $|p|$ to denote its length and $r_p$ to denote the lowest vertex in $p$, which we call the \emph{root} of $p$.
  
- We define the cost of a particular path decomposition, $P(T)$, as $f_{path}(P(T)) = \sum_{p\in P(T)} |p| \log |p|$.
+ The \emph{cost} of $P(T)$ is $\cost(P(T)) = \sum_{p\in P(T)} |p| \log |p|$. (We use $|p|$ to denote the number of vertices in $p$.)
 \end{definition}
 
-Let $P(T)$ be a path decomposition of $T$.  Then the paths in $P(T)$ naturally define a tree\footnote{Please excuse the 
+Fix $\chi(T)$, which fixes all the heaps $H_v$. We choose a special path decomposition, which can be related
+to the running time of the algorithm. This is defined best as a subset of edges in $T$ such that each internal
+vertex has degree exactly $1$. This naturally gives as path decomposition.
+For each internal vertex $v\in T$, add the edge from $v$ to $\arg \max_{v_l, v_r} \{|H_{v_l}|, |H_{v_r}|\}$ 
+ where $v_l$ and $v_r$ are the children of $v$ (if $|H_{v_l}|=|H_{v_r}|$ then pick one arbitrarily).
+This is called the \emph{maximum} path decomposition, denoted by $\pmax(T)$.
+
+Our main theorem is the following.
+
+\begin{theorem} \label{thm:runtime} $\sum_{v \in T} \log |H_v| = O(\cost(\pmax(T)))$.
+\end{theorem}
+
+
+\subsection{Shrubs, heavy paths, and light paths}
+
+
+The paths in $P(T)$ naturally define a tree\footnote{Please excuse the 
 overloading of the term 'tree', it is the most natural term to use here.} of their own.  Specifically, in the original 
 tree $T$ contract each path down to its root.  Call the resulting tree the \emph{shrub} of $T$ corresponding to 
-the path decomposition $P(T)$, and denote it by $\pathTree(T)$.
+the path decomposition $P(T)$. Abusing notation, we simply use $P(T)$ to denote the shrub.
+As a result, we use terms like `parent', `child', `sibling', etc. for paths as well.
+The shrub gives a handle on the heaps of a path.
+We use $b(p)$ to denote the \emph{base} of the path, which is vertex in $p$ closest
+to root of $T$. We use $\ell(p)$ to denote the leaf in $p$.
+We use $H_p$ to denote the $H_{b(p)}$.
+% and denote it by $\pathTree(T)$.
+
+\begin{lemma}
+\label{lem:adjacent}
+ Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the children on $p$.
+Then $H_{\ell(p)} + \sum_{i=1}^k |H_{q_i}| \leq |H_p|+2|p|$. 
+\end{lemma}
+
+\begin{proof} For convenience, denote $H_i = H_{q_i}$ and $H_0 = H_{\ell(p)}$.
+Consider $v \in \bigcup_{i} H_i$ that lies below
+$b(p)$ in $T$. Note that $v \in H_p$ and has only one color in $\bigcup_{i} L(T_(b(q_i))) \cup \ell(p)$.
+Since the latter sets are all disjoint, any $u \in H_i \cap H_j$ must lie in $p$.
+Any $u \in p$ can be in at most two of the $H_i$'s. Hence, $\sum_i |H_i| \leq |H_p| + 2|p|$.
+\ignore{
+ First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
+ Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
+  
+ Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e. $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
+ In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
+ as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
+ Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
+ Putting these together gives
+ \[
+  \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
+ \]
+}
+\end{proof}
+
+
+
+We wish to prove $\sum_{v\in T} \log |H_v| = O(\sum_{p\in P} |p| \log |p|)$. 
+The simplest approach is to prove $\forall p\in P$, $\sum_{v\in p} \log |H_v|= O(|p|\log|p|)$.
+This is unfortunately not true, which is why we divide paths into two categories.
+
+\begin{definition}
+ For $p\in P(T)$, $p$ is \emph{light} if $|p| < \sqrt{|H_{p}|}/100$, and \emph{heavy} otherwise.
+\end{definition}
+
+\ignore{
+\begin{observation}
+\label{obs:decrease}
+ Let $v$ be a vertex in $T$ and let $w$ be its parent.  Then $|H_w| \geq |H_v| -1$, as $L(T_v) \subseteq L(T_w)$ and the path from 
+ $w$ to the root has one less vertex than the path from $v$ to the root.
+ In particular, we have the following more general property.
+ Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $v$ is a descendant of $u$.  
+ Then $|H_v| \leq |H_u| + d(u,v)$. 
+\end{observation}
+
+The following can be thought of as a generalization of the above observation, and will be useful in later sections.
+}
+
+
+
+The following lemma demonstrates that heavy paths can ``pay'' for themselves.
+
+\begin{lemma}
+\label{lem:pathBounds} If $p$ is heavy, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
+If $p$ is light, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_p|)$.
+% Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
+% Then, 
+% \begin{compactenum}
+%  \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
+%  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{p}|)$.
+% \end{compactenum}
+\end{lemma}
+\begin{proof} \ignore{
+ By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{p}| + |p|$ (as $v$ is a descendant of $r_p$ along $p$).
+}
+For $v \in p$, $|H_v|\leq |H_{p}| + |p|$ (as $v$ is a descendant of $b(p)$ along $p$).
+Hence, $\sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{p}| + |p|)  = |p| \log (|H_{p}| + |p|)$.
+ If $p$ is a heavy path, then $|p| \log (|H_{p}| + |p|) = O(|p| \log |p|)$. If $p$ is light, then 
+ $|p| \log (|H_{p}| + |p|) = O(|p| \log |H_{p}| )$.
+\end{proof}
+
+\ignore{
+For a light path $p$ we can think of the quantity $|p|(\log |H_p| - \log |p|)$ as the excess of $p$, i.e. what was not ``paid for'' locally by $p$.
+Our eventual goal will be to show that by choosing the right path decomposition, this excess 
+can be recharged to heavy paths. In the next couple sections we introduce the appropriate path decomposition and prove 
+some useful facts about it.  Then given these facts, in \Sec{} we are able to make the recharging argument.
+}
+
+We have a claim that also bounds heap sizes for special set of paths.
+
+\begin{claim} \label{clm:above} Let $Q$ be a set of incomparable nodes in the shrub $P(T)$ (which are paths in $T$).
+Suppose all paths in $A(Q)$ are heavy.
+Then $\sum_{q \in Q} |H_q| \log |H_q| = O(\sum_{p \in A(Q)} |p|\log |p|)$.
+\end{claim}
+
+\begin{proof} Pick $q \in Q$ and some $v \in H_q$. As we traverse up the tree passing
+through $A(q)$, we must encounter some $p \in A(q)$ such that $v \in p$. Furthermore,
+there is an order in which these vertices (of $H_q$) occur. Let $H'$ be the first half
+of vertices that occur. For all $v \in H'$, $|H_v| \geq |H_q|/2$. Hence,
+$|H_q| \log |H_q| \leq 4 \sum_{v \in H'} \log |H_v| \leq 4 \sum_{v \in H_q} |H_v|$.
+So $\sum_{q \in Q} |H_q| \log |H_q| \leq 4 \sum_{q \in Q} \sum_{v \in H_q} |H_v|$.
+
+Since nodes in $Q$ are incomparable, all the $H_q$'s (for $q \in Q$) are disjoint.
+Each such $v$ must occur in some path $p \in A(Q)$. Thus,
+$\sum_{q \in Q} |H_q| \log |H_q| \leq 4 \sum_{p \in A(Q)} \sum_{v \in p} |H_v|$.
+We apply the bound of \Lem{pathBounds} to complete the proof.
+\end{proof}
+
+Now, for the critical piece of the approach. Focus on $\pmax(T)$. Let $L$ be the set of light paths, 
+and $\hat{L} \subseteq L$ be the set of paths such that no ancestor of $p \in L'$
+is light. Obviously, $\hat{L}$ is an anti-chain in $P(T)$.
+
+\begin{lemma} \label{lem:light} $\sum_{p \in L} \sum_{v \in p} \log |H_v| = O(\sum_{p \in L'} |H_p| \log |H_p|)$.
+\end{lemma}
+
+With this lemma, the proof of \Thm{runtime} is straightforward.
+
+\begin{proof} (of \Thm{runtime}) We split into heavy and light paths.
+We have $\sum_{v \in T} \log |H_v| = \sum_{p \in L} \sum_{v \in p} \log |H_v| + \sum_{p \notin L} \sum_{v \in p} \log |H_v|$.
+For the first term, we apply \Lem{light} to bound by $O(\sum_{p \in L'} |H_p| \log |H_p|)$.
+Now, we apply \Clm{above} to the set $L'$, noting that it satifies the claim conditions and that $A(Q) \cap L = \emptyset$.
+Hence, the first term is $O(\sum_{p \notin L} |p|\log |p|)$.
+The latter is also bounded by the same expression, by \Lem{pathBounds}. By definition,
+$\sum_{p \notin L} |p|\log |p| \leq \cost(\pmax(T))$.
+\end{proof}
+
+The main challenge is proving \Lem{light}, which we defer to the next section.
+
+\ignore{
+\begin{definition}
+ Let $\chi(T)$ be a valid coloring of a binary tree $T$.  We define a set of disjoint paths over the vertices of 
+ $T$ as follows.  
+ The corresponding collection of paths that all such edges correspond to is a path decomposition of $T$, which 
+ we refer to as a \emph{maximum} path decomposition, and is denoted by $\mathcal{P}(T)$.  
+\end{definition}
+}
+
+
+
+
+
+
+\subsection{Upper Bound by Path Decomposition}
+
+
+
+\ignore{
+From the previous section we now have a lower bound of $\Omega(f_{path}(P))$ for computing the merge tree in terms of any path decomposition $P$. 
+We now show that the running time of our algorithm for computing the merge tree is upper bounded by this expression for a specific path decomposition, 
+which we will call the maximum path decomposition (defined below).
+Specifically, for a given valid coloring $\chi$ of a tree $T$, we will prove that for the maximum path decomposition $f_{alg}(\chi(T)) = O(f_{path}(P(T)))$. 
+%using the observations about path decompositions from 
+%\Sec{background}, which will then imply $f_{alg}(\chi(T)) = \Theta(f_{path}(P(T)))$.
+
+Throughout this section, for a path $p\in P(T)$, we use the notation $H_p$ to refer to the heap at the root of $p$, i.e. $H_p = H_{r_p}$.
+}
+
+We focus on $\pmax(T)$, and prove the key property of this path decomposition.
+
+\begin{lemma}
+\label{lem:geometric}
+ Let $p$ be the parent of $q$ in the shrub $\pmax(T)$.  
+ Then $|H_q|\leq \frac{3}{5} |H_p|$. 
+\end{lemma}
+\begin{proof}
+ Let $w$ be the vertex in the path $p$ to which the root of the path $q$ is adjacent to in $T$, 
+ i.e. $w$ is the parent of $r_q$ in $T$.  Let $c$ be the other child of $w$, which lies in $p$.
+ As $\mathcal{P}(T)$ is a maximum path decomposition of $T$ and $c$ rather than $r_q$ is in 
+ the same path as $w$, we have $|H_q|\leq |H_c|$.  Therefore, $|H_w|\geq |H_q|+|H_c|-1\geq 2|H_q|-1$. 
+ Therefore, by \Obs{decrease}, $|H_p|+ d(r_p, w) \geq |H_w|\geq 2|H_q|-1$.  
+ Since $p$ is a light path, $d(r_p, w)\leq \sqrt{|H_p|}/100$ and so we have $|H_p|+\sqrt{|H_p|}/100\geq 2|H_q|-1$.
+ Assuming $|H_p|>11$ (and we can safely assume $|H_p|$ is bigger than any constant), this yields $\frac{3}{5} |H_p| \geq |H_q|$
+\end{proof}
+
+\ignore{
+Naturally, this geometric series behavior can be extended to more than two adjacent light paths, thus motivating 
+the following definition.
+
+\begin{definition}
+ Let $p$ be a path in a path decomposition $P(T)$, with corresponding shrub $\pathTree$.
+ Call a light path $q\in P(T)$ light reachable from $p$ if the path from $p$ to $q$ in $\pathTree$ 
+ contains only vertices which correspond to light paths.  Call the subtree of $\pathTree$ consisting 
+ of all light reachable paths from $p$ the \emph{light shrub} of $p$, and denote it $\mathcal{L}(p)$.
+\end{definition}
+
+In the following subsection we show how to exploit this geometric series behavior of light shrubs.
 
 We say two paths in $P(T)$ are adjacent if their corresponding vertices are adjacent in the shrub.  Similarly, for 
 two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the shrub. 
+}
 
 \remove{
 \Ben{Maybe move the remainder of this subsection to 5.3 since heavy and light paths and not used until then}
@@ -1098,219 +1310,6 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
 
 
 
-
-
-
-
-\subsection{Lower Bound by Path Decomposition}
-
-In this section we show that any algorithm for computing the merge tree $T$ must pay at least $f_{path}(P(T))$ (see \Def{path}) for any path decomposition $P(T)$.
-
-We say two shrubs $S_1$ and $S_2$ (of merge trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
-between the two shrubs such that for any node $v\in S_1$ corresponding to a path of size $|v|$, $f(v)$ also corresponds to a path of size $|v|$.
-For the purposes of the next lemma, we say two $2$-manifolds are different, if their corresponding contour trees are the different.  
-
-\begin{figure}[h]\centering
-    \includegraphics[width=.15\linewidth]{figs/diamond}\hspace{2cm}
-    \includegraphics[width=.125\linewidth]{figs/topView}\hspace{2cm}
-    \includegraphics[width=.095\linewidth]{figs/sideView}
-    \caption{From left to right: the cone portion of a diamond; the top down view and then the side view of a cone face with a platform added.}
-    \label{fig:diamond}
-\end{figure}
-
-\begin{lemma}
-\label{lem:pathDecomp}
-Let $T$ be a merge tree, $P = P(T)$ any path decomposition of $T$, and $\pathTree$ the corresponding shrub.  
-Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an equivalent shrub.
-\end{lemma}
-\begin{proof}
- We describe a simple input mesh, with heights specified for all vertices except for the saddles.  The main idea is that 
- this mesh will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of merge trees 
- whose size is that described in the lemma statement.
- 
- First, we describe the basic building block of this input mesh, which roughly speaking corresponds to a fixed path $p\in P$.  
- Specifically, we say a \emph{diamond} of size $m$ is the following mesh.  To start, construct a cycle 
- of length $m$, where the height of the $i$th vertex in the cycle is say $i/2m$.  Next, create an apex vertex at height 
- $\infty$ (or any appropriately large finite height), and add an edge between this vertex and each vertex in the cycle.  At this point 
- we have built an upside down cone with $m$ triangular faces (see \Fig{diamond}). To make this cone a closed surface we add a triangular cap at the bottom. 
- Specifically, add a $3$ cycle of vertices at heights $0$, $1/20m$, and $1/10m$, and connect each vertex of this $3$-cycle to an arbitrary distinct 
- vertex on the $m$ cycle (with matching cyclic ordering), and triangulate all remaining faces.  For consistency, if the size $m$ is $\leq 3$, the diamond 
- will be just a tetrahedron.
- 
- Now above each face of the cone of the diamond, we will create a triangular ``platform'', which will act as the location to glue on other (shrunken) diamonds, 
- and whose highest point of connection to the face below will be a saddle vertex.  Specifically the heights of the vertices of the triangle will be $h$, $h-\eps$, and $h-2\eps$, where 
- $h$ is some unspecified height value.  This near horizontal platform is then connected to its respective face with vertical edges down to the face. See \Fig{diamond}.
- %
- %The vertex at height $h$ will lie in the plane of the respective face of the cone, and the other two will lie above the face, 
- %with edges connecting down to the face, hence creating an actual ``platform''.
- 
- At this point we can construct the entire input mesh, by gluing together diamonds.  Specifically, for each path $p_i\in P$ we create a diamond of size $p_i$.
- Now we glue together diamonds of different paths in the same way the paths are connected in $\pathTree$.  Specially, for two paths $p,q\in P$ where 
- $p$ is the parent of $q$ in $\pathTree$, we glue the bottom triangular cap of the diamond for $q$ onto the triangular ``platform'' of some face of the diamond for $p$.
- (Naturally for this construction to work, diamonds for a given path will be scaled down relative to the size of the diamond of their parent).
- 
- Observe now that the only saddle points in this construction are the highest connecting point on a face of an edge from the platform above.  Moreover, the only maxima are the apexes of the 
- diamonds, and there is exactly one minima corresponding to the bottom cap of the diamond representing the root of $\pathTree$.  Therefore, the saddles on a given 
- diamond will appear contiguously on a root to leaf path in the merge tree of the mesh, where the leaf corresponds to the maxima of the diamond 
- (since all these saddles have a direct line of sight to this apex).  In particular, 
- this implies that, regardless of the heights assigned to the platforms, the merge tree of this mesh has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
- 
- Now there is a valid instantiation of this described mesh for any relative ordering of the heights of the saddles on a given diamond.  In particular, 
- there are $|p|!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} |p_i|!$ possible instantiations of 
- the mesh overall.  Also, each one of these instantiations will result in a different merge.  Specifically, a permutation of the heights on a given diamond 
- corresponds to a permutation of the vertices along a path in $P$, as by construction all saddles on a given diamond will appear in sorted order in the merge tree.
-\end{proof}
-
-
-
-\begin{corollary}
- Let $A(S)$ be any algorithm to compute the merge tree of any input surface $S$ (whose contour tree is a merge tree).  
- Then the running time of $A(S)$ is $\Omega(f_{path}(P))=\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$ where $P$ is any path decomposition of the 
- merge tree of $S$.
-\end{corollary}
-\begin{proof}
- Given an input surface $S$ whose merge tree has a particular path decomposition $P$, by the above lemma, there are $\Pi_{p_i\in P} |p_i|!$ other surfaces 
- with distinct merge trees, all of which have a shrub equivalent to $\pathTree$.  Therefore, any algorithm which computes the merge tree must distinguish between 
- these possibilities, and therefore its corresponding decision tree must have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, 
- this decision tree must have depth $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
-\end{proof}
-
-
-
-
-
-\subsection{Upper Bound by Path Decomposition}
-\Ben{This section is a work in progress.}
-
-From the previous section we now have a lower bound of $\Omega(f_{path}(P))$ for computing the merge tree in terms of any path decomposition $P$. 
-We now show that the running time of our algorithm for computing the merge tree is upper bounded by this expression for a specific path decomposition, 
-which we will call the maximum path decomposition (defined below).
-Specifically, for a given valid coloring $\chi$ of a tree $T$, we will prove that for the maximum path decomposition $f_{alg}(\chi(T)) = O(f_{path}(P(T)))$. 
-%using the observations about path decompositions from 
-%\Sec{background}, which will then imply $f_{alg}(\chi(T)) = \Theta(f_{path}(P(T)))$.
-
-Throughout this section, for a path $p\in P(T)$, we use the notation $H_p$ to refer to the heap at the root of $p$, i.e. $H_p = H_{r_p}$.
-
-\subsubsection{Heavy and light paths}
-
-Before describing the maximum path decomposition, we introduce the notion of heavy and light paths 
-(which will help motivate what the decomposition should be).
-
-Recall we are ultimately trying to show $f_{alg}(\chi(T)) = O(f_{path}(P(T)))$ for some path decomposition $P=P(T)$, 
-or more specifically $\sum_{v\in T} \log |H_v| = O(\sum_{p\in P} |p| \log |p|)$.  In particular, if we could 
-show for each path $p\in P$ that $\sum_{v\in p} \log |H_v|= |p|\log|p|$ then we would be done.
-In other words we can think of each path as having a budget of $|p|\log|p|$, and ideally the budget 
-of each path will pay for the algorithm's cost due to this path.  This is too good to hope for, so instead 
-we will divide paths into two categories, called heavy and light, which as we show below in \Lem{pathBounds} roughly corresponds 
-to whether a path can pay for itself or not.
-
-\begin{definition}
- Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.  
- For $p\in P(T)$, we say that $p$ is \emph{light} if $|p| < \sqrt{|H_{p}|}/100$, and we say it is \emph{heavy} otherwise.
-\end{definition}
-
-\begin{observation}
-\label{obs:decrease}
- Let $v$ be a vertex in $T$ and let $w$ be its parent.  Then $|H_w| \geq |H_v| -1$, as $L(T_v) \subseteq L(T_w)$ and the path from 
- $w$ to the root has one less vertex than the path from $v$ to the root.
- In particular, we have the following more general property.
- Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $v$ is a descendant of $u$.  
- Then $|H_v| \leq |H_u| + d(u,v)$. 
-\end{observation}
-
-The following can be thought of as a generalization of the above observation, and will be useful in later sections.
-
-\begin{lemma}
-\label{lem:adjacent}
- Let $T$ be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
- Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all adjacent child paths of $p$ in $\pathTree(T)$.
- For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
- Also, let $H_0$ denote the heap at the leaf of $p$.
- 
- Then $\sum_{i=0}^k |H_i| \leq |H_p|+|p|$, where $H_p = H_{r_p}$.
-\end{lemma}
-\begin{proof} 
- First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
- Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
-  
- Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e. $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
- In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
- as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
- Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
- Putting these together gives
- \[
-  \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
- \]
-\end{proof}
-
-The following lemma demonstrates that heavy paths can ``pay'' for themselves.
-
-\begin{lemma}
-\label{lem:pathBounds}
- Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
- Then, 
- \begin{compactenum}
-  \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{p}|)$.
- \end{compactenum}
-\end{lemma}
-\begin{proof}
- By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{p}| + |p|$ (as $v$ is a descendant of $r_p$ along $p$).
- As such, 
- \[
- \sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{p}| + |p|)  = |p| \log (|H_{p}| + |p|).
- \]
- If $p$ is a heavy path then $|p| \log (|H_{p}| + |p|) = O(|p| \log |p|)$, and if $p$ is light then 
- $|p| \log (|H_{p}| + |p|) = O(|p| \log |H_{p}| )$.
-\end{proof}
-
-For a light path $p$ we can think of the quantity $|p|(\log |H_p| - \log |p|)$ as the excess of $p$, i.e. what was not ``paid for'' locally by $p$.
-Our eventual goal will be to show that by choosing the right path decomposition, this excess 
-can be recharged to heavy paths. In the next couple sections we introduce the appropriate path decomposition and prove 
-some useful facts about it.  Then given these facts, in \Sec{} we are able to make the recharging argument.
-
-
-
-\subsubsection{The decomposition and its main property}
-
-\begin{definition}
- Let $\chi(T)$ be a valid coloring of a binary tree $T$.  We define a set of disjoint paths over the vertices of 
- $T$ as follows.  For each internal vertex $v\in T$ add the edge from $v$ to $\arg \max_{v_l, v_r} \{|H_{v_l}|, |H_{v_r}|\}$ 
- where $v_l$ and $v_r$ are the children of $v$ (if $|H_{v_l}|=|H_{v_r}|$ then pick one arbitrarily).
- The corresponding collection of paths that all such edges correspond to is a path decomposition of $T$, which 
- we refer to as a \emph{maximum} path decomposition, and is denoted by $\mathcal{P}(T)$.  
-\end{definition}
-
-We now prove that in a maximum path decomposition, when going between adjacent light paths, the heap size decreases by a constant fraction.
-
-\begin{lemma}
-\label{lem:geometric}
- Let $p$ and $q$ be two light paths such that $p$ is the parent of $q$ in the shrub $\pathTreeA$.  
- Then $|H_q|\leq \frac{3}{5} |H_p|$, where $H_p$ and $H_q$ are the heaps at the roots of $p$ and $q$, respectively. 
-\end{lemma}
-\begin{proof}
- Let $w$ be the vertex in the path $p$ to which the root of the path $q$ is adjacent to in $T$, 
- i.e. $w$ is the parent of $r_q$ in $T$.  Let $c$ be the other child of $w$, which lies in $p$.
- As $\mathcal{P}(T)$ is a maximum path decomposition of $T$ and $c$ rather than $r_q$ is in 
- the same path as $w$, we have $|H_q|\leq |H_c|$.  Therefore, $|H_w|\geq |H_q|+|H_c|-1\geq 2|H_q|-1$. 
- Therefore, by \Obs{decrease}, $|H_p|+ d(r_p, w) \geq |H_w|\geq 2|H_q|-1$.  
- Since $p$ is a light path, $d(r_p, w)\leq \sqrt{|H_p|}/100$ and so we have $|H_p|+\sqrt{|H_p|}/100\geq 2|H_q|-1$.
- Assuming $|H_p|>11$ (and we can safely assume $|H_p|$ is bigger than any constant), this yields $\frac{3}{5} |H_p| \geq |H_q|$
-\end{proof}
-
-Naturally, this geometric series behavior can be extended to more than two adjacent light paths, thus motivating 
-the following definition.
-
-\begin{definition}
- Let $p$ be a path in a path decomposition $P(T)$, with corresponding shrub $\pathTree$.
- Call a light path $q\in P(T)$ light reachable from $p$ if the path from $p$ to $q$ in $\pathTree$ 
- contains only vertices which correspond to light paths.  Call the subtree of $\pathTree$ consisting 
- of all light reachable paths from $p$ the \emph{light shrub} of $p$, and denote it $\mathcal{L}(p)$.
-\end{definition}
-
-In the following subsection we show how to exploit this geometric series behavior of light shrubs.
-
-
 \subsubsection{An asymptotically equivalent weight function}
 \label{sec:weight}
 Let $\mathcal{L} = \mathcal{L}(r)$ be a light shrub of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
@@ -1334,7 +1333,7 @@ $c(v)$ defined above, where $v$ is that leaf's corresponding parent.
 Now we can define a weight function $w(u)$ over any node $u$ in the tree, which is defined to be the total cost of all leaves in its subtree.   
 To simplify notation, we now use $\mathcal{L}$ to refer to this new weighted tree (rather than its unweighted counterpart).
 
-As the weight $w(p$ includes the sizes of the heaps of all contributing heavy paths and leaves in the subtree rooted at $p$, we have the following.
+As the weight $w(p)$ includes the sizes of the heaps of all contributing heavy paths and leaves in the subtree rooted at $p$, we have the following.
 
 \begin{claim}
 For any $p\in \mathcal{L}$, $w(p)\geq |H_p|$.  Moreover, for any $v\in p$, $w(p)\geq |H_v|$.
@@ -1499,6 +1498,93 @@ Using this observation and \Cor{equivalent} we then have,
 
 
 
+
+
+
+
+\section{Lower Bound by Path Decomposition}
+
+In this section we show that any algorithm for computing the merge tree $T$ must pay at least $f_{path}(P(T))$ (see \Def{path}) for any path decomposition $P(T)$.
+
+We say two shrubs $S_1$ and $S_2$ (of merge trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
+between the two shrubs such that for any node $v\in S_1$ corresponding to a path of size $|v|$, $f(v)$ also corresponds to a path of size $|v|$.
+For the purposes of the next lemma, we say two $2$-manifolds are different, if their corresponding contour trees are the different.  
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.15\linewidth]{figs/diamond}\hspace{2cm}
+    \includegraphics[width=.125\linewidth]{figs/topView}\hspace{2cm}
+    \includegraphics[width=.095\linewidth]{figs/sideView}
+    \caption{From left to right: the cone portion of a diamond; the top down view and then the side view of a cone face with a platform added.}
+    \label{fig:diamond}
+\end{figure}
+
+\begin{lemma}
+\label{lem:pathDecomp}
+Let $T$ be a merge tree, $P = P(T)$ any path decomposition of $T$, and $\pathTree$ the corresponding shrub.  
+Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an equivalent shrub.
+\end{lemma}
+\begin{proof}
+ We describe a simple input mesh, with heights specified for all vertices except for the saddles.  The main idea is that 
+ this mesh will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of merge trees 
+ whose size is that described in the lemma statement.
+ 
+ First, we describe the basic building block of this input mesh, which roughly speaking corresponds to a fixed path $p\in P$.  
+ Specifically, we say a \emph{diamond} of size $m$ is the following mesh.  To start, construct a cycle 
+ of length $m$, where the height of the $i$th vertex in the cycle is say $i/2m$.  Next, create an apex vertex at height 
+ $\infty$ (or any appropriately large finite height), and add an edge between this vertex and each vertex in the cycle.  At this point 
+ we have built an upside down cone with $m$ triangular faces (see \Fig{diamond}). To make this cone a closed surface we add a triangular cap at the bottom. 
+ Specifically, add a $3$ cycle of vertices at heights $0$, $1/20m$, and $1/10m$, and connect each vertex of this $3$-cycle to an arbitrary distinct 
+ vertex on the $m$ cycle (with matching cyclic ordering), and triangulate all remaining faces.  For consistency, if the size $m$ is $\leq 3$, the diamond 
+ will be just a tetrahedron.
+ 
+ Now above each face of the cone of the diamond, we will create a triangular ``platform'', which will act as the location to glue on other (shrunken) diamonds, 
+ and whose highest point of connection to the face below will be a saddle vertex.  Specifically the heights of the vertices of the triangle will be $h$, $h-\eps$, and $h-2\eps$, where 
+ $h$ is some unspecified height value.  This near horizontal platform is then connected to its respective face with vertical edges down to the face. See \Fig{diamond}.
+ %
+ %The vertex at height $h$ will lie in the plane of the respective face of the cone, and the other two will lie above the face, 
+ %with edges connecting down to the face, hence creating an actual ``platform''.
+ 
+ At this point we can construct the entire input mesh, by gluing together diamonds.  Specifically, for each path $p_i\in P$ we create a diamond of size $p_i$.
+ Now we glue together diamonds of different paths in the same way the paths are connected in $\pathTree$.  Specially, for two paths $p,q\in P$ where 
+ $p$ is the parent of $q$ in $\pathTree$, we glue the bottom triangular cap of the diamond for $q$ onto the triangular ``platform'' of some face of the diamond for $p$.
+ (Naturally for this construction to work, diamonds for a given path will be scaled down relative to the size of the diamond of their parent).
+ 
+ Observe now that the only saddle points in this construction are the highest connecting point on a face of an edge from the platform above.  Moreover, the only maxima are the apexes of the 
+ diamonds, and there is exactly one minima corresponding to the bottom cap of the diamond representing the root of $\pathTree$.  Therefore, the saddles on a given 
+ diamond will appear contiguously on a root to leaf path in the merge tree of the mesh, where the leaf corresponds to the maxima of the diamond 
+ (since all these saddles have a direct line of sight to this apex).  In particular, 
+ this implies that, regardless of the heights assigned to the platforms, the merge tree of this mesh has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
+ 
+ Now there is a valid instantiation of this described mesh for any relative ordering of the heights of the saddles on a given diamond.  In particular, 
+ there are $|p|!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} |p_i|!$ possible instantiations of 
+ the mesh overall.  Also, each one of these instantiations will result in a different merge.  Specifically, a permutation of the heights on a given diamond 
+ corresponds to a permutation of the vertices along a path in $P$, as by construction all saddles on a given diamond will appear in sorted order in the merge tree.
+\end{proof}
+
+
+
+\begin{corollary}
+ Let $A(S)$ be any algorithm to compute the merge tree of any input surface $S$ (whose contour tree is a merge tree).  
+ Then the running time of $A(S)$ is $\Omega(f_{path}(P))=\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$ where $P$ is any path decomposition of the 
+ merge tree of $S$.
+\end{corollary}
+\begin{proof}
+ Given an input surface $S$ whose merge tree has a particular path decomposition $P$, by the above lemma, there are $\Pi_{p_i\in P} |p_i|!$ other surfaces 
+ with distinct merge trees, all of which have a shrub equivalent to $\pathTree$.  Therefore, any algorithm which computes the merge tree must distinguish between 
+ these possibilities, and therefore its corresponding decision tree must have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, 
+ this decision tree must have depth $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
+\end{proof}
+
+
+
+
+\bibliographystyle{alpha}
+\bibliography{contour}
+
+\appendix
+
+\section{Old stuff}
+
 \subsubsection{Paying it down the line}
 
 % \begin{claim}
@@ -1648,14 +1734,5 @@ This easily implies the desired inequality as $\log(H_p+p)$ is larger than any o
 Define the crust of the shrub to be the first (i.e. closest to the root) layer of light paths in the shrub.  Apply \Lem{lightCost} to each of the light paths in the crust and then 
 say by \Lem{excess} and since the root heap goes to zero we are done.
 
-
-
-
-
-
-
-
-\bibliographystyle{alpha}
-\bibliography{contour}
 
 \end{document}
