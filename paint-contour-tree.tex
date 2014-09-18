@@ -1151,12 +1151,12 @@ Now, for the critical piece of the approach. Focus on $\pmax(T)$. Let $L$ be the
 and $\hat{L} \subseteq L$ be the set of paths such that no ancestor of $p \in L'$
 is light. Obviously, $\hat{L}$ is an anti-chain in $P(T)$.
 
-\begin{lemma} \label{lem:light} $\sum_{p \in \cL} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
+\begin{lemma} \label{lem:light} For the path decomposition $\pmax(T)$, $\sum_{p \in \cL} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 \end{lemma}
 
 With this lemma, the proof of \Thm{runtime} is straightforward.
 
-\begin{proof} (of \Thm{runtime}) We split into heavy and light paths.
+\begin{proof} (of \Thm{runtime}) We focus on $\pmax(T)$ and split into heavy and light paths.
 We have $\sum_{v \in T} \log |H_v| =$  $\sum_{p \in \cL} \sum_{v \in p} \log |H_v| + $ $\sum_{p \in \cH} \sum_{v \in p} \log |H_v|$.
 For the first term, we apply \Lem{light} to bound by $O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 Then we apply \Clm{above} to bound by $O(\sum_{p \in \cH} |p|\log |p|)$.
@@ -1180,13 +1180,14 @@ The main challenge is proving \Lem{light}, which we defer to the next section.
 
 
 
-\subsection{Proving \Lem{light}}
+\subsection{Proving \Lem{light}} \label{sec:light}
 
+Our focus is on $\pmax(T)$.
 We can simplify a little. We split the summation and apply \Lem{pathBounds}. Finally,
 we note that for $p \in \cL$, $|p| \leq |H_p|$.
 \begin{eqnarray*} 
-\sum_{p \in \cL} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| \\
-& = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(|p|\log |H_p|) = \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(|H_p|\log |H_p|)
+\sum_{p \in \cL} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL'} \sum_{v \in p} \log |H_v|\\
+& = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |p|\log |H_p|) = \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |H_p|\log |H_p|)
 \end{eqnarray*}
 
 
@@ -1200,6 +1201,15 @@ Specifically, for a given valid coloring $\chi$ of a tree $T$, we will prove tha
 
 Throughout this section, for a path $p\in P(T)$, we use the notation $H_p$ to refer to the heap at the root of $p$, i.e. $H_p = H_{r_p}$.
 }
+
+It suffices to focus on unsupported light paths. \Lem{light} can be reduced to the following.
+
+\begin{lemma} \label{lem:support} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
+\end{lemma}
+
+We now construct the shrub of unsupported light paths $\cU$. Consider $p \in \cL \setminus \cL'$,
+and traverse the chain of ancestors 
+
 
 We focus on $\pmax(T)$, and prove the key property of this path decomposition.
 
