@@ -1107,23 +1107,43 @@ can be recharged to heavy paths. In the next couple sections we introduce the ap
 some useful facts about it.  Then given these facts, in \Sec{} we are able to make the recharging argument.
 }
 
-We have a claim that also bounds heap sizes for special set of paths.
+There are some light paths that we can also ``pay" for. 
 
-\begin{claim} \label{clm:above} Let $Q$ be a set of incomparable nodes in the shrub $P(T)$ (which are paths in $T$).
-Suppose all paths in $A(Q)$ are heavy.
-Then $\sum_{q \in Q} |H_q| \log |H_q| = O(\sum_{p \in A(Q)} |p|\log |p|)$.
+\begin{definition} \label{def:support} A light path $p$ is called \emph{supported} if there exists
+a contiguous (from $p$) chain of ancestors $q_1, q_2, \ldots, q_k$ (in $P(T)$) such that $|H_{q_k}| \leq 99|H_p|/100$
+and all $q_i$'s are heavy.
+\end{definition}
+
+Let $\cL$ be the set of light paths, $\cL'$ be the set of supported light paths, and $\cH$ be the set of heavy paths.
+%We have a claim that also bounds heap sizes for special set of paths.
+
+\begin{claim} \label{clm:above} $\sum_{p \in \cL'} |H_p| \log |H_p| = O(\sum_{p \in \cH} |p|\log |p|)$.
 \end{claim}
 
-\begin{proof} Pick $q \in Q$ and some $v \in H_q$. As we traverse up the tree passing
-through $A(q)$, we must encounter some $p \in A(q)$ such that $v \in p$. Furthermore,
-there is an order in which these vertices (of $H_q$) occur. Let $H'$ be the first half
-of vertices that occur. For all $v \in H'$, $|H_v| \geq |H_q|/2$. Hence,
-$|H_q| \log |H_q| \leq 4 \sum_{v \in H'} \log |H_v| \leq 4 \sum_{v \in H_q} |H_v|$.
-So $\sum_{q \in Q} |H_q| \log |H_q| \leq 4 \sum_{q \in Q} \sum_{v \in H_q} |H_v|$.
+\begin{proof} Pick $p \in \cL'$. As we traverse up $q_1, q_2, \ldots, q_k$, there
+are certain vertices of $H_p$ that lie in these paths. There must be at least $|H_p|/100$
+such vertices, since $H_{q_k} \leq 99H_p/100$. These are encountered in
+a fixed order. Let $H'_p$ be the first half of these vertices. For all $v \in H'_p$
+$|H_v| \geq |H_p|/200$. Hence, $|H_p|\log |H_p| = O(\sum_{v \in H'_p} \log |H_v|)$
+and $\sum_{p \in L'} |H_p|\log |H_p| = O(\sum_{p \in L'} \sum_{v \in H'_p} \log |H_v|)$.
 
-Since nodes in $Q$ are incomparable, all the $H_q$'s (for $q \in Q$) are disjoint.
-Each such $v$ must occur in some path $p \in A(Q)$. Thus,
-$\sum_{q \in Q} |H_q| \log |H_q| \leq 4 \sum_{p \in A(Q)} \sum_{v \in p} |H_v|$.
+Pick another $\widetilde{p} \in \cL'$. If $p$ and $\widetilde{p}$ are ancestor-descendant,
+then their corresponding supporting ancestor chains are disjoint. Any $v \in H'_p$
+can only occur in one other $H'_q$ (for $q \in \cL'$), because $v$ has exactly two colors.
+In other words, any $v$ appears at most twice in the above double summation.
+These vertices are all present in heavy paths, so we can bound
+the double summation by $\sum_{p \in \cH} \sum_{v \in p} \log |H_v|$.
+%
+%Pick $q \in Q$ and some $v \in H_q$. As we traverse up the tree passing
+%through $A(q)$, we must encounter some $p \in A(q)$ such that $v \in p$. Furthermore,
+%there is an order in which these vertices (of $H_q$) occur. Let $H'$ be the first half
+%of vertices that occur. For all $v \in H'$, $|H_v| \geq |H_q|/2$. Hence,
+%$|H_q| \log |H_q| \leq 4 \sum_{v \in H'} \log |H_v| \leq 4 \sum_{v \in H_q} |H_v|$.
+%So $\sum_{q \in Q} |H_q| \log |H_q| \leq 4 \sum_{q \in Q} \sum_{v \in H_q} |H_v|$.
+%
+%Since nodes in $Q$ are incomparable, all the $H_q$'s (for $q \in Q$) are disjoint.
+%Each such $v$ must occur in some path $p \in A(Q)$. Thus,
+%$\sum_{q \in Q} |H_q| \log |H_q| \leq 4 \sum_{p \in A(Q)} \sum_{v \in p} |H_v|$.
 We apply the bound of \Lem{pathBounds} to complete the proof.
 \end{proof}
 
@@ -1131,18 +1151,17 @@ Now, for the critical piece of the approach. Focus on $\pmax(T)$. Let $L$ be the
 and $\hat{L} \subseteq L$ be the set of paths such that no ancestor of $p \in L'$
 is light. Obviously, $\hat{L}$ is an anti-chain in $P(T)$.
 
-\begin{lemma} \label{lem:light} $\sum_{p \in L} \sum_{v \in p} \log |H_v| = O(\sum_{p \in L'} |H_p| \log |H_p|)$.
+\begin{lemma} \label{lem:light} $\sum_{p \in \cL} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 \end{lemma}
 
 With this lemma, the proof of \Thm{runtime} is straightforward.
 
 \begin{proof} (of \Thm{runtime}) We split into heavy and light paths.
-We have $\sum_{v \in T} \log |H_v| = \sum_{p \in L} \sum_{v \in p} \log |H_v| + \sum_{p \notin L} \sum_{v \in p} \log |H_v|$.
-For the first term, we apply \Lem{light} to bound by $O(\sum_{p \in L'} |H_p| \log |H_p|)$.
-Now, we apply \Clm{above} to the set $L'$, noting that it satifies the claim conditions and that $A(Q) \cap L = \emptyset$.
-Hence, the first term is $O(\sum_{p \notin L} |p|\log |p|)$.
+We have $\sum_{v \in T} \log |H_v| =$  $\sum_{p \in \cL} \sum_{v \in p} \log |H_v| + $ $\sum_{p \in \cH} \sum_{v \in p} \log |H_v|$.
+For the first term, we apply \Lem{light} to bound by $O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
+Then we apply \Clm{above} to bound by $O(\sum_{p \in \cH} |p|\log |p|)$.
 The latter is also bounded by the same expression, by \Lem{pathBounds}. By definition,
-$\sum_{p \notin L} |p|\log |p| \leq \cost(\pmax(T))$.
+$\sum_{p \in \cH} |p|\log |p| \leq \cost(\pmax(T))$.
 \end{proof}
 
 The main challenge is proving \Lem{light}, which we defer to the next section.
@@ -1161,8 +1180,14 @@ The main challenge is proving \Lem{light}, which we defer to the next section.
 
 
 
-\subsection{Upper Bound by Path Decomposition}
+\subsection{Proving \Lem{light}}
 
+We can simplify a little. We split the summation and apply \Lem{pathBounds}. Finally,
+we note that for $p \in \cL$, $|p| \leq |H_p|$.
+\begin{eqnarray*} 
+\sum_{p \in \cL} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| \\
+& = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(|p|\log |H_p|) = \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(|H_p|\log |H_p|)
+\end{eqnarray*}
 
 
 \ignore{
