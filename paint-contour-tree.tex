@@ -74,6 +74,7 @@
 \newcommand{\cH}{{\cal H}}
 \newcommand{\cL}{{\cal L}}
 \newcommand{\cP}{{\cal P}}
+\newcommand{\cU}{{\cal U}}
 \newcommand{\cV}{{\cal V}}
 
 \newcommand{\LL}{\mathbb{L}}
@@ -1180,7 +1181,7 @@ The main challenge is proving \Lem{light}, which we defer to the next section.
 
 
 
-\subsection{Proving \Lem{light}} \label{sec:light}
+\subsection{The shrub of unsupported paths} \label{sec:light}
 
 Our focus is on $\pmax(T)$.
 We can simplify a little. We split the summation and apply \Lem{pathBounds}. Finally,
@@ -1207,146 +1208,83 @@ It suffices to focus on unsupported light paths. \Lem{light} can be reduced to t
 \begin{lemma} \label{lem:support} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 \end{lemma}
 
-We now construct the shrub of unsupported light paths $\cU$. Consider $p \in \cL \setminus \cL'$,
-and traverse the chain of ancestors 
+We now construct the shrub of unsupported light paths. Consider $p \in \cL \setminus \cL'$,
+and traverse the chain of ancestors from $p$. Eventually, we must reach another light path $q$.
+(If not, we have reached the root $r$ of $\pmax(T)$. But $|H_r| = 0$, implying $p$ is supported.)
+Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
+the shrub forest of $\cL \setminus \cL'$, where every unsupported light path is an internal node, and all
+roots are supported light paths. \Lem{support} is a direct consequence of the following,
+which is the really the main lemma.
+
+\begin{lemma} \label{lem:cu} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
+be the root of $\cU$. Then $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O(|H_r| \log |H_r|)$.
+\end{lemma}
+
+We proceed with the setup to prove \Lem{cu}.
+We focus our attention on some shrub $\cU$.
+We prove a technical lemma about $\cU$, from which \Lem{cu} follows directly.
+
+\begin{lemma} \label{lem:cu-root} (i) For any $v \in p$ such that $p \in \cU$,
+$|H_v| = O(|H_r|)$. (ii) $\sum_{p \in \cU} |p| = O(|H_r|)$.
+\end{lemma}
+
+\begin{proof} (of \Lem{cu}) We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
+\end{proof}
 
 
-We focus on $\pmax(T)$, and prove the key property of this path decomposition.
+
+\subsection{The root is everything in $\cU$} \label{sec:weight}
+
+\Lem{cu-root} asserts the root $r$ in $\cU$ pretty much encompasses all sizes and heaps in $\cU$.
+Consider $q \in \cL \setminus \cL'$ that is a child of $p$ in the shrub $\cU$.
+By construction, there is a heavy path (denoted $h(q)$) that is a child of $p$ in $\pmax(T)$,
+and an ancestor of $q$. Furthermore, $|H_{h(q)}| > 99|H_q|/100$.
+We begin with a key property, which is where the construction of $\pmax(T)$ enters the picture.
+
+%
+%
+%
+%We focus on $\pmax(T)$, and prove the key property of this path decomposition.
 
 \begin{lemma}
 \label{lem:geometric}
- Let $p$ be the parent of $q$ in the shrub $\pmax(T)$.  
- Then $|H_q|\leq \frac{3}{5} |H_p|$. 
+ Let $p$ be the parent of $q$ in the shrub $\cU$. Then $|H_p|\geq \frac{3}{2}|H_q|$. 
 \end{lemma}
-\begin{proof}
- Let $w$ be the vertex in the path $p$ to which the root of the path $q$ is adjacent to in $T$, 
- i.e. $w$ is the parent of $r_q$ in $T$.  Let $c$ be the other child of $w$, which lies in $p$.
- As $\mathcal{P}(T)$ is a maximum path decomposition of $T$ and $c$ rather than $r_q$ is in 
- the same path as $w$, we have $|H_q|\leq |H_c|$.  Therefore, $|H_w|\geq |H_q|+|H_c|-1\geq 2|H_q|-1$. 
- Therefore, by \Obs{decrease}, $|H_p|+ d(r_p, w) \geq |H_w|\geq 2|H_q|-1$.  
- Since $p$ is a light path, $d(r_p, w)\leq \sqrt{|H_p|}/100$ and so we have $|H_p|+\sqrt{|H_p|}/100\geq 2|H_q|-1$.
- Assuming $|H_p|>11$ (and we can safely assume $|H_p|$ is bigger than any constant), this yields $\frac{3}{5} |H_p| \geq |H_q|$
+\begin{proof} We know that $h(q)$ is a child of $p$ in $\pmax(T)$. Consider the base
+of $h(q)$, which is a node $w$ in $T$. Let $v$ denote the sibling of $w$ in $T$.
+Their parent is called $u$. Note that both $u$ and $v$ are nodes in the path $p$.
+Now, the decomposition $\pmax(T)$ put $u$ and $v$ in the same path $p$. This
+implies $|H_v| \geq |H_w|$. Since $|H_u| \geq |H_v| + |H_w| - 1$,
+$|H_u| \geq 2|H_w| - 1$. Let $b$ be the base of $p$.
+We have $|H_p| = |H_b| \geq |H_u| - |p| \geq 2|H_w| - |p| - 2$. Since $p$ is a light path, $|p| < \sqrt{|H_p|}/100$.
+Applying this bound, we get $|H_p| \geq (2-\delta)|H_w|$ (for small constant $\delta > 0$).
+Since $w$ is the base of $h(q)$, $H_w = H_{h(q)}$. We apply the bound $|H_{h(q)}| > 99|H_q|/100$,
+to complete the proof.
+
+%
+%
+% Let $w$ be the vertex in the path $p$ to which the root of the path $q$ is adjacent to in $T$, 
+% i.e. $w$ is the parent of $r_q$ in $T$.  Let $c$ be the other child of $w$, which lies in $p$.
+% As $\mathcal{P}(T)$ is a maximum path decomposition of $T$ and $c$ rather than $r_q$ is in 
+% the same path as $w$, we have $|H_q|\leq |H_c|$.  Therefore, $|H_w|\geq |H_q|+|H_c|-1\geq 2|H_q|-1$. 
+% Therefore, by \Obs{decrease}, $|H_p|+ d(r_p, w) \geq |H_w|\geq 2|H_q|-1$.  
+% Since $p$ is a light path, $d(r_p, w)\leq \sqrt{|H_p|}/100$ and so we have $|H_p|+\sqrt{|H_p|}/100\geq 2|H_q|-1$.
+% Assuming $|H_p|>11$ (and we can safely assume $|H_p|$ is bigger than any constant), this yields $\frac{3}{5} |H_p| \geq |H_q|$
 \end{proof}
 
-\ignore{
-Naturally, this geometric series behavior can be extended to more than two adjacent light paths, thus motivating 
-the following definition.
-
-\begin{definition}
- Let $p$ be a path in a path decomposition $P(T)$, with corresponding shrub $\pathTree$.
- Call a light path $q\in P(T)$ light reachable from $p$ if the path from $p$ to $q$ in $\pathTree$ 
- contains only vertices which correspond to light paths.  Call the subtree of $\pathTree$ consisting 
- of all light reachable paths from $p$ the \emph{light shrub} of $p$, and denote it $\mathcal{L}(p)$.
-\end{definition}
-
-In the following subsection we show how to exploit this geometric series behavior of light shrubs.
-
-We say two paths in $P(T)$ are adjacent if their corresponding vertices are adjacent in the shrub.  Similarly, for 
-two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the shrub. 
-}
-
-\remove{
-\Ben{Maybe move the remainder of this subsection to 5.3 since heavy and light paths and not used until then}
-
-\begin{definition}
- Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.  
- For $p\in P(T)$, we say that $p$ is \emph{light} if $|p| < \sqrt{|H_{r_p}|}/100$, and we say it is \emph{heavy} otherwise.
-\end{definition}
-
-\begin{observation}
-\label{obs:decrease}
- Let $v$ be a vertex in $T$ and let $w$ be its parent.  Then $|H_w| \geq |H_v| -1$, as $L(T_v) \subseteq L(T_w)$ and the path from 
- $w$ to the root has one less vertex than the path from $v$ to the root.
- 
- In particular, we have the following more general property.
- Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $u$ is lower than $v$.  
- Then $|H_v| \leq |H_u| + d(u,v)$. 
-\end{observation}
-
-
-\begin{lemma}
-\label{lem:pathBounds}
- Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
- Then, 
- \begin{compactenum}
-  \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{r_p}|)$.
- \end{compactenum}
-\end{lemma}
-\begin{proof}
- By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{r_p}| + |p|$ (as $r_p$ lies below $v$ on $p$).
- As such, 
- \[
- \sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{r_p}| + |p|)  = |p| \log (|H_{r_p}| + |p|).
- \]
- If $p$ is a heavy path then $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |p|)$, and if $p$ is light then 
- $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |H_{r_p}| )$.
-\end{proof}
-
-The following lemma can be thought of as a generalization of $\Obs{decrease}$.
-
-\begin{lemma}
-\label{lem:adjacent}
- Let $T$ be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
- Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all adjacent child paths of $p$.
- For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
- Also, let $H_0$ denote the heap at the leaf of $p$.
- 
- Then $\sum_{i=0}^k |H_i| \leq |H_p|+|p|$, where $H_p = H_{r_p}$.
-\end{lemma}
-\begin{proof} 
- First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
- Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
-  
- Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e. $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
- In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
- as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
- Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
- Putting these together gives
- \[
-  \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
- \]
-\end{proof}
-
-% \Ben{There is a fundamental flaw in the following lemma and corollary.  
-% As such, the remainder of this subsection will likely be deleted.}
-% 
-% Using the notation defined in the above lemma, we have the following crucial lemma, which we will use to 
-% argue we can charge that cost of all paths in $P(T)$ to the cost of the heavy paths.
-% 
-% \begin{lemma}
-% Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be any set of light paths in $P(T)$ such that 
-% $\sum_{i=1}^k |H_i| = O(H_p)$.  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$
-% \end{lemma}
-% \begin{proof}
-% By \Lem{pathBounds}, for all $1\leq i\leq k$, 
-%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
-%  By assumption $\sum_{i=1}^k |H_i| = O(|H_p|)$, 
-%  As $x\log x$ is a convex function, Jensen's inequality then implies 
-%  $\sum_{i=1}^{k} |H_i|\log |H_i| = O(|H_p| \log |H_p|) = O(|p|\log |p|)$, since $p$ is a heavy path.
-% \end{proof}
-% 
-% 
-% \begin{corollary}
-% \label{cor:heavyLight}
-%  Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
-%  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$.
-% \end{corollary}
-% \begin{proof}
-%  Let $H_i$ be as defined in \Lem{adjacent}.  By \Lem{pathBounds}, for all $1\leq i\leq k$, 
-%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
-%  Now by \Lem{adjacent}, $\sum_{i=1}^k |H_i| \leq |H_p|+|p| = O(|p|)$, as $p$ is a heavy path. 
-%  Therefore, as $x\log x$ is a convex function, Jensen's inequality implies the claim.
-%  
-% \end{proof}
-
-}
 
 
 
 
-\subsubsection{An asymptotically equivalent weight function}
-\label{sec:weight}
+
+To prove this, we need to understand how $H_p$ is constructed. The path $p$ has some children
+$q_1, q_2, \ldots, q_k$ in $\pmax(T)$. Furthermore, as a leaf path in $p$, some leaf
+$\ell$ of $T$ in one of the ends of $p$. The heap $H_p$ is essentially the
+union of $H_\ell$ and $H_{q_1}, H_{q_2}, \ldots, H_{q_k}$, with the vertices in $p$
+removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
+for a child $q'$ in $\cU$.
+
+
 Let $\mathcal{L} = \mathcal{L}(r)$ be a light shrub of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
 The intuitive idea is that due to the geometric decreasing behavior of light shrubs described in the previous subsection, 
 one can show that for the entire light shrub our algorithm pays roughly the cost due to the root path $r$.  This argument 
@@ -1768,6 +1706,125 @@ This easily implies the desired inequality as $\log(H_p+p)$ is larger than any o
 
 Define the crust of the shrub to be the first (i.e. closest to the root) layer of light paths in the shrub.  Apply \Lem{lightCost} to each of the light paths in the crust and then 
 say by \Lem{excess} and since the root heap goes to zero we are done.
+
+
+
+\ignore{
+Naturally, this geometric series behavior can be extended to more than two adjacent light paths, thus motivating 
+the following definition.
+
+\begin{definition}
+ Let $p$ be a path in a path decomposition $P(T)$, with corresponding shrub $\pathTree$.
+ Call a light path $q\in P(T)$ light reachable from $p$ if the path from $p$ to $q$ in $\pathTree$ 
+ contains only vertices which correspond to light paths.  Call the subtree of $\pathTree$ consisting 
+ of all light reachable paths from $p$ the \emph{light shrub} of $p$, and denote it $\mathcal{L}(p)$.
+\end{definition}
+
+In the following subsection we show how to exploit this geometric series behavior of light shrubs.
+
+We say two paths in $P(T)$ are adjacent if their corresponding vertices are adjacent in the shrub.  Similarly, for 
+two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the shrub. 
+}
+
+\remove{
+\Ben{Maybe move the remainder of this subsection to 5.3 since heavy and light paths and not used until then}
+
+\begin{definition}
+ Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.  
+ For $p\in P(T)$, we say that $p$ is \emph{light} if $|p| < \sqrt{|H_{r_p}|}/100$, and we say it is \emph{heavy} otherwise.
+\end{definition}
+
+\begin{observation}
+\label{obs:decrease}
+ Let $v$ be a vertex in $T$ and let $w$ be its parent.  Then $|H_w| \geq |H_v| -1$, as $L(T_v) \subseteq L(T_w)$ and the path from 
+ $w$ to the root has one less vertex than the path from $v$ to the root.
+ 
+ In particular, we have the following more general property.
+ Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $u$ is lower than $v$.  
+ Then $|H_v| \leq |H_u| + d(u,v)$. 
+\end{observation}
+
+
+\begin{lemma}
+\label{lem:pathBounds}
+ Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
+ Then, 
+ \begin{compactenum}
+  \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
+  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{r_p}|)$.
+ \end{compactenum}
+\end{lemma}
+\begin{proof}
+ By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{r_p}| + |p|$ (as $r_p$ lies below $v$ on $p$).
+ As such, 
+ \[
+ \sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{r_p}| + |p|)  = |p| \log (|H_{r_p}| + |p|).
+ \]
+ If $p$ is a heavy path then $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |p|)$, and if $p$ is light then 
+ $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |H_{r_p}| )$.
+\end{proof}
+
+The following lemma can be thought of as a generalization of $\Obs{decrease}$.
+
+\begin{lemma}
+\label{lem:adjacent}
+ Let $T$ be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
+ Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all adjacent child paths of $p$.
+ For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
+ Also, let $H_0$ denote the heap at the leaf of $p$.
+ 
+ Then $\sum_{i=0}^k |H_i| \leq |H_p|+|p|$, where $H_p = H_{r_p}$.
+\end{lemma}
+\begin{proof} 
+ First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
+ Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
+  
+ Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e. $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
+ In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
+ as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
+ Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
+ Putting these together gives
+ \[
+  \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
+ \]
+\end{proof}
+
+% \Ben{There is a fundamental flaw in the following lemma and corollary.  
+% As such, the remainder of this subsection will likely be deleted.}
+% 
+% Using the notation defined in the above lemma, we have the following crucial lemma, which we will use to 
+% argue we can charge that cost of all paths in $P(T)$ to the cost of the heavy paths.
+% 
+% \begin{lemma}
+% Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be any set of light paths in $P(T)$ such that 
+% $\sum_{i=1}^k |H_i| = O(H_p)$.  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$
+% \end{lemma}
+% \begin{proof}
+% By \Lem{pathBounds}, for all $1\leq i\leq k$, 
+%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
+%  By assumption $\sum_{i=1}^k |H_i| = O(|H_p|)$, 
+%  As $x\log x$ is a convex function, Jensen's inequality then implies 
+%  $\sum_{i=1}^{k} |H_i|\log |H_i| = O(|H_p| \log |H_p|) = O(|p|\log |p|)$, since $p$ is a heavy path.
+% \end{proof}
+% 
+% 
+% \begin{corollary}
+% \label{cor:heavyLight}
+%  Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
+%  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$.
+% \end{corollary}
+% \begin{proof}
+%  Let $H_i$ be as defined in \Lem{adjacent}.  By \Lem{pathBounds}, for all $1\leq i\leq k$, 
+%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
+%  Now by \Lem{adjacent}, $\sum_{i=1}^k |H_i| \leq |H_p|+|p| = O(|p|)$, as $p$ is a heavy path. 
+%  Therefore, as $x\log x$ is a convex function, Jensen's inequality implies the claim.
+%  
+% \end{proof}
+
+}
+
+
+
 
 
 \end{document}
