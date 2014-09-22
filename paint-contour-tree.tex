@@ -998,8 +998,8 @@ containing a leaf.
 \begin{definition}
 \label{def:path} A \emph{path decomposition}, $P(T)$, is a partition of $T$ into 
  a set of vertex disjoint leaf paths.  Note that the number of paths in $P(T)$ must equal the number of leaves in $T$.
- 
- The \emph{cost} of $P(T)$ is $\cost(P(T)) = \sum_{p\in P(T)} |p| \log |p|$. (We use $|p|$ to denote the number of vertices in $p$.)
+% 
+% The \emph{cost} of $P(T)$ is $\cost(P(T)) = \sum_{p\in P(T)} |p| \log |p|$. (We use $|p|$ to denote the number of vertices in $p$.)
 \end{definition}
 
 Fix $\chi(T)$, which fixes all the heaps $H_v$. We choose a special path decomposition, which can be related
@@ -1009,9 +1009,9 @@ For each internal vertex $v\in T$, add the edge from $v$ to $\arg \max_{v_l, v_r
  where $v_l$ and $v_r$ are the children of $v$ (if $|H_{v_l}|=|H_{v_r}|$ then pick one arbitrarily).
 This is called the \emph{maximum} path decomposition, denoted by $\pmax(T)$.
 
-Our main theorem is the following.
+Our main theorem is the following. We use $|p|$ to denote the number of vertices in $p$.
 
-\begin{theorem} \label{thm:runtime} $\sum_{v \in T} \log |H_v| = O(\cost(\pmax(T)))$.
+\begin{theorem} \label{thm:runtime} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in P(T)} |p| \log |p|)$.
 \end{theorem}
 
 
@@ -1084,7 +1084,7 @@ The following lemma demonstrates that heavy paths can ``pay'' for themselves.
 
 \begin{lemma}
 \label{lem:pathBounds} If $p$ is heavy, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-If $p$ is light, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_p|)$.
+If $p$ is light, $\sum_{v\in p} \log |H_v| = O(|H_p| \log |H_p|)$.
 % Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
 % Then, 
 % \begin{compactenum}
@@ -1098,7 +1098,7 @@ If $p$ is light, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_p|)$.
 For $v \in p$, $|H_v|\leq |H_{p}| + |p|$ (as $v$ is a descendant of $b(p)$ along $p$).
 Hence, $\sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{p}| + |p|)  = |p| \log (|H_{p}| + |p|)$.
  If $p$ is a heavy path, then $|p| \log (|H_{p}| + |p|) = O(|p| \log |p|)$. If $p$ is light, then 
- $|p| \log (|H_{p}| + |p|) = O(|p| \log |H_{p}| )$.
+ $|p| \log (|H_{p}| + |p|) = O(|p| \log |H_{p}| )$. For light paths, $|p| = O(|H_p|)$.
 \end{proof}
 
 \ignore{
@@ -1110,8 +1110,8 @@ some useful facts about it.  Then given these facts, in \Sec{} we are able to ma
 
 There are some light paths that we can also ``pay" for. 
 
-\begin{definition} \label{def:support} A light path $p$ is called \emph{supported} if: 
-at least $|H_p|/100$ vertices in $p$ lie in heavy ancestors $q$ such that $|H_q| > |H_p|/100$.
+\begin{definition} \label{def:support} A light path $p$ is \emph{supported} if
+at least $|H_p|/100$ vertices $v$ in $H_p$ lie in heavy ancestors.
 %
 %
 % there exists
@@ -1119,25 +1119,68 @@ at least $|H_p|/100$ vertices in $p$ lie in heavy ancestors $q$ such that $|H_q|
 %and all $q_i$'s are heavy.
 \end{definition}
 
-Let $\cL$ be the set of light paths, $\cL'$ be the set of supported light paths, and $\cH$ be the set of heavy paths.
+Let $\cL$ be the set of light paths, $\cL'$ be the set of supported light paths, and $\cH$ be the set of heavy paths
+given by $\pmax(T)$.
+We now construct the shrub of unsupported light paths. Consider $p \in \cL \setminus \cL'$,
+and traverse the chain of ancestors from $p$. Eventually, we must reach another light path $q$.
+(If not, we have reached the root $r$ of $\pmax(T)$. Hence, $p$ is supported.)
+Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
+to the shrub forest of $\cL \setminus \cL'$, where every unsupported light path is an internal node, and all
+roots are supported light paths. 
+
+Most of work goes into proving the following technical lemma.
+
+\begin{lemma} \label{lem:cu-root} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
+be the root of $\cU$. (i) For any $v \in p$ such that $p \in \cU$,
+$|H_v| = O(|H_r|)$. (ii) $\sum_{p \in \cU} |p| = O(|H_r|)$.
+\end{lemma}
+
+We split the remaining argument into two subsections. We first prove \Thm{runtime} from \Lem{cu-root},
+which mostly imvolves routing calculations. Then we prove \Lem{cu-root}, where most
+of the interesting work happens.
+
+
+\subsection{Proving \Thm{runtime}} \label{sec:thm-runtime}
+
+We split the summation into heavy, light, and unsupported light paths.
+\begin{eqnarray*} 
+\sum_{p \in \cL} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cH} \sum_{v \in p} \log |H_v|
+%& = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |p|\log |H_p|) = \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |H_p|\log |H_p|)
+\end{eqnarray*}
+The last term can be bounded by $O(\sum_{p \in \pmax(T)} |p|\log |p|)$, by \Lem{pathBounds}.
+The second term can be bounded by $O(\sum_{p \in \cL'} |H_p| \log |H_p|)$, by \Lem{pathBounds} again.
+The following claim shows that in turn is at most the last term.
+
 %We have a claim that also bounds heap sizes for special set of paths.
 
-\begin{claim} \label{clm:above} $\sum_{p \in \cL'} |H_p| \log |H_p| = O(\sum_{p \in \cH} |p|\log |p|)$.
+\begin{claim} \label{clm:above} $\sum_{p \in \cL'} |H_p| \log |H_p| = O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
 \end{claim}
 
-\begin{proof} Pick $p \in \cL'$. As we traverse up $q_1, q_2, \ldots, q_k$, there
-are certain vertices of $H_p$ that lie in these paths. There must be at least $|H_p|/100$
-such vertices, since $H_{q_k} \leq 99H_p/100$. These are encountered in
-a fixed order. Let $H'_p$ be the first half of these vertices. For all $v \in H'_p$
-$|H_v| \geq |H_p|/200$. Hence, $|H_p|\log |H_p| = O(\sum_{v \in H'_p} \log |H_v|)$
-and $\sum_{p \in L'} |H_p|\log |H_p| = O(\sum_{p \in L'} \sum_{v \in H'_p} \log |H_v|)$.
+\begin{proof} 
+Pick $p \in \cL'$. 
+%Let the first $|H_p|/200$ vertices the lie in heavy paths be denoted as $H'_p$. 
+%Observe that for any $v \in H'_p$, 
+%We have $|H_p| \log |H_p| = O(\sum_{v \in H'_p} \log |H_p|)$
+%$= O(\sum_{v \in H'_p} \log |H_v|)$. Since all the vertices lie in heavy paths,
+%we can write this as $O(\sum_{q \in \cH} \sum_{v \in H'_p \cap q} \log |H_v|)$.
+%Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum_{v \in H'_p \cap q} \log |H_v|$.
+%
+%
+As we traverse the heavy ancestors, there
+are at least $|H_p|/100$ vertices of $H_p$ that lie in these paths. These are encountered in
+a fixed order. Let $H'_p$ be the first $|H_p|/200$ of these vertices. When $v \in H'_p$
+is encountered, there are $|H_p|/200$ vertices of $H_p$ not yet encountered. Hence,
+$|H_v| \geq |H_p|/200$. Hence, $|H_p|\log |H_p| = O(\sum_{v \in H'_p} \log |H_v|)$.
+Since all the vertices lie in heavy paths,
+we can write this as $O(\sum_{q \in \cH} \sum_{v \in H'_p \cap q} \log |H_v|)$.
+Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum_{v \in H'_p \cap q} \log |H_v|$.
+%and $\sum_{p \in \cL'} |H_p|\log |H_p| = O(\sum_{p \in \cL'} \sum_{v \in H'_p} \log |H_v|)$.
 
 Pick another $\widetilde{p} \in \cL'$. If $p$ and $\widetilde{p}$ are ancestor-descendant,
 then their corresponding supporting ancestor chains are disjoint. Any $v \in H'_p$
-can only occur in one other $H'_q$ (for $q \in \cL'$), because $v$ has exactly two colors.
-In other words, any $v$ appears at most twice in the above double summation.
-These vertices are all present in heavy paths, so we can bound
-the double summation by $\sum_{p \in \cH} \sum_{v \in p} \log |H_v|$.
+can only occur in one other $H'_{\hat{p}}$ (for $\hat{p} \in \cL'$), because $v$ has exactly two colors.
+In other words, any $\log |H_v|$ appears at most twice in the above triple summation.
+Hence, we can bound it by $O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
 %
 %Pick $q \in Q$ and some $v \in H_q$. As we traverse up the tree passing
 %through $A(q)$, we must encounter some $p \in A(q)$ such that $v \in p$. Furthermore,
@@ -1149,9 +1192,25 @@ the double summation by $\sum_{p \in \cH} \sum_{v \in p} \log |H_v|$.
 %Since nodes in $Q$ are incomparable, all the $H_q$'s (for $q \in Q$) are disjoint.
 %Each such $v$ must occur in some path $p \in A(Q)$. Thus,
 %$\sum_{q \in Q} |H_q| \log |H_q| \leq 4 \sum_{p \in A(Q)} \sum_{v \in p} |H_v|$.
-We apply the bound of \Lem{pathBounds} to complete the proof.
+%We apply the bound of \Lem{pathBounds} to complete the proof.
 \end{proof}
 
+The first term (unsupported light paths) can be charged to the second term (supported light paths).
+This is where the critical \Lem{cu-root} plays a role.
+
+\begin{claim} \label{clm:first} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
+\end{claim}
+
+\begin{proof} Let $\cU$ denote a connected component of the shrub forest.
+We have $\sum_{p \in \cL \setminus \cL'} \leq \sum_{\cU} \sum_{p \in \cU} \sum_{v \in p} \log |H_v|$.
+By \Lem{cu-root}, $|H_v| = O(|H_r|)$, where $r$ is the root of $\cU$.
+Furthermore, $\sum_{p \in \cU} |p| = O(|H_r|)$. 
+We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
+We sum this over all $\cU$ in the shrub forest, and note that roots in the shrub forest are supported light paths.
+\end{proof}
+
+
+\ignore{
 Now, for the critical piece of the approach. Focus on $\pmax(T)$. Let $L$ be the set of light paths, 
 and $\hat{L} \subseteq L$ be the set of paths such that no ancestor of $p \in L'$
 is light. Obviously, $\hat{L}$ is an anti-chain in $P(T)$.
@@ -1170,33 +1229,13 @@ $\sum_{p \in \cH} |p|\log |p| \leq \cost(\pmax(T))$.
 \end{proof}
 
 The main challenge is proving \Lem{light}, which we defer to the next section.
-
-\ignore{
 \begin{definition}
  Let $\chi(T)$ be a valid coloring of a binary tree $T$.  We define a set of disjoint paths over the vertices of 
  $T$ as follows.  
  The corresponding collection of paths that all such edges correspond to is a path decomposition of $T$, which 
  we refer to as a \emph{maximum} path decomposition, and is denoted by $\mathcal{P}(T)$.  
 \end{definition}
-}
 
-
-
-
-
-
-\subsection{The shrub of unsupported paths} \label{sec:light}
-
-Our focus is on $\pmax(T)$.
-We can simplify a little. We split the summation and apply \Lem{pathBounds}. Finally,
-we note that for $p \in \cL$, $|p| \leq |H_p|$.
-\begin{eqnarray*} 
-\sum_{p \in \cL} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL'} \sum_{v \in p} \log |H_v|\\
-& = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |p|\log |H_p|) = \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |H_p|\log |H_p|)
-\end{eqnarray*}
-
-
-\ignore{
 From the previous section we now have a lower bound of $\Omega(f_{path}(P))$ for computing the merge tree in terms of any path decomposition $P$. 
 We now show that the running time of our algorithm for computing the merge tree is upper bounded by this expression for a specific path decomposition, 
 which we will call the maximum path decomposition (defined below).
@@ -1207,44 +1246,13 @@ Specifically, for a given valid coloring $\chi$ of a tree $T$, we will prove tha
 Throughout this section, for a path $p\in P(T)$, we use the notation $H_p$ to refer to the heap at the root of $p$, i.e. $H_p = H_{r_p}$.
 }
 
-It suffices to focus on unsupported light paths. \Lem{light} can be reduced to the following.
-
-\begin{lemma} \label{lem:support} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
-\end{lemma}
-
-We now construct the shrub of unsupported light paths. Consider $p \in \cL \setminus \cL'$,
-and traverse the chain of ancestors from $p$. Eventually, we must reach another light path $q$.
-(If not, we have reached the root $r$ of $\pmax(T)$. But $|H_r| = 0$, implying $p$ is supported.)
-Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
-to the shrub forest of $\cL \setminus \cL'$, where every unsupported light path is an internal node, and all
-roots are supported light paths. \Lem{support} is a direct consequence of the following,
-which is the really the main lemma.
-
-%\begin{lemma} \label{lem:cu} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
-%be the root of $\cU$. Then $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O(|H_r| \log |H_r|)$.
-%\end{lemma}
-%
-%We proceed with the setup to prove \Lem{cu}.
-%We focus our attention on some shrub $\cU$.
-%We prove a technical lemma about $\cU$, from which \Lem{cu} follows directly.
-
-\begin{lemma} \label{lem:cu-root} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
-be the root of $\cU$. (i) For any $v \in p$ such that $p \in \cU$,
-$|H_v| = O(|H_r|)$. (ii) $\sum_{p \in \cU} |p| = O(|H_r|)$.
-\end{lemma}
-
-\begin{proof} (of \Lem{support}) We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
-We sum this over all $\cU$ in the shrub forest, and note that roots in the shrub forest are supported light paths.
-\end{proof}
 
 
 
 \subsection{Proving \Lem{cu-root}: the root is everything in $\cU$} \label{sec:weight}
 
 \Lem{cu-root} asserts the root $r$ in $\cU$ pretty much encompasses all sizes and heaps in $\cU$.
-Consider $q \in \cL \setminus \cL'$ that is a child of $p$ in the shrub $\cU$.
-By construction, there is a heavy path (denoted $h(q)$) that is a child of $p$ in $\pmax(T)$,
-and an ancestor of $q$. Furthermore, $|H_{h(q)}| > 99|H_q|/100$.
+%Consider $q \in \cL \setminus \cL'$ that is a child of $p$ in the shrub $\cU$.
 We begin with a key property, which is where the construction of $\pmax(T)$ enters the picture.
 
 %
@@ -1256,7 +1264,11 @@ We begin with a key property, which is where the construction of $\pmax(T)$ ente
 \label{lem:geometric}
  Let $p$ be the parent of $q$ in the shrub $\cU$. Then $|H_p|\geq \frac{3}{2}|H_q|$. 
 \end{lemma}
-\begin{proof} We know that $h(q)$ is a child of $p$ in $\pmax(T)$. Consider the base
+\begin{proof} By construction, there is a heavy path (denoted $h(q)$) that is a child of $p$ in $\pmax(T)$,
+and an ancestor of $q$. The chain of ancestors from $q$ to $h(q)$ consists only of heavy paths.
+These paths contain at most $|H_p|/100$ vertices of $H_p$, so $|H_{h(q)}| \geq 99|H_p|/100$.
+
+Consider the base
 of $h(q)$, which is a node $w$ in $T$. Let $v$ denote the sibling of $w$ in $T$.
 Their parent is called $u$. Note that both $u$ and $v$ are nodes in the path $p$.
 Now, the decomposition $\pmax(T)$ put $u$ and $v$ in the same path $p$. This
@@ -1278,7 +1290,16 @@ to complete the proof.
 % Assuming $|H_p|>11$ (and we can safely assume $|H_p|$ is bigger than any constant), this yields $\frac{3}{5} |H_p| \geq |H_q|$
 \end{proof}
 
-This immediately proves part (i) of \Lem{cu-root}. Part (ii) requires some more work.
+This immediately proves part (i) of \Lem{cu-root}. Part (ii) requires much more work.
+It is helpful to spell out how the various heaps evolve. Consider $p \in \cU$,
+which has children $q_1, q_2, \ldots, q_k$ in $\pmax(T)$.
+Furthermore, as a leaf path in $p$, some leaf
+$\ell$ of $T$ in one of the ends of $p$. The heap $H_p$ is the
+union of $H_\ell$ and $H_{q_1}, H_{q_2}, \ldots, H_{q_k}$, with the vertices in $p$
+removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
+for a child $q'$ in $\cU$.
+
+
 
 \begin{proof} (part (ii) of \Lem{cu-root}) Let level $\ell$ of $\cU$ denote all nodes at distance $\ell$ from the root $r$.
 These set of these nodes is designated as $\cU_\ell$. We set $\sigma_\ell = \sum_{p \in \cU_\ell} |p|$
@@ -1837,6 +1858,53 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
 
 }
 
+
+
+\subsection{The shrub of unsupported paths} \label{sec:light}
+
+
+
+It suffices to focus on unsupported light paths. \Lem{light} can be reduced to the following.
+
+\begin{lemma} \label{lem:support} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
+\end{lemma}
+
+We now construct the shrub of unsupported light paths. Consider $p \in \cL \setminus \cL'$,
+and traverse the chain of ancestors from $p$. Eventually, we must reach another light path $q$.
+(If not, we have reached the root $r$ of $\pmax(T)$. Hence, $p$ is supported.)
+Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
+to the shrub forest of $\cL \setminus \cL'$, where every unsupported light path is an internal node, and all
+roots are supported light paths. 
+
+We list out some important claims about this shrub forest.
+We focus on $\cU$, a connected component (shrub) in the shrub forest and denote the 
+the root by $r(\cU)$.
+
+\begin{claim} \label{clm:loss} Consider $p \in \cL \setminus \cL'$ that is in $\cU$. Let $Q$
+be the set of heavy ancestors of $p$ that are descendants of $r(\cU)$. Then $\sum_{q \in Q} |q \cap H_p| \leq |H_p|/50$.
+\end{claim}
+
+\begin{proof} Suppose not, for contradictions sake. As we traverse the heavy ancestors of $p$,
+we encounter various vertices of $H_p$ in the ancestors $q$. Consider the first $|H_p|/100$
+such vertices of $p$ encountered. At each such $v$, there are at least $|H_p|/100$
+vertices \emph{not yet} encountered, so $|H_v| > |H_p|/100$. Each of these vertices $v$
+is supported, implying that $p$ is a supported light path.
+\end{proof}
+
+\Lem{support} is a direct consequence of the following,
+which is the really the main lemma.
+
+%\begin{lemma} \label{lem:cu} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
+%be the root of $\cU$. Then $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O(|H_r| \log |H_r|)$.
+%\end{lemma}
+%
+%We proceed with the setup to prove \Lem{cu}.
+%We focus our attention on some shrub $\cU$.
+%We prove a technical lemma about $\cU$, from which \Lem{cu} follows directly.
+
+
+\begin{proof} (of \Lem{support})
+\end{proof}
 
 
 
