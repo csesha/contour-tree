@@ -1110,9 +1110,13 @@ some useful facts about it.  Then given these facts, in \Sec{} we are able to ma
 
 There are some light paths that we can also ``pay" for. 
 
-\begin{definition} \label{def:support} A light path $p$ is called \emph{supported} if there exists
-a contiguous (from $p$) chain of ancestors $q_1, q_2, \ldots, q_k$ (in $P(T)$) such that $|H_{q_k}| \leq 99|H_p|/100$
-and all $q_i$'s are heavy.
+\begin{definition} \label{def:support} A light path $p$ is called \emph{supported} if: 
+at least $|H_p|/100$ vertices in $p$ lie in heavy ancestors $q$ such that $|H_q| > |H_p|/100$.
+%
+%
+% there exists
+%a contiguous (from $p$) chain of ancestors $q_1, q_2, \ldots, q_k$ (in $P(T)$) such that $|H_{q_k}| \leq 99|H_p|/100$
+%and all $q_i$'s are heavy.
 \end{definition}
 
 Let $\cL$ be the set of light paths, $\cL'$ be the set of supported light paths, and $\cH$ be the set of heavy paths.
@@ -1212,28 +1216,30 @@ We now construct the shrub of unsupported light paths. Consider $p \in \cL \setm
 and traverse the chain of ancestors from $p$. Eventually, we must reach another light path $q$.
 (If not, we have reached the root $r$ of $\pmax(T)$. But $|H_r| = 0$, implying $p$ is supported.)
 Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
-the shrub forest of $\cL \setminus \cL'$, where every unsupported light path is an internal node, and all
+to the shrub forest of $\cL \setminus \cL'$, where every unsupported light path is an internal node, and all
 roots are supported light paths. \Lem{support} is a direct consequence of the following,
 which is the really the main lemma.
 
-\begin{lemma} \label{lem:cu} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
-be the root of $\cU$. Then $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O(|H_r| \log |H_r|)$.
-\end{lemma}
+%\begin{lemma} \label{lem:cu} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
+%be the root of $\cU$. Then $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O(|H_r| \log |H_r|)$.
+%\end{lemma}
+%
+%We proceed with the setup to prove \Lem{cu}.
+%We focus our attention on some shrub $\cU$.
+%We prove a technical lemma about $\cU$, from which \Lem{cu} follows directly.
 
-We proceed with the setup to prove \Lem{cu}.
-We focus our attention on some shrub $\cU$.
-We prove a technical lemma about $\cU$, from which \Lem{cu} follows directly.
-
-\begin{lemma} \label{lem:cu-root} (i) For any $v \in p$ such that $p \in \cU$,
+\begin{lemma} \label{lem:cu-root} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
+be the root of $\cU$. (i) For any $v \in p$ such that $p \in \cU$,
 $|H_v| = O(|H_r|)$. (ii) $\sum_{p \in \cU} |p| = O(|H_r|)$.
 \end{lemma}
 
-\begin{proof} (of \Lem{cu}) We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
+\begin{proof} (of \Lem{support}) We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
+We sum this over all $\cU$ in the shrub forest, and note that roots in the shrub forest are supported light paths.
 \end{proof}
 
 
 
-\subsection{The root is everything in $\cU$} \label{sec:weight}
+\subsection{Proving \Lem{cu-root}: the root is everything in $\cU$} \label{sec:weight}
 
 \Lem{cu-root} asserts the root $r$ in $\cU$ pretty much encompasses all sizes and heaps in $\cU$.
 Consider $q \in \cL \setminus \cL'$ that is a child of $p$ in the shrub $\cU$.
@@ -1272,9 +1278,17 @@ to complete the proof.
 % Assuming $|H_p|>11$ (and we can safely assume $|H_p|$ is bigger than any constant), this yields $\frac{3}{5} |H_p| \geq |H_q|$
 \end{proof}
 
+This immediately proves part (i) of \Lem{cu-root}. Part (ii) requires some more work.
 
+\begin{proof} (part (ii) of \Lem{cu-root}) Let level $\ell$ of $\cU$ denote all nodes at distance $\ell$ from the root $r$.
+These set of these nodes is designated as $\cU_\ell$. We set $\sigma_\ell = \sum_{p \in \cU_\ell} |p|$
+and $\sigma_{\leq \ell} = \sum_{k \leq \ell} \sigma_k$.
+By \Lem{geometric}, for any $p \in \cU_\ell$, $|H_p| \leq (2/3)^\ell |H_r|$.
 
+Since all nodes in $\cU$ represent light paths, $\forall p \in \cU$, $|p| < \sqrt{|H_p|}/100$.
+So $\sigma_\ell < \sum_{p \in \cU_\ell} \sqrt{|H_p|}/100$. 
 
+\end{proof}
 
 
 To prove this, we need to understand how $H_p$ is constructed. The path $p$ has some children
