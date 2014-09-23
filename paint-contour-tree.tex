@@ -1299,6 +1299,71 @@ union of $H_\ell$ and $H_{q_1}, H_{q_2}, \ldots, H_{q_k}$, with the vertices in 
 removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
 for a child $q'$ in $\cU$.
 
+We define a \emph{residue} $R_p$ for each $p \in \cU$. Suppose $p$ has children
+$q_1, q_2, \ldots, q_k$ in $\cU$. Then $R_p = |H_p| - \sum_i |H_{q_i}|$. 
+By definition, $|H_p| = \sum_{q \in \cU_p} R_p$. 
+Note that $R_p$ can be negative. 
+Now, define $R^+_p = \max(R_p,0)$, and set $W_p = \sum_{q \in \cU_p} R^+_p$.
+Observe that $W_p \geq |H_p|$. We also get an approximate converse.
+
+
+\begin{claim} \label{clm:loss} $|H_p| \geq W_p - 2\sum_{q \in \cU_p} |q| - 2\sum_{q \in \cU_p} \sum_{h \in \cH} |h \cap R_q|$
+\end{claim}
+
+\begin{proof} Consider $q \in \cU_p$, and traverse $\pmax(T)$ up to $p$. Suppose we encounter
+the paths $q_0 = q, q_1, q_2, \ldots, q_k = p$. The vertices in the residue $R_q$ that 
+are removed from $H_p$ are exactly the vertices that lie in these paths. 
+We split this contribution into heavy and light paths, observing that the latter
+are all unsupported. Hence, we can (crudely) upper bound the number of vertices
+removed by $\sum_{q \in \cU_p} |q| + \sum_{q \in \cU_p} \sum_{h \in \cH} |h \cap q|$.
+Each vertex can be removed from at most two distinct $R_q$'s, completing the proof.
+\end{proof}
+
+The main challenge of the entire proof is bounding the sum of path lengths, which is done next.
+We stress that the all the previous work is mostly setup to get to this claim.
+
+\begin{claim} \label{clm:charge} Consider $p \in \cU$ such that for any $q,q' \in \cU_p$
+such that $q$ is a parent of $q'$, $W_q \geq (4/3)W_{q'}$. Then $\sum_{q \in \cU_p} |q| \leq W_p/20$.
+\end{claim}
+
+\begin{proof} By the definition of light paths, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|W_q|}/100$.
+We prove that $\sum_{q \in \cU_p} \sqrt{|W_q|}/100 \leq W_p/20$
+by a charge redistribution scheme. Assume that each $q \in \cU_p$
+starts with $\sqrt{W_p}/100$ units of charge. We redistribute this charge over all
+nodes in $\cU_p$, and then calculate the total charge. For $q \in \cU_p$, spread
+its charge to all nodes in $\cU_q$ proportional to $R^+$ values. In other words,
+give $(\sqrt{W_q}/100)\cdot(R^+_{q'}/W_q)$ units of charge to each $q' \in \cU_q$.
+
+After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\cU_p$.
+$q = a_0, a_1, a_2, \ldots, a_k$ contributes to the charge at $q$. The charge is expressed in the following
+equation. We use the assumption that $W_{a_i} \geq (4/3) W_{a_{i-1}}$ and hence $W_{a_i} \geq (4/3)^i$.
+$$ ({R^+_q}/100)\sum_{a_i} 1/\sqrt{W_{a_i}} \leq ({R^+_q}/100)\sum_{a_i} (3/4)^{i/2} \leq R^+_q/20 $$
+The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$.
+\end{proof}
+
+We wrap it all up by proving part (ii) of \Lem{cu-root}.
+
+\begin{claim} $\sum_{p \in \cU} |p| \leq H_{r(\cU)}/10$.
+\end{claim}
+
+\begin{proof} We use $r$ for $r(\cU)$. Our aim is to simply apply \Clm{charge} from $r(\cU)$. 
+Suppose $W_q \geq (4/3)W_{q'}$ (for $q$ parent of $q'$). By \Clm{charge}, $\sum_{p \in \cU} |p| \leq W_{r}/20$.
+By \Clm{loss}, $|H_r| \geq W_r - 2\sum_{p \in \cU} |p| - 2\sum_{h \in \cH} |h \cap H_p|$.
+
+
+
+We first need to prove the claim assumption,
+namely that of $W_q \geq (4/3)W_{q'}$ (for $q$ parent of $q'$). We do know from \Lem{geometric}
+that $|H_q| \geq (3/2)|H_{q'}|$. We will apply \Clm{loss} and \Clm{charge} to prove this.
+
+
+
+Pick the node furthest from $r(\cU)$
+
+
+\end{proof}
+
+
 
 
 \begin{proof} (part (ii) of \Lem{cu-root}) Let level $\ell$ of $\cU$ denote all nodes at distance $\ell$ from the root $r$.
