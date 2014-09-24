@@ -163,6 +163,7 @@
 \newcommand{\pmax}{P_{\max}}
 \newcommand{\rain}{{\tt rain}}
 \newcommand{\reeb}{R}
+\newcommand{\redH}{\widetilde{H}}
 \newcommand{\rep}{rep}
 \newcommand{\st}{K}
 \newcommand{\surgery}{{\tt surgery}}
@@ -958,7 +959,7 @@ For set of nodes $U$, $A(U) = \bigcup_{u \in U} A(u)$.
 
 \begin{definition}
  A \emph{leaf assignment} $\chi$ of a tree $T$ assigns \emph{two} distinct leaves in each internal vertex $v$,
- one from the left and one from the right subtree of $v$.
+ one from the left child and one from the right child subtree of $v$.
 \end{definition}
 
 For a vertex $v\in T$, we use $H_v$ to denote the \emph{heap} at $v$.
@@ -997,21 +998,21 @@ containing a leaf.
 
 \begin{definition}
 \label{def:path} A \emph{path decomposition}, $P(T)$, is a partition of $T$ into 
- a set of vertex disjoint leaf paths.  Note that the number of paths in $P(T)$ must equal the number of leaves in $T$.
+ a set of vertex disjoint leaf paths.  
 % 
 % The \emph{cost} of $P(T)$ is $\cost(P(T)) = \sum_{p\in P(T)} |p| \log |p|$. (We use $|p|$ to denote the number of vertices in $p$.)
 \end{definition}
 
-Fix $\chi(T)$, which fixes all the heaps $H_v$. We choose a special path decomposition, which can be related
-to the running time of the algorithm. This is defined best as a subset of edges in $T$ such that each internal
-vertex has degree exactly $1$. This naturally gives as path decomposition.
+Note that the number of paths in $P(T)$ must equal the number of leaves in $T$.
+Fix $\chi$, which fixes all the heaps $H_v$. We choose a special path decomposition that is best defined as a subset of edges in $T$ such that each internal
+vertex has degree at most $2$. This naturally gives a path decomposition.
 For each internal vertex $v\in T$, add the edge from $v$ to $\arg \max_{v_l, v_r} \{|H_{v_l}|, |H_{v_r}|\}$ 
  where $v_l$ and $v_r$ are the children of $v$ (if $|H_{v_l}|=|H_{v_r}|$ then pick one arbitrarily).
 This is called the \emph{maximum} path decomposition, denoted by $\pmax(T)$.
 
 Our main theorem is the following. We use $|p|$ to denote the number of vertices in $p$.
 
-\begin{theorem} \label{thm:runtime} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in P(T)} |p| \log |p|)$.
+\begin{theorem} \label{thm:runtime} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in \pmax(T)} |p| \log |p|)$.
 \end{theorem}
 
 
@@ -1128,7 +1129,7 @@ Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construc
 to the shrub forest of $\cL \setminus \cL'$, where every unsupported light path is an internal node, and all
 roots are supported light paths. 
 
-Most of work goes into proving the following technical lemma.
+Most of the work goes into proving the following technical lemma.
 
 \begin{lemma} \label{lem:cu-root} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
 be the root of $\cU$. (i) For any $v \in p$ such that $p \in \cU$,
@@ -1136,8 +1137,7 @@ $|H_v| = O(|H_r|)$. (ii) $\sum_{p \in \cU} |p| = O(|H_r|)$.
 \end{lemma}
 
 We split the remaining argument into two subsections. We first prove \Thm{runtime} from \Lem{cu-root},
-which mostly imvolves routing calculations. Then we prove \Lem{cu-root}, where most
-of the interesting work happens.
+which involves routine calculations. Then we prove \Lem{cu-root}, where the interesting work happens.
 
 
 \subsection{Proving \Thm{runtime}} \label{sec:thm-runtime}
@@ -1252,6 +1252,10 @@ Throughout this section, for a path $p\in P(T)$, we use the notation $H_p$ to re
 \subsection{Proving \Lem{cu-root}: the root is everything in $\cU$} \label{sec:weight}
 
 \Lem{cu-root} asserts the root $r$ in $\cU$ pretty much encompasses all sizes and heaps in $\cU$.
+We will work with the \emph{reduced} heap $\redH_p$. This is the subset of $H_p$
+of vertices that only appear in light paths. By definition, for any unsupported light path
+(hence, any non-root $p \in \cU$), $|H'_p| \geq 99|H_p|/100$. For notational convenience, we simply
+set $H'_r = H_r$.
 %Consider $q \in \cL \setminus \cL'$ that is a child of $p$ in the shrub $\cU$.
 We begin with a key property, which is where the construction of $\pmax(T)$ enters the picture.
 
@@ -1262,11 +1266,11 @@ We begin with a key property, which is where the construction of $\pmax(T)$ ente
 
 \begin{lemma}
 \label{lem:geometric}
- Let $p$ be the parent of $q$ in the shrub $\cU$. Then $|H_p|\geq \frac{3}{2}|H_q|$. 
+ Let $p$ be the parent of $q$ in the shrub $\cU$. Then $|\redH_p|\geq \frac{3}{2}|\redH_q|$. 
 \end{lemma}
 \begin{proof} By construction, there is a heavy path (denoted $h(q)$) that is a child of $p$ in $\pmax(T)$,
 and an ancestor of $q$. The chain of ancestors from $q$ to $h(q)$ consists only of heavy paths.
-These paths contain at most $|H_p|/100$ vertices of $H_p$, so $|H_{h(q)}| \geq 99|H_p|/100$.
+Since $q$ is unsupported, these paths contain at most $|H_p|/100$ vertices of $H_p$. Thus, $|H_{h(q)}| \geq 99|H_p|/100$.
 
 Consider the base
 of $h(q)$, which is a node $w$ in $T$. Let $v$ denote the sibling of $w$ in $T$.
@@ -1276,9 +1280,8 @@ implies $|H_v| \geq |H_w|$. Since $|H_u| \geq |H_v| + |H_w| - 1$,
 $|H_u| \geq 2|H_w| - 1$. Let $b$ be the base of $p$.
 We have $|H_p| = |H_b| \geq |H_u| - |p| \geq 2|H_w| - |p| - 2$. Since $p$ is a light path, $|p| < \sqrt{|H_p|}/100$.
 Applying this bound, we get $|H_p| \geq (2-\delta)|H_w|$ (for small constant $\delta > 0$).
-Since $w$ is the base of $h(q)$, $H_w = H_{h(q)}$. We apply the bound $|H_{h(q)}| > 99|H_q|/100$,
-to complete the proof.
-
+Since $w$ is the base of $h(q)$, $H_w = H_{h(q)}$. We apply the bound $|H_{h(q)}| > 99|H_q|/100$
+to get $|H_p| \geq 197|H_q|/100$. The proof is completed by noting that $|\redH_p| \geq 99|H_p|/100$ and $|H_q| \geq |\redH_q|$.
 %
 %
 % Let $w$ be the vertex in the path $p$ to which the root of the path $q$ is adjacent to in $T$, 
@@ -1294,279 +1297,90 @@ This immediately proves part (i) of \Lem{cu-root}. Part (ii) requires much more 
 It is helpful to spell out how the various heaps evolve. Consider $p \in \cU$,
 which has children $q_1, q_2, \ldots, q_k$ in $\pmax(T)$.
 Furthermore, as a leaf path in $p$, some leaf
-$\ell$ of $T$ in one of the ends of $p$. The heap $H_p$ is the
-union of $H_\ell$ and $H_{q_1}, H_{q_2}, \ldots, H_{q_k}$, with the vertices in $p$
+$\ell$ of $T$ in one of the ends of $p$. The reduced heap $\redH_p$ is the
+union of $\redH_\ell$ and $\redH_{q_1}, \redH_{q_2}, \ldots, \redH_{q_k}$, with the vertices in $p$
 removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
 for a child $q'$ in $\cU$.
 
 We define a \emph{residue} $R_p$ for each $p \in \cU$. Suppose $p$ has children
-$q_1, q_2, \ldots, q_k$ in $\cU$. Then $R_p = |H_p| - \sum_i |H_{q_i}|$. 
-By definition, $|H_p| = \sum_{q \in \cU_p} R_p$. 
+$q_1, q_2, \ldots, q_k$ in $\cU$. Then $R_p = |\redH_p| - \sum_i |\redH_{q_i}|$. 
+By definition, $|\redH_p| = \sum_{q \in \cU_p} R_p$. 
 Note that $R_p$ can be negative. 
 Now, define $R^+_p = \max(R_p,0)$, and set $W_p = \sum_{q \in \cU_p} R^+_p$.
-Observe that $W_p \geq |H_p|$. We also get an approximate converse.
+Observe that $W_p \geq |\redH_p|$. We also get an approximate converse.
 
 
-\begin{claim} \label{clm:loss} $|H_p| \geq W_p - 2\sum_{q \in \cU_p} |q| - 2\sum_{q \in \cU_p} \sum_{h \in \cH} |h \cap R_q|$
+\begin{claim} \label{clm:loss} $|\redH_p| \geq W_p - 2\sum_{q \in \cU_p} |q|$
 \end{claim}
 
-\begin{proof} Consider $q \in \cU_p$, and traverse $\pmax(T)$ up to $p$. Suppose we encounter
+\begin{proof} We write $W_p - |\redH_p| = \sum_{q \in \cU_p} R^+_q - R_q$ $= -\sum_{q \in \cU_p: R_q < 0} R_q$.
+Consider $q \in \cU_p$ and denote the children in $\cU_p$ by $q'_1, q'_2, \ldots$.
+Note that $R_q$ is negative exactly when $|\redH_q| < \sum_i |\redH_{q'_i}|$.
+Traverse $\pmax(T)$ from $q'_i$ to $q$.
+Other than $q$, all other nodes encountered are heavy paths and hence
+do not affect reduced heaps.
+The vertices of $\redH_{q'_i}$ that are deleted
+are exactly those present in the path $q$ (which are paths in $T$) traversed. 
+Any vertex in $q$ can be deleted from at most two reduced heaps $\redH_{q'_i}$.
+When $R_q$ is negative, it is at most $2|q|$.
+We sum over all $q$ to complete the proof.
+\end{proof}
+
+\ignore{Let $D_q = H_q \setminus \bigcup_i H_{q'_i}$. In other words, as we traverse $\cU$,
+$D_q$ is the set of vertices ``added" at $q$. Suppose we traverse $\pmax(T)$ from $q'_i$
+to $q$. All vertices of $H_{q'_i}$ that lie on these paths are removed.
+
+
+ and traverse $\pmax(T)$ up to $p$. Suppose we encounter
 the paths $q_0 = q, q_1, q_2, \ldots, q_k = p$. The vertices in the residue $R_q$ that 
 are removed from $H_p$ are exactly the vertices that lie in these paths. 
 We split this contribution into heavy and light paths, observing that the latter
 are all unsupported. Hence, we can (crudely) upper bound the number of vertices
 removed by $\sum_{q \in \cU_p} |q| + \sum_{q \in \cU_p} \sum_{h \in \cH} |h \cap q|$.
 Each vertex can be removed from at most two distinct $R_q$'s, completing the proof.
-\end{proof}
+}
+
 
 The main challenge of the entire proof is bounding the sum of path lengths, which is done next.
-We stress that the all the previous work is mostly setup to get to this claim.
+We stress that the all the previous work is mostly the setup for this claim.
 
-\begin{claim} \label{clm:charge} Consider $p \in \cU$ such that for any $q,q' \in \cU_p$
-such that $q$ is a parent of $q'$, $W_q \geq (4/3)W_{q'}$. Then $\sum_{q \in \cU_p} |q| \leq W_p/20$.
+\begin{claim} \label{clm:charge} Fix $p \in \cU$. Suppose for any $q,q' \in \cU_p$
+where $q$ is a parent of $q'$ in $\cU_p$, $W_q \geq (4/3)W_{q'}$. Then $\sum_{q \in \cU_p} |q| \leq W_p/20$.
 \end{claim}
 
-\begin{proof} By the definition of light paths, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|W_q|}/100$.
-We prove that $\sum_{q \in \cU_p} \sqrt{|W_q|}/100 \leq W_p/20$
+\begin{proof} Since $q$ is an unsupported light path, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|\redH_q|}/99 \leq \sqrt{|W_q|}/99$.
+We prove that $\sum_{q \in \cU_p} \sqrt{|W_q|}/99 \leq W_p/20$
 by a charge redistribution scheme. Assume that each $q \in \cU_p$
-starts with $\sqrt{W_p}/100$ units of charge. We redistribute this charge over all
+starts with $\sqrt{W_p}/99$ units of charge. We redistribute this charge over all
 nodes in $\cU_p$, and then calculate the total charge. For $q \in \cU_p$, spread
 its charge to all nodes in $\cU_q$ proportional to $R^+$ values. In other words,
-give $(\sqrt{W_q}/100)\cdot(R^+_{q'}/W_q)$ units of charge to each $q' \in \cU_q$.
+give $(\sqrt{W_q}/99)\cdot(R^+_{q'}/W_q)$ units of charge to each $q' \in \cU_q$.
 
-After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\cU_p$.
+After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\cU_p$ 
 $q = a_0, a_1, a_2, \ldots, a_k$ contributes to the charge at $q$. The charge is expressed in the following
 equation. We use the assumption that $W_{a_i} \geq (4/3) W_{a_{i-1}}$ and hence $W_{a_i} \geq (4/3)^i$.
-$$ ({R^+_q}/100)\sum_{a_i} 1/\sqrt{W_{a_i}} \leq ({R^+_q}/100)\sum_{a_i} (3/4)^{i/2} \leq R^+_q/20 $$
-The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$.
+$$ ({R^+_q}/99)\sum_{a_i} 1/\sqrt{W_{a_i}} \leq ({R^+_q}/99)\sum_{a_i} (3/4)^{i/2} \leq R^+_q/20 $$
+The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$. 
 \end{proof}
 
 We wrap it all up by proving part (ii) of \Lem{cu-root}.
 
-\begin{claim} $\sum_{p \in \cU} |p| \leq H_{r(\cU)}/10$.
+\begin{claim} $\sum_{p \in \cU} |p| \leq |H_{r(\cU)}|/10$.
 \end{claim}
 
 \begin{proof} We use $r$ for $r(\cU)$. Our aim is to simply apply \Clm{charge} from $r(\cU)$. 
-Suppose $W_q \geq (4/3)W_{q'}$ (for $q$ parent of $q'$). By \Clm{charge}, $\sum_{p \in \cU} |p| \leq W_{r}/20$.
-By \Clm{loss}, $|H_r| \geq W_r - 2\sum_{p \in \cU} |p| - 2\sum_{h \in \cH} |h \cap H_p|$.
+Suppose $W_q \geq (4/3)W_{q'}$ (for any choice in $\cU$ of $q$ parent of $q'$). By \Clm{charge}, $\sum_{p \in \cU} |p| \leq W_{r}/20$.
+By \Clm{loss}, $|\redH_r| \geq W_r - 2\sum_{p \in \cU} |p|$. By simple algebra, we deduce, $\sum_{p \in \cU} |p| \leq |\redH_r|/10 = |H_r|/10$.
 
-
-
-We first need to prove the claim assumption,
-namely that of $W_q \geq (4/3)W_{q'}$ (for $q$ parent of $q'$). We do know from \Lem{geometric}
-that $|H_q| \geq (3/2)|H_{q'}|$. We will apply \Clm{loss} and \Clm{charge} to prove this.
-
-
-
-Pick the node furthest from $r(\cU)$
-
-
-\end{proof}
-
-
-
-
-\begin{proof} (part (ii) of \Lem{cu-root}) Let level $\ell$ of $\cU$ denote all nodes at distance $\ell$ from the root $r$.
-These set of these nodes is designated as $\cU_\ell$. We set $\sigma_\ell = \sum_{p \in \cU_\ell} |p|$
-and $\sigma_{\leq \ell} = \sum_{k \leq \ell} \sigma_k$.
-By \Lem{geometric}, for any $p \in \cU_\ell$, $|H_p| \leq (2/3)^\ell |H_r|$.
-
-Since all nodes in $\cU$ represent light paths, $\forall p \in \cU$, $|p| < \sqrt{|H_p|}/100$.
-So $\sigma_\ell < \sum_{p \in \cU_\ell} \sqrt{|H_p|}/100$. 
-
-\end{proof}
-
-
-To prove this, we need to understand how $H_p$ is constructed. The path $p$ has some children
-$q_1, q_2, \ldots, q_k$ in $\pmax(T)$. Furthermore, as a leaf path in $p$, some leaf
-$\ell$ of $T$ in one of the ends of $p$. The heap $H_p$ is essentially the
-union of $H_\ell$ and $H_{q_1}, H_{q_2}, \ldots, H_{q_k}$, with the vertices in $p$
-removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
-for a child $q'$ in $\cU$.
-
-
-Let $\mathcal{L} = \mathcal{L}(r)$ be a light shrub of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
-The intuitive idea is that due to the geometric decreasing behavior of light shrubs described in the previous subsection, 
-one can show that for the entire light shrub our algorithm pays roughly the cost due to the root path $r$.  This argument 
-is hard to make directly, so instead we define an alternative quantity for which we can make the argument.
-Specifically, we now define a weight function $w(v)$ for all $v\in \mathcal{L}$, and show that $w(v)=\Theta(|H_v|)$.  
-
-For a path $v\in \mathcal{L}$, let $H_v$ denote the heap at the root of $v$, and let $H_{v_f}$ denote the heap 
-at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $\pathTreeA(T)$.
-
-We want to understand how the heap size changes as we move around the paths in $\mathcal{L}$.  Specifically, there are 
-three places the vertices in the heap along a light path can come from; adjacent light paths, adjacent heavy paths, and the initial heap at the leaf of the path.  
-Given this observation we now define a weight function which upper bounds the size of the heap at the root of any path in $\mathcal{L}$.
-
-First, for all $v\in \mathcal{L}$ we define the local cost function $c(v) = H_{v_f}+\sum_{i\in S_h(v)} H_i$, this is the addition to the heap at $v$ which 
-was not already charged to descendant light paths.  We now define a weighted version of $\mathcal{L}$ based on these costs.  
-To do so, we first augment $\mathcal{L}$ by attaching one 
-leaf to each vertex in $\mathcal{L}$.  Now for each newly created leaf (which are the only leaves now) assign the cost 
-$c(v)$ defined above, where $v$ is that leaf's corresponding parent.  
-Now we can define a weight function $w(u)$ over any node $u$ in the tree, which is defined to be the total cost of all leaves in its subtree.   
-To simplify notation, we now use $\mathcal{L}$ to refer to this new weighted tree (rather than its unweighted counterpart).
-
-As the weight $w(p)$ includes the sizes of the heaps of all contributing heavy paths and leaves in the subtree rooted at $p$, we have the following.
-
-\begin{claim}
-For any $p\in \mathcal{L}$, $w(p)\geq |H_p|$.  Moreover, for any $v\in p$, $w(p)\geq |H_v|$.
-\end{claim}
-
-%Let $W= \sum_{v\in \mathcal{L}} w(v) \geq \sum_{v\in \mathcal{L}} |H_v|$.  
-%Suppose we could show that conversely $W=O(H_r)$.  Then we would have 
-%$\sum_{v\in \mathcal{L}} H_v = O(H_r)$, which was our original goal.  
-%So proving $W=O(H_r)$ is now our new goal.
-
-We now would like to show conversely that $w(v)= O(|H_v|)$.  
-To do so we first introduce some notation.  
-Let $C\subseteq \mathcal{P}$ be the subset of paths that are leaves in $\mathcal{L}$.
-For any path $v$, let $\mathcal{L}_v$ (resp. $C_v$) be the subset of paths in $\mathcal{L}$ (resp $C$) 
-that are in the subtree of $\mathcal{L}$ which is rooted at $v$.
-
-First, observe that $|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} |u|$.  
-This holds by the same argument as in \Lem{adjacent}, namely, $w(v)$ by definition 
-counts all the contributing heavy path heaps and initial leaf heaps that contribute 
-to the heap at $v$ and $\sum_{u\in \mathcal{L}_v} |u|$ is an upper bound on the number 
-of vertices that could have been removed from one of these heaps before reaching the 
-root of $v$ (since a vertex in a heap can only get removed if it appears on one of 
-the paths).  
-
-As all paths in $\mathcal{L}$ are light, we thus have the following.
-
-\begin{claim}
-$|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{|H_u|}/100 \geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100$
-\end{claim}
-
-By the above claim, if we can prove $\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100 \leq w(v)/c$ for some constant $c>1$, 
-then we will have proven that $|H_v| = \Theta(w(v))$.  
-
-Recall that \Lem{geometric} told us that that $|H_{u}|\leq (3/5) |H_{u'}|$, if $u'$ is the parent $u$ in $\mathcal{L}$. 
-The following lemma shows that if we had a similar statement in terms of the weights rather than the heap sizes, 
-then we get the desired bound on the sum.
-
-\begin{lemma}
-\label{lem:distribution}
-Let $v$ be a path in $\mathcal{L}$.  Suppose that for any two paths $x,y\in \mathcal{L}_v$ 
-such that $y$ is the parent of $x$, $w(x)\leq (4/5) w(y)$.
-Then $\sum_{u\in \mathcal{P}_v} \sqrt{w(u)}/100 \leq \sum_{c\in C_v} \sqrt{w(c)}/10$
-\end{lemma}
-
-\begin{proof}
-The idea is to recursively redistribute the contribution to the sum of each internal vertex to its children, 
-until all the weight sits on the leaves.  Specifically, let $v$ be some path in $\mathcal{L}$.  Its 
-contribution to the sum is $\sqrt{w(v)}/100$, which we will call the value at $v$.  We redistribute this 
-value to its children, in proportion by the weight of each child.  For example, if $v$ has a child $x$ then 
-the fraction it gets assigned is $w(x)/w(v)$ (recall that by definition $w(v)$ is the sum of the weights of 
-its children and so the total value will get reassigned to the children).
-
-Suppose we keep redistributing the value of $v$ until it reaches the leaves of its subtree in $\mathcal{L}$.  
-Let's see how much gets assigned to a given leaf.  Specifically, let $u_0, u_1, \ldots, u_k$ 
-be a path in $\mathcal{L}$ (of paths from the set $\mathcal{P}_v$), such that $v=u_0$, $u_{i+1}$ 
-is child of $u_i$ for all $i$, and $u_k$ is a leaf of $\mathcal{L}$.  
-
-Then the total value from $u_0$ that ends up at $u_k$ is 
-\[
-\frac{\sqrt{w(u_0)}}{100} \pth{ \frac{w(u_1)}{w(u_0)} \frac{w(u_2)}{w(u_1)} \cdots \frac{w(u_k)}{w(u_{k-1})} }
-= \frac{\sqrt{w(u_0)}}{100} \pth{ \frac{w(u_k)}{w(u_0)} } = \frac{w(u_k)}{100\sqrt{w(u_0)}}
-\]
-
-For a given leaf in $\mathcal{L}$, we can calculate the total value reassigned to it from it its ancestors.
-Specifically, let $u_0, u_1, u_2, \dots, u_m$ be a root to leaf path in $\mathcal{L}$ 
-(i.e. $u_0$ is the root $r$ of $\mathcal{L}$).
-
-By assumption from the lemma statement we have $w(u_{i+1})\leq (4/5) w(u_i)$.  Therefore by the above calculation, 
-the total reassigned to $u_m$ is 
-
-\[
- \sum_{i=0}^m \frac{w(u_m)}{100\sqrt{w(u_i)}} \leq \frac{w(u_m)}{100} \sum_{i=0}^m 1 \Big/ \sqrt{\pth{\frac{5}{4}}^iw(u_m)} 
- \leq \frac{\sqrt{w(u_m)}}{100} \sum_{i=0}^{\infty} \pth{\frac{4}{5}}^{i/2} \leq \frac{\sqrt{w(u_m)}}{10}
-\]
-
-The claim then follows by summing this quantity over the children of $\mathcal{L}$.
-\end{proof}
-
-By combining the above lemma and claim we have the following.
-
-\begin{claim}
-For any path $v\in \mathcal{L}$ if it holds that 
-$w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$, then 
-
-\[
-|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100 \geq w(v)- \sum_{c\in C_v} \sqrt{w(c)}/10 \geq \frac{4}{5} w(v)
-\]
-\end{claim}
-
-
-
-\begin{lemma}
-Let $\mathcal{L}$ be the light shrub of some path $r$.  
-Then for any $v\in \mathcal{L}$, we have $|H_v|\geq \frac{4}{5} w(v)$.
-\end{lemma}
-% \begin{proof}
-% We will actually prove the stronger statement that for any $v\in \mathcal{L}$, 
-% we have $|H_v|\geq \frac{4}{5} w(v)$ and $w(v)\leq (4/5) w(p)$ where $p$ is the parent 
-% of $v$ in $\mathcal{L}$.
-% 
-% Suppose otherwise, and let $v$ be the lowest path in $\mathcal{L}$ such that this fails 
-% (i.e. the statement holds for all descendants of $v$ in $\mathcal{L}$).  Then for any 
-% two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$, 
-% we have that $w(x)\leq (4/5) w(y)$ and so by \Lem{distribution}, $|H_v|\geq \frac{4}{5} w(v)$.
-% Combining this fact with \Lem{geometric} gives,
-% \[
-% w(v) \leq \frac{5}{4}|H_v| \leq \frac{5}{4} \frac{3}{5} |H_p| \leq \frac{3}{4} w(p).
-% \]
-% 
-% \end{proof}
-%
-\begin{proof}
-By the above claim, we know that $|H_v|\geq \frac{4}{5} w(v)$ if it holds that 
-$w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$.
-So let $v$ be the lowest path in $\mathcal{L}$ such that this fractional decrease fails to hold, i.e. $w(c)> (4/5) w(v)$ 
-where $c$ is a child of $v$ in $\mathcal{L}$, and conversely all vertices in $\mathcal{L}_c$ 
-the fractional decrease holds.  As the fractional decrease holds for a paths in $\mathcal{L}_c$, 
-we have $|H_c|\geq \frac{4}{5} w(c)$.  Therefore,
-\[
-w(c) \leq \frac{5}{4}|H_c| \leq \frac{5}{4} \frac{3}{5} |H_v| \leq \frac{3}{4} w(v).
-\]
-However, this is a contradiction with the assumption $w(c)> (4/5) w(v)$ , and hence the 
-fractional decrease always holds implying the claim always holds.
-\end{proof}
-
-\begin{corollary}
-\label{cor:equivalent}
- Let $\mathcal{L}$ be a light shrub of a light path $r$.  Then for any $v\in \mathcal{L}$, $|H_v| \leq w(v) \leq \frac{5}{4} |H_v|$.
-\end{corollary}
-
-Now we are finally ready to make use of the properties we have proven about the weight function we introduced.
-
-\Ben{The constant in the lemmas below, but it is no more than twice that.}
-
-\begin{lemma}
-\label{lem:lightCost}
- Let $\mathcal{L}$ be a light shrub of a light path $r$.  Let $V$ be the set of heavy paths from the full shrub which are adjacent to paths in $\mathcal{L}$.  
-  Then $\sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q| \leq \frac{4}{3} |H_r|\log |H_r|$
-\end{lemma}
-\begin{proof}
-\Ben{
-The following is a proof for $\frac{3}{2}+\eps$, rather than $\frac{4}{3}$.  The discrepancy is due to a corrected calculation error.  
-4/3 can be achieved by tightening constants above, and is left in the lemma statement as it is used later.
-}
-
-Recall that in a proper coloring of a binary tree $T$, the color of any vertex must be the color of one of its descendants.  
-Therefore, any vertex in the light path shrub must appear in the heap of either the root of an adjacent 
-path from the full shrub or from the heap of a leaf of a path in $\mathcal{L}$.  
-Also note $|H_r|$ precisely counts sum of the number of vertices from these heaps that do not appear in $\mathcal{L}$.
-As there are no adjacent light paths to a light shrub, the total number of vertices over all paths in $\mathcal{L}$ is at most 
-$m = \sum_{p\in \mathcal{L}} |H_{p_f}| +\sum_{q\in V} |H_q| - |H_r| = w(r)-|H_r|$, where $H_{p_f}$ is the heap at the leaf of $p$. 
-
-Using this observation and \Cor{equivalent} we then have, 
-\begin{align*}
- \sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q|
- &\leq \sum_{p\in \mathcal{L}}\sum_{v\in p} \log(w(r)) + \sum_{q\in V} |H_q|\log(w(r))\\
- &\leq \log(w(r))\pth{ w(r)-|H_r| } + \log(w(r))w(r)\\ 
- &= (2w(r)-|H_r|)\log(w(r)) \leq \pth{\frac{5}{2}|H_r|-|H_r|}\log\pth{\frac{5}{4}|H_r|}\\
- &= \frac{3}{2}|H_r|\log\pth{\frac{5}{4}|H_r|}
-\end{align*}
+We now prove that for any $q$ parent of $q'$, $W_q \geq (4/3)W_{q'}$.
+Suppose not. Let $p, p'$ be the counterexample furthest from the root,
+where $p$ is the parent of $p'$. 
+Note that for $q$ and child $q'$ in $\cU_{p'}$, $W_q \geq (4/3)W_{q'}$.
+We will apply \Clm{charge} for $\cU_{p'}$ to deduce that $\sum_{q \in \cU_{p'}} |q| \leq W_{p'}/20$.
+By \Clm{loss}, $|\redH_{p'}| \geq 19W_{p'}/20$. By \Lem{geometric}, $|\redH_p| \geq (3/2)|\redH_{p'}|$.
+Noting that $W_p \geq |\redH_p|$, we deduce that $W_p \geq (4/3)W_{p'}$.
+Hence, $p, p'$ is not a counterexample, and more generally, this is no counterexample.
+That completes the whole proof.
 \end{proof}
 
 
@@ -1967,9 +1781,214 @@ which is the really the main lemma.
 %We focus our attention on some shrub $\cU$.
 %We prove a technical lemma about $\cU$, from which \Lem{cu} follows directly.
 
+\section{Ben's old stuff}
 
-\begin{proof} (of \Lem{support})
+
+
+\begin{proof} (part (ii) of \Lem{cu-root}) Let level $\ell$ of $\cU$ denote all nodes at distance $\ell$ from the root $r$.
+These set of these nodes is designated as $\cU_\ell$. We set $\sigma_\ell = \sum_{p \in \cU_\ell} |p|$
+and $\sigma_{\leq \ell} = \sum_{k \leq \ell} \sigma_k$.
+By \Lem{geometric}, for any $p \in \cU_\ell$, $|H_p| \leq (2/3)^\ell |H_r|$.
+
+Since all nodes in $\cU$ represent light paths, $\forall p \in \cU$, $|p| < \sqrt{|H_p|}/100$.
+So $\sigma_\ell < \sum_{p \in \cU_\ell} \sqrt{|H_p|}/100$. 
+
 \end{proof}
+
+
+To prove this, we need to understand how $H_p$ is constructed. The path $p$ has some children
+$q_1, q_2, \ldots, q_k$ in $\pmax(T)$. Furthermore, as a leaf path in $p$, some leaf
+$\ell$ of $T$ in one of the ends of $p$. The heap $H_p$ is essentially the
+union of $H_\ell$ and $H_{q_1}, H_{q_2}, \ldots, H_{q_k}$, with the vertices in $p$
+removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
+for a child $q'$ in $\cU$.
+
+
+Let $\mathcal{L} = \mathcal{L}(r)$ be a light shrub of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
+The intuitive idea is that due to the geometric decreasing behavior of light shrubs described in the previous subsection, 
+one can show that for the entire light shrub our algorithm pays roughly the cost due to the root path $r$.  This argument 
+is hard to make directly, so instead we define an alternative quantity for which we can make the argument.
+Specifically, we now define a weight function $w(v)$ for all $v\in \mathcal{L}$, and show that $w(v)=\Theta(|H_v|)$.  
+
+For a path $v\in \mathcal{L}$, let $H_v$ denote the heap at the root of $v$, and let $H_{v_f}$ denote the heap 
+at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $\pathTreeA(T)$.
+
+We want to understand how the heap size changes as we move around the paths in $\mathcal{L}$.  Specifically, there are 
+three places the vertices in the heap along a light path can come from; adjacent light paths, adjacent heavy paths, and the initial heap at the leaf of the path.  
+Given this observation we now define a weight function which upper bounds the size of the heap at the root of any path in $\mathcal{L}$.
+
+First, for all $v\in \mathcal{L}$ we define the local cost function $c(v) = H_{v_f}+\sum_{i\in S_h(v)} H_i$, this is the addition to the heap at $v$ which 
+was not already charged to descendant light paths.  We now define a weighted version of $\mathcal{L}$ based on these costs.  
+To do so, we first augment $\mathcal{L}$ by attaching one 
+leaf to each vertex in $\mathcal{L}$.  Now for each newly created leaf (which are the only leaves now) assign the cost 
+$c(v)$ defined above, where $v$ is that leaf's corresponding parent.  
+Now we can define a weight function $w(u)$ over any node $u$ in the tree, which is defined to be the total cost of all leaves in its subtree.   
+To simplify notation, we now use $\mathcal{L}$ to refer to this new weighted tree (rather than its unweighted counterpart).
+
+As the weight $w(p)$ includes the sizes of the heaps of all contributing heavy paths and leaves in the subtree rooted at $p$, we have the following.
+
+\begin{claim}
+For any $p\in \mathcal{L}$, $w(p)\geq |H_p|$.  Moreover, for any $v\in p$, $w(p)\geq |H_v|$.
+\end{claim}
+
+%Let $W= \sum_{v\in \mathcal{L}} w(v) \geq \sum_{v\in \mathcal{L}} |H_v|$.  
+%Suppose we could show that conversely $W=O(H_r)$.  Then we would have 
+%$\sum_{v\in \mathcal{L}} H_v = O(H_r)$, which was our original goal.  
+%So proving $W=O(H_r)$ is now our new goal.
+
+We now would like to show conversely that $w(v)= O(|H_v|)$.  
+To do so we first introduce some notation.  
+Let $C\subseteq \mathcal{P}$ be the subset of paths that are leaves in $\mathcal{L}$.
+For any path $v$, let $\mathcal{L}_v$ (resp. $C_v$) be the subset of paths in $\mathcal{L}$ (resp $C$) 
+that are in the subtree of $\mathcal{L}$ which is rooted at $v$.
+
+First, observe that $|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} |u|$.  
+This holds by the same argument as in \Lem{adjacent}, namely, $w(v)$ by definition 
+counts all the contributing heavy path heaps and initial leaf heaps that contribute 
+to the heap at $v$ and $\sum_{u\in \mathcal{L}_v} |u|$ is an upper bound on the number 
+of vertices that could have been removed from one of these heaps before reaching the 
+root of $v$ (since a vertex in a heap can only get removed if it appears on one of 
+the paths).  
+
+As all paths in $\mathcal{L}$ are light, we thus have the following.
+
+\begin{claim}
+$|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{|H_u|}/100 \geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100$
+\end{claim}
+
+By the above claim, if we can prove $\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100 \leq w(v)/c$ for some constant $c>1$, 
+then we will have proven that $|H_v| = \Theta(w(v))$.  
+
+Recall that \Lem{geometric} told us that that $|H_{u}|\leq (3/5) |H_{u'}|$, if $u'$ is the parent $u$ in $\mathcal{L}$. 
+The following lemma shows that if we had a similar statement in terms of the weights rather than the heap sizes, 
+then we get the desired bound on the sum.
+
+\begin{lemma}
+\label{lem:distribution}
+Let $v$ be a path in $\mathcal{L}$.  Suppose that for any two paths $x,y\in \mathcal{L}_v$ 
+such that $y$ is the parent of $x$, $w(x)\leq (4/5) w(y)$.
+Then $\sum_{u\in \mathcal{P}_v} \sqrt{w(u)}/100 \leq \sum_{c\in C_v} \sqrt{w(c)}/10$
+\end{lemma}
+
+\begin{proof}
+The idea is to recursively redistribute the contribution to the sum of each internal vertex to its children, 
+until all the weight sits on the leaves.  Specifically, let $v$ be some path in $\mathcal{L}$.  Its 
+contribution to the sum is $\sqrt{w(v)}/100$, which we will call the value at $v$.  We redistribute this 
+value to its children, in proportion by the weight of each child.  For example, if $v$ has a child $x$ then 
+the fraction it gets assigned is $w(x)/w(v)$ (recall that by definition $w(v)$ is the sum of the weights of 
+its children and so the total value will get reassigned to the children).
+
+Suppose we keep redistributing the value of $v$ until it reaches the leaves of its subtree in $\mathcal{L}$.  
+Let's see how much gets assigned to a given leaf.  Specifically, let $u_0, u_1, \ldots, u_k$ 
+be a path in $\mathcal{L}$ (of paths from the set $\mathcal{P}_v$), such that $v=u_0$, $u_{i+1}$ 
+is child of $u_i$ for all $i$, and $u_k$ is a leaf of $\mathcal{L}$.  
+
+Then the total value from $u_0$ that ends up at $u_k$ is 
+\[
+\frac{\sqrt{w(u_0)}}{100} \pth{ \frac{w(u_1)}{w(u_0)} \frac{w(u_2)}{w(u_1)} \cdots \frac{w(u_k)}{w(u_{k-1})} }
+= \frac{\sqrt{w(u_0)}}{100} \pth{ \frac{w(u_k)}{w(u_0)} } = \frac{w(u_k)}{100\sqrt{w(u_0)}}
+\]
+
+For a given leaf in $\mathcal{L}$, we can calculate the total value reassigned to it from it its ancestors.
+Specifically, let $u_0, u_1, u_2, \dots, u_m$ be a root to leaf path in $\mathcal{L}$ 
+(i.e. $u_0$ is the root $r$ of $\mathcal{L}$).
+
+By assumption from the lemma statement we have $w(u_{i+1})\leq (4/5) w(u_i)$.  Therefore by the above calculation, 
+the total reassigned to $u_m$ is 
+
+\[
+ \sum_{i=0}^m \frac{w(u_m)}{100\sqrt{w(u_i)}} \leq \frac{w(u_m)}{100} \sum_{i=0}^m 1 \Big/ \sqrt{\pth{\frac{5}{4}}^iw(u_m)} 
+ \leq \frac{\sqrt{w(u_m)}}{100} \sum_{i=0}^{\infty} \pth{\frac{4}{5}}^{i/2} \leq \frac{\sqrt{w(u_m)}}{10}
+\]
+
+The claim then follows by summing this quantity over the children of $\mathcal{L}$.
+\end{proof}
+
+By combining the above lemma and claim we have the following.
+
+\begin{claim}
+For any path $v\in \mathcal{L}$ if it holds that 
+$w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$, then 
+
+\[
+|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100 \geq w(v)- \sum_{c\in C_v} \sqrt{w(c)}/10 \geq \frac{4}{5} w(v)
+\]
+\end{claim}
+
+
+
+\begin{lemma}
+Let $\mathcal{L}$ be the light shrub of some path $r$.  
+Then for any $v\in \mathcal{L}$, we have $|H_v|\geq \frac{4}{5} w(v)$.
+\end{lemma}
+% \begin{proof}
+% We will actually prove the stronger statement that for any $v\in \mathcal{L}$, 
+% we have $|H_v|\geq \frac{4}{5} w(v)$ and $w(v)\leq (4/5) w(p)$ where $p$ is the parent 
+% of $v$ in $\mathcal{L}$.
+% 
+% Suppose otherwise, and let $v$ be the lowest path in $\mathcal{L}$ such that this fails 
+% (i.e. the statement holds for all descendants of $v$ in $\mathcal{L}$).  Then for any 
+% two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$, 
+% we have that $w(x)\leq (4/5) w(y)$ and so by \Lem{distribution}, $|H_v|\geq \frac{4}{5} w(v)$.
+% Combining this fact with \Lem{geometric} gives,
+% \[
+% w(v) \leq \frac{5}{4}|H_v| \leq \frac{5}{4} \frac{3}{5} |H_p| \leq \frac{3}{4} w(p).
+% \]
+% 
+% \end{proof}
+%
+\begin{proof}
+By the above claim, we know that $|H_v|\geq \frac{4}{5} w(v)$ if it holds that 
+$w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$.
+So let $v$ be the lowest path in $\mathcal{L}$ such that this fractional decrease fails to hold, i.e. $w(c)> (4/5) w(v)$ 
+where $c$ is a child of $v$ in $\mathcal{L}$, and conversely all vertices in $\mathcal{L}_c$ 
+the fractional decrease holds.  As the fractional decrease holds for a paths in $\mathcal{L}_c$, 
+we have $|H_c|\geq \frac{4}{5} w(c)$.  Therefore,
+\[
+w(c) \leq \frac{5}{4}|H_c| \leq \frac{5}{4} \frac{3}{5} |H_v| \leq \frac{3}{4} w(v).
+\]
+However, this is a contradiction with the assumption $w(c)> (4/5) w(v)$ , and hence the 
+fractional decrease always holds implying the claim always holds.
+\end{proof}
+
+\begin{corollary}
+\label{cor:equivalent}
+ Let $\mathcal{L}$ be a light shrub of a light path $r$.  Then for any $v\in \mathcal{L}$, $|H_v| \leq w(v) \leq \frac{5}{4} |H_v|$.
+\end{corollary}
+
+Now we are finally ready to make use of the properties we have proven about the weight function we introduced.
+
+\Ben{The constant in the lemmas below, but it is no more than twice that.}
+
+\begin{lemma}
+\label{lem:lightCost}
+ Let $\mathcal{L}$ be a light shrub of a light path $r$.  Let $V$ be the set of heavy paths from the full shrub which are adjacent to paths in $\mathcal{L}$.  
+  Then $\sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q| \leq \frac{4}{3} |H_r|\log |H_r|$
+\end{lemma}
+\begin{proof}
+\Ben{
+The following is a proof for $\frac{3}{2}+\eps$, rather than $\frac{4}{3}$.  The discrepancy is due to a corrected calculation error.  
+4/3 can be achieved by tightening constants above, and is left in the lemma statement as it is used later.
+}
+
+Recall that in a proper coloring of a binary tree $T$, the color of any vertex must be the color of one of its descendants.  
+Therefore, any vertex in the light path shrub must appear in the heap of either the root of an adjacent 
+path from the full shrub or from the heap of a leaf of a path in $\mathcal{L}$.  
+Also note $|H_r|$ precisely counts sum of the number of vertices from these heaps that do not appear in $\mathcal{L}$.
+As there are no adjacent light paths to a light shrub, the total number of vertices over all paths in $\mathcal{L}$ is at most 
+$m = \sum_{p\in \mathcal{L}} |H_{p_f}| +\sum_{q\in V} |H_q| - |H_r| = w(r)-|H_r|$, where $H_{p_f}$ is the heap at the leaf of $p$. 
+
+Using this observation and \Cor{equivalent} we then have, 
+\begin{align*}
+ \sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q|
+ &\leq \sum_{p\in \mathcal{L}}\sum_{v\in p} \log(w(r)) + \sum_{q\in V} |H_q|\log(w(r))\\
+ &\leq \log(w(r))\pth{ w(r)-|H_r| } + \log(w(r))w(r)\\ 
+ &= (2w(r)-|H_r|)\log(w(r)) \leq \pth{\frac{5}{2}|H_r|-|H_r|}\log\pth{\frac{5}{4}|H_r|}\\
+ &= \frac{3}{2}|H_r|\log\pth{\frac{5}{4}|H_r|}
+\end{align*}
+\end{proof}
+
+
 
 
 
