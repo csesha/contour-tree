@@ -948,7 +948,10 @@ In this section, we set up a framework to analyze the time taken to compute a me
 \end{observation}
 
 
-Any tree $T$ considered in this section will be a rooted full binary tree where the height of a vertex is its distance 
+Any tree $T$ considered in this section will be a rooted full binary tree\footnote{Note 
+that technically the trees considered should have a leaf vertex hanging below the root of this 
+full binary tree in order to represent the global minimum of the surface.  This vertex is 
+(safely) ignored to simplify the presentation.} where the height of a vertex is its distance 
 from the root $r$.  As such, the children of a vertex $v\in T$ are the adjacent vertices of larger height
 (and $v$ is the parent of such vertices).  Then the subtree rooted at $v$, denoted $T_v$ consists of the graph induced on all 
 vertices which are descendants of $v$ (including $v$ itself).  For two vertices $v$ and $w$ in $T$ let $d(v,w)$ denote the 
@@ -1462,12 +1465,17 @@ That completes the whole proof.
 
 
 \section{Lower Bound by Path Decomposition}
+In this section we provide a lower bound for the time it takes to compute a contour tree in terms the cost of path decompositions.  Specially, 
+we first consider the easier case of merge trees, after which the lower bound for more general contour trees will easily follow.
 
+\subsection{Merge Trees}
 In this section we show that any algorithm for computing the merge tree $T$ must pay at least $f_{path}(P(T))$ (see \Def{path}) for any path decomposition $P(T)$.
 
-We say two shrubs $S_1$ and $S_2$ (of merge trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
-between the two shrubs such that for any node $v\in S_1$ corresponding to a path of size $|v|$, $f(v)$ also corresponds to a path of size $|v|$.
-For the purposes of the next lemma, we say two $2$-manifolds are different, if their corresponding contour trees are the different.  
+%We say two shrubs $S_1$ and $S_2$ (of merge trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
+%between the two shrubs such that for any node $v\in S_1$ corresponding to a path of size $|v|$, $f(v)$ also corresponds to a path of size $|v|$.
+%For the purposes of the next lemma, we say two $2$-manifolds are different, if their corresponding contour trees are the different.   
+
+In the following note that two distinct PL surfaces can have the same graph structure defining their meshes, but different height values associated with their vertices.
 
 \begin{figure}[h]\centering
     \includegraphics[width=.15\linewidth]{figs/diamond}\hspace{2cm}
@@ -1479,11 +1487,11 @@ For the purposes of the next lemma, we say two $2$-manifolds are different, if t
 
 \begin{lemma}
 \label{lem:pathDecomp}
-Let $T$ be a merge tree, $P = P(T)$ any path decomposition of $T$, and $\pathTree$ the corresponding shrub.  
-Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an equivalent shrub.
+Let $T$ be a merge tree, and let $P = P(T)$ any path decomposition of $T$.  %, and $\pathTree$ the corresponding shrub.  
+Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, all of which have the same defining mesh.
 \end{lemma}
 \begin{proof}
- We describe a simple input mesh, with heights specified for all vertices except for the saddles.  The main idea is that 
+ We describe a simple mesh, with heights specified for all vertices except for the saddles.  The main idea is that 
  this mesh will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of merge trees 
  whose size is that described in the lemma statement.
  
@@ -1503,8 +1511,9 @@ Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an eq
  %The vertex at height $h$ will lie in the plane of the respective face of the cone, and the other two will lie above the face, 
  %with edges connecting down to the face, hence creating an actual ``platform''.
  
- At this point we can construct the entire input mesh, by gluing together diamonds.  Specifically, for each path $p_i\in P$ we create a diamond of size $p_i$.
- Now we glue together diamonds of different paths in the same way the paths are connected in $\pathTree$.  Specially, for two paths $p,q\in P$ where 
+ At this point we can construct the entire input mesh, by gluing together diamonds.  
+ Specifically, for each path $p_i\in P$ we create a diamond of size $|p_i|-1$ (we subtract one because the tip of the diamond already corresponds to the leaf of the path).
+ Now we glue together diamonds of different paths in the same way the paths are connected in the shrub $\pathTree$.  Specially, for two paths $p,q\in P$ where 
  $p$ is the parent of $q$ in $\pathTree$, we glue the bottom triangular cap of the diamond for $q$ onto the triangular ``platform'' of some face of the diamond for $p$.
  (Naturally for this construction to work, diamonds for a given path will be scaled down relative to the size of the diamond of their parent).
  
@@ -1515,25 +1524,123 @@ Then there are at least $\Pi_{p_i\in P} |p_i|!$ different 2-manifolds with an eq
  this implies that, regardless of the heights assigned to the platforms, the merge tree of this mesh has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
  
  Now there is a valid instantiation of this described mesh for any relative ordering of the heights of the saddles on a given diamond.  In particular, 
- there are $|p|!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} |p_i|!$ possible instantiations of 
- the mesh overall.  Also, each one of these instantiations will result in a different merge.  Specifically, a permutation of the heights on a given diamond 
+ there are $(|p|-1)!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible instantiations of 
+ the mesh overall.  Also, each one of these instantiations will result in a different merge tree.  Specifically, a permutation of the heights on a given diamond 
  corresponds to a permutation of the vertices along a path in $P$, as by construction all saddles on a given diamond will appear in sorted order in the merge tree.
 \end{proof}
 
 
 
 \begin{corollary}
- Let $A(S)$ be any algorithm to compute the merge tree of any input surface $S$ (whose contour tree is a merge tree).  
+ \label{cor:mergeLB}
+ Let $A(S)$ be any comparison based algorithm to compute the merge tree of any input surface $S$ (whose contour tree is a merge tree).  
  Then the running time of $A(S)$ is $\Omega(f_{path}(P))=\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$ where $P$ is any path decomposition of the 
  merge tree of $S$.
 \end{corollary}
 \begin{proof}
- Given an input surface $S$ whose merge tree has a particular path decomposition $P$, by the above lemma, there are $\Pi_{p_i\in P} |p_i|!$ other surfaces 
- with distinct merge trees, all of which have a shrub equivalent to $\pathTree$.  Therefore, any algorithm which computes the merge tree must distinguish between 
- these possibilities, and therefore its corresponding decision tree must have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, 
- this decision tree must have depth $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
+ Given an input surface $S$, by the above lemma, any path decomposition $P$ of its merge tree defines a set of $\Pi_{p_i\in P} |p_i|!$ surfaces 
+ with distinct merge trees, all of which have the same mesh.  Specifically, for each sorted ordering of the relative height values of the saddles 
+ on each diamond in the mesh, yields a different merge tree.
+ Therefore, any comparison based algorithm which computes the merge tree must distinguish between these possibilities, and therefore its corresponding decision tree must 
+ have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, this decision tree must have depth $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
 \end{proof}
 
+\subsection{Contour Trees}
+We first generalize previous terms to the case of contour trees.
+In this section $T$ will denote an arbitrary contour tree.  Specifically, every internal vertex in $T$ has degree $3$ 
+and the height function defined over the vertex set is such that every internal vertex in either a split or merge 
+(i.e. at most $2$ neighbors lie above or below it).
+
+Again we define a path decomposition as a partition of the vertices into 
+disjoint leaf paths (i.e. each path is monotonic in height and contains a leaf). 
+However, for simplicity we now restrict our attention to path decompositions which 
+roughly speaking are consistent with the raining procedure described in \Sec{rain} 
+(more general decompositions can work, but it is not needed for our purposes).
+
+\begin{definition}
+\label{def:path2} A path decomposition, $P(T)$, is called \emph{rain consistent} if its paths can be obtained as follows.
+Perform an upward BFS from an arbitrary minima $v$ in $T$, and mark all vertices encountered.  
+Now recursively run a directional BFS from all vertices adjacent to the current marked set.  
+Specifically, for each BFS run, make it an upward BFS if it is at an odd height in the recursion tree and downward otherwise.  
+
+This procedure partitions the vertex set into disjoint rooted subtrees of $T$, based on which BFS marked a vertex.  
+For each such subtree, now take any partition of the vertices into leaf paths.\footnote{Note that the subtree  
+of the initial vertex is rooted at is a minima.  For simplicity we require that the path this vertex belongs to 
+also contains a maxima.}
+\end{definition}
+
+
+The following is analogous to \Lem{pathDecomp}, and in particular uses it as a subroutine.
+
+\begin{lemma}
+\label{lem:pathDecomp2}
+Let $T$ be a contour tree, and let $P = P(T)$ be any rain consistent path decomposition of $T$.  
+Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, all of which have the same defining mesh.
+\end{lemma}
+\begin{proof}
+ As $P$ is rain consistent, the paths can be partitioned into sets $P_1, \dots, P_m$, where $P_i$ is the set of all paths with 
+ vertices from a given BFS, as described in \Def{path2}.  Specifically, let $T_i$ be the subtree of $T$ corresponding to $P_i$ and 
+ let $r_i$ be the root vertex of this subtree.  
+ Note that the $P_i$ sets naturally define a tree where $P_i$ is the parent of $P_j$ if $r_i$ is adjacent to a vertex in $P_j$.  
+ 
+ As the set $P_i$ is a path decomposition of a rooted binary tree $T_i$, the surface mesh construction of \Lem{pathDecomp} for $P_i$ is well defined.  
+ Actually the only difference is that here the rooted tree is not a full binary tree, and so some of the faces of the constructed diamonds will be blank.  
+ Specifically, these blank faces correspond to the adjacent children of $P_i$, and they tell us how to connect the meshes of the different $P_i$'s.
+ 
+\begin{figure}[h]\centering
+    \includegraphics[width=.5\linewidth]{figs/bridge2}
+    \caption{On the left, the root of $P_i$ merges into a diamond of its parent $P_j$.  On the right, the root of $P_i$ splits off from a diamond of $P_j$}
+    \label{fig:diamond}
+\end{figure}
+ 
+ So for each $P_i$ construct a surface mesh as described in \Def{path2}.  By construction, the diamonds corresponding to the paths in $P_i$ are connected 
+ into a tree structure (i.e. corresponding to the shrub of $P_i$).  Therefore the bottoms of all these diamonds are covered except for the one corresponding 
+ to the path containing the root $r_i$.  If $r_i$ is the initial minima that the rain consistent path decomposition was defined from,  
+ we add a tetrahedral cap to the uncovered bottom of this diamond (i.e. we construct the minima).  Otherwise, $P_i$ has some parent $P_j$ in which case 
+ we connect the bottom of the diamond for $r_i$ to a free face of a diamond in the construction for $P_j$, specifically, the face corresponding to the 
+ vertex in $T$ which $r_i$ is adjacent to. 
+ If $T_i$ was created by an upward BFS, then the connection to this face should be a merge vertex, and otherwise it should be a split vertex.  
+ See \Fig{diamond}.
+ 
+ Just as in \Lem{pathDecomp} we now have one fixed mesh graph structure, such that each different relative ordering of the heights of the merge and split vertices 
+ on each diamond produces a surface with a distinct merge tree.  The specific bound on the number of such distinct manifolds follows by applying the 
+ bound from \Lem{pathDecomp} to each $P_i$.
+\end{proof}
+
+For the same reason that \Cor{mergeLB} followed from \Lem{pathDecomp}, we now have the following. 
+
+\begin{theorem}
+ Let $A(S)$ be any comparison based algorithm to compute the contour tree of an input surface $S$.  
+ Then the running time of $A(S)$ is $\Omega(f_{path}(P))=\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$ where $P$ 
+ is any rain consistent path decomposition of the contour tree of $S$.
+\end{theorem}
+
+
+
+
+% \section{Temp}
+% Given a contour tree we allow any path decomp, as long as each path contains a maxima or minima (or both).
+% We call a path $p$ in the decomp a min (resp. max) path if it contains a minima (resp. maxima) (note a path can be both).
+% For every path we create a cylinder with $m$ faces for $p$, where $m$ is the number of non-leaf vertices in $p$ (either $|p|-1$ or $|p|-2$).  
+% If $p$ has a maxima we put a top cone cap on the cylinder, and if it contains a manima then put a bottom cone cap (i.e. the cap represents the maxima or minima).
+% 
+% Every edge $e$ in $T$, but not in a path decomp. tells us how to glue together cylinders.  Let $u$ be the upper endpoint of $e$ and $l$ the lower endpoint.
+% 
+% First we ``remove'' all edges $e$ such that $u$ is adjacent to a max path and $l$ adjacent to a min path by joining the free ends of the respective cylinder together.
+% Hence we can assume no such edges exist.  Now we have three cases:
+% 
+% \begin{enumerate}[{Case} 1]
+%  \item 
+% $l$ is adjacent to a min path:\newline
+% Note in this case the path containing $u$ must be a min path.
+% In this case connect the bottom of the cylinder for the path containing $l$ into a face of the cylinder for the path containing $u$.
+% \item
+% $l$ is adjacent to a max path and $u$ is adjacent to a max path:\newline
+% In this case connect the bottom of the cylinder for the path containing $u$ into a face of the cylinder for the path containing $l$.
+% \item
+% $l$ is adjacent to a max path and $u$ is adjacent to a min path:\newline
+% Connect a face of the cylinder for the $u$ path (using a split) to a face of the cylinder for the $l$ path (using a merge).
+% \end{enumerate}
 
 
 
