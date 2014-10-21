@@ -64,7 +64,8 @@
 \newcommand{\outnbd}{\Gamma^+}
 
 \newcommand{\bT}{{\bf T}}
-\newcommand{\cS}{{\cal S}}
+
+\newcommand{\cA}{{\cal A}}
 \newcommand{\cB}{{\cal B}}
 \newcommand{\cC}{{\cal C}}
 \newcommand{\cD}{{\cal D}}
@@ -72,8 +73,10 @@
 \newcommand{\cF}{{\cal F}}
 \newcommand{\cG}{{\cal G}}
 \newcommand{\cH}{{\cal H}}
+\newcommand{\cJ}{{\cal J}}
 \newcommand{\cL}{{\cal L}}
 \newcommand{\cP}{{\cal P}}
+\newcommand{\cS}{{\cal S}}
 \newcommand{\cU}{{\cal U}}
 \newcommand{\cV}{{\cal V}}
 
@@ -158,6 +161,7 @@
 \newcommand{\h}{high}
 \newcommand{\lift}{{\tt lift}}
 \newcommand{\mcol}{mcol}
+\newcommand{\merge}{{\tt merge}}
 \newcommand{\onestep}{{\tt piece}}
 \newcommand{\paint}{{\tt paint}}
 \newcommand{\pmax}{P_{\max}}
@@ -708,11 +712,113 @@ Each $\surgery$ call is constant time, and the total time is the size of the rec
 \end{proof}
 
 
-\section{Painting to compute contour trees} \label{sec:paint}
+\section{Contour trees of extremum dominant manifolds} \label{sec:paint}
 
 The previous section allows us to restrict attention to extremum dominant manifolds.
 We will orient so that the extremum in question is always a \emph{minimum}.
-We will fix such a simplicial complex $\MM$, with the dominant minimum $u$. 
+We will fix such a simplicial complex $\MM$, with the dominant minimum $m^*$. 
+We observe that the contours trees of minimum dominant manifolds have a relatively simple description.
+This description is directly inspired by (and proven using) the \emph{join tree} of~\cite{csa-cctad-00}.
+We first explain what these trees are.
+
+For vertex $v$, we use $\MM^+_v$ to denote the simplicial complex obtained by only
+keeping vertices $u$ such that $f(u) > f(v)$. Analogously, define $\MM^-_v$. Note that $\MM^+$ may contain
+numerous connected components. The following definition of join and split trees were given by~\cite{csa-cctad-00}.
+Conventially, all edges are directed from higher to lower function value.
+
+\begin{definition} \label{join} The join tree $\cJ(\MM)$ of $\MM$ is built on vertex set $V(\MM)$.
+The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex is a connected component of $\MM^+_v$
+\emph{and} $v$ is connected to this component (in $\MM$). The split tree $\cS(\MM)$ is obtained
+by looking at $\MM^-_v$ (or alternately, by taking the join tree of the inversion of $\MM$). 
+\end{definition}
+
+Note that unlike the contour tree, all vertices in $\MM$ are present in $\cJ(\MM)$ and $\cS(\MM)$. 
+Some basic facts about these trees. All outdegrees in $\cJ(\MM)$ and all indegrees in $\cS(\MM)$ are at most $1$.
+Indegree $2$ vertices in $\cJ(\MM)$ are joins, and outdegree $2$ vertices in $\cS(\MM)$ are splits.
+Leaves in $\cJ(\MM)$ are maxima, and leaves in $\cS(\MM)$ are minima.
+
+The key observation is that $\cS(\MM)$ is trivial for minimum dominant $\MM$.
+
+\begin{lemma} \label{lem:split} $\cS(\MM)$ consists of:
+\begin{asparaitem}
+	\item A single path (in sorted order) with all vertices except non-dominant minima.
+	\item Each non-dominant minimum is attached to a unique split.
+\end{asparaitem}
+\end{lemma}
+
+\begin{proof} First, let us complete the proof assuming that each split $v$ has one child that is just a leaf, which
+is a non-dominant minimum. Any minimum is a leaf in $\cS(\MM)$, and thereby attached to a split. If we removed
+all non-dominant minima, we must end up with a path, as asserted above.
+
+Consider a split $v$. For sufficiently small $\eps, \delta$, there are exactly two $(f(v) - \delta)$-contours
+$\phi$ and $\psi$ intersecting $B_\eps(v)$. Both of these are regular contours. There must be a non-ascending
+path from $v$ to the dominant minimum $m^*$. Consider the first edge (necessarily decreasing from $v$)
+on this path. It must intersect some contour, say $\phi$. By \Thm{jordan}, $\cut(\MM,\phi)$ has
+two connected components, with one (call it $\LL$) having $\phi^-$ as a boundary maximum. This complex
+contains $m^*$ as the non-ascending path $\phi$ intersects $\phi$ only once. Let the other
+component be called $\MM'$.
+
+Consider $\cut(\MM',\psi)$ with connected component $\NN$ having $\psi^-$ as a boundary. $\NN$
+does not contain $m^*$, so any path from the interior of $\NN$ to $m^*$ must intersect the boundary $\psi^-$.
+But the latter is a maximum in $\NN$, so there can be no non-ascending path from the interior to $m^*$.
+Since $\MM$ is overall minimum dominant, the interior of $\NN$ can only contain a single vertex $w$, a non-dominant
+minimum.
+
+The split $v$ has two children in $\cS(\MM)$, one in $\NN$ and one in $\LL$. The child in $\NN$ can only
+be the non-dominant minimum $w$, which is a leaf. 
+\end{proof}
+
+It is convenient to denote the non-dominant minima by $m_1, m_2, \ldots, m_k$, and the associated
+splits (as given by \Lem{split}) by $s_1, s_2, \ldots, s_k$.
+
+To prove our main theorem, we use the merging procedure from~\cite{csa-cctad-00} that constructs the contour tree
+from the join and split trees. 
+It actually construsts the \emph{augmented contour tree} $\cA(\MM)$, which
+is the contour tree with regular points inserted into the edges. 
+For any tree $T$ with vertex $v$, we define \emph{erasing} $v$ from $T$,
+when both in and outdegrees are at most $1$. If $v$ is a leaf, just delete $v$. Otherwise, smooth $v$ out
+(delete $v$ and connect its neighbors by an edge). This tree is denoted by $T \ominus v$.
+
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
+{\bf $\merge(\cJ(\MM),\cS(\MM))$}
+
+\smallskip
+\begin{compactenum}
+	\item Set $\cJ = \cJ(\MM)$ and $\cS = \cS(\MM)$.
+	\item Denote $v$ as \emph{candidate} if sum of indegree of $v$ in $\cJ$ and outdegree of $v$ in $\cS$ is $1$. 
+	\item Add all candidates to queue.
+	\item While candidate queue is non-empty: 
+	\begin{compactenum}
+		\item Let $v$ be head of queue. If $v$ is leaf in $\cJ$, consider its edge in $\cJ$. Otherwise
+		consider edge in $\cS$. In either case, let edge by $(v,w)$.
+		\item Insert $(v,w)$ in $\cA(\MM)$. 
+		\item Set $\cJ = \cJ \ominus v$ and $\cS = \cS \ominus v$. Enqueue any new candidates.
+	\end{compactenum}
+	\item Smooth out all regular vertices in $\cA(\MM)$ to get $\cC(\MM)$.
+\end{compactenum}
+\end{minipage}}
+
+\medskip
+
+\begin{theorem} \label{thm:contour-tree} The contour tree $\cC(\MM)$ consists of all edges $\{(s_i, m_i)\}$
+as well as: for any critical point $v$, edge $(w,v)$ where $w$ is the lowest non-minimal critical point
+in a connected component of $\MM^+_v$ connected to $v$.
+\end{theorem}
+
+\begin{proof} We first show that $\cA(\MM)$ is $\cJ(\MM) \ominus \{m_i\}$ with edges $\{(s_i,m_i)\}$.
+We have flexibility in choosing the order of processing in $\merge$. We first put the non-dominant
+maxima $m_1, \ldots, m_k$ into the queue. As these are processed, the edges $\{(s_i,m_i)\}$ are inserted 
+into $\cA(\MM)$. Once all the $m_i$'s are erased, $\cS$ becomes a path, so all outdegrees are at most $1$.
+The join tree is now $\cJ(\MM) \ominus \{m_i\}$. We can now process $\cJ$ leaf by leaf, and all
+edges of $\cJ$ are inserted into $\cA(\MM)$.
+
+Note that $\cC(\MM)$ is obtained by smoothing out all regular points from $\cA(\MM)$. Smoothing out regular
+points from $\cJ(\MM) \ominus \{m_i\}$ exactly yields the edges described in the theorem.
+\end{proof}
+
+\section{Painting to compute contour trees}
 
 We begin by associating a color with each maximum. If the set of maxima is $S$,
 this is simply an arbitrary bijection $\chi:S \mapsto [|S|]$. Imagine there being a large
