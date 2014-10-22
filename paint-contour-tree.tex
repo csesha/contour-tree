@@ -64,7 +64,8 @@
 \newcommand{\outnbd}{\Gamma^+}
 
 \newcommand{\bT}{{\bf T}}
-\newcommand{\cS}{{\cal S}}
+
+\newcommand{\cA}{{\cal A}}
 \newcommand{\cB}{{\cal B}}
 \newcommand{\cC}{{\cal C}}
 \newcommand{\cD}{{\cal D}}
@@ -72,8 +73,10 @@
 \newcommand{\cF}{{\cal F}}
 \newcommand{\cG}{{\cal G}}
 \newcommand{\cH}{{\cal H}}
+\newcommand{\cJ}{{\cal J}}
 \newcommand{\cL}{{\cal L}}
 \newcommand{\cP}{{\cal P}}
+\newcommand{\cS}{{\cal S}}
 \newcommand{\cU}{{\cal U}}
 \newcommand{\cV}{{\cal V}}
 
@@ -158,11 +161,12 @@
 \newcommand{\h}{high}
 \newcommand{\lift}{{\tt lift}}
 \newcommand{\mcol}{mcol}
+\newcommand{\merge}{{\tt merge}}
 \newcommand{\onestep}{{\tt piece}}
 \newcommand{\paint}{{\tt paint}}
 \newcommand{\pmax}{P_{\max}}
 \newcommand{\rain}{{\tt rain}}
-\newcommand{\reeb}{R}
+\newcommand{\reeb}{\cC}
 \newcommand{\redH}{\widetilde{H}}
 \newcommand{\rep}{rep}
 \newcommand{\st}{K}
@@ -386,7 +390,6 @@ and therefore require $\Omega(n\log n)$ time to compute.
 
 \paragraph{Organization.}
 
-
 \begin{figure}[h]\centering
     \includegraphics[width=.18\linewidth]{figs/orderGray1}%
     \hspace{.8in}
@@ -395,274 +398,139 @@ and therefore require $\Omega(n\log n)$ time to compute.
     \label{fig:order}
 \end{figure}
 
+\section{Contour tree basics} \label{sec:basics}
 
-\section{Preliminaries}
-Consider a piecewise-linear (PL) $2$-manifold $\MM$ with boundaries.
-This is represented by a triangulation (given as a DCEL) where edges
-can be oriented and the boundary of a face is always counterclockwise. Some faces will \emph{not}
-be triangular, and each of these corresponds to a \emph{boundary face}.
-Let $G(\MM) = (V,E)$ denote this triangulation. We assume this triangulation
-has bounded degree.
-We will assume that $\MM$ is embedding in $\RR^d$.
-The manifold within each face is just linear.
-We define a \emph{height function} on $\MM$, $f:\MM \mapsto \RR$. For each point in $x \in \MM$, let $f(x)$ simply be the value of $x_1$.
-We distinguish between vertices and points in $\MM$. A point simply denotes any $x \in \MM$. A vertex is a point
-corresponding to some vertex of the triangulation $G(\MM)$.
+We detail the basic definitions about contour trees. Most of this is taken from Chapter 6 of Carr's thesis~\cite{Carr}.
+Our input is a continuous PL function $f:\MM \mapsto \RR$, where $\MM$ is a simplicial complex in $\RR^d$. 
+All simplices are isomorphic to a standard $d$-dimensional simplex, except for specially designated
+\emph{boundary} simplices. \Sesh{Some mention of representation and data structures here.}
+It is standard to assume
+that $f$ is Morse (we explain later what this entails). 
 
-We define the size of the manifold $\MM$, denoted $|\MM|$, to be the number of faces, edges, and vertices.  
-Let $n$ denote the number of vertices.  
-Since we are working with $2$-manifolds, the size of the manifold is $\Theta(n)$.
+Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simplicial complex living in $\RR^{d+1}$.
+We can think of $f(x)$ as the ``height" of a point $x \in \MM$.
+We will often omit $f$, and assume that $f$ is encoded in the representation of $\MM$.
 
-For smooth manifolds the ``status" of an internal point is decided by the gradient at that point. 
-Points of zero gradient are deemed \emph{critical};
-all other points are regular.
-For PL manifolds, we need a discrete version of this definition.
-First, all non-vertex points are considered regular.
-For vertex $v$, we use $\nbd(v)$ to denote the neighborhood of $v$ in $G(\MM)$. Let $\outnbd(v) := \{ w | f(v) > f(w), w \in \Gamma(v)\}$
-and $\innbd(v) := \{w | f(v) < f(w), w \in \Gamma(v)\}$. 
-%It is convenient to define $D(\MM)$, a directed variant of $G(\MM)$,
-%where edges are directed from higher to lower $f$-value. So $\outnbd(v)$ and $\innbd(v)$ are exactly the out- and in-neighborhoods
-%of $v$. A vertex in $v \in V$ can be classified in four types.
-\smallskip
-\begin{asparaenum}
-	\item Regular: Both $\outnbd(v)$ and $\innbd(v)$ are non-empty and are contiguous in $\nbd(v)$.
-	\item Maxima: $\nbd(v) = \outnbd(v)$.
-	\item Minima: $\nbd(v) = \innbd(v)$.
-	\item Saddle: Both $\outnbd(v)$ and $\innbd(v)$ are not contiguous in $\nbd(v)$.
-\end{asparaenum}
-\smallskip
-%Because $\MM$ is PL, the gradient at all non-vertex points of $\MM$ is zero.
-%So all non-vertex points are regular. 
+\begin{definition} \label{def:level} The level set at value $h$ is the set $\{x \in \MM| f(x) = h\}$.
+A contour is a maximal connected component of a level set. An $h$-contour is a contour where $f$-values are $h$.
+\end{definition}
 
-We will assume that $f$ is Morse, so the function value on all critical points is distinct. 
-We will also assume the stronger condition that all internal vertices have distinct function values.
-Note that assuming $f$ is Morse implies that $\MM$ has no multi-saddles 
-(i.e. $\outnbd(v)$ and $\innbd(v)$ can each have at most two non-contiguous components).
-A value $t$ is \emph{non-critical} if there exists no critical point $x$ such that $f(x) = t$.
+Not that a contour is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
+We let $\delta, \eps$ denote infinitesimals. Let $B_\eps(x)$ denote a ball of radius $\eps$ around $x$.
 
-Furthermore, the boundary vertices have special properties, encapsulated in the following definition.
+\begin{definition} \label{def:deg} The up-degree of $x \in \MM$ is the number of $(f(x) + \delta)$-contours that intersect $B_\eps(x)$
+as $\delta, \eps \rightarrow 0^+$. The down-degree is the number of $(f(x) - \delta)$-contours that intersect $B_\eps(x)$
+as $\delta, \eps \rightarrow 0^+$.
+\end{definition}
 
-\begin{definition} \label{def:bound} A manifold is \emph{boundary critical} if the following holds.
-Consider a boundary face $F$. All vertices in $F$ have the same function value. Furthermore, all
-internal neighbors of $F$ either have function values strictly greater (or strictly less)
+The definition allows us to categorize points in $\MM$ depending on the local changes in topology.
+
+\begin{definition} \label{def:points} A point $x \in \MM$ is categorized as follows.
+\begin{asparaitem}
+	\item Regular: Both up-degree and down-degrees are $1$.
+	\item Maximum: Up-degree is $0$.
+	\item Minimum: Down-degree is $0$.
+	\item Join: Up-degree is strictly greater than $1$.
+	\item Split: Down-degree is strictly greater than $1$.
+\end{asparaitem}
+Non-regular points are called \emph{critical}. Joins and splits are called \emph{saddles}.
+Maxima and minima are called \emph{extrema}.
+\end{definition}
+
+
+We will enforce a special constraint on boundaries, encapsulated in the following definition.
+
+\begin{definition} \label{def:bound} $f$ is \emph{boundary critical} if the following holds.
+Consider a boundary simplex $F$. All vertices of $F$ have the same function value. Furthermore, all
+neighbors of $F$ not in $F$ either have function values strictly greater or strictly less
 than this value.
 \end{definition}
 
-In other words, the vertices in a boundary face collectively behave like a maximum or minimum. 
-Abusing notation, the term ``critical point", ``maxima", and ``minima" will also refer to boundaries.
-Critical values include these boundary values.
+We use $\cV$ to denote the set of critical points in $\MM$.
+Because $f$ is piecewise-linear, all critical points are vertices in $\MM$. 
+A value $h$ is called critical, if $f(x) = h$, for some $x \in \cV$. The Morse assumption
+implies that all critical points have distinct values. A contour that involves a critical
+point is also denoted as critical. Note that the vertices in a boundary face collectively behaves like an extremum.
+Abusing notation, the term ``critical point", ``maxima", and ``minima" will include boundaries.
+Critical values include these boundary values. By boundary criticality, all contours are themselves
+represented as $d-1$-dimensional simplicial complices.
 
-\begin{definition} \label{def:desc} A \emph{descending path} in $\MM$ is a continuous function $\lambda:[0,1] \mapsto \MM$
-such that for all $a < b$, $f(\lambda(a)) \geq f(\lambda(b))$. A \emph{PL descending path} from $x$ to $y$ is a sequence
-of points $x = s_0, s_1, s_2, \ldots, s_k = y$ with the following properties: for all $s_i$ but the first and last,
-$s_i$ lies on an edge of $\MM$. $s_i$ and $s_{i+1}$ lie in the same face of $\MM$. 
-For $i < j$, $f(s_i) \geq f(s_j)$.
+\begin{definition} \label{def:equiv} Two contours $\psi$ and $\psi'$ are equivalent 
+if the following holds. There exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$,
+such that no $x \in p$ belongs to a critical contour.
 \end{definition}
 
-Since $\MM$ is PL, if there is a descending path from $x$ to $y$ then it has PL representation. So we will always refer to
-PL descending paths.
+These give the \emph{contour classes}. By continuity, a regular point is present on a single contour,
+and we can partition the regular contours into these classes. Every such class maps to intervals
+of the form $(f(x_i),f(x_j))$, where $x_i, x_j$ are critical points. Such a class is said
+to be created at $x_i$ and destroyed at $x_j$. 
 
-\begin{definition} \label{def:cont} A \emph{contour} in $\MM$ is the image of a continuous and injective function $\phi:\SSS^1 \mapsto \MM$ such that $\forall a, b \in \SSS^1$, $f(\phi(a)) = f(\phi(b))$. This is called a \emph{$t$-contour} if $f(\phi(a)) = t$.
-%A contour is \emph{simple} if $\forall a, b \in \SSS^1$, $\lambda(a) \neq \lambda(b)$. 
+\begin{definition} \label{def:tree} The contour tree is the graph on vertex set $\cV$, where
+edges are formed as follows. For every contour class that is created at $v_i$ and destroyed $v_j$,
+there is an edge $(v_i,v_j)$. (Conventially, edges are directed from higher function value to lower.)
 \end{definition}
 
-Note that just as in the case of paths, contours are also PL and have a corresponding discrete representation.
+(It is not immediately obvious that this graph is a tree. But it is equivalent to the Reeb graph
+of $f:\MM \rightarrow \RR$, which is known to be a tree.) We denote the contour tree of $\MM$
+by $\reeb(\MM,f)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
 
-\begin{remark}
-For contours which pass through critical points, our definition of a contour differs from the ``standard" definition (i.e. contours which are the result of a horizontal cutting).  
+We use a key theorem from~\cite{Carr} (Theorem 6.6) that maps paths in $\cC(\MM)$ and $\MM$.
 
-In particular, the injective requirement does not allow contours through maxima or minima.  We can add these single point contours at the maxima and minima to our set of contours (though this is not really necessary).
-\end{remark}
+\begin{theorem} \label{thm:carr-path} For every path $P$ in $\MM$, there exists a path $Q$ in the contour tree to which $P$
+maps, and for every path $Q$ in the contour tree, there exists at least one path $P$ in $\MM$ that maps to $Q$.
+\end{theorem}
 
-\begin{lemma} \label{lem:cont} If two distinct contours intersect, then their intersection is a saddle point.
-\end{lemma} 
+\section{Divide and conquer through contour surgery} \label{sec:surgery}
 
-\begin{proof}
-Consider any (closed) triangular face $f$, interior to the $2$-manifold.  The set of points on this face at a given height $h$ forms a closed line segment, call it $l_f$.  Let $\phi$ be any contour that intersects some point in the interior of this face at height $h$.  Then $\phi$ must contain all of $l_f$, since otherwise continuity or simplicity would be violated.  
+{\bf The cutting operation:} We define a ``cut" operation on $f:\MM \rightarrow \RR$ that cuts along a regular contour to create
+a new simplicial complex with an added boundary. Given contour $\phi$, this is constructing the simplicial complex $\MM \setminus \phi$. 
+We will always enforce the condition that $\phi$ never passes through a vertex of $\MM$.
+Again, we use $\eps$ for an infinitesimally small value. We denote $\phi^+$ (resp. $\phi^-$) to be
+the contour at value $f(\phi^+) + \eps$ (resp. $f(\phi^-) - \eps$), which is at distance $\eps$
+from $\phi$. 
 
-So consider two distinct intersecting contours $\phi_1$ and $\phi_2$.  Since they are distinct, there must be a point on the boundary of their intersection, i.e. any (arbitrarily small) ball centered at this point contains contour points both inside and outside the intersection of the contours.  Call this point $p$.
+An $h$-contour is achieved by intersecting $\MM$ with the hyperplane $x_{d+1} = h$. (Think of the $d+1$-dimension
+as height.) Given some point $x$
+on an $h$-contour $\phi$ (with some simplex that $x$ is present in), we can walk along $\MM$ from $x$ and determine $\phi$.
+We can ``cut" along $\phi$ to get a new (possibly) disconnected simplicial complex $\MM'$. This is achieved
+by splitting every facet $F$ that $\phi$ intersects into an ``upper" facet and ``lower" facet. Algorithmically,
+we cut facet $F$ with $\phi^+$ and take everything above $\phi^+$ in $F$ to make the upper facet. Analogously, we cut with $\phi^-$ to get the lower facet.
+The facets are then triangulated to ensure that they are all simplices.
+Given that $\phi$ cannot cut a boundary and all non-boundary facets
+have constant size, we omit the algorithmic description for this process. We only note that this
+creates the two new boundaries $\phi^+$ and $\phi^-$, and we maintain the property of constant $f$-value at a boundary.
+This new simplicial complex is denoted by $\cut(\phi,\MM)$.
+This can be constructed in time linear in $|\phi|$.
 
-If $p$ lies in the interior of a face $f$ then both $\phi_1$ and $\phi_2$ must contain the entire above mentioned closed lines segment $l_f$, and hence $p$ was not on the intersection boundary. 
-Similarly suppose that $p$ is in the interior of an edge (clearly such an edge would need to be interior to the manifold for $\phi_1$ and $\phi_2$ to be contours).  Since this is a $2$-manifold each edge is adjacent to exactly two faces.  Let $l_a$ and $l_b$ be the above described closed line segments on each face.  Then again $\phi_1$ and $\phi_2$ contain all of $l_a$ and $l_b$, and $p$ was not on the intersection boundary.
-
-So $p$ must be a vertex $v$ of the manifold.  Let $\phi$ be any contour through $v$.  There must be two distinct faces $f_a$ and $f_b$ adjacent to $v$ which $\phi$ intersects.  Any face adjacent to $v$ has exactly two bounding edges adjacent to $v$.  Since faces are linear interpolates of the vertices, and since $\phi$ intersects $f_a$ and $f_b$, for either face one of these two edges must be increasing from $v$ and the other decreasing from $v$.  Call such a face a middle face.
-
-Now if $v$ is on the boundary of the intersection of $\phi_1$ and $\phi_2$ then we need at least 3 middle faces adjacent to $v$ (since otherwise it again is like the case we $p$ was interior to an edge).  However, the only vertices the have at least 3 such faces are by definition saddle points.  As no two vertices are at the same height, this saddle point can be the only point of intersection.
-\end{proof}
-
-%\begin{proof} Consider the intersection point $x$. It cannot be internal to a face, otherwise $\MM$ self-intersects.
-%By the distinctness of the contours, there must be $4$ faces incident to $x$, where each face
-%has vertex with a larger function value.
-%It cannot be internal to an edge, otherwise this edge would participate in $4$ faces. So it must be a vertex. 
-%These $4$ faces lead to at least $2$ neighbors of $x$ with higher function value. One can also show the existence of $2$
-%interleaved neighbors with lower function value. So $x$ is critical.
-%\end{proof}
-
-\begin{corollary}
-There is a unique contour containing a regular point.
-\end{corollary}
-
-\begin{definition} \label{def:p-cont}
-For a regular point $x$, $\cont(x)$ denotes the unique contour containing $x$.
-\end{definition}
-
-%By the Morse property of distinct critical values, we get the following important lemma.
-
-\begin{corollary} \label{cor:cont} Let $t$ be a non-critical value. The set of $t$-contours is a set
-of disjoint PL contours.
-\end{corollary}
-
-We can use contours to classify saddle points. For a saddle point, we call two increasing (or decreasing) neighbors \emph{opposite}
-if they lie in disjoint parts of $\Gamma^+(w)$ (or $\Gamma^-(w)$).
-
-In the following definition and, unless otherwise stated, throughout the rest of this writeup $\eps$ is some infinitesimally small amount
-(in particular smaller than the minimum height difference between vertices in the manifold).
-
-\begin{definition} \label{def:merge} Consider two increasing (resp. decreasing) opposite edges incident to a saddle point $x$,
-and let $y$ and $z$ be points on these edges such that $f(y) = f(z) = f(x) + \eps$ (resp. $=f(x) - \eps$).
-If $\cont(y)$ and $\cont(z)$ are disjoint, then $x$ is called a \emph{merge} (resp. \emph{split}) vertex.
-\end{definition}
-
-As $f$ is a Morse function over a $2$-manifold, we have the following.
-
-\begin{claim} \label{clm:saddle} 
-  \begin{compactenum}[(1)]
-    \item Every saddle is either a merge or a split, but not both.
-    \item Every saddle has exactly two distinct contours which contain it.
-  \end{compactenum}
-\end{claim}
+%We denote this new manifold by $\cut(\phi,\MM)$, and the new boundaries by $\phi^+$ and $\phi^-$.
+%Abusing notation, we use $\cut(\phi,\MM)$
+%for a set $\Psi$ of contours to mean the manifold obtained by cutting along all contours in $\Phi$.
 
 
-\subsection{The L-homotopy} \label{sec:l-hom}
-We need a specific notion of homotopy between contours. The L below stands for ``level".
-
-\begin{definition} \label{def:cont-hom} Two contours $\phi_0, \phi_1$ are \emph{L-homotopic}
-if: there exists a continuous function $H:\SSS^1 \times [0,1] \mapsto \MM$
-such that $H(\SSS^1,0) = \phi_0$, $H(\SSS^1,1) = \phi_1$, and $\forall a \in [0,1]$,
-$H(\SSS^1,a)$ is a contour.
-\end{definition}
-
-\begin{claim} \label{clm:non-hom} Consider a saddle point $x$. Take an increasing edge incident to $x$
-and let $y$ be a point on this edge within an $\eps$-ball of $x$. Similarly, take a decreasing edge
-and a point $z$ on this edge. $\psi(y)$ and $\psi(z)$ are not L-homotopic.
-\end{claim}
-
-\begin{proof}
-Without loss of generality assume that $x$ is a merge vertex.  By \Clm{saddle} there are exactly two distinct contours, 
-$\phi_1$ and $\phi_2$ through $x$.  Let $E_1$ and $E_2$ be the sets of manifold edges that are not adjacent to $x$ and that $\phi_1$ and $\phi_2$ intersect, respectively.
-Observe that as contours are by definition non-trivial, both $E_1$ and $E_2$ must non-empty.  Moreover since $\phi_1$ and $\phi_2$ only intersect at $x$, $E_1\cap E_2 = \emptyset$
-
-As $x$ is a merge vertex, $\psi(y)$ cannot intersect all edges in $E_1 \cup E_2$.
-On the other hand since $x$ cannot be both a merge and a split by \Clm{saddle}, $\psi(z)$ must intersect all of $E_1 \cup E_2$.  As $x$ is the only vertex in between $z$ and $y$ 
-and no edge in $E_1\cup E_2$ is adjacent to $x$, it is not hard to see that by the continuity requirement $\psi(z)$ cannot be L-homotopic to $\psi(y)$.
-%
-%
-% Without loss of generality assume that $x$ is a merge vertex.  By \ref{clm:saddle} there are exactly two distinct contours, 
-% $\phi_1$ and $\phi_2$ through $x$.  Observe that by continuity of L-homotopy, if $\psi(z)$ is $L$-homotopic to $\psi(y)$, 
-% then $\psi(z)$ must L-homotopic to either $\phi_1$ or $\phi_2$, as these are the only two possible contours at the height of $x$ 
-% (in the connected component of the manifold in between $y$ and $z$ and containing $x$).
-% We now show that $\psi(z)$ is not L-homotopic to either $\phi_1$ or $\phi_2$.
-% 
-% First observe that since contours are non-trivial (except at extrema), by continuity $\psi(z)$ cannot be 
-% simultaneously L-homotopic to both contours through $x$.  So suppose $\psi(z)$ is L-homotopic to one of the contours, say $\phi_1$.
-% 
-% As $\eps$ is smaller than the minimum height difference of two vertices in the manifold, 
-% and $z$ is $\eps$ lower than $x$, there are no vertices in between $z$ and $x$.  In particular, whatever edges $\phi_1$ and $\phi_2$ intersect (in their interier), 
-% $\psi(z)$ must also intersect.
-\end{proof}
-
-\begin{definition} \label{def:hom-mono} Two contours $\phi_0, \phi_1$ are \emph{monotonically L-homotopic}
-if the $L$-homotopy $H$ has the following property. Consider function $\alpha:[0,1] \mapsto \RR$
-where $\alpha(a) = f^{-1}(H(\SSS^1,a))$. The function $\alpha$ is strictly increasing or strictly decreasing.
-\end{definition}
-
-\begin{claim} \label{clm:mono} If two contours are L-homotopic, then they are monotonically L-homotopic.
-\end{claim}
-
-\begin{proof} Consider some L-homotopy $H$. We can assume wlog that for all $a \neq b$, $H(\SSS^1,a) \neq H(\SSS^1,b)$.
-(Otherwise, one could simplify $H$ and ``shortcut" between $a$ and $b$.)
-By continuity of $H$, the function $\alpha$ is continuous. Hence, if it is not strictly
-increasing or decreasing, $\alpha$ attains a local maximum at some $a \in (0,1)$. So there exist $a_1 = a - \eps_1$
-and $a_2 = a + \eps_2$ such that $\alpha(a_1) = \alpha(a_2)$.
-
-By continuity, $\eps_1$ and $\eps_2$ can be chosen small enough such that there are no vertices 
-in between $f^{-1}(H(\SSS^1,a_1))$ and the local maximum. 
-Now the local maximum at $a$ may contain a vertex, but by \Clm{non-hom} this vertex cannot be a saddle.
-Therefore $H(\SSS^1,a_1)$ and $H(\SSS^1,a_2)$ must intersect the same set of edges and therefore cannot be distinct.
-\end{proof}
-
-\begin{claim} \label{clm:reg} Consider a contour $\phi$ containing only regular points. 
-Take the edge cut by $\phi$ whose upper endpoint $x$ has minimum value, and let $e$
-denote the portion above $\phi$. Then $\phi$ is L-homotopic to the contour
-through any point in the interior of $e$. If $x$ is regular, then $\phi$ is L-homotopic
-to the contour through $x$.
-\end{claim}
-
-\begin{proof} 
-Let $a$ be the height of $\phi$ and $b$ the height of $x$. Consider the (potentially disconnected) 
-manifold obtained by removing all manifold points above $b$ and below $a$.  
-Specifically consider connected component that contains $\phi$.  
-By continuity of L-homotopy the claim holds iff it holds on this manifold. 
-However, this manifold contains no vectices except at the ends, and therefore
-an L-homotopy can be constructed using the natural piecewise linear map.
-\end{proof}
-
-\subsection{Reeb graphs} \label{sec:reeb}
-
-Now we get to the real definitions. Call a contour regular if it only contains regular points.
-
-\begin{definition} \label{def:rel} Define a relation $\sim$ between regular contours, so $\phi \sim \phi'$ if $\phi$
-is L-homotopic to $\phi$'.
-\end{definition}
-
-It is easy to check that $\sim$ is an equivalence relation, so the set of regular contours
-is partitioned into equivalence classes. All contours in a class are L-homotopic to each other.
-
-\begin{claim} \label{clm:equiv} Consider such an equivalence class $\Phi$. Then $f(\Phi)$
-is an open interval $(a,b)$, where $a$ and $b$ are critical values.
-\end{claim}
-
-\begin{proof} \Clm{mono} and continuity of L-homotopy immediately imply that for $\phi, \phi' \in \Phi$,
-for any $t \in [f(\phi),f(\phi')]$, there exists $\phi'' \in \Phi$ such that $f(\phi'') = t$.
-So $f(\Phi)$ is an interval. As equivalence classes are defined over only regular contours, \Clm{reg} 
-tells us that this interval must be open with critical value endpoints.
-\end{proof}
-
-We can now define the Reeb Graph $\reeb(\MM)$. We use the fact that critical points 
-have distinct values. (Technically, the Reeb Graph depends on the function $f$.
-Because it is implicit by the embedding of $\MM$, we will remove it from the notation.)
-
-\begin{definition} \label{def:reeb} The \emph{Reeb Graph} $\reeb(\MM)$ has as a vertex set
-the set of critical points. The edge $(x,y)$ is present if there exists equivalence class
-$\Phi$ such that $f(\Phi) = (f(x),f(y))$.
-\end{definition}
-
-We define a ``cut" operation on manifolds that cuts along a contour to create
-a manifold with a new boundary. Intuitively, any cut creates two disjoint boundaries, one
-above and one below.
-
+\ignore{
 \medskip
 \fbox{
 \begin{minipage}{0.9\textwidth}
-{\bf $\cut(\MM,\phi)$}
+{\bf $\cut(\phi,\MM)$}
 
 \smallskip
 \begin{asparaenum}
 %	\item Insert the vertices of $\phi$ in $\MM$.
-	\item Take an arbitrary edge $e$ whose interior intersect $\phi$.
+	\item For every edge $e$ that intersects $\phi$ at point $x$: add edges $(e,x^+)$ and $(e,x^-)$
+	where $x^+$ (resp. $x^-$) is infinitesimally above (resp. below) $x$.
 	\item Take a point $x$ (resp. $y$) on $e$ at distance $\eps$ above (resp. below) $\phi$.
 	\item Let $\phi_x$ be the contour through $x$, and analogously define $\phi_y$. Insert a vertex
-	at each intersection point of these contours with edges of the manifold. Triangulate all new faces.
-	\item Delete the vertices (and incident edges, faces, etc.) of $\phi$ from the manifold.
+	at each intersection point of these contours with edges of $\MM$. Add  
+	\item Delete the edges between $\phi_x$ and $\phi_y$.
 \end{asparaenum}
 \end{minipage}}
 
 \medskip
-This results in a new manifold which is boundary critical if the input manifold was. There are two new disjoint
-boundary faces added. The manifold may be disconnected. Abusing notation, we use $\cut(\MM,\Psi)$
-for a set $\Psi$ of contours to mean the manifold obtained by cutting along all contours in $\Psi$.
+This results in a new boundary critical simplicial complex. There are two new disjoint
+boundary simplices added. The manifold may be disconnected. 
+}
 
-We now describe a procedure that converts the Reeb Graph of $\cut(\MM,\phi)$ to the Reeb Graph of $\MM$.
+We now describe a high-level approach to construct $\reeb(\MM)$.
 
 \medskip
 \fbox{
@@ -671,54 +539,112 @@ We now describe a procedure that converts the Reeb Graph of $\cut(\MM,\phi)$ to 
 
 \smallskip
 \begin{asparaenum}
-	\item Let $\MM' = \cut(\MM,\phi)$.
-	\item Construct $\reeb(\MM')$ and let $B, C$ be the vertices corresponding to the new boundaries created
+	\item Let $\MM' = \cut(\phi,\MM)$.
+	\item Construct $\reeb(\MM')$ and let $A, B$ be the nodes corresponding to the new boundaries created
 	in $\MM'$. (One is a minima and the other is maxima.)
-	\item Since $B, C$ are leaves, they each have unique neighbors $B'$ and $C'$, respectively. Insert
-	edge $(B',C')$ and delete $B,C$ to obtain a new graph.
+	\item Since $A, B$ are leaves, they each have unique neighbors $A'$ and $B'$, respectively. Insert
+	edge $(A',B')$ and delete $A, B$ to obtain $\reeb(\MM)$.
 \end{asparaenum}
 \end{minipage}}
 
 \medskip
-\begin{lemma} \label{lem:surgery} For any regular contour $\phi$, the output of $\surgery(\MM,\phi)$ is $\reeb(\MM)$.
+\begin{theorem} \label{thm:surgery} For any regular contour $\phi$, the output of $\surgery(\MM,\phi)$ is $\reeb(\MM)$.
+\end{theorem}
+
+The main theorem is a direct consequence of the following lemma. 
+
+\begin{lemma} \label{lem:cut} Consider a regular contour $\phi$ contain in contour class (edge of $\reeb(\MM))$
+$(u,v)$ and denote $\MM' = \cut(\phi,\MM)$. Then $\cV(\reeb(\MM')) = \{\phi^+,\phi^-\} \cup (\cV(\MM) \setminus \phi)$
+and $\cE(\reeb(\MM')) = \{(u,\phi^+),(\phi^-,v)\} \cup (\cE(\MM) \setminus (u,v))$.
 \end{lemma}
 
-\begin{proof} The only difference between $\reeb(\MM)$ and $\reeb(\cut(\MM,\phi))$ is in the equivalence
-class corresponding to $\phi$. This class is split into two classes in $\cut(\MM,\phi)$, which are joined
-back by $\surgery(\MM,\phi)$.
+\begin{proof} The contours of $\MM'$ are exactly the contours of $\MM$ with $\phi^+$ and $\phi^-$, without $\phi$.
+All new vertices created in $\MM'$ are present on $\phi^+$ and $\phi^-$. That proves the first part.
+
+Any contour class in $\MM'$ (edge in $\cC(\MM')$) that does not involve $\phi^+$ or $\phi^-$ is also
+a contour class in $\MM$. Furthermore, a maximal contour class satisfying these properties is also
+maximal in $\MM$. So all edges of $\cC(\MM')$ that do not involve $\phi^+$ or $\phi^-$ are edges of $\cC(\MM)$.
+Analogously, every edge of $\cC(\MM)$ not involving $\phi$ is an edge of $\cC(\MM)$.
+
+Consider the contour class corresponding to edge $(u,v)$ of $\cC(\MM)$. There is a natural ordering
+of the contours by function value, ranging from $f(u)$ to $f(v)$. All contours in this class ``above" $\phi$
+form a maximal contour class in $\MM'$, represented by edge $(u,\phi^+)$. Analogously, there is another
+contour class represented by edge $(\phi^-,v)$. We have now accounted for all contours in $\cC(\MM')$,
+completing the proof.
+\end{proof}
+
+A useful corollary of this lemma shows that a contour actually splits the simplicial complex into
+two disconnected complices.
+
+\begin{theorem} \label{thm:jordan} $\cut(\phi,\MM)$ consists of two
+disconnected simplicial complices.
+\end{theorem}
+
+\begin{proof} Denote (as in \Lem{cut}) the edge containing $\phi$ to be $(u,v)$. Suppose for contradiction that there is a path between vertices $u$ and $v$
+in $\MM' = \cut(\phi,\MM)$. By \Thm{carr-path}, there is a path in $\cC(\MM')$ between $u$ and $v$. Since $\phi^+$ and $\phi^-$
+are leaves in $\cC(\MM')$, this path obviously cannot use edges incident to them. By \Lem{cut},
+all the edges of this path are in $\cE(\cC(\MM)) \setminus (u,v)$. So we get a cycle in $\cC(\MM)$. Contradiction.
+To show that there are exactly two connected components in $\cut(\phi,\MM)$, it suffices
+to see that $\cC(\MM')$ has two connected components (by \Lem{cut}) and apply \Thm{carr-path}.
 \end{proof}
 
 \section{Raining to partition $\MM$} \label{sec:rain}
 
-In this section, we assume that $\MM$ is homeomorphic to $\SSS^2$ with boundaries. 
+In this section, we describe a linear time procedure that partitions $\MM$ into special
+\emph{extremum dominant} simplicial complices.
 
-\begin{definition} \label{def:dom} A manifold is \emph{extremum dominant} if there exists
-a maximum (resp. minimum) $x$ such that every non-maximal (resp. non-minimal) \emph{vertex} in the manifold has an increasing (resp. decreasing) path to $x$.
+\begin{definition} \label{def:dom} A simplicial complex is \emph{minimum dominant} if there exists
+a minimum $x$ such that every non-minimal \emph{vertex} in the manifold has decreasing path to $x$.
+Analogously define \emph{maximum dominant}. 
 \end{definition}
 
-We will describe a linear time algorithm that partitions $\MM$ into a set of extremum dominant manifolds.
-The first part of this requires a ``raining" procedure. Start at some point $x \in \MM$ and imagine rain at $x$.
-The water will flow downwards along descending paths and ``wet" all the points encountered.
+The first aspect of the partitioning is ``raining". Start at some point $x \in \MM$ and imagine rain at $x$.
+The water will flow downwards along descending paths and ``wet" all the points encountered. Note that this procedure considers all points
+of the manifold, not just vertices.
 
-\begin{definition} \label{def:wet} The set of points $y$ such that there is a descending path from $x$ to $y$
-is denoted by $\wet(x,\MM)$. A point $z$ is on the \emph{interface} of $\wet(x,\MM)$ if every neighborhood of $z$
+\begin{definition} \label{def:wet} Fix $\MM$ and $x \in \MM$. The set of points $y \in \MM$ such that there is a non-ascending path from $x$ to $y$
+is denoted by $\wet(x,\MM)$ (which is in turn represented as a simplicial complex). A point $z$ is at the \emph{interface} of $\wet(x,\MM)$ if every neighborhood of $z$
 has non-trivial intersection with $\wet(x,\MM)$.
 \end{definition}
 
-Note that $\wet(x,\MM)$ (and its interface) can easily be computed in linear time in the size of the wet sub-manifold, using a descending BFS from $x$.
+The following claim gives a description of the interface. While its meaning is quite intuitive, the proof is tedious.
 
-\begin{claim} \label{clm:inter} For any $x$, the interface of $\wet(x,\MM)$ is a set of disjoint, non-regular contours.
-Furthermore, each such contour contains a merge vertex.
+\begin{claim} \label{clm:inter} For any $x$, the interface of $\wet(x,\MM)$ is a set of contours,
+each containing a join vertex.
 \end{claim}
 
-\begin{proof}
+\begin{proof} If $y \in \wet(x,\MM)$, all the points in any contour containing $y$ are also in $\wet(x,\MM)$.
+ (Follow the non-ascending path to from $x$ to $y$ and then walk along the contour.) The converse is also true,
+ so $\wet(x,\MM)$ contains entire contours.
+
+Let $\eps, \delta$ be sufficiently small as usual. Fix some $y$ at the interface.
+Note that $y \in \wet(x,\MM)$. (Otherwise, $B_\eps(y)$ is dry.)
+The points in $B_\eps(y)$ that lie below $y$ have a descending path from $y$ and hence must be wet.
+There must be a dry point in $B_\eps(y)$ that is above $y$, and hence,
+there exists a dry, regular $(f(y)+\delta)$-contour $\phi$ intersecting $B_\eps(y)$.
+
+Suppose $y$ is in the interface. Consider the set $\Gamma_y$ of points connected to $y$
+by a path with all points at height $f(y)$. (This is a set of $f(y)$-contours.) Suppose for contradiction
+that $\forall z \in \Gamma_y$, $z$ has up-degree $1$. Consider the non-ascending path from $x$ to $y$ and let $z$
+be the first point of $\Gamma_y$ encountered. There exists a wet, regular $(f(y) + \delta)$-contour $\psi$ 
+intersecting $B_\eps(z)$. Now, walk from $z$ to $y$ along $\Gamma_y$. If all points $w$ in this walk
+have up-degree $1$ (ref. to \Def{deg}), then $\psi$ is the unique $f(y)+\delta$-contour
+intersecting $B_\eps(w)$. This would imply that $\phi = \psi$, contradicting the fact that $\phi$ is wet
+and $\psi$ is dry.
+
+Therefore, there must exist a join vertex $w$ in $\Gamma_y$, such that $B_\eps(w)$ intersects
+both $\phi$ and $\psi$. As $\delta, \eps \rightarrow 0^+$, the limit of $\phi$ (which is dry)
+lies in $\Gamma_y$ (which is wet). Hence, this gives the interface, which is a contour containing
+the join $w$.
+\end{proof}
+
+\ignore{
+\begin{proof} If $y \in \wet(x,\MM)$, all the points in any contour containing $y$ are also in $\wet(x,\MM)$.
+ (Follow the non-ascending path to from $x$ to $y$ and then walk along the contour.)
  First observe that any point which in the interface must be wet.  Second, for $y \in \wet(x,\MM)$, all the points in any contour containing $y$ are also in $\wet(x,\MM)$, 
- as one can follow the descending path to $y$ and then walk along the contour.
+ as one can follow the non-ascending path to $y$ and then walk along the contour.
  
- So let $y$ be a point in the interface.
- For $\eps$ sufficiently small, the points in any $\eps$ neighborhood of $y$ that lie below $y$ must have a descending path from $y$ and hence must be wet.
- Therefore in order for $y$ to have non-trivial intersection with $\wet(x,\MM)$ for any arbitrarily small $\eps$ there must be a dry point which lies 
- strictly above $y$.  In particular, this implies there must be an entire dry contour which lies just above $y$.
+ So let $y$ be a point in the interface. 
  
  However, since $y$ is in the interface, it is also wet.  Therefore for any contour $\phi$ which contains $y$, for any arbitrarily small $\eps$ there is 
  a wet point which lies above $\phi$ and has a descending path of length at most $\eps$ to $\phi$.
@@ -730,6 +656,14 @@ Furthermore, each such contour contains a merge vertex.
  By similar logic one can argue that of the two contours through a given merge vertex at most one can contain interface points other than the merge vertex, 
  and that if one of the contours does contain such interface points, then the entire contour consists of interface points.
 \end{proof}
+}
+
+
+Note that $\wet(x,\MM)$ (and its interface) can be computed in time linear in the size of the wet simplicial complex.
+We perform a non-ascending walk from $x$. Any facet $F$ of $\MM$ encountered has some (if not all) portion of in $\wet(x,\MM)$.
+This portion is determined by cutting $F$ along the interface. Since the interface is a contour, this is equivalent
+to cutting $F$ by a hyperplane. All these operations can be performed to output $\wet(x,\MM)$ in time linear in $|\wet(x,\MM)|$.
+
 
 % \begin{proof} If $y \in \wet(x,\MM)$, but not in the interface, then any contour containing $y$ is also in $\wet(x,\MM)$.
 % So consider a point $y$ in the interface. We argue that all points in a contour $\phi$ containing $y$
@@ -746,26 +680,40 @@ Furthermore, each such contour contains a merge vertex.
 % through them as disjoint. So $y$ is a merge.
 % \end{proof}
 
-We will define a \lift{} operation on the interface contours. Consider such a contour $\phi$ containing
+We define a simple \lift{} operation on the interface contours. Consider such a contour $\phi$ containing
 a merge vertex $y$. Take any dry increasing edge incident to $y$, and pick the point $z$ on this edge at height
-$f(y) + \eps$. Let $\lift(y) = \cont(z)$.
+$f(y) + \delta$. Let $\lift(\phi)$ be the unique contour through regular point $z$. Note that $\lift(\phi)$ is dry.
 
 \begin{claim} \label{clm:cut-int} Let $\phi$ be an interface contour. Then $\cut(\MM,\lift(\phi))$
-results in two disjoint manifolds, one consisting entirely of dry points.
+results in two disjoint simplicial complices, one consisting entirely of dry points.
 \end{claim}
 
-\begin{proof} Note that $\lift(\phi)$ is a closed, dry curve. By the Jordan Curve Theorem,
-$\cut(\MM,\lift(\phi))$ results in two disjoint manifolds. Let $\NN$ be the manifold containing
-the point $x$ that we called $\wet(x,\MM)$ from, and let $\NN'$ be the other manifold. 
-If there exists a wet point $z$ in $\NN'$, then there exists a descending path from $x$ to $z$. 
-As $x$ is in $\NN$ and $z$ is in $\NN'$, again by the Jordan Curve Theorem this path must intersect $\phi$, 
-contradicting the fact that $\phi$ is dry.
+\begin{proof} By \Thm{jordan}, $\cut(\MM,\lift(\phi))$ results in two disjoint simplicial complices. Let $\NN$ be the complex containing
+the point $x$ (the argument in $\wet(x,\MM)$), and let $\NN'$ be the other complex. 
+Any path from $x$ to $\NN'$ must intersect $\lift(\phi)$, which is dry. Hence $\NN'$ is dry.
+%
+%
+%If there exists a wet point $z$ in $\NN'$, then there exists a descending path from $x$ to $z$. 
+%As $x$ is in $\NN$ and $z$ is in $\NN'$, again by the Jordan Curve Theorem this path must intersect $\phi$, 
+%contradicting the fact that $\phi$ is dry.
 \end{proof}
 
-We now define the main partitioning procedure that cuts up a manifold $\NN$ homeomorphic to $\SSS^2$ with boundaries into a series of extremum
-dominant manifolds. It takes as input the manifold and a maximum $x$. To initialize,
-we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum.
 
+We describe the main partitioning procedure that cuts a simplicial complex $\NN$ into extremum
+dominant complices. It takes an additional input of a maximum $x$. To initialize,
+we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum. One of the critical aspects
+of the procedure is that the rain alternately flows downwards and upwards. In other words, when
+we start, rain flows downwards. In each recursive call, the direction of rain is switched to the 
+opposite direction. While this is way of implementing $\rain$, it is conceptually easier
+to think of \emph{inverting} a complex $\NN'$ when a recursive call is made. Inversion
+is easily achieved by just negating the height values. (From a running time standpoint, it suffices
+to maintain a single bit associated with $\NN'$ that determines whether heights are inverted or not.)
+We can now let rain flow downwards, as it usually does in our world.
+
+%
+%We critically perform
+%an \emph{inversion} step, which is simply achieved by negating
+%
 \medskip
 \fbox{
 \begin{minipage}{0.9\textwidth}
@@ -773,42 +721,56 @@ we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum.
 
 \smallskip
 \begin{compactenum}
-	\item Compute the interface of $\wet(x,\NN)$. 
-	\item If the interface is empty, simply output $\NN$. Otherwise, denote the contours by $\phi_1, \phi_2, \ldots, \phi_k$, and set $\phi'_i = \lift(\phi_i)$.
+	\item Determine interface of $\wet(x,\NN)$. 
+	\item If the interface is empty, simply output $\NN$. Otherwise, denote the contours by $\phi_1, \phi_2, \ldots, \phi_k$ and set $\phi'_i = \lift(\phi_i)$.
 	\item Initialize $\NN_1 = \NN$.
 	\item For $i$ from $1$ to $k$: 
 	\begin{compactenum}
-		\item Call $\cut(\phi'_i,\NN_1)$ to get the dry manifold $\LL_i$ and wet manifold $\NN_{i+1}$.
-		\item Let the new boundary of $\LL_i$ be $B_i$. Invert $\LL_i$ so that $B_i$ is a maximum. Recursively
+		\item Construct $\cut(\phi'_i,\NN_i)$, consisting of dry complex $\LL_i$ and remainder $\NN_{i+1}$.
+		\item Let the newly created boundary of $\LL_i$ be $B_i$. Invert $\LL_i$ so that $B_i$ is a maximum. Recursively
 		call $\rain(B_i,\LL_i)$.
 	\end{compactenum}
-	\item Output $\NN_{k+1}$.
+	\item Output $\NN_{k+1}$ together with any complices output by recursive calls.
 \end{compactenum}
 \end{minipage}}
 
 \medskip
 For convenience, denote the total output of $\rain(x,\MM)$ by $\MM_1, \MM_2, \ldots, \MM_r$.
+We first argue the correctness of $\rain$.
 
-\begin{lemma} \label{lem:rain-1} Each output manifold $\MM_i$ is extremum dominant.
+\begin{lemma} \label{lem:rain-1} Each output $\MM_i$ is extremum dominant.
 \end{lemma}
 
 \begin{proof} Consider a call to $\rain(x,\NN)$. If the interface is empty, then all of $\NN$
 is in $\wet(x,\NN)$, so $\NN$ is trivially extremum dominant. So suppose the interface
 is non-empty and consists of $\phi_1, \phi_2, \ldots, \phi_k$ (as denoted in the procedure).
-By repeated applications of \Clm{cut-int}, $\NN_{k+1}$ consists of wet points. 
+By repeated applications of \Clm{cut-int}, $\NN_{k+1}$ contains $\wet(x,\MM)$. 
 Consider $\wet(x,\NN_{k+1})$. The interface must exactly be $\phi_1, \phi_2, \ldots, \phi_k$.
 So the only dry vertices are those in the boundaries $B_1, B_2, \ldots, B_k$. But these
 boundaries are maxima.
 \end{proof}
 
-The procedure $\rain$ creates new boundary vertices on the edges it cuts each time it call the 
-subroutine $\cut$.  The key to understanding the running time of this procedure is to bound the 
-number of newly created vertices, for which we have the following lemma.
+Focus on $\rain(x,\MM)$. As $\rain$ proceeds, new facets/simplices are created because of repeated cutting. Indeed, any facet $F$
+in any simplicial complex $\NN$ that is recursively invoked, is achieved by cutting facet $F'$ in $\MM$.
+The key to the running time of $\rain(x,\MM)$ is bounding the number of newly created facets, for which we have the following lemma.
 
 \begin{lemma}\label{lem:new-verts}
-The total number of boundary vertices created by a call to $\rain(x, \NN)$ is $O(n)$, where $n=|\NN|$
+A facet $F \in \MM$ is cut at most once during the $\rain(x,\MM)$.
 \end{lemma}
-\begin{proof}
+\begin{proof} All notation here follows that in the pseudocode of $\rain$.
+Firstly, by \Thm{jordan}, all the pieces of which $\rain$ is invoked are disjoint.
+Secondly, all recursive calls are made on dry complices.
+
+Consider the first time that $F$ is cut, say, during the call to $\rain(x,\NN)$.
+Specially, say this happens when $\cut(\phi'_i,\NN_i)$ is constructed. 
+So $F$ is cut by some hyperplane into lower and upper portions (which are then triangulated).
+Since the cut is infinitesimally above an interface, the lower portion is basically wet.
+It can never be part of $\LL_1, \LL_2, \ldots$, which go into recursive calls. This portion
+is in $\NN_{k+1}$. The upper portion/facet (call it $U$) is in $\LL_i$. Note that the lower
+boundary of $U$ is in the boundary $B_i$. Since a recursive call is made to $\rain(B_i,\LL_i)$
+(and $\LL_i$ is inverted), $U$ becomes wet. Hence, $U$ will not be cut subsequently.
+All in all, $F$ is cut at most once.
+\ignore{
 As the number of edges is $O(n)$, arguing that there is at most one boundary vertex created along any given edge will imply the claim.
 Consider some edge $e$ and take the first time a boundary vertex is created in $e$.
 This happens when some contour $\phi$ intersects $e$. On applying $\cut(\NN,\lift(\phi))$,
@@ -819,8 +781,20 @@ The dry part of $e$ (call it $e'$) needs to be considered.
 A boundary vertex $v$ (an new endpoint of $e$) is created, which is part of the boundary $B$ in $\LL$,
 such that $\rain(B,\LL)$ is called to the inverted $\LL$. In this call, since the water starts from $v$,
 all of $e'$ becomes wet. So there is no further interface contour that can intersect this portion of $e'$.
+}
 \end{proof}
 
+
+\begin{theorem} \label{thm:rain-time} The total running time of $\rain(x,\MM)$ is $O(|\MM|)$.
+\end{theorem}
+
+\begin{proof} The operations performed are the raining and cutting. We can bound this by the total
+complexities of the wet complices and the new boundaries created. No facet is every wet twice,
+and by \Lem{new-verts}, the total number of facets that every appear is $O(|\MM|)$. This also 
+bounds the complexities of the boundaries created.
+\end{proof}
+
+\ignore{
 As each original vertex in $\NN$ appears in only one of the sub-manifolds output by $\rain(x,\NN)$, we have the following corollary.
 
 \begin{corollary}
@@ -835,30 +809,142 @@ We know that each invocation to $\wet$ runs in time linear
 to the portion of the manifold which is wet (including the new boundary vertices created).  
 As the output of $\rain$ is precisely the distinct sub-manifolds wet by each distinct call to $\wet$, the claim follows.
 \end{proof}
-
-Consider the set of manifolds output by $\rain(x,\MM)$, there is a natural tree ordering defined over these manifolds where the 
-root corresponds the first manifold that was wet when we rained from $x$, and its children correspond to the recursive calls 
-(i.e. where we rained from the interface contours of the first raining).  Call this the \emph{Manifold Ordering Tree}.
-$\rain$ can easily be modified to also output this tree (without affecting the asymptotic running time).  
-
+ 
 %Consider one of the manifolds $\MM_i$ output by $\rain$.  This manifold has a set of boundary maxima/minima that are the result 
 %of cutting along interface contours.  For each such contour there is exactly one other output manifold $\MM_j$ for which 
 %the contour appears as a boundary maxima/minima. 
+}
 
-\begin{claim} \label{clm:rain-reeb} Let $\reeb(\MM_1), \reeb(\MM_2), \ldots, \reeb(\MM_r)$, 
-be the output of $\rain(x,\MM)$. Suppose that for each reeb graph we know its corresponding vertex in the Manifold Ordering Tree. 
-Then $\reeb(\MM)$ can be computed in $O(n)$ time.
+
+
+\begin{claim} \label{clm:rain-reeb} Given $\reeb(\MM_1), \reeb(\MM_2), \ldots, \reeb(\MM_r)$, 
+%be the output of $\rain(x,\MM)$. Suppose that for each reeb graph we know its corresponding vertex in the Manifold Ordering Tree. 
+$\reeb(\MM)$ can be constructed in $O(|\MM|)$ time.
 \end{claim}
 
-\begin{proof}
-We will walk through the Manifold Ordering Tree in a leaf first ordering.  Each time we visit a node we connect its reeb graph to the 
-reeb graph of its children in the tree using the $\surgery$ procedure. This takes $O(n)$ time overall by \Lem{new-verts} and since $\surgery$ takes constant time (given the appropriate vertices in each reeb graph).  The correctness follows by induction and  \Lem{surgery}.
+\begin{proof} Consider the tree of recursive calls in $\rain(x,\MM)$, with each node
+labeled with some $\MM_i$.
+%
+%There is a natural tree ordering defined over these manifolds where the 
+%root corresponds the first manifold that was wet when we rained from $x$, and its children correspond to the recursive calls 
+%(i.e. where we rained from the interface contours of the first raining).  Call this the \emph{Manifold Ordering Tree}.
+%$\rain$ can easily be modified to also output this tree (without affecting the asymptotic running time).  
+Walk through this tree in a leaf first ordering.  Each time we visit a node we connect its contour tree to the 
+contour tree of its children in the tree using the $\surgery$ procedure. 
+Each $\surgery$ call is constant time, and the total time is the size of the recursion tree.
+%
+%
+%This takes $O(n)$ time overall by \Lem{new-verts} and since $\surgery$ takes constant time (given the appropriate vertices in each reeb graph).  The correctness follows by induction and  \Lem{surgery}.
 \end{proof}
 
-\section{Painting to compute contour trees} \label{sec:paint}
+
+\section{Contour trees of extremum dominant manifolds} \label{sec:paint}
+
 The previous section allows us to restrict attention to extremum dominant manifolds.
-We will orient so that the extremum in question is a \emph{minimum}.
-We will fix such a manifold $\MM$, with the dominant minimum $u$. 
+We will orient so that the extremum in question is always a \emph{minimum}.
+We will fix such a simplicial complex $\MM$, with the dominant minimum $m^*$. 
+We observe that the contours trees of minimum dominant manifolds have a relatively simple description.
+This description is directly inspired by (and proven using) the \emph{join tree} of~\cite{csa-cctad-00}.
+We first explain what these trees are.
+
+For vertex $v$, we use $\MM^+_v$ to denote the simplicial complex obtained by only
+keeping vertices $u$ such that $f(u) > f(v)$. Analogously, define $\MM^-_v$. Note that $\MM^+$ may contain
+numerous connected components. The following definition of join and split trees were given by~\cite{csa-cctad-00}.
+Conventially, all edges are directed from higher to lower function value.
+
+\begin{definition} \label{join} The join tree $\cJ(\MM)$ of $\MM$ is built on vertex set $V(\MM)$.
+The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex is a connected component of $\MM^+_v$
+\emph{and} $v$ is connected to this component (in $\MM$). The split tree $\cS(\MM)$ is obtained
+by looking at $\MM^-_v$ (or alternately, by taking the join tree of the inversion of $\MM$). 
+\end{definition}
+
+Note that unlike the contour tree, all vertices in $\MM$ are present in $\cJ(\MM)$ and $\cS(\MM)$. 
+Some basic facts about these trees. All outdegrees in $\cJ(\MM)$ and all indegrees in $\cS(\MM)$ are at most $1$.
+Indegree $2$ vertices in $\cJ(\MM)$ are joins, and outdegree $2$ vertices in $\cS(\MM)$ are splits.
+Leaves in $\cJ(\MM)$ are maxima, and leaves in $\cS(\MM)$ are minima.
+
+The key observation is that $\cS(\MM)$ is trivial for minimum dominant $\MM$.
+
+\begin{lemma} \label{lem:split} $\cS(\MM)$ consists of:
+\begin{asparaitem}
+	\item A single path (in sorted order) with all vertices except non-dominant minima.
+	\item Each non-dominant minimum is attached to a unique split.
+\end{asparaitem}
+\end{lemma}
+
+\begin{proof} First, let us complete the proof assuming that each split $v$ has one child that is just a leaf, which
+is a non-dominant minimum. Any minimum is a leaf in $\cS(\MM)$, and thereby attached to a split. If we removed
+all non-dominant minima, we must end up with a path, as asserted above.
+
+Consider a split $v$. For sufficiently small $\eps, \delta$, there are exactly two $(f(v) - \delta)$-contours
+$\phi$ and $\psi$ intersecting $B_\eps(v)$. Both of these are regular contours. There must be a non-ascending
+path from $v$ to the dominant minimum $m^*$. Consider the first edge (necessarily decreasing from $v$)
+on this path. It must intersect some contour, say $\phi$. By \Thm{jordan}, $\cut(\MM,\phi)$ has
+two connected components, with one (call it $\LL$) having $\phi^-$ as a boundary maximum. This complex
+contains $m^*$ as the non-ascending path $\phi$ intersects $\phi$ only once. Let the other
+component be called $\MM'$.
+
+Consider $\cut(\MM',\psi)$ with connected component $\NN$ having $\psi^-$ as a boundary. $\NN$
+does not contain $m^*$, so any path from the interior of $\NN$ to $m^*$ must intersect the boundary $\psi^-$.
+But the latter is a maximum in $\NN$, so there can be no non-ascending path from the interior to $m^*$.
+Since $\MM$ is overall minimum dominant, the interior of $\NN$ can only contain a single vertex $w$, a non-dominant
+minimum.
+
+The split $v$ has two children in $\cS(\MM)$, one in $\NN$ and one in $\LL$. The child in $\NN$ can only
+be the non-dominant minimum $w$, which is a leaf. 
+\end{proof}
+
+It is convenient to denote the non-dominant minima by $m_1, m_2, \ldots, m_k$, and the associated
+splits (as given by \Lem{split}) by $s_1, s_2, \ldots, s_k$.
+
+To prove our main theorem, we use the merging procedure from~\cite{csa-cctad-00} that constructs the contour tree
+from the join and split trees. 
+It actually construsts the \emph{augmented contour tree} $\cA(\MM)$, which
+is the contour tree with regular points inserted into the edges. 
+For any tree $T$ with vertex $v$, we define \emph{erasing} $v$ from $T$,
+when both in and outdegrees are at most $1$. If $v$ is a leaf, just delete $v$. Otherwise, smooth $v$ out
+(delete $v$ and connect its neighbors by an edge). This tree is denoted by $T \ominus v$.
+
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
+{\bf $\merge(\cJ(\MM),\cS(\MM))$}
+
+\smallskip
+\begin{compactenum}
+	\item Set $\cJ = \cJ(\MM)$ and $\cS = \cS(\MM)$.
+	\item Denote $v$ as \emph{candidate} if sum of indegree of $v$ in $\cJ$ and outdegree of $v$ in $\cS$ is $1$. 
+	\item Add all candidates to queue.
+	\item While candidate queue is non-empty: 
+	\begin{compactenum}
+		\item Let $v$ be head of queue. If $v$ is leaf in $\cJ$, consider its edge in $\cJ$. Otherwise
+		consider edge in $\cS$. In either case, let edge by $(v,w)$.
+		\item Insert $(v,w)$ in $\cA(\MM)$. 
+		\item Set $\cJ = \cJ \ominus v$ and $\cS = \cS \ominus v$. Enqueue any new candidates.
+	\end{compactenum}
+	\item Smooth out all regular vertices in $\cA(\MM)$ to get $\cC(\MM)$.
+\end{compactenum}
+\end{minipage}}
+
+\medskip
+
+\begin{theorem} \label{thm:contour-tree} The contour tree $\cC(\MM)$ consists of all edges $\{(s_i, m_i)\}$
+as well as: for any critical point $v$, edge $(w,v)$ where $w$ is the lowest non-minimal critical point
+in a connected component of $\MM^+_v$ connected to $v$.
+\end{theorem}
+
+\begin{proof} We first show that $\cA(\MM)$ is $\cJ(\MM) \ominus \{m_i\}$ with edges $\{(s_i,m_i)\}$.
+We have flexibility in choosing the order of processing in $\merge$. We first put the non-dominant
+maxima $m_1, \ldots, m_k$ into the queue. As these are processed, the edges $\{(s_i,m_i)\}$ are inserted 
+into $\cA(\MM)$. Once all the $m_i$'s are erased, $\cS$ becomes a path, so all outdegrees are at most $1$.
+The join tree is now $\cJ(\MM) \ominus \{m_i\}$. We can now process $\cJ$ leaf by leaf, and all
+edges of $\cJ$ are inserted into $\cA(\MM)$.
+
+Note that $\cC(\MM)$ is obtained by smoothing out all regular points from $\cA(\MM)$. Smoothing out regular
+points from $\cJ(\MM) \ominus \{m_i\}$ exactly yields the edges described in the theorem.
+\end{proof}
+
+\section{Painting to compute contour trees}
 
 We begin by associating a color with each maximum. If the set of maxima is $S$,
 this is simply an arbitrary bijection $\chi:S \mapsto [|S|]$. Imagine there being a large
@@ -2292,6 +2378,248 @@ Using this observation and \Cor{equivalent} we then have,
  &= \frac{3}{2}|H_r|\log\pth{\frac{5}{4}|H_r|}
 \end{align*}
 \end{proof}
+
+
+\section{Preliminaries}
+Consider a piecewise-linear (PL) $2$-manifold $\MM$ with boundaries.
+This is represented by a triangulation (given as a DCEL) where edges
+can be oriented and the boundary of a face is always counterclockwise. Some faces will \emph{not}
+be triangular, and each of these corresponds to a \emph{boundary face}.
+Let $G(\MM) = (V,E)$ denote this triangulation. We assume this triangulation
+has bounded degree.
+We will assume that $\MM$ is embedding in $\RR^d$.
+The manifold within each face is just linear.
+We define a \emph{height function} on $\MM$, $f:\MM \mapsto \RR$. For each point in $x \in \MM$, let $f(x)$ simply be the value of $x_1$.
+We distinguish between vertices and points in $\MM$. A point simply denotes any $x \in \MM$. A vertex is a point
+corresponding to some vertex of the triangulation $G(\MM)$.
+
+We define the size of the manifold $\MM$, denoted $|\MM|$, to be the number of faces, edges, and vertices.  
+Let $n$ denote the number of vertices.  
+Since we are working with $2$-manifolds, the size of the manifold is $\Theta(n)$.
+
+For smooth manifolds the ``status" of an internal point is decided by the gradient at that point. 
+Points of zero gradient are deemed \emph{critical};
+all other points are regular.
+For PL manifolds, we need a discrete version of this definition.
+First, all non-vertex points are considered regular.
+For vertex $v$, we use $\nbd(v)$ to denote the neighborhood of $v$ in $G(\MM)$. Let $\outnbd(v) := \{ w | f(v) > f(w), w \in \Gamma(v)\}$
+and $\innbd(v) := \{w | f(v) < f(w), w \in \Gamma(v)\}$. 
+%It is convenient to define $D(\MM)$, a directed variant of $G(\MM)$,
+%where edges are directed from higher to lower $f$-value. So $\outnbd(v)$ and $\innbd(v)$ are exactly the out- and in-neighborhoods
+%of $v$. A vertex in $v \in V$ can be classified in four types.
+\smallskip
+\begin{asparaenum}
+	\item Regular: Both $\outnbd(v)$ and $\innbd(v)$ are non-empty and are contiguous in $\nbd(v)$.
+	\item Maxima: $\nbd(v) = \outnbd(v)$.
+	\item Minima: $\nbd(v) = \innbd(v)$.
+	\item Saddle: Both $\outnbd(v)$ and $\innbd(v)$ are not contiguous in $\nbd(v)$.
+\end{asparaenum}
+\smallskip
+%Because $\MM$ is PL, the gradient at all non-vertex points of $\MM$ is zero.
+%So all non-vertex points are regular. 
+
+We will assume that $f$ is Morse, so the function value on all critical points is distinct. 
+We will also assume the stronger condition that all internal vertices have distinct function values.
+Note that assuming $f$ is Morse implies that $\MM$ has no multi-saddles 
+(i.e. $\outnbd(v)$ and $\innbd(v)$ can each have at most two non-contiguous components).
+A value $t$ is \emph{non-critical} if there exists no critical point $x$ such that $f(x) = t$.
+
+Furthermore, the boundary vertices have special properties, encapsulated in the following definition.
+
+\begin{definition} \label{def:bound} A manifold is \emph{boundary critical} if the following holds.
+Consider a boundary face $F$. All vertices in $F$ have the same function value. Furthermore, all
+internal neighbors of $F$ either have function values strictly greater (or strictly less)
+than this value.
+\end{definition}
+
+In other words, the vertices in a boundary face collectively behave like a maximum or minimum. 
+Abusing notation, the term ``critical point", ``maxima", and ``minima" will also refer to boundaries.
+Critical values include these boundary values.
+
+\begin{definition} \label{def:desc} A \emph{descending path} in $\MM$ is a continuous function $\lambda:[0,1] \mapsto \MM$
+such that for all $a < b$, $f(\lambda(a)) \geq f(\lambda(b))$. A \emph{PL descending path} from $x$ to $y$ is a sequence
+of points $x = s_0, s_1, s_2, \ldots, s_k = y$ with the following properties: for all $s_i$ but the first and last,
+$s_i$ lies on an edge of $\MM$. $s_i$ and $s_{i+1}$ lie in the same face of $\MM$. 
+For $i < j$, $f(s_i) \geq f(s_j)$.
+\end{definition}
+
+Since $\MM$ is PL, if there is a descending path from $x$ to $y$ then it has PL representation. So we will always refer to
+PL descending paths.
+
+\begin{definition} \label{def:cont} A \emph{contour} in $\MM$ is the image of a continuous and injective function $\phi:\SSS^1 \mapsto \MM$ such that $\forall a, b \in \SSS^1$, $f(\phi(a)) = f(\phi(b))$. This is called a \emph{$t$-contour} if $f(\phi(a)) = t$.
+%A contour is \emph{simple} if $\forall a, b \in \SSS^1$, $\lambda(a) \neq \lambda(b)$. 
+\end{definition}
+
+Note that just as in the case of paths, contours are also PL and have a corresponding discrete representation.
+
+\begin{remark}
+For contours which pass through critical points, our definition of a contour differs from the ``standard" definition (i.e. contours which are the result of a horizontal cutting).  
+
+In particular, the injective requirement does not allow contours through maxima or minima.  We can add these single point contours at the maxima and minima to our set of contours (though this is not really necessary).
+\end{remark}
+
+\begin{lemma} \label{lem:cont} If two distinct contours intersect, then their intersection is a saddle point.
+\end{lemma} 
+
+\begin{proof}
+Consider any (closed) triangular face $f$, interior to the $2$-manifold.  The set of points on this face at a given height $h$ forms a closed line segment, call it $l_f$.  Let $\phi$ be any contour that intersects some point in the interior of this face at height $h$.  Then $\phi$ must contain all of $l_f$, since otherwise continuity or simplicity would be violated.  
+
+So consider two distinct intersecting contours $\phi_1$ and $\phi_2$.  Since they are distinct, there must be a point on the boundary of their intersection, i.e. any (arbitrarily small) ball centered at this point contains contour points both inside and outside the intersection of the contours.  Call this point $p$.
+
+If $p$ lies in the interior of a face $f$ then both $\phi_1$ and $\phi_2$ must contain the entire above mentioned closed lines segment $l_f$, and hence $p$ was not on the intersection boundary. 
+Similarly suppose that $p$ is in the interior of an edge (clearly such an edge would need to be interior to the manifold for $\phi_1$ and $\phi_2$ to be contours).  Since this is a $2$-manifold each edge is adjacent to exactly two faces.  Let $l_a$ and $l_b$ be the above described closed line segments on each face.  Then again $\phi_1$ and $\phi_2$ contain all of $l_a$ and $l_b$, and $p$ was not on the intersection boundary.
+
+So $p$ must be a vertex $v$ of the manifold.  Let $\phi$ be any contour through $v$.  There must be two distinct faces $f_a$ and $f_b$ adjacent to $v$ which $\phi$ intersects.  Any face adjacent to $v$ has exactly two bounding edges adjacent to $v$.  Since faces are linear interpolates of the vertices, and since $\phi$ intersects $f_a$ and $f_b$, for either face one of these two edges must be increasing from $v$ and the other decreasing from $v$.  Call such a face a middle face.
+
+Now if $v$ is on the boundary of the intersection of $\phi_1$ and $\phi_2$ then we need at least 3 middle faces adjacent to $v$ (since otherwise it again is like the case we $p$ was interior to an edge).  However, the only vertices the have at least 3 such faces are by definition saddle points.  As no two vertices are at the same height, this saddle point can be the only point of intersection.
+\end{proof}
+
+%\begin{proof} Consider the intersection point $x$. It cannot be internal to a face, otherwise $\MM$ self-intersects.
+%By the distinctness of the contours, there must be $4$ faces incident to $x$, where each face
+%has vertex with a larger function value.
+%It cannot be internal to an edge, otherwise this edge would participate in $4$ faces. So it must be a vertex. 
+%These $4$ faces lead to at least $2$ neighbors of $x$ with higher function value. One can also show the existence of $2$
+%interleaved neighbors with lower function value. So $x$ is critical.
+%\end{proof}
+
+\begin{corollary}
+There is a unique contour containing a regular point.
+\end{corollary}
+
+\begin{definition} \label{def:p-cont}
+For a regular point $x$, $\cont(x)$ denotes the unique contour containing $x$.
+\end{definition}
+
+%By the Morse property of distinct critical values, we get the following important lemma.
+
+\begin{corollary} \label{cor:cont} Let $t$ be a non-critical value. The set of $t$-contours is a set
+of disjoint PL contours.
+\end{corollary}
+
+We can use contours to classify saddle points. For a saddle point, we call two increasing (or decreasing) neighbors \emph{opposite}
+if they lie in disjoint parts of $\Gamma^+(w)$ (or $\Gamma^-(w)$).
+
+In the following definition and, unless otherwise stated, throughout the rest of this writeup $\eps$ is some infinitesimally small amount
+(in particular smaller than the minimum height difference between vertices in the manifold).
+
+\begin{definition} \label{def:merge} Consider two increasing (resp. decreasing) opposite edges incident to a saddle point $x$,
+and let $y$ and $z$ be points on these edges such that $f(y) = f(z) = f(x) + \eps$ (resp. $=f(x) - \eps$).
+If $\cont(y)$ and $\cont(z)$ are disjoint, then $x$ is called a \emph{merge} (resp. \emph{split}) vertex.
+\end{definition}
+
+As $f$ is a Morse function over a $2$-manifold, we have the following.
+
+\begin{claim} \label{clm:saddle} 
+  \begin{compactenum}[(1)]
+    \item Every saddle is either a merge or a split, but not both.
+    \item Every saddle has exactly two distinct contours which contain it.
+  \end{compactenum}
+\end{claim}
+
+
+\subsection{The L-homotopy} \label{sec:l-hom}
+We need a specific notion of homotopy between contours. The L below stands for ``level".
+
+\begin{definition} \label{def:cont-hom} Two contours $\phi_0, \phi_1$ are \emph{L-homotopic}
+if: there exists a continuous function $H:\SSS^1 \times [0,1] \mapsto \MM$
+such that $H(\SSS^1,0) = \phi_0$, $H(\SSS^1,1) = \phi_1$, and $\forall a \in [0,1]$,
+$H(\SSS^1,a)$ is a contour.
+\end{definition}
+
+\begin{claim} \label{clm:non-hom} Consider a saddle point $x$. Take an increasing edge incident to $x$
+and let $y$ be a point on this edge within an $\eps$-ball of $x$. Similarly, take a decreasing edge
+and a point $z$ on this edge. $\psi(y)$ and $\psi(z)$ are not L-homotopic.
+\end{claim}
+
+\begin{proof}
+Without loss of generality assume that $x$ is a merge vertex.  By \Clm{saddle} there are exactly two distinct contours, 
+$\phi_1$ and $\phi_2$ through $x$.  Let $E_1$ and $E_2$ be the sets of manifold edges that are not adjacent to $x$ and that $\phi_1$ and $\phi_2$ intersect, respectively.
+Observe that as contours are by definition non-trivial, both $E_1$ and $E_2$ must non-empty.  Moreover since $\phi_1$ and $\phi_2$ only intersect at $x$, $E_1\cap E_2 = \emptyset$
+
+As $x$ is a merge vertex, $\psi(y)$ cannot intersect all edges in $E_1 \cup E_2$.
+On the other hand since $x$ cannot be both a merge and a split by \Clm{saddle}, $\psi(z)$ must intersect all of $E_1 \cup E_2$.  As $x$ is the only vertex in between $z$ and $y$ 
+and no edge in $E_1\cup E_2$ is adjacent to $x$, it is not hard to see that by the continuity requirement $\psi(z)$ cannot be L-homotopic to $\psi(y)$.
+%
+%
+% Without loss of generality assume that $x$ is a merge vertex.  By \ref{clm:saddle} there are exactly two distinct contours, 
+% $\phi_1$ and $\phi_2$ through $x$.  Observe that by continuity of L-homotopy, if $\psi(z)$ is $L$-homotopic to $\psi(y)$, 
+% then $\psi(z)$ must L-homotopic to either $\phi_1$ or $\phi_2$, as these are the only two possible contours at the height of $x$ 
+% (in the connected component of the manifold in between $y$ and $z$ and containing $x$).
+% We now show that $\psi(z)$ is not L-homotopic to either $\phi_1$ or $\phi_2$.
+% 
+% First observe that since contours are non-trivial (except at extrema), by continuity $\psi(z)$ cannot be 
+% simultaneously L-homotopic to both contours through $x$.  So suppose $\psi(z)$ is L-homotopic to one of the contours, say $\phi_1$.
+% 
+% As $\eps$ is smaller than the minimum height difference of two vertices in the manifold, 
+% and $z$ is $\eps$ lower than $x$, there are no vertices in between $z$ and $x$.  In particular, whatever edges $\phi_1$ and $\phi_2$ intersect (in their interier), 
+% $\psi(z)$ must also intersect.
+\end{proof}
+
+\begin{definition} \label{def:hom-mono} Two contours $\phi_0, \phi_1$ are \emph{monotonically L-homotopic}
+if the $L$-homotopy $H$ has the following property. Consider function $\alpha:[0,1] \mapsto \RR$
+where $\alpha(a) = f^{-1}(H(\SSS^1,a))$. The function $\alpha$ is strictly increasing or strictly decreasing.
+\end{definition}
+
+\begin{claim} \label{clm:mono} If two contours are L-homotopic, then they are monotonically L-homotopic.
+\end{claim}
+
+\begin{proof} Consider some L-homotopy $H$. We can assume wlog that for all $a \neq b$, $H(\SSS^1,a) \neq H(\SSS^1,b)$.
+(Otherwise, one could simplify $H$ and ``shortcut" between $a$ and $b$.)
+By continuity of $H$, the function $\alpha$ is continuous. Hence, if it is not strictly
+increasing or decreasing, $\alpha$ attains a local maximum at some $a \in (0,1)$. So there exist $a_1 = a - \eps_1$
+and $a_2 = a + \eps_2$ such that $\alpha(a_1) = \alpha(a_2)$.
+
+By continuity, $\eps_1$ and $\eps_2$ can be chosen small enough such that there are no vertices 
+in between $f^{-1}(H(\SSS^1,a_1))$ and the local maximum. 
+Now the local maximum at $a$ may contain a vertex, but by \Clm{non-hom} this vertex cannot be a saddle.
+Therefore $H(\SSS^1,a_1)$ and $H(\SSS^1,a_2)$ must intersect the same set of edges and therefore cannot be distinct.
+\end{proof}
+
+\begin{claim} \label{clm:reg} Consider a contour $\phi$ containing only regular points. 
+Take the edge cut by $\phi$ whose upper endpoint $x$ has minimum value, and let $e$
+denote the portion above $\phi$. Then $\phi$ is L-homotopic to the contour
+through any point in the interior of $e$. If $x$ is regular, then $\phi$ is L-homotopic
+to the contour through $x$.
+\end{claim}
+
+\begin{proof} 
+Let $a$ be the height of $\phi$ and $b$ the height of $x$. Consider the (potentially disconnected) 
+manifold obtained by removing all manifold points above $b$ and below $a$.  
+Specifically consider connected component that contains $\phi$.  
+By continuity of L-homotopy the claim holds iff it holds on this manifold. 
+However, this manifold contains no vectices except at the ends, and therefore
+an L-homotopy can be constructed using the natural piecewise linear map.
+\end{proof}
+
+\subsection{Reeb graphs} \label{sec:reeb}
+
+Now we get to the real definitions. Call a contour regular if it only contains regular points.
+
+\begin{definition} \label{def:rel} Define a relation $\sim$ between regular contours, so $\phi \sim \phi'$ if $\phi$
+is L-homotopic to $\phi$'.
+\end{definition}
+
+It is easy to check that $\sim$ is an equivalence relation, so the set of regular contours
+is partitioned into equivalence classes. All contours in a class are L-homotopic to each other.
+
+\begin{claim} \label{clm:equiv} Consider such an equivalence class $\Phi$. Then $f(\Phi)$
+is an open interval $(a,b)$, where $a$ and $b$ are critical values.
+\end{claim}
+
+\begin{proof} \Clm{mono} and continuity of L-homotopy immediately imply that for $\phi, \phi' \in \Phi$,
+for any $t \in [f(\phi),f(\phi')]$, there exists $\phi'' \in \Phi$ such that $f(\phi'') = t$.
+So $f(\Phi)$ is an interval. As equivalence classes are defined over only regular contours, \Clm{reg} 
+tells us that this interval must be open with critical value endpoints.
+\end{proof}
+
+We can now define the Reeb Graph $\reeb(\MM)$. We use the fact that critical points 
+have distinct values. (Technically, the Reeb Graph depends on the function $f$.
+Because it is implicit by the embedding of $\MM$, we will remove it from the notation.)
+
+\begin{definition} \label{def:reeb} The \emph{Reeb Graph} $\reeb(\MM)$ has as a vertex set
+the set of critical points. The edge $(x,y)$ is present if there exists equivalence class
+$\Phi$ such that $f(\Phi) = (f(x),f(y))$.
+\end{definition}
 
 
 
