@@ -203,7 +203,7 @@
   C. Seshadhri
 }
 
-\title{Follow the Flow of Rain and Paint: \break An Output Sensitive Contour Tree Algorithm}
+\title{A Mountaintop View Requires Minimal Sorting: \break An Instance Optimal Contour Tree Algorithm}
 \date{}
 
 
@@ -212,66 +212,192 @@
 \maketitle
 
 \begin{abstract}
-Reeb graphs are a fundamental topological structure which tracks the evolution of levels sets of a real valued function over a manifold.  In the case when this graph is loop free it is called a contour tree.  Due to the use of the contour trees in practice on large data sets, there has been significant previous work on algorithms for their efficient computation. 
+Reeb graphs are a fundamental topological structure which tracks the evolution of levels sets of a real valued function over a manifold.  
+In the case when this graph is loop free it is called a contour tree.  Due to the use of the contour trees in practice on large data sets, 
+there has been significant previous work in developing algorithms for their efficient computation. 
 
-Some of these previous results are describe as optimal, however they are only worst case optimal.  Here we present an output sensitive approach to computing contour trees.  Our approach leads to a faster algorithm when the contour tree is nicely behaved (i.e. more balanced), yet is still optimal in the worst case.  Our approach is novel and we believe will lead to faster algorithms for other applications as well.
+Here we present the first contour tree algorithm which takes into account the shape of the contour tree, 
+and in doing so yields instance optimal results (on all instances requiring $\Omega(n\alpha(n))$ time).
+In particular, our algorithm runs in $O(n\alpha(n))$ time when the tree is balanced, yet still 
+matches the previous worst case $O(n\log n)$ bound when the tree is long and skinny.
+
+In order to produce our instance optimal results we introduce a novel linear time surface partitioning scheme which is likely to have applications elsewhere.
+Moreover, in order to prove the optimality we use a non-trivial combinatorial discharging argument which we believe is of independent interest and in particular uses 
+such tools as heavy-light path decompositions.
 \end{abstract}
 
 
 \section{Introduction}
-Describe what reeb graphs and contour trees are.
 
-\medskip
-\noindent
-Explain why useful:  Lets you know the ``shape of your date''.  Map of the critical points where contours change.  Fast extraction of seed sets in a small sized structure, which can let you do threshold queries.
+Let $f$ be a real valued function defined over a manifold embedded in $\RR^d$.  
+For any real value $\alpha$, the level set $f^{-1}(\alpha)$ can be decomposed into its connected components, or ``contours''.
+The Reeb graph is a fundamental topological structure which represents the evolution of these contours as one sweeps the surface 
+from $-\infty$ to $\infty$ according to $f$.  Often this graph is acyclic, in which case it is 
+called a \emph{contour tree}.  This is the case if, for example, the input is a surface mesh of a mountain range 
+(and the contour tree would encode when mountain peeks form and how they merge together).
 
-\medskip
-\noindent
-Paragraph on specific applications.  Scientific visualization, in particular combustion research.  GIS.
+There is a long list of practical applications of the study of contour trees (see for example \cite{c-tmi-04} and references therein).
+Often these applications involve massive data sets, and so consequently there has also been a long series 
+of results on efficient algorithms for their computation \cite{kobps-ctsssit-97,tv-cct-98,csa-cctad-00,pc-ectls-02,cllr-sooscctmp-05}.
+As an initial step these algorithms require that all $n$ contour tree vertices be sorted.  
+In particular, \cite{cllr-sooscctmp-05} provide an $O(n\log n)$ time algorithm, and since in the worst case computing the contour tree 
+requires $\Omega(n\log n)$ time, this algorithm is optimal with respect to the size of the output.  
+Here we present the first contour tree algorithm which is optimal (for instances requiring $\Omega(n\alpha(n))$ 
+time\footnote{Where $\alpha(n)$ is the inverse Ackermann function, which is $< 5$ for computation in this universe.}) 
+with respect not just to the size of the output, but also its structure.  This is accomplished by introducing a simple linear time 
+surface partitioning scheme to avoid sorting, which is likely to have applications elsewhere.  
+For all instances the bound for our algorithm either matches the best previous bound, or is faster.
+For, example when the contour tree is a balanced, our algorithm runs in $O(n\alpha(n))$ time, whereas all 
+previous algorithms had a running time of $\Omega(n\log n)$
+
+%In particular, the algorithm in \cite{cllr-sooscctmp-05} is worst case optimal with respect to the size of the output.  
+%Here we present the first contour tree algorithm which is (near\footnote{Our algorithm is optimal on all instance requiring $\Omega(n\alpha(n))$ time.}) 
+%optimal with respect not just to the size of the output, but also its structure.  
+%Specifically, the bound for our algorithm either matches \cite{cllr-sooscctmp-05}, or is faster.
+%For, example when the contour tree is a balanced, our algorithm runs in $O(n\alpha(n))$ time, whereas all 
+%previous algorithms had a running time of $\Omega(n\log n)$.
+
+This work can be seen as a continuation of the study of instance-optimal geometric algorithms introduced by Afshani \etal \cite{abc-ioga-09}.
+In order to prove instance optimality we use a non-trivial combinatorial discharging argument, which we believe is of independent interest.
+Of particular note is the use of heavy-light path decompositions, first introduced by Sleator and Tarjan \cite{st-dsdt-83} in their analysis of link-cut trees.
+
+
+
+% Explain why useful:  Lets you know the ``shape of your date''.  Map of the critical points where contours change.  
+%Fast extraction of seed sets in a small sized structure, which can let you do threshold queries.
+% 
+% \medskip\noindent
+% Paragraph on specific applications.  Scientific visualization, in particular combustion research.  GIS.
 
 \subsection{Previous Work}
 
+\subsubsection{Worst Case Alternatives}
+In worst case analysis an algorithm's running time is judged in terms of its worst 
+case behavior over all inputs of a given size.  While there are benefits to such a 
+pessimistic view, it fails to capture the whole story.  As such, many alternatives 
+have been considered.  For example, one can make assumptions on the distribution of 
+inputs, which has led to a number interesting results on average case and probabilistic 
+analysis, and also smoothed analysis \cite{st-saa-04}.  However, even without making 
+assumptions on the distribution of the input, there is still more to the story.
+For example, in the study of parametrized complexity, one takes into account other 
+parameters determined by the input other than just its size (for example the maximum 
+degree in a graph or whether it is planar).
 
-\paragraph{Contour Trees.}
-As the application areas of contour trees usually involve very large data sets, highly efficient algorithms are not only desirable but often necessary.  As such there have been a long sequence of papers with improved running times for computing contour trees.  Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D meshes and an $O(N^2)$ algorithm for higher dimensions, where $N$ is the number of simplices in the mesh. Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case by making several passes over the input.
+\paragraph{Output Sensitive Analysis.}
+In geometric settings often the goal is to compute a (potentially complex) geometric structure determined 
+by the input, and so it is natural to also consider how the form of this output structure affects the running time.
+One example is the standard sweep line algorithm of Bentley and Ottmann \cite{bo-arcgi-79} for line segment intersection, 
+which runs $O((n+k)\log n)$ time where k is the number of intersections, which in the worst case is quadratic.
+Another example is Chan's algorithm for computing the convex hull \cite{c-ooscha-96} which runs in $O(n\log h)$ 
+where $h$ is the number of vertices on the hull, which in the worst case is $n$.  While such algorithms represent 
+significant improvements over their worst case counterparts, their running times are only measured with respect 
+to the size of the output and not any structure it may have.
 
-Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N)$, where $n$ is the number of mesh vertices.  Their algorithm works in 3 simple stages.  The first stage consist of a top down sweep to compute what is known as the merge (or join) tree, which tracks the evolution of super-level sets (whereas the contour tree tracks level sets).  Similarly, the second stage does a bottom up sweep to compute the split tree, which tracks sub-level sets.  Their main contribution is the third and final step where 
-they present an $O(n)$ time algorithm to merge together the merge and split trees to get the contour tree.  Chiang \etal \cite{cllr-sooscctmp-05} 
-have since 
-
-%The most expensive part of the Carr \etal algorithm comes from sorting.  They sort all vertices of the mesh to facilitate an easing sweeping of the mesh.
-%asdfas \cite{} improve the running to $O()$ by sorting only critical points of the mesh.  However, without looking at the non-critical points in the mesh 
-%one does not know how the critical points connect to each other in the contour tree.  To overcome this \cite{} use ``mountain climbers'' from each saddle 
-%to determine which critical points they belong to above.
-
-\paragraph{Output Sensitivity.}
-Let $t$ be the number of critical points in the input mesh.  There is room to improve the results of Carr \etal, as $t$ could potentially be much smaller than $n$.  In particular, Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provide an $O(n+t\log n)$ time algorithm for the case of 3 dimensional structured meshes.  Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t\log t)$ which works for structured or unstructured meshes in any dimension.  
-
-As the the authors point out in \cite{cllr-sooscctmp-05}, by reduction from sorting, one can show that any algorithm to compute the contour tree in the worst case takes $\Omega(N+t\log t)$ time.  However, this lower bound only holds when the contour tree is very unbalanced (i.e. long and skinny) and therefore contains a sorted path with a large fraction of the vertices.  Therefore the bound of $\Omega(N+t\log t)$ is only worst case optimal.  In this paper we will consider an output sensitive approach which takes into account the shape of the contour tree.
-
-
-\paragraph{Reeb Graphs.} UNDER CONSTRUCTION.
-There have also been a number of result for the more general Reeb graph, i.e. when the loopless assumption is removed.  Shinagawa and Kunii \cite{sk-crgacs-91} provided the first provably correct algorithm for the case of triangulated $2$-manifolds. Cole-McLaughlin \etal \cite{cehnp-lrbm-03} later improved the running time to $O(n\log n)$.
-
-
-\subsection{Our Approach and Contribution.}
+\paragraph{Instance Optimality.}  
+Here we are concerned with a more refined analysis than the typical output sensitive analysis.
+Specifically, we investigate an algorithm which is instance optimal as defined by Afshani \etal \cite{abc-ioga-09}.  
+In order to prove such a result, one considers a family of allowable partitions of the input, 
+each of which is defined in terms of the structure of the output.  Each such partition then has 
+an associated entropy type cost representing the number of possible instantiations of such a partition.
+Our work differs slightly from Afshani \etal \cite{abc-ioga-09} however, in that they show any algorithm 
+(for say the convex hull) requires the minimum such cost, where as in our case it is shown that 
+any algorithm requires the maximum over these costs.
 
 
-\paragraph{To Sort or not to Sort.}
-As discussed above, the algorithm of Carr \etal \cite{csa-cctad-00} computes the contour tree by first constructing the merge and split trees. 
-As vertices appear in sorted order in any root to leaf path in either tree, sorting the input vertices is a natural step.  However, not all vertices must be sorted together.  In particular, Chiang \etal \cite{cllr-sooscctmp-05} improved the running time by observing that as the merge and split tree only consists of critical points, it suffices to only sort critical points.  
-%
-%However, without looking at the non-critical points in the mesh 
-%one does not know how the critical points connect to each other in the contour tree.  \cite{} easily overcome this by sending out increasing monotone paths (i.e. ``mountain climbers'') from each critical point to determine which critical points they connect to above.
-%
-If a large fraction of the vertices appear in a single root to leaf path in the merge or split tree, paying to sort all the critical 
-points is unavoidable in order to compute the merge and split trees.  However, if the merge and split trees are balanced then sorting all the critical points is potentially very costly.
+\subsubsection{Contour Trees}
 
-There is also a more fundamental problem with the now standard approach of first computing the merge and split trees in order to compute the contour tree.  In particular, this approach can never lead to an algorithm that is optimal with respect to the shape of the contour tree.  This is because it is possible to have merge and split trees which are long and skinny (i.e. costly to compute) whereas the contour tree is balanced.  For example consider the case when the mesh looks like two (thickened) balanced binary trees, one upside down, and joined at their roots.  In this case the contour tree is potentially cheap to compute as there is no long sorted path.  However, the merge and split trees will have long sorted tails (consisting of the vertices in the bottom and top balanced trees, respectively), and therefore require $\Omega(n\log n)$ time to compute.  
+\Ben{Maybe discuss contour tree applications and why they are useful here? Or maybe earlier?}
 
-\paragraph{Our Contribution.} UNDER CONSTRUCTION.
-Give a high level overview.  Emphasize the spilling partitioning scheme used to avoid sorting, and say it may be useful else where.  State our running time.  Say it may be optimal (we still need to investigate).  It matches previous on worst case (i.e. optimal in worst case).
+\paragraph{A History of Contour Trees.}
+As discussed above, there has been a long series of improved algorithms for computing contour trees.
+Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D 
+meshes and an $O(N^2)$ algorithm for higher dimensions, where $N$ is the number of simplices in the mesh. 
+Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case by making 
+several passes over the input.
 
+Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N)$, 
+where $n$ is the number of mesh vertices.  Their algorithm works in 3 simple stages.  
+The first stage consist of a top down sweep to compute what is known as the join (or merge) tree, 
+which tracks the evolution of super-level sets (whereas the contour tree tracks level sets).  
+Similarly, the second stage does a bottom up sweep to compute the split tree, which tracks sub-level sets.  
+Their main contribution is the third and final step where they present an $O(n)$ time algorithm to merge 
+together the join and split trees to get the contour tree.  
+
+There have also been some output sensitive results for computing the contour tree.  Let $t'$ be the number 
+of critical points in the input mesh, which could potentially be much smaller than $n$.  In particular, 
+Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provide an $O(n+t\log n)$ time algorithm for the case of 
+$3$ dimensional structured meshes.  \Ben{Update distinction between critical and component-critical}
+Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t\log t)$ algorithm 
+which works for structured or unstructured meshes in any dimension, which is provably optimal with respect 
+to the output size but not the output structure, as discussed below.
+
+%As the the authors point out in \cite{cllr-sooscctmp-05}, by reduction from sorting, 
+%one can show that any algorithm to compute the contour tree in the worst case takes 
+%$\Omega(N+t\log t)$ time.  However, this lower bound only holds when the contour tree 
+%is very unbalanced (i.e. long and skinny) and therefore contains a sorted path with a 
+%large fraction of the vertices.  Therefore the bound of $\Omega(N+t\log t)$ is only 
+%worst case optimal.  In this paper we will consider an output sensitive approach which 
+%takes into account the shape of the contour tree.
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.27\linewidth]{figs/spike3}%
+    \hspace{.35in}
+    \includegraphics[width=.27\linewidth]{figs/spike4}%
+    \hspace{.4in}
+    \includegraphics[width=.22\linewidth]{figs/spikeTree2}
+    \caption{Two surfaces with different orderings of the maxima, but the same contour tree.}
+    \label{fig:relative}
+\end{figure}
+
+\paragraph{The Issue of Sorting.}
+As discussed above, the algorithm of Carr \etal \cite{csa-cctad-00} computes the contour 
+tree by first constructing the join and split trees.  As vertices appear in sorted order 
+in any root to leaf path in the join and split trees, and in any maxima to minima path 
+in the contour tree, sorting the input vertices is a natural first step.  However, not 
+all vertices from the input need to be sorted.  In particular, Chiang \etal 
+\cite{cllr-sooscctmp-05} improved the running time by observing that as the join and 
+split trees only consist of critical points, it suffices to only sort critical points.  
+If a large fraction of the vertices appear in a single path in the join or split tree, 
+then paying to sort all the critical points is unavoidable, and therefore in the worst 
+case \cite{cllr-sooscctmp-05} is optimal.  However, if the trees are more balanced then 
+sorting all critical points together can be very costly.  Specifically, the contour tree 
+does not care about the relative ordering of vertices which do not have an 
+ancestor-descendant relationship, and so this information does not need to be computed.
+See \Fig{relative} for an example.
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/shaded}%
+    \hspace{.5in}
+    \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/trees2}
+    \caption{On the left, a surface will a balanced contour tree, but whose merge and split trees have long tails.  
+    On the right (in clockwise order from the top) the contour, split and merge trees.}
+    \label{fig:sorting}
+\end{figure}
+
+\paragraph{Suboptimal Join and Split Trees.}
+There is also a more fundamental problem with the now standard approach of first computing 
+the join and split trees in order to compute the contour tree.  In particular, this approach 
+can never lead to an algorithm that is optimal with respect to the shape of the contour tree.  
+This is because it is possible to have join and split trees which are long and skinny (i.e. 
+costly to compute) whereas the contour tree is balanced.  For example consider the case shown 
+in \Fig{sorting}, where the mesh looks like two (thickened) balanced binary trees, one upside 
+down, and joined at their roots.  In this case the contour tree is potentially cheap to 
+compute as there is no long sorted path.  However, the join and split trees will have long 
+sorted tails (consisting of the vertices in the bottom and top balanced trees, respectively), 
+and therefore require $\Omega(n\log n)$ time to compute.
+
+\subsection{Our Contribution}
+\Ben{To be Written}
+
+\paragraph{Organization.}
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.18\linewidth]{figs/orderGray1}%
+    \hspace{.8in}
+    \includegraphics[width=.18\linewidth]{figs/orderGray2}
+    \caption{On left, downward paint spilling only (each shade of gray represents a different color).  On right, flipping the direction of paint spilling.}
+    \label{fig:order}
+\end{figure}
 
 \section{Contour tree basics} \label{sec:basics}
 
@@ -1179,7 +1305,7 @@ Our main theorem is the following. We use $|p|$ to denote the number of vertices
 \end{theorem}
 
 
-\subsection{Shrubs, heavy paths, and light paths}
+\subsection{Shrubs, tall paths, and short paths}
 
 
 The paths in $P(T)$ naturally define a tree\footnote{Please excuse the 
@@ -1229,7 +1355,7 @@ The simplest approach is to prove $\forall p\in P$, $\sum_{v\in p} \log |H_v|= O
 This is unfortunately not true, which is why we divide paths into two categories.
 
 \begin{definition}
- For $p\in P(T)$, $p$ is \emph{light} if $|p| < \sqrt{|H_{p}|}/100$, and \emph{heavy} otherwise.
+ For $p\in P(T)$, $p$ is \emph{short} if $|p| < \sqrt{|H_{p}|}/100$, and \emph{tall} otherwise.
 \end{definition}
 
 \ignore{
@@ -1247,16 +1373,16 @@ The following can be thought of as a generalization of the above observation, an
 
 
 
-The following lemma demonstrates that heavy paths can ``pay'' for themselves.
+The following lemma demonstrates that tall paths can ``pay'' for themselves.
 
 \begin{lemma}
-\label{lem:pathBounds} If $p$ is heavy, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-If $p$ is light, $\sum_{v\in p} \log |H_v| = O(|H_p| \log |H_p|)$.
+\label{lem:pathBounds} If $p$ is tall, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
+If $p$ is short, $\sum_{v\in p} \log |H_v| = O(|H_p| \log |H_p|)$.
 % Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
 % Then, 
 % \begin{compactenum}
-%  \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-%  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{p}|)$.
+%  \item for any tall path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
+%  \item for any short path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{p}|)$.
 % \end{compactenum}
 \end{lemma}
 \begin{proof} \ignore{
@@ -1264,38 +1390,38 @@ If $p$ is light, $\sum_{v\in p} \log |H_v| = O(|H_p| \log |H_p|)$.
 }
 For $v \in p$, $|H_v|\leq |H_{p}| + |p|$ (as $v$ is a descendant of $b(p)$ along $p$).
 Hence, $\sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{p}| + |p|)  = |p| \log (|H_{p}| + |p|)$.
- If $p$ is a heavy path, then $|p| \log (|H_{p}| + |p|) = O(|p| \log |p|)$. If $p$ is light, then 
- $|p| \log (|H_{p}| + |p|) = O(|p| \log |H_{p}| )$. For light paths, $|p| = O(|H_p|)$.
+ If $p$ is a tall path, then $|p| \log (|H_{p}| + |p|) = O(|p| \log |p|)$. If $p$ is short, then 
+ $|p| \log (|H_{p}| + |p|) = O(|p| \log |H_{p}| )$. For short paths, $|p| = O(|H_p|)$.
 \end{proof}
 
 \ignore{
-For a light path $p$ we can think of the quantity $|p|(\log |H_p| - \log |p|)$ as the excess of $p$, i.e. what was not ``paid for'' locally by $p$.
+For a short path $p$ we can think of the quantity $|p|(\log |H_p| - \log |p|)$ as the excess of $p$, i.e. what was not ``paid for'' locally by $p$.
 Our eventual goal will be to show that by choosing the right path decomposition, this excess 
-can be recharged to heavy paths. In the next couple sections we introduce the appropriate path decomposition and prove 
+can be recharged to tall paths. In the next couple sections we introduce the appropriate path decomposition and prove 
 some useful facts about it.  Then given these facts, in \Sec{} we are able to make the recharging argument.
 }
 
-There are some light paths that we can also ``pay" for.  Consider any light path $p$ in the shrub.  We will refer to the 
-\emph{heavy support chain} of $p$ as the heavy ancestors of $p$ in the shrub which have a path to $p$ which does not use any 
-light path (i.e. it is a chain of paths adjacent to $p$).
+There are some short paths that we can also ``pay" for.  Consider any short path $p$ in the shrub.  We will refer to the 
+\emph{tall support chain} of $p$ as the tall ancestors of $p$ in the shrub which have a path to $p$ which does not use any 
+short path (i.e. it is a chain of paths adjacent to $p$).
 
-\begin{definition} \label{def:support} A light path $p$ is \emph{supported} if
-at least $|H_p|/100$ vertices $v$ in $H_p$ lie in paths in the heavy support chain of $p$.
+\begin{definition} \label{def:support} A short path $p$ is \emph{supported} if
+at least $|H_p|/100$ vertices $v$ in $H_p$ lie in paths in the tall support chain of $p$.
 %
 %
 % there exists
 %a contiguous (from $p$) chain of ancestors $q_1, q_2, \ldots, q_k$ (in $P(T)$) such that $|H_{q_k}| \leq 99|H_p|/100$
-%and all $q_i$'s are heavy.
+%and all $q_i$'s are tall.
 \end{definition}
 
-Let $\cL$ be the set of light paths, $\cL'$ be the set of supported light paths, and $\cH$ be the set of heavy paths
+Let $\cL$ be the set of short paths, $\cL'$ be the set of supported short paths, and $\cH$ be the set of tall paths
 given by $\pmax(T)$.
-We now construct the shrub of unsupported light paths. Consider $p \in \cL \setminus \cL'$,
-and traverse the chain of ancestors from $p$. Eventually, we must reach another light path $q$.
+We now construct the shrub of unsupported short paths. Consider $p \in \cL \setminus \cL'$,
+and traverse the chain of ancestors from $p$. Eventually, we must reach another short path $q$.
 (If not, we have reached the root $r$ of $\pmax(T)$. Hence, $p$ is supported.)
 Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
-to the shrub forest of $\cL \setminus \cL'$, where all the roots are supported light paths, 
-and the remaining nodes are the unsupported light paths.
+to the shrub forest of $\cL \setminus \cL'$, where all the roots are supported short paths, 
+and the remaining nodes are the unsupported short paths.
 
 Most of the work goes into proving the following technical lemma.
 
@@ -1310,7 +1436,7 @@ which involves routine calculations. Then we prove \Lem{cu-root}, where the inte
 
 \subsection{Proving \Thm{runtime}} \label{sec:thm-runtime}
 
-We split the summation into heavy, light, and unsupported light paths.
+We split the summation into tall, short, and unsupported short paths.
 \begin{eqnarray*} 
 \sum_{p \in \cL} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cH} \sum_{v \in p} \log |H_v|
 %& = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |p|\log |H_p|) = \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |H_p|\log |H_p|)
@@ -1326,20 +1452,20 @@ The following claim shows that this in turn is at most the last term.
 
 \begin{proof} 
 Pick $p \in \cL'$. 
-%Let the first $|H_p|/200$ vertices the lie in heavy paths be denoted as $H'_p$. 
+%Let the first $|H_p|/200$ vertices the lie in tall paths be denoted as $H'_p$. 
 %Observe that for any $v \in H'_p$, 
 %We have $|H_p| \log |H_p| = O(\sum_{v \in H'_p} \log |H_p|)$
-%$= O(\sum_{v \in H'_p} \log |H_v|)$. Since all the vertices lie in heavy paths,
+%$= O(\sum_{v \in H'_p} \log |H_v|)$. Since all the vertices lie in tall paths,
 %we can write this as $O(\sum_{q \in \cH} \sum_{v \in H'_p \cap q} \log |H_v|)$.
 %Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum_{v \in H'_p \cap q} \log |H_v|$.
 %
 %
-As we traverse the heavy support chain of $p$, there
+As we traverse the tall support chain of $p$, there
 are at least $|H_p|/100$ vertices of $H_p$ that lie in these paths. These are encountered in
 a fixed order. Let $H'_p$ be the first $|H_p|/200$ of these vertices. When $v \in H'_p$
 is encountered, there are $|H_p|/200$ vertices of $H_p$ not yet encountered. Hence,
 $|H_v| \geq |H_p|/200$. Hence, $|H_p|\log |H_p| = O(\sum_{v \in H'_p} \log |H_v|)$.
-Since all the vertices lie in heavy paths,
+Since all the vertices lie in tall paths,
 we can write this as $O(\sum_{q \in \cH} \sum_{v \in H'_p \cap q} \log |H_v|)$.
 Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum_{v \in H'_p \cap q} \log |H_v|$.
 %and $\sum_{p \in \cL'} |H_p|\log |H_p| = O(\sum_{p \in \cL'} \sum_{v \in H'_p} \log |H_v|)$.
@@ -1347,7 +1473,7 @@ Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum
 Consider any $v \in H'_p$.  Let $S$ be the set of paths $\widetilde{p}\in \cL'$ such that 
 $v\in H'_{\widetilde{p}}$.  We now show $|S|\leq 2$ (i.e. it contains at most one path other than $p$).
 First observe that any two paths in $S$ must be unrelated (i.e. $S$ is an anti-chain), 
-since paths which have an ancestor-descendant relationship have disjoint heavy support chains.  
+since paths which have an ancestor-descendant relationship have disjoint tall support chains.  
 However, any vertex $v$ receives exactly one color from each of its two subtrees (in $T$), and therefore $|S|\leq 2$ since any two 
 paths which share descendant leaves in $T$ (i.e. their heaps are tracking the same color) must have an ancestor-descendant relationship.
 
@@ -1367,7 +1493,7 @@ Hence, we can bound it by $O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
 %We apply the bound of \Lem{pathBounds} to complete the proof.
 \end{proof}
 
-The first term (unsupported light paths) can be charged to the second term (supported light paths).
+The first term (unsupported short paths) can be charged to the second term (supported short paths).
 This is where the critical \Lem{cu-root} plays a role.
 
 \begin{claim} \label{clm:first} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
@@ -1378,29 +1504,29 @@ We have $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| \leq \sum_{\c
 By \Lem{cu-root}, $|H_v| = O(|H_r|)$, where $r$ is the root of $\cU$.
 Furthermore, $\sum_{p \in \cU} |p| = O(|H_r|)$. 
 We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
-We sum this over all $\cU$ in the shrub forest, and note that roots in the shrub forest are supported light paths.
+We sum this over all $\cU$ in the shrub forest, and note that roots in the shrub forest are supported short paths.
 \end{proof}
 
 
 \ignore{
-Now, for the critical piece of the approach. Focus on $\pmax(T)$. Let $L$ be the set of light paths, 
+Now, for the critical piece of the approach. Focus on $\pmax(T)$. Let $L$ be the set of short paths, 
 and $\hat{L} \subseteq L$ be the set of paths such that no ancestor of $p \in L'$
-is light. Obviously, $\hat{L}$ is an anti-chain in $P(T)$.
+is short. Obviously, $\hat{L}$ is an anti-chain in $P(T)$.
 
-\begin{lemma} \label{lem:light} For the path decomposition $\pmax(T)$, $\sum_{p \in \cL} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
+\begin{lemma} \label{lem:short} For the path decomposition $\pmax(T)$, $\sum_{p \in \cL} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 \end{lemma}
 
 With this lemma, the proof of \Thm{runtime} is straightforward.
 
-\begin{proof} (of \Thm{runtime}) We focus on $\pmax(T)$ and split into heavy and light paths.
+\begin{proof} (of \Thm{runtime}) We focus on $\pmax(T)$ and split into tall and short paths.
 We have $\sum_{v \in T} \log |H_v| =$  $\sum_{p \in \cL} \sum_{v \in p} \log |H_v| + $ $\sum_{p \in \cH} \sum_{v \in p} \log |H_v|$.
-For the first term, we apply \Lem{light} to bound by $O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
+For the first term, we apply \Lem{short} to bound by $O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 Then we apply \Clm{above} to bound by $O(\sum_{p \in \cH} |p|\log |p|)$.
 The latter is also bounded by the same expression, by \Lem{pathBounds}. By definition,
 $\sum_{p \in \cH} |p|\log |p| \leq \cost(\pmax(T))$.
 \end{proof}
 
-The main challenge is proving \Lem{light}, which we defer to the next section.
+The main challenge is proving \Lem{short}, which we defer to the next section.
 \begin{definition}
  Let $\chi(T)$ be a valid coloring of a binary tree $T$.  We define a set of disjoint paths over the vertices of 
  $T$ as follows.  
@@ -1425,9 +1551,9 @@ Throughout this section, for a path $p\in P(T)$, we use the notation $H_p$ to re
 
 \Lem{cu-root} asserts the root $r$ in $\cU$ pretty much encompasses all sizes and heaps in $\cU$.
 We will work with the \emph{reduced} heap $\redH_p$. This is the subset of vertices of $H_p$ that 
-do not appear on the heavy support chain of $p$.
-%only appear in light paths. 
-By definition, for any unsupported light path
+do not appear on the tall support chain of $p$.
+%only appear in short paths. 
+By definition, for any unsupported short path
 (hence, any non-root $p \in \cU$), $|\redH_p| \geq 99|H_p|/100$. 
 % For notational convenience, we simply set $\redH_r = H_r$.
 %Consider $q \in \cL \setminus \cL'$ that is a child of $p$ in the shrub $\cU$.
@@ -1443,11 +1569,11 @@ We begin with a key property, which is where the construction of $\pmax(T)$ ente
  Let $q$ be the child of some path $p$ in $\cU$, then $|H_p|\geq \frac{3}{2}|H_q|$. 
  Moreover, if $p\neq r(\cU)$, then $|\redH_p|\geq \frac{3}{2}|\redH_q|$. 
 \end{lemma}
-\begin{proof} Let $h(q)$ denote the heavy path that is a child of $p$ in $\pmax(T)$,
-and an ancestor of $q$. If no such heavy path exists, then by construction $p$ is the parent 
+\begin{proof} Let $h(q)$ denote the tall path that is a child of $p$ in $\pmax(T)$,
+and an ancestor of $q$. If no such tall path exists, then by construction $p$ is the parent 
 of $q$ in $\pmax(T)$, and the following argument will go through by setting $h(q)=q$.
 
-The chain of ancestors from $q$ to $h(q)$ consists only of heavy paths.
+The chain of ancestors from $q$ to $h(q)$ consists only of tall paths.
 Since $q$ is unsupported, these paths contain at most $|H_q|/100$ vertices of $H_q$. 
 Thus, $|H_{h(q)}| \geq 99|H_q|/100$.
 
@@ -1457,7 +1583,7 @@ Their parent is called $u$. Note that both $u$ and $v$ are nodes in the path $p$
 Now, the decomposition $\pmax(T)$ put $u$ and $v$ in the same path $p$. This
 implies $|H_v| \geq |H_w|$. Since $|H_u| \geq |H_v| + |H_w| - 2$,
 $|H_u| \geq 2|H_w| - 2$. Let $b$ be the base of $p$.
-We have $|H_p| = |H_b| \geq |H_u| - |p| \geq 2|H_w| - |p| - 2$. Since $p$ is a light path, $|p| < \sqrt{|H_p|}/100$.
+We have $|H_p| = |H_b| \geq |H_u| - |p| \geq 2|H_w| - |p| - 2$. Since $p$ is a short path, $|p| < \sqrt{|H_p|}/100$.
 Applying this bound, we get $|H_p| \geq (2-\delta)|H_w|$ (for a small constant $\delta > 0$).
 Since $w$ is the base of $h(q)$, $H_w = H_{h(q)}$. We apply the bound $|H_{h(q)}| \geq 99|H_q|/100$
 to get $|H_p| \geq 197|H_q|/100$, implying the first part of the lemma.  For the second part, observe that 
@@ -1469,7 +1595,7 @@ if $p\neq r(\cU)$, then $p$ is unsupported and so $|\redH_p| \geq 99|H_p|/100$, 
 % As $\mathcal{P}(T)$ is a maximum path decomposition of $T$ and $c$ rather than $r_q$ is in 
 % the same path as $w$, we have $|H_q|\leq |H_c|$.  Therefore, $|H_w|\geq |H_q|+|H_c|-1\geq 2|H_q|-1$. 
 % Therefore, by \Obs{decrease}, $|H_p|+ d(r_p, w) \geq |H_w|\geq 2|H_q|-1$.  
-% Since $p$ is a light path, $d(r_p, w)\leq \sqrt{|H_p|}/100$ and so we have $|H_p|+\sqrt{|H_p|}/100\geq 2|H_q|-1$.
+% Since $p$ is a short path, $d(r_p, w)\leq \sqrt{|H_p|}/100$ and so we have $|H_p|+\sqrt{|H_p|}/100\geq 2|H_q|-1$.
 % Assuming $|H_p|>11$ (and we can safely assume $|H_p|$ is bigger than any constant), this yields $\frac{3}{5} |H_p| \geq |H_q|$
 \end{proof}
 
@@ -1496,7 +1622,7 @@ Observe that $W_p \geq |\redH_p|$. We also get an approximate converse.
 Consider $q \in \cU_p$ and denote the children in $\cU_p$ by $q'_1, q'_2, \ldots$.
 Note that $R_q$ is negative exactly when $|\redH_q| < \sum_i |\redH_{q'_i}|$.
 Traverse $\pmax(T)$ from $q'_i$ to $q$.
-Other than $q$, all other nodes encountered are in the heavy support chain of $q'_i$ and hence
+Other than $q$, all other nodes encountered are in the tall support chain of $q'_i$ and hence
 do not affect its reduced heap.
 The vertices of $\redH_{q'_i}$ that are deleted
 are exactly those present in the path $q$. 
@@ -1514,7 +1640,7 @@ to $q$. All vertices of $H_{q'_i}$ that lie on these paths are removed.
  and traverse $\pmax(T)$ up to $p$. Suppose we encounter
 the paths $q_0 = q, q_1, q_2, \ldots, q_k = p$. The vertices in the residue $R_q$ that 
 are removed from $H_p$ are exactly the vertices that lie in these paths. 
-We split this contribution into heavy and light paths, observing that the latter
+We split this contribution into tall and short paths, observing that the latter
 are all unsupported. Hence, we can (crudely) upper bound the number of vertices
 removed by $\sum_{q \in \cU_p} |q| + \sum_{q \in \cU_p} \sum_{h \in \cH} |h \cap q|$.
 Each vertex can be removed from at most two distinct $R_q$'s, completing the proof.
@@ -1529,7 +1655,7 @@ We stress that the all the previous work is mostly the setup for this claim.
 where $q$ is a parent of $q'$ in $\cU_p$, $W_q \geq (4/3)W_{q'}$. Then $\sum_{q \in \cU_p} |q| \leq W_p/20$.
 \end{claim}
 
-\begin{proof} Since $q$ is an unsupported light path, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|\redH_q|}/99 \leq \sqrt{|W_q|}/99$.
+\begin{proof} Since $q$ is an unsupported short path, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|\redH_q|}/99 \leq \sqrt{|W_q|}/99$.
 We prove that $\sum_{q \in \cU_p} \sqrt{|W_q|}/99 \leq W_p/20$
 by a charge redistribution scheme. Assume that each $q \in \cU_p^-$
 starts with $\sqrt{W_q}/99$ units of charge. We redistribute this charge over all
@@ -1540,7 +1666,7 @@ give $(\sqrt{W_q}/99)\cdot(R^+_{q'}/W_q)$ units of charge to each $q' \in \cU_q$
 After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\cU_p^-$ 
 $q = a_0, a_1, a_2, \ldots, a_k$ contributes to the charge at $q$. The charge is expressed in the following
 equation. We use the assumption that $W_{a_i} \geq (4/3) W_{a_{i-1}}$ and hence $W_{a_i} \geq (4/3)^i W_{a_0} \geq (4/3)^i$, 
-as $a_0$ is an unsupported light path and hence $W_{a_0}\geq 1$. 
+as $a_0$ is an unsupported short path and hence $W_{a_0}\geq 1$. 
 $$ ({R^+_q}/99)\sum_{a_i} 1/\sqrt{W_{a_i}} \leq ({R^+_q}/99)\sum_{a_i} (3/4)^{i/2} \leq R^+_q/20 $$
 The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$. 
 \end{proof}
@@ -1561,7 +1687,7 @@ The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$.
 % where $q$ is a parent of $q'$ in $\cU_p$, $W_q \geq (4/3)W_{q'}$. Then $\sum_{q \in \cU_p} |q| \leq W_p/20$.
 % \end{claim}
 % 
-% \begin{proof} Since $q$ is an unsupported light path, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|\redH_q|}/99 \leq \sqrt{|W_q|}/99$.
+% \begin{proof} Since $q$ is an unsupported short path, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|\redH_q|}/99 \leq \sqrt{|W_q|}/99$.
 % We prove that $\sum_{q \in \cU_p} \sqrt{|W_q|}/99 \leq W_p/20$
 % by a charge redistribution scheme. Assume that each $q \in \cU_p$
 % starts with $\sqrt{W_p}/99$ units of charge. We redistribute this charge over all
@@ -1572,7 +1698,7 @@ The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$.
 % After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\cU_p$ 
 % $q = a_0, a_1, a_2, \ldots, a_k$ contributes to the charge at $q$. The charge is expressed in the following
 % equation. We use the assumption that $W_{a_i} \geq (4/3) W_{a_{i-1}}$ and hence $W_{a_i} \geq (4/3)^i W_{a_0} \geq (4/3)^i$, 
-% as $a_0$ is an unsupported light path and hence $W_{a_0}\geq 1$. 
+% as $a_0$ is an unsupported short path and hence $W_{a_0}\geq 1$. 
 % $$ ({R^+_q}/99)\sum_{a_i} 1/\sqrt{W_{a_i}} \leq ({R^+_q}/99)\sum_{a_i} (3/4)^{i/2} \leq R^+_q/20 $$
 % The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$. 
 % \end{proof}
@@ -1860,14 +1986,14 @@ For the same reason that \Cor{mergeLB} followed from \Lem{pathDecomp}, we now ha
 
 \begin{lemma}
 \label{lem:excess}
- Let $p$ be a heavy path, and let $S_1, \dots S_k$ and $R_1, \dots, R_l$ be the sizes of the heaps at the roots of the light and heavy children of $p$, respectively, in the shrub.  
+ Let $p$ be a tall path, and let $S_1, \dots S_k$ and $R_1, \dots, R_l$ be the sizes of the heaps at the roots of the short and tall children of $p$, respectively, in the shrub.  
  Let $H_f$ be the heap at the leaf of the path $p$.
  Then,  $|H_p| \log |H_p|   \geq  \sum_{v\in p} \log|H_v| + \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i  -  c|p|\log |p|$, for some sufficiently large constant $c$
  \end{lemma}
 \begin{proof}
  First observe that the lemma holds for $|H_p|$ less than any fixed constant, since otherwise \Lem{adjacent} implies we can choose $c$ 
  large enough such that $c|p|\log|p|$ will dominate all other terms.
- Next, observe that $\sum_{v\in p} \log|H_v| \leq \sum_{v\in p} \log(|H_v|+|p|) = |p|\log(|H_v|+|p|) = O(|p|\log|p|)$, as $p$ is a heavy path.  
+ Next, observe that $\sum_{v\in p} \log|H_v| \leq \sum_{v\in p} \log(|H_v|+|p|) = |p|\log(|H_v|+|p|) = O(|p|\log|p|)$, as $p$ is a tall path.  
  Therefore, in the remainder of the proof  we can safely ignore the $\sum_{v\in p} \log|H_v|$ term as we can choose $c$ large enough to cover it.  
  That is we now instead prove the inequality,
  \[
@@ -1930,13 +2056,13 @@ This easily implies the desired inequality as $\log(H_p+p)$ is larger than any o
 % 
 % \begin{lemma}
 % \label{lem:excess}
-%  Let $p$ be a heavy path, and let $S_1, \dots S_k$ and $R_1, \dots, R_l$ be the sizes of the heaps at the roots of the light and heavy children of $p$, respectively, in the shrub.  
+%  Let $p$ be a tall path, and let $S_1, \dots S_k$ and $R_1, \dots, R_l$ be the sizes of the heaps at the roots of the short and tall children of $p$, respectively, in the shrub.  
 %  Let $H_f$ be the size of the heap at the leaf of the path $p$, and let $X = \sum_{i=0}^k H_i \log H_i$.  
 %  Then,  $|H_p| \log |H_p|   \geq  H_f\log H_f + \sum_{i=0}^k S_i \log S_i + \sum_{i=0}^l R_i \log R_i  -  c|p|\log |p|$, for some sufficiently large constant $c$
 %  \end{lemma}
 % \begin{proof}
 % By \Lem{adjacent} we know that $|H_p|+|p| \geq  H_f + \sum_{i=0}^k S_i + \sum_{i=0}^l R_i$.  
-% %Now as $p$ is a heavy path we have $|p|\geq \sqrt{|H_p|}/100$, and so, $(|H_p|+|p|)\log(|H_p|+|p|)$
+% %Now as $p$ is a tall path we have $|p|\geq \sqrt{|H_p|}/100$, and so, $(|H_p|+|p|)\log(|H_p|+|p|)$
 % 
 % We  break the analysis into two case based on the relative size of $|p|$ and $|H_p|$.  In the following $c$ is some yet to be determined constant greater than $1$.
 % 
@@ -1957,34 +2083,34 @@ This easily implies the desired inequality as $\log(H_p+p)$ is larger than any o
 }
 
 
-Define the crust of the shrub to be the first (i.e. closest to the root) layer of light paths in the shrub.  Apply \Lem{lightCost} to each of the light paths in the crust and then 
+Define the crust of the shrub to be the first (i.e. closest to the root) layer of short paths in the shrub.  Apply \Lem{shortCost} to each of the short paths in the crust and then 
 say by \Lem{excess} and since the root heap goes to zero we are done.
 
 
 
 \ignore{
-Naturally, this geometric series behavior can be extended to more than two adjacent light paths, thus motivating 
+Naturally, this geometric series behavior can be extended to more than two adjacent short paths, thus motivating 
 the following definition.
 
 \begin{definition}
  Let $p$ be a path in a path decomposition $P(T)$, with corresponding shrub $\pathTree$.
- Call a light path $q\in P(T)$ light reachable from $p$ if the path from $p$ to $q$ in $\pathTree$ 
- contains only vertices which correspond to light paths.  Call the subtree of $\pathTree$ consisting 
- of all light reachable paths from $p$ the \emph{light shrub} of $p$, and denote it $\mathcal{L}(p)$.
+ Call a short path $q\in P(T)$ short reachable from $p$ if the path from $p$ to $q$ in $\pathTree$ 
+ contains only vertices which correspond to short paths.  Call the subtree of $\pathTree$ consisting 
+ of all short reachable paths from $p$ the \emph{short shrub} of $p$, and denote it $\mathcal{L}(p)$.
 \end{definition}
 
-In the following subsection we show how to exploit this geometric series behavior of light shrubs.
+In the following subsection we show how to exploit this geometric series behavior of short shrubs.
 
 We say two paths in $P(T)$ are adjacent if their corresponding vertices are adjacent in the shrub.  Similarly, for 
 two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the shrub. 
 }
 
 \remove{
-\Ben{Maybe move the remainder of this subsection to 5.3 since heavy and light paths and not used until then}
+\Ben{Maybe move the remainder of this subsection to 5.3 since tall and short paths and not used until then}
 
 \begin{definition}
  Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.  
- For $p\in P(T)$, we say that $p$ is \emph{light} if $|p| < \sqrt{|H_{r_p}|}/100$, and we say it is \emph{heavy} otherwise.
+ For $p\in P(T)$, we say that $p$ is \emph{short} if $|p| < \sqrt{|H_{r_p}|}/100$, and we say it is \emph{tall} otherwise.
 \end{definition}
 
 \begin{observation}
@@ -2003,8 +2129,8 @@ two adjacent paths in $P(T)$ we can define a parent/child relationship based on 
  Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
  Then, 
  \begin{compactenum}
-  \item for any heavy path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-  \item for any light path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{r_p}|)$.
+  \item for any tall path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
+  \item for any short path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{r_p}|)$.
  \end{compactenum}
 \end{lemma}
 \begin{proof}
@@ -2013,7 +2139,7 @@ two adjacent paths in $P(T)$ we can define a parent/child relationship based on 
  \[
  \sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{r_p}| + |p|)  = |p| \log (|H_{r_p}| + |p|).
  \]
- If $p$ is a heavy path then $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |p|)$, and if $p$ is light then 
+ If $p$ is a tall path then $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |p|)$, and if $p$ is short then 
  $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |H_{r_p}| )$.
 \end{proof}
 
@@ -2046,30 +2172,30 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
 % As such, the remainder of this subsection will likely be deleted.}
 % 
 % Using the notation defined in the above lemma, we have the following crucial lemma, which we will use to 
-% argue we can charge that cost of all paths in $P(T)$ to the cost of the heavy paths.
+% argue we can charge that cost of all paths in $P(T)$ to the cost of the tall paths.
 % 
 % \begin{lemma}
-% Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be any set of light paths in $P(T)$ such that 
+% Let $p$ be a tall path in $P(T)$ and let $\{q_1, \dots q_k\}$ be any set of short paths in $P(T)$ such that 
 % $\sum_{i=1}^k |H_i| = O(H_p)$.  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$
 % \end{lemma}
 % \begin{proof}
 % By \Lem{pathBounds}, for all $1\leq i\leq k$, 
-%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
+%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a short path.
 %  By assumption $\sum_{i=1}^k |H_i| = O(|H_p|)$, 
 %  As $x\log x$ is a convex function, Jensen's inequality then implies 
-%  $\sum_{i=1}^{k} |H_i|\log |H_i| = O(|H_p| \log |H_p|) = O(|p|\log |p|)$, since $p$ is a heavy path.
+%  $\sum_{i=1}^{k} |H_i|\log |H_i| = O(|H_p| \log |H_p|) = O(|p|\log |p|)$, since $p$ is a tall path.
 % \end{proof}
 % 
 % 
 % \begin{corollary}
-% \label{cor:heavyLight}
-%  Let $p$ be a heavy path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all light paths adjacent to $p$.
+% \label{cor:tallLight}
+%  Let $p$ be a tall path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all short paths adjacent to $p$.
 %  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$.
 % \end{corollary}
 % \begin{proof}
 %  Let $H_i$ be as defined in \Lem{adjacent}.  By \Lem{pathBounds}, for all $1\leq i\leq k$, 
-%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a light path.
-%  Now by \Lem{adjacent}, $\sum_{i=1}^k |H_i| \leq |H_p|+|p| = O(|p|)$, as $p$ is a heavy path. 
+%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a short path.
+%  Now by \Lem{adjacent}, $\sum_{i=1}^k |H_i| \leq |H_p|+|p| = O(|p|)$, as $p$ is a tall path. 
 %  Therefore, as $x\log x$ is a convex function, Jensen's inequality implies the claim.
 %  
 % \end{proof}
@@ -2078,35 +2204,35 @@ The following lemma can be thought of as a generalization of $\Obs{decrease}$.
 
 
 
-\subsection{The shrub of unsupported paths} \label{sec:light}
+\subsection{The shrub of unsupported paths} \label{sec:short}
 
 
 
-It suffices to focus on unsupported light paths. \Lem{light} can be reduced to the following.
+It suffices to focus on unsupported short paths. \Lem{short} can be reduced to the following.
 
 \begin{lemma} \label{lem:support} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 \end{lemma}
 
-We now construct the shrub of unsupported light paths. Consider $p \in \cL \setminus \cL'$,
-and traverse the chain of ancestors from $p$. Eventually, we must reach another light path $q$.
+We now construct the shrub of unsupported short paths. Consider $p \in \cL \setminus \cL'$,
+and traverse the chain of ancestors from $p$. Eventually, we must reach another short path $q$.
 (If not, we have reached the root $r$ of $\pmax(T)$. Hence, $p$ is supported.)
 Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
-to the shrub forest of $\cL \setminus \cL'$, where every unsupported light path is an internal node, and all
-roots are supported light paths. 
+to the shrub forest of $\cL \setminus \cL'$, where every unsupported short path is an internal node, and all
+roots are supported short paths. 
 
 We list out some important claims about this shrub forest.
 We focus on $\cU$, a connected component (shrub) in the shrub forest and denote the 
 the root by $r(\cU)$.
 
 \begin{claim} \label{clm:loss2} Consider $p \in \cL \setminus \cL'$ that is in $\cU$. Let $Q$
-be the set of heavy ancestors of $p$ that are descendants of $r(\cU)$. Then $\sum_{q \in Q} |q \cap H_p| \leq |H_p|/50$.
+be the set of tall ancestors of $p$ that are descendants of $r(\cU)$. Then $\sum_{q \in Q} |q \cap H_p| \leq |H_p|/50$.
 \end{claim}
 
-\begin{proof} Suppose not, for contradictions sake. As we traverse the heavy ancestors of $p$,
+\begin{proof} Suppose not, for contradictions sake. As we traverse the tall ancestors of $p$,
 we encounter various vertices of $H_p$ in the ancestors $q$. Consider the first $|H_p|/100$
 such vertices of $p$ encountered. At each such $v$, there are at least $|H_p|/100$
 vertices \emph{not yet} encountered, so $|H_v| > |H_p|/100$. Each of these vertices $v$
-is supported, implying that $p$ is a supported light path.
+is supported, implying that $p$ is a supported short path.
 \end{proof}
 
 \Lem{support} is a direct consequence of the following,
@@ -2129,7 +2255,7 @@ These set of these nodes is designated as $\cU_\ell$. We set $\sigma_\ell = \sum
 and $\sigma_{\leq \ell} = \sum_{k \leq \ell} \sigma_k$.
 By \Lem{geometric}, for any $p \in \cU_\ell$, $|H_p| \leq (2/3)^\ell |H_r|$.
 
-Since all nodes in $\cU$ represent light paths, $\forall p \in \cU$, $|p| < \sqrt{|H_p|}/100$.
+Since all nodes in $\cU$ represent short paths, $\forall p \in \cU$, $|p| < \sqrt{|H_p|}/100$.
 So $\sigma_\ell < \sum_{p \in \cU_\ell} \sqrt{|H_p|}/100$. 
 
 \end{proof}
@@ -2143,28 +2269,28 @@ removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
 for a child $q'$ in $\cU$.
 
 
-Let $\mathcal{L} = \mathcal{L}(r)$ be a light shrub of some light path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
-The intuitive idea is that due to the geometric decreasing behavior of light shrubs described in the previous subsection, 
-one can show that for the entire light shrub our algorithm pays roughly the cost due to the root path $r$.  This argument 
+Let $\mathcal{L} = \mathcal{L}(r)$ be a short shrub of some short path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
+The intuitive idea is that due to the geometric decreasing behavior of short shrubs described in the previous subsection, 
+one can show that for the entire short shrub our algorithm pays roughly the cost due to the root path $r$.  This argument 
 is hard to make directly, so instead we define an alternative quantity for which we can make the argument.
 Specifically, we now define a weight function $w(v)$ for all $v\in \mathcal{L}$, and show that $w(v)=\Theta(|H_v|)$.  
 
 For a path $v\in \mathcal{L}$, let $H_v$ denote the heap at the root of $v$, and let $H_{v_f}$ denote the heap 
-at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of light (resp. heavy) paths adjacent to $v$ in $\pathTreeA(T)$.
+at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of short (resp. tall) paths adjacent to $v$ in $\pathTreeA(T)$.
 
 We want to understand how the heap size changes as we move around the paths in $\mathcal{L}$.  Specifically, there are 
-three places the vertices in the heap along a light path can come from; adjacent light paths, adjacent heavy paths, and the initial heap at the leaf of the path.  
+three places the vertices in the heap along a short path can come from; adjacent short paths, adjacent tall paths, and the initial heap at the leaf of the path.  
 Given this observation we now define a weight function which upper bounds the size of the heap at the root of any path in $\mathcal{L}$.
 
 First, for all $v\in \mathcal{L}$ we define the local cost function $c(v) = H_{v_f}+\sum_{i\in S_h(v)} H_i$, this is the addition to the heap at $v$ which 
-was not already charged to descendant light paths.  We now define a weighted version of $\mathcal{L}$ based on these costs.  
+was not already charged to descendant short paths.  We now define a weighted version of $\mathcal{L}$ based on these costs.  
 To do so, we first augment $\mathcal{L}$ by attaching one 
 leaf to each vertex in $\mathcal{L}$.  Now for each newly created leaf (which are the only leaves now) assign the cost 
 $c(v)$ defined above, where $v$ is that leaf's corresponding parent.  
 Now we can define a weight function $w(u)$ over any node $u$ in the tree, which is defined to be the total cost of all leaves in its subtree.   
 To simplify notation, we now use $\mathcal{L}$ to refer to this new weighted tree (rather than its unweighted counterpart).
 
-As the weight $w(p)$ includes the sizes of the heaps of all contributing heavy paths and leaves in the subtree rooted at $p$, we have the following.
+As the weight $w(p)$ includes the sizes of the heaps of all contributing tall paths and leaves in the subtree rooted at $p$, we have the following.
 
 \begin{claim}
 For any $p\in \mathcal{L}$, $w(p)\geq |H_p|$.  Moreover, for any $v\in p$, $w(p)\geq |H_v|$.
@@ -2183,13 +2309,13 @@ that are in the subtree of $\mathcal{L}$ which is rooted at $v$.
 
 First, observe that $|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} |u|$.  
 This holds by the same argument as in \Lem{adjacent}, namely, $w(v)$ by definition 
-counts all the contributing heavy path heaps and initial leaf heaps that contribute 
+counts all the contributing tall path heaps and initial leaf heaps that contribute 
 to the heap at $v$ and $\sum_{u\in \mathcal{L}_v} |u|$ is an upper bound on the number 
 of vertices that could have been removed from one of these heaps before reaching the 
 root of $v$ (since a vertex in a heap can only get removed if it appears on one of 
 the paths).  
 
-As all paths in $\mathcal{L}$ are light, we thus have the following.
+As all paths in $\mathcal{L}$ are short, we thus have the following.
 
 \begin{claim}
 $|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{|H_u|}/100 \geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100$
@@ -2257,7 +2383,7 @@ $w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is 
 
 
 \begin{lemma}
-Let $\mathcal{L}$ be the light shrub of some path $r$.  
+Let $\mathcal{L}$ be the short shrub of some path $r$.  
 Then for any $v\in \mathcal{L}$, we have $|H_v|\geq \frac{4}{5} w(v)$.
 \end{lemma}
 % \begin{proof}
@@ -2292,7 +2418,7 @@ fractional decrease always holds implying the claim always holds.
 
 \begin{corollary}
 \label{cor:equivalent}
- Let $\mathcal{L}$ be a light shrub of a light path $r$.  Then for any $v\in \mathcal{L}$, $|H_v| \leq w(v) \leq \frac{5}{4} |H_v|$.
+ Let $\mathcal{L}$ be a short shrub of a short path $r$.  Then for any $v\in \mathcal{L}$, $|H_v| \leq w(v) \leq \frac{5}{4} |H_v|$.
 \end{corollary}
 
 Now we are finally ready to make use of the properties we have proven about the weight function we introduced.
@@ -2300,8 +2426,8 @@ Now we are finally ready to make use of the properties we have proven about the 
 \Ben{The constant in the lemmas below, but it is no more than twice that.}
 
 \begin{lemma}
-\label{lem:lightCost}
- Let $\mathcal{L}$ be a light shrub of a light path $r$.  Let $V$ be the set of heavy paths from the full shrub which are adjacent to paths in $\mathcal{L}$.  
+\label{lem:shortCost}
+ Let $\mathcal{L}$ be a short shrub of a short path $r$.  Let $V$ be the set of tall paths from the full shrub which are adjacent to paths in $\mathcal{L}$.  
   Then $\sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q| \leq \frac{4}{3} |H_r|\log |H_r|$
 \end{lemma}
 \begin{proof}
@@ -2311,10 +2437,10 @@ The following is a proof for $\frac{3}{2}+\eps$, rather than $\frac{4}{3}$.  The
 }
 
 Recall that in a proper coloring of a binary tree $T$, the color of any vertex must be the color of one of its descendants.  
-Therefore, any vertex in the light path shrub must appear in the heap of either the root of an adjacent 
+Therefore, any vertex in the short path shrub must appear in the heap of either the root of an adjacent 
 path from the full shrub or from the heap of a leaf of a path in $\mathcal{L}$.  
 Also note $|H_r|$ precisely counts sum of the number of vertices from these heaps that do not appear in $\mathcal{L}$.
-As there are no adjacent light paths to a light shrub, the total number of vertices over all paths in $\mathcal{L}$ is at most 
+As there are no adjacent short paths to a short shrub, the total number of vertices over all paths in $\mathcal{L}$ is at most 
 $m = \sum_{p\in \mathcal{L}} |H_{p_f}| +\sum_{q\in V} |H_q| - |H_r| = w(r)-|H_r|$, where $H_{p_f}$ is the heap at the leaf of $p$. 
 
 Using this observation and \Cor{equivalent} we then have, 
