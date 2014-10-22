@@ -155,10 +155,11 @@
 
 \newcommand{\build}{{\tt build}}
 \newcommand{\col}{col}
+\newcommand{\fcol}{full}
 \newcommand{\cut}{{\tt cut}}
 \newcommand{\cont}{\psi}
 \newcommand{\cost}{\mathop{cost}}
-\newcommand{\h}{high}
+\newcommand{\h}{att}
 \newcommand{\lift}{{\tt lift}}
 \newcommand{\mcol}{mcol}
 \newcommand{\merge}{{\tt merge}}
@@ -820,32 +821,54 @@ points from $\cJ(\MM) \ominus \{m_i\}$ exactly yields the edges described in the
 
 \section{Painting to compute contour trees}
 
-We begin by associating a color with each maximum. If the set of maxima is $S$,
-this is simply an arbitrary bijection $\chi:S \mapsto [|S|]$. Imagine there being a large
-can of paint of color $\chi(y)$ at maxima $y$. We will spill different paint from each maximum and watch it flow down.
+Now we come to the main algorithmic contribution. We design a new algorithm for computing contour
+trees of a minimum dominant simplicial complice $\MM$. As part of the initialization, we determine
+all critical points in $\MM$. For any vertex $v$, we can look at $f(v) \pm \delta$-contours 
+in $f|_{B_\eps(v)}$ to determine the up and down degrees. This determines the criticality (and type)
+of $v$. This requires $O(|\MM|)$ time, since every facet is looked at proportional to the number of its
+vertices.
+
+{\bf Painting:} The central tool is a notion 
+of \emph{painting} of $\MM$. Initially associate a color with each maximum. Denoting the set of maxima is $X$,
+this is an arbitrary bijection $\chi:X \mapsto [|X|]$. Imagine there being a large
+can of paint of color $\chi(x)$ at maxima $x$. We will spill different paint from each maximum and watch it flow down.
 This is analogous to the raining in the previous section, but paint is a much more viscous liquid.
-\emph{So paint only flows down edges, and it does not color the interior of faces.} Furthermore, paints
-do not mix, so eventually, every vertex and edge of $\MM$ gets a unique color.
+\emph{So paint only flows down edges, and it does not color the interior of facets.} Furthermore, paints
+do not mix, so eventually, every vertex and edge of $\MM$ gets a unique color. This process (and indeed the entire algorithm)
+works purely on the 1-skeleton of $\MM$, which is just a graph.
 %
-\begin{definition} \label{def:paint} A  \emph{painting} of $\MM$ is a map $\chi:S \cup E \mapsto [|S|]$
-with the following properties. (Remember that $G(\MM) = (V,E)$.)
+\begin{definition} \label{def:paint} Let the 1-skeleton of $\MM$ be denoted $G(\MM) = (\cV,E)$.
+A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \mapsto [|X|]$ with the following properties. 
 \begin{asparaitem}
-	\item The restriction $\chi:S \mapsto [|S|]$ is a bijection.
+	\item The restriction $\chi:X \mapsto [|X|]$ is a bijection.
 	\item Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
 	consisting of edges in $E$, such that all edges along this path have the same color as $x$. (The maximum $x$
 	is well-defined to be the unique maximum with the same color as $e$.)
 \end{asparaitem}
 \end{definition}
 %
-Note that paintings are not unique. It is straightforward to construct a painting of $\MM$ in $O(n)$ time, using a descending BFS from each maximum that does not explore previously colored edges. 
+Note that paintings are not unique. It is straightforward to construct a painting of $\MM$ in $O(|\MM|)$ time, using a descending BFS from each maximum that does not explore previously colored edges. 
+
+{\bf Colors of vertices:} Note that a painting only colors edges, not vertices. We associate certain
+sets of colors with vertices.
+
+\begin{definition} \label{def:color-set} Fix a painting $\chi$, and a color $c$.
+A vertex $v$ is \emph{touched by $c$} if $x$ is incident to a $c$-colored
+edge with $v$ at the lower endpoint. For $v$, $\col(v)$ is the set of colors that touch $v$.
+\end{definition}
+
+Abusing notation, we say a contour $\phi$ is of color $c$ if all edges that intersect $\phi$ have color $c$.
+
+\begin{definition} \label{def:color-full} Consider vertex $v$, and let $\phi$ be a $(f(v)+\delta)$-contour in
+$f|_{B_\eps(v)}$. If $\phi$ is monochromatic of color $c$, then $v$ is \emph{fully touched by $c$}. The set of colors
+that fully touch $v$ is denoted $\fcol(v)$.
+\end{definition}
+
+Note that $\fcol(v)$ has size at most $2$, by the Morse condition. Note that $\col(v)$ and $\fcol(v)$ can
+be initially determined in $O(|\MM|)$ time, by a simple linear scan.
 
 \subsection{The data structures} \label{sec:struct}
 
-\begin{definition} \label{def:color-set} Fix a painting $\chi$, and a color $c$.
-A critical point $x$ is \emph{touched by $c$} if $x$ is incident to a $c$-colored
-increasing edge. The set of non-extremal critical points touched by $c$ is denoted $\touch(c)$.
-For $x$, $\col(x)$ is the set of colors that touch $x$.
-\end{definition}
 %
 %We will store each set $\touch(c)$ in a binomial heap, keyed by the heights. 
 Abusing notation, $\touch(c)$ refers
@@ -853,8 +876,8 @@ both to the set and the data structure used to store it.
 
 \medskip
 \noindent
-{\bf The binomial heaps $\touch(c)$:} For each color $c$, we store a binomial
-heap $T(c)$ of non-extremal critical points, keyed by vertex heights.
+{\bf The binomial heaps $\touch(c)$:} For each color $c$, $T(c) = \{v | c \in \fcol(v)\}$.
+This is stored as a \emph{binomial max-heap} $T(c)$, keyed by vertex heights.
 
 \medskip
 \noindent
@@ -866,7 +889,9 @@ by simply setting $\rep(c) = c$ for all colors.
 
 \medskip
 \noindent
-{\bf The stack $\st$:} This consists of non-extremal critical points with the following structure.
+{\bf The stack $\st$:} This consists of non-extremal critical points, with monotonically increasing
+heights as we go from the base to the head.
+\ignore{
 Each point $x \in \st$ has an associated subset of $\col(x)$, denoted $\mcol(x)$.
 Both $\mcol(x)$ and its complement are stored as hash table. So lookups, inserts, and deletes
 are in these sets are all constant time operations. The stack is guaranteed to satisfy 
@@ -877,17 +902,43 @@ the following invariants.
 	\item Consider $x, y \in \st$ such that $y$ was pushed on $x$. There exists $c \in \col(x) \setminus
 	\mcol(x)$ such that $x$ is not highest in $T(c)$ but $y$ is highest in $T(c)$.
 \end{asparaitem}
+}
 
 \medskip
 \noindent
-{\bf Highest points $\h(c)$:} For each color $c$, we maintain a special critical point $\h(c)$ of this color.
-It is supposed to denote the ``highest" point of color $c$, but the notion of highest evolves
-with the algorithm. 
+{\bf Attachment vertex $\h(c)$:} For each color $c$, we maintain a critical point $\h(c)$ of this color.
+We will maintain the guarantee that the portion of the contour tree above (and including) $\h(c)$ has already been constructed.
+
+\subsection{Properties of a painted simplicial complex} \label{sec:prop}
+
+\begin{lemma} \label{lem:full} Consider vertex $v$ and take $(f(v)+\delta)$-contour $\phi$ intersecting
+$B_\eps(v)$. Suppose the edges incident to $v$ intersecting $\phi$ do not have the same color. For any such
+color $c$, there exists a critical vertex $w$ strictly higher than $v$ such that $c \in \fcol(v)$.
+\end{lemma}
+
+\begin{proof} Consider the highest
+vertex $w$ that is touched by $c$ and some other color. Clearly such a vertex exists, since the condition
+is also satisfied by $v$. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
+and intersect some $c$-colored edge incident to $w$. Note that $\phi$ is also colored $c$,
+since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
+edges from the maximum to $w$. For any point on this path, the contour passing through this point must
+be colored $c$.) Hence, $c \in \fcol(w)$ and $w \neq v$. Furthermore, $w$ is a critical point,
+since $w$ is touched by another color. The corresponding edge cannot intersect $\phi$, so $w$
+must have up-degree $2$.
+\end{proof}
+
+
+\begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \fcol(v)$, $v$
+is the highest vertex in $T(c)$. Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(c)$ is empty.
+\end{definition} 
+
+
+
 
 \subsection{Updating the stack} \label{sec:stack}
 
-We have a simple, but critical, procedure that updates the stack $\st$ by pushing
-points on to it.
+We have an imporant procedure that updates the stack $\st$.
+
 
 
 \medskip
@@ -897,23 +948,46 @@ points on to it.
 
 \smallskip
 \begin{compactenum}
-	\item If $K$ is empty, pick arbitrary $c$. Let $x$ be the highest point in $T(c)$.
-	Push $x$ onto stack and set $\mcol(x) = \{c\}$.
+	\item If $K$ is empty, push arbitrary unprocessed critical point $v$.
 	\item Let $h$ be head of $\st$.
-	\item While $\col(h) \setminus \mcol(h)$ non-empty:
+	\item While $h$ is not ripe:
 	\begin{compactenum}
-		\item Pick some $c \in \col(h) \setminus \mcol(h)$. Replace it by $c' = \rep(c)$.
-		\item Obtain highest point $x$ in $T(c')$. 
-		\item If $x = h$, put $c'$ in $\mcol(h)$. Otherwise ($x \neq h$), push $x$ onto stack
-		and add $c'$ to $\mcol(x)$.
-		\item Let $h$ be new head of $\st$.
+		\item (Either (i) there is $c \in \fcol(v)$ such that $v$ is not the highest in $T(c)$ or (ii) there is 
+		$c \in \col(v) \setminus \fcol(v)$, such that $T(c)$ is non-empty.)
+		\item In either case, push the highest of $T(c)$ onto $\st$, and update head $h$.
 	\end{compactenum}
 \end{compactenum}
 \end{minipage}}
 
 \medskip
-When $\update(\st)$ terminates, the head $h$ has the following property. For every $c \in \col(h)$,
-$h$ is the highest point in $\touch(c)$. 
+Clearly, when $\update(\st)$ terminates, the head $h$ is ripe. The following crucial claim demonstrates
+the utility of the stack.
+
+\begin{claim} \label{clm:stack} Vertices are always pushed onto $\st$ in increasing order of height.
+\end{claim}
+
+\begin{proof} Consider a single push onto the stack. In Case (i), the increase in height is obvious.
+Consider Case (ii). There is a vertex $v$ touched by color $c \notin \fcol(v)$. Consider the highest
+vertex $w$ that is touched by $c$ and some other color. Clearly such a vertex exists, since the condition
+is also satisfied by $v$. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
+and intersect some $c$-colored edge incident to $w$. Note that $\phi$ is also colored $c$,
+since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
+edges from the maximum to $w$. For any point on this path, the contour passing through this point must
+be colored $c$.) Hence, $c \in \fcol(w)$ and $w \neq v$. Furthermore, $w$ is a critical point,
+since $w$ is touched by another color. The corresponding edge cannot intersect $\phi$, so $w$
+must have up-degree $2$.
+
+All in all, when a new vertex is pushed onto the stack, it is always higher than the previous head.
+\end{proof}
+
+The painting evolves over time, and is primarily updated through \emph{color merges}. The best way
+of thinking about this is to imagine that two colors are suddenly replaced by one new common color.
+Of course, it is not possible to explicitly redo the painting, but this is implictly done
+through the union-find data structure on colors. So, when we process some vertex $v$,
+which has (say) $\col(v) = \{c_1, c_2, \ldots\}$, it may be the case that all these colors
+have merged.
+
+
 
 \begin{claim} \label{clm:cont} Consider an increasing path from $h$ to some maxima $x$.
 For any $y$ in this path, $\cont(y)$ only contains points of color $c(x)$.
