@@ -1,13 +1,154 @@
+@preamble{" \providecommand{\CNFX}[1]{{\em{\textrm{(#1)}}}} " }
+@preamble{" \providecommand{\CNFSoCG}{\CNFX{SoCG}} "}
+@preamble{" \providecommand{\CNFFOCS}{\CNFX{FOCS}} "}
+@preamble{" \providecommand{\CNFSODA}{\CNFX{SODA}} "}
+@preamble{" \providecommand{\CNFSTOC}{\CNFX{STOC}} "}
+@preamble{" \providecommand{\CNFWADS}{\CNFX{WADS}} "}%
 
+@string{JACM   = "J. Assoc. Comput. Mach."}
+@string{DCG    = "Discrete Comput. Geom."}
+@string{CGTA   = "Comput. Geom. Theory Appl."}
+@string{FOCS_1987 = "Proc. 28th Annu. IEEE Sympos. Found. Comput. Sci. \CNFFOCS"}
+@string{FOCS_1994 = "Proc. 35th Annu. IEEE Sympos. Found. Comput. Sci. \CNFFOCS"}
+@string{FOCS_2009 = "Proc. 50th Annu. IEEE Sympos. Found. Comput. Sci. \CNFFOCS"}
+@string{WADS_2003 = "Proc. 8th Workshop Algorithms Data Struct. \CNFWADS"}
+@string{SOCG_1997 = "Proc. 13th Annu.  Sympos. Comput. Geom. \CNFSoCG"}
+@string{SOCG_1998 = "Proc. 14th Annu.  Sympos. Comput. Geom. \CNFSoCG"}
+@string{SOCG_2003 = "Proc. 19th Annu.  Sympos. Comput. Geom. \CNFSoCG"}
+@string{SODA_2000 = "Proc. 11th ACM-SIAM Sympos. Discrete Algs. \CNFSODA"}
+
+
+@inproceedings{c-mosga-94,
+  author    = {K. L. Clarkson},
+  title     = {More Output-Sensitive Geometric Algorithms (Extended Abstract)},
+  booktitle = FOCS_1994,
+  year      = {1994},
+  pages     = {695--702},
+  url       = {http://doi.ieeecomputersociety.org/10.1109/SFCS.1994.365723},
+  doi       = {10.1109/SFCS.1994.365723},
+  timestamp = {Thu, 02 Oct 2014 18:16:44 +0200},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/conf/focs/Clarkson94},
+  bibsource = {dblp computer science bibliography, http://dblp.org}
+}
+
+@inproceedings{bdeilmt-osacnnd-03,
+  author       = {D. Bremner and E. Demaine and J. Erickson and
+                  J. Iacono and S. Langerman and P. Morin and
+                  G. Toussaint},
+  title        = {Output-Sensitive Algorithms for Computing
+                  Nearest-Neighbor Decision Boundaries},
+  booktitle    = WADS_2003,
+  year         = {2003},
+  pages        = {451--461},
+}
+
+@article{c-ooscha-96,
+  author       = {T. Chan},
+  title        = {Optimal Output-Sensitive Convex Hull Algorithms in
+                  Two and Three Dimensions},
+  journal      = DCG,
+  year         = {1996},
+  volume       = {16},
+  number       = {4},
+  pages        = {361--368},
+  url          = {http://dx.doi.org/10.1007/BF02712873},
+  doi          = {10.1007/BF02712873},
+  timestamp    = {Thu, 02 Oct 2014 18:09:50 +0200},
+  biburl       =
+                  {http://dblp.uni-trier.de/rec/bib/journals/dcg/Chan96},
+  bibsource    = {dblp computer science bibliography, http://dblp.org}
+}
+
+@inproceedings{gm-osacvg-87,
+  author       = {S. K. Ghosh and D. M. Mount},
+  title        = {An Output Sensitive Algorithm for Computing
+                  Visibility Graphs},
+  booktitle    = FOCS_1987,
+  year         = {1987},
+  pages        = {11--19},
+  url          = {http://doi.ieeecomputersociety.org/10.1109/SFCS.1987.6},
+  doi          = {10.1109/SFCS.1987.6},
+  biburl       = {http://dblp.uni-trier.de/rec/bib/conf/focs/GhoshM87},
+  bibsource    = {dblp computer science bibliography, http://dblp.org}
+}
+
+@article{st-saa-04,
+  author       = {D. Spielman and S. Teng},
+  title        = {Smoothed analysis of algorithms: Why the simplex
+                  algorithm usually takes polynomial time},
+  journal      = JACM,
+  year         = {2004},
+  volume       = {51},
+  number       = {3},
+  pages        = {385--463},
+  url          = {http://doi.acm.org/10.1145/990308.990310},
+  doi          = {10.1145/990308.990310},
+  timestamp    = {Thu, 02 Oct 2014 21:15:19 +0200},
+  biburl       =
+                  {http://dblp.uni-trier.de/rec/bib/journals/jacm/SpielmanT04},
+  bibsource    = {dblp computer science bibliography, http://dblp.org}
+}
+
+@article{bo-arcgi-79,
+  keyent       = {bo-arcgi-79},
+  author       = {J. Bentley and T. Ottmann},
+  title        = {Algorithms for reporting and counting geometric intersections},
+  journal      = {IEEE Trans. Comput.},
+  volume       = {C-28},
+  number       = 9,
+  month        = sep,
+  year         = 1979,
+  pages        = {643--647}
+}
+
+
+@inproceedings{abc-ioga-09,
+  author    = {P. Afshani and
+               J. Barbay and
+               T. Chan},
+  title     = {Instance-Optimal Geometric Algorithms},
+  booktitle = FOCS_2009,
+  year      = {2009},
+  pages     = {129--138},
+  crossref  = {DBLP:conf/focs/2009},
+  url       = {http://doi.ieeecomputersociety.org/10.1109/FOCS.2009.34},
+  doi       = {10.1109/FOCS.2009.34},
+  timestamp = {Sun, 19 Oct 2014 21:27:42 +0200},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/conf/focs/AfshaniBC09},
+  bibsource = {dblp computer science bibliography, http://dblp.org}
+}
+
+@article{st-dsdt-83,
+  author    = {D. Sleator and
+               R. Tarjan},
+  title     = {A Data Structure for Dynamic Trees},
+  journal   = {J. Comput. Syst. Sci.},
+  year      = {1983},
+  volume    = {26},
+  number    = {3},
+  pages     = {362--391},
+  url       = {http://dx.doi.org/10.1016/0022-0000(83)90006-5},
+  doi       = {10.1016/0022-0000(83)90006-5},
+  timestamp = {Sun, 19 Oct 2014 21:26:20 +0200},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/journals/jcss/SleatorT83},
+  bibsource = {dblp computer science bibliography, http://dblp.org}
+}
+
+@phdthesis{c-tmi-04,
+  author    = {H. Carr},
+  school    = {University of British Columbia},
+  title     = {Topological Manipulation of Isosurfaces},
+  year      = 2004
+}
 
 @inproceedings{kobps-ctsssit-97,
-  author    = {Marc J. van Kreveld and
-               Ren{\'e} van Oostrum and
-               Chandrajit L. Bajaj and
-               Valerio Pascucci and
-               Daniel Schikore},
+  author    = {M. van Kreveld and
+               R. van Oostrum and
+               C. Bajaj and
+               V. Pascucci and
+               D. Schikore},
   title     = {Contour Trees and Small Seed Sets for Isosurface Traversal},
-  booktitle = {Symposium on Computational Geometry},
+  booktitle = SOCG_1997,
   year      = {1997},
   pages     = {212-220},
   ee        = {http://doi.acm.org/10.1145/262839.269238},
@@ -15,10 +156,10 @@
 }
 
 @inproceedings{tv-cct-98,
-  author    = {Sergey P. Tarasov and
-               Michael N. Vyalyi},
+  author    = {S. Tarasov and
+               M. Vyalyi},
   title     = {Construction of Contour Trees in 3D in ${O}(n \log n)$ Steps},
-  booktitle = {Symposium on Computational Geometry},
+  booktitle = SOCG_1998,
   year      = {1998},
   pages     = {68-75},
   ee        = {http://doi.acm.org/10.1145/276884.276892},
@@ -26,11 +167,11 @@
 }
 
 @inproceedings{csa-cctad-00,
-  author    = {Hamish Carr and
-               Jack Snoeyink and
-               Ulrike Axen},
+  author    = {H. Carr and
+               J. Snoeyink and
+               U. Axen},
   title     = {Computing contour trees in all dimensions},
-  booktitle = {SODA},
+  booktitle = SODA_2000,
   year      = {2000},
   pages     = {918-926},
   ee        = {http://dl.acm.org/citation.cfm?id=338219.338659},
@@ -39,13 +180,13 @@
 }
 
 @article{cllr-sooscctmp-05,
-  author    = {Yi-Jen Chiang and
-               Tobias Lenz and
-               Xiang Lu and
-               G{\"u}nter Rote},
+  author    = {Y. Chiang and
+               T. Lenz and
+               X. Lu and
+               G. Rote},
   title     = {Simple and optimal output-sensitive construction of contour
                trees using monotone paths},
-  journal   = {Comput. Geom.},
+  journal   = CGTA,
   volume    = {30},
   number    = {2},
   year      = {2005},
@@ -55,8 +196,8 @@
 }
 
 @inproceedings{pc-ectls-02,
-  author    = {Valerio Pascucci and
-               Kree Cole-McLaughlin},
+  author    = {V. Pascucci and
+               K. Cole-McLaughlin},
   title     = {Efficient Computation of the Topology of Level Set},
   booktitle = {IEEE Visualization},
   year      = {2002},
@@ -66,13 +207,13 @@
 }
 
 @inproceedings{cehnp-lrbm-03,
-  author    = {Kree Cole-McLaughlin and
-               Herbert Edelsbrunner and
-               John Harer and
-               Vijay Natarajan and
-               Valerio Pascucci},
+  author    = {K. Cole-McLaughlin and
+               H. Edelsbrunner and
+               J. Harer and
+               V. Natarajan and
+               V. Pascucci},
   title     = {Loops in reeb graphs of 2-manifolds},
-  booktitle = {Symposium on Computational Geometry},
+  booktitle = SOCG_2003,
   year      = {2003},
   pages     = {344-350},
   ee        = {http://doi.acm.org/10.1145/777792.777844},
@@ -81,8 +222,8 @@
 }
 
 @article{sk-crgacs-91,
-  author    = {Yoshihisa Shinagawa and 
-	      Tosiyasu L. Kunii},
+  author    = {Y. Shinagawa and 
+	      T. Kunii},
   title     = {Constructing a Reeb Graph Automatically from Cross Sections},
   journal   = {IEEE Comput. Graphics Appl.},
   volume    = {11},
