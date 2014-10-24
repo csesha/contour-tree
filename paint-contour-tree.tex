@@ -323,12 +323,13 @@ Their main contribution is the third and final step where they present an $O(n)$
 together the join and split trees to get the contour tree.  
 
 There have also been some output sensitive results for computing the contour tree.  Let $t'$ be the number 
-of critical points in the input mesh, which could potentially be much smaller than $n$.  In particular, 
-Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provide an $O(n+t\log n)$ time algorithm for the case of 
-$3$ dimensional structured meshes.  \Ben{Update distinction between critical and component-critical}
+of critical points in the input mesh, which could potentially be much smaller than $n$.  
+Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t'\log n)$ time algorithm for the case of 
+$3$-dimensional structured meshes (note $N$ does not show up in the running time as the mesh is structured).
 Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t\log t)$ algorithm 
-which works for structured or unstructured meshes in any dimension, which is provably optimal with respect 
-to the output size but not the output structure, as discussed below.
+which works for structured or unstructured meshes in any dimension, where $t$ is the number of component 
+critical vertices.  This is provably optimal with respect to the output size but not the output structure, 
+as discussed below.
 
 %As the the authors point out in \cite{cllr-sooscctmp-05}, by reduction from sorting, 
 %one can show that any algorithm to compute the contour tree in the worst case takes 
@@ -385,27 +386,82 @@ compute as there is no long sorted path.  However, the join and split trees will
 sorted tails (consisting of the vertices in the bottom and top balanced trees, respectively), 
 and therefore require $\Omega(n\log n)$ time to compute.
 
-\subsection{Our Contribution}
+\subsection{Overview and Contribution}
+
+\paragraph{Algorithm Overview.}
+At a high level, the technique is rather simple.  Break the input manifold into nicely 
+behaved pieces, compute the contour tree on each piece, and then stitch together the computed 
+contour trees according to the cuts we made to break up the manifold.  Below we informally 
+describe how this is accomplished.
+\begin{compactitem}
+ \item {\bf Raining to partition.}  To start with, pick an arbitrary maxima.  Now imagine 
+ ``raining'' water down on the manifold from this maxima, i.e. mark all points which are reachable 
+ by non-ascending paths from the maxima.  Let the boundary between wet and dry portions of the 
+ manifold be called the interface (which may have different connected components).  
+ Remove the wet submanifold, and invert the remaining pieces
+ of the original manifold.  Now recursively rain in each one of these pieces, but rather than 
+ picking an arbitrary maxima, start from the portion of the interface that cut that piece off.
+ 
+ The benefit of this partitioning is that each resulting piece 
+ is maxima dominant, i.e. there is a single maxima that has a non-ascending path to each point.  
+ This implies the contour of this submanifold is the same as its split tree, or in other words 
+ its contour tree is a rooted binary tree. 
+ 
+ %
+ \item {\bf Painting trees.}  For each maxima dominant piece we want to compute the split 
+ tree without sorting all the vertices.  For conceptual ease lets first flip the submanifold 
+ (i.e., it is now minima dominant and we compute the join tree).  Now arbitrarily pick a maxima 
+ and spill paint from it, specifically color all edges and vertices of the mesh that are reachable 
+ from the maxima by descending paths.  Now go to each other maxima and spill a different color, 
+ but be aware that paints do not mix, i.e. if we reach a vertex that was previosly explored 
+ by another color then we do not explore it.
+ 
+ This procedure partitions the set of critical points into color classes.  Clearly each color 
+ class is connected in the manifold.  Suppose each class was also connected in the join tree.  
+ In this case we partitioned the join tree into a set of descending paths, each of which 
+ can be constructed by sorting the critical points in a class.  Roughly speaking, 
+ these paths can then be joined together by what amounts to doing a post-order traversal of the tree.
+ However, we may not be so lucky and the color classes may not be connected in the 
+ tree.  This turns out not to be a problem, but it requires proper data-structure use. 
+%  
+%  Now suppose we were lucky and the spilling of paint in the manifold corresponded with a paint 
+%  spilling in the join tree, i.e. the color classes of the critical points partition the join 
+%  tree into disjoint descending paths, each containing one leaf.   In this case 
+%  we have partitioned the tree into branches, and so the tree can be formed by gluing these 
+%  branches together.  Intuitively (i.e. not exactly true), if two branches glue together then 
+%  it means there is a join vertex which got colored by the respective colors of each branch 
+%  (only one of these colors actually explored the vertex in the mesh and this is the ``main'' 
+%  branch you are gluing into).  Therefore, the tree can be constructed by starting at the leaf 
+%  of the trunk (i.e. the branch with the global minima) and recursively building the subtrees 
+%  while walking towards the root.  In other words we are building the tree by doing a post-order traversal.
+%  Unfortunately, we may not be so lucky and the color classes may not appear contiguously in 
+%  the tree.  In this case we can still build the tree in this leaf first fashion, but doing so 
+%  efficiently requires the use of data-structures.
+\end{compactitem}
+
+\paragraph{Lower Bound Overview.}
 \Ben{To be Written}
 
-\paragraph{Organization.}
+\paragraph{Our Contribution.}
+Our contribution can be broken into three main aspects.  The first two are algorithmic.  Namely, 
+first we describe a new linear time manifold partitioning scheme which breaks the manifold into 
+``extremum'' dominant submanifolds.  
+Second, we describe how to compute join trees optimally with respect to shape of the tree.
+As the contour tree of each submanifold is (roughly) equal to its join tree, this leads to an 
+optimal algorithm for the contour tree of the input manifold.  
+Therefore, our third and final contribution is proving the optimality of this result, which 
+requires a non-trivial amount of work, and uses techniques we believe to be of independent interest.
 
-\begin{figure}[h]\centering
-    \includegraphics[width=.18\linewidth]{figs/orderGray1}%
-    \hspace{.8in}
-    \includegraphics[width=.18\linewidth]{figs/orderGray2}
-    \caption{On left, downward paint spilling only (each shade of gray represents a different color).  On right, flipping the direction of paint spilling.}
-    \label{fig:order}
-\end{figure}
+\paragraph{Organization.}
+\Ben{To be Written}
 
 \section{Contour tree basics} \label{sec:basics}
 
-We detail the basic definitions about contour trees. Most of this is taken from Chapter 6 of Carr's thesis~\cite{Carr}.
-Our input is a continuous PL function $f:\MM \mapsto \RR$, where $\MM$ is a simplicial complex in $\RR^d$. 
-All simplices are isomorphic to a standard $d$-dimensional simplex, except for specially designated
-\emph{boundary} simplices. \Sesh{Some mention of representation and data structures here.}
-It is standard to assume
-that $f$ is Morse (we explain later what this entails). 
+We detail the basic definitions about contour trees. The following is based on Chapter 6 of Carr's thesis \cite{c-tmi-04}.
+Our input is a continuous PL function $f:\MM \mapsto \RR$, where $\MM$ is a fully triangulated simplicial complex in $\RR^d$. 
+%All simplices are isomorphic to a standard $d$-dimensional simplex, except for specially designated \emph{boundary} simplices. 
+\Sesh{Some mention of representation and data structures here.}
+We use the standard assumption that $f$ is Morse (we explain later what this entails). 
 
 Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simplicial complex living in $\RR^{d+1}$.
 We can think of $f(x)$ as the ``height" of a point $x \in \MM$.
@@ -415,7 +471,7 @@ We will often omit $f$, and assume that $f$ is encoded in the representation of 
 A contour is a maximal connected component of a level set. An $h$-contour is a contour where $f$-values are $h$.
 \end{definition}
 
-Not that a contour is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
+Note that a contour is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
 We let $\delta, \eps$ denote infinitesimals. Let $B_\eps(x)$ denote a ball of radius $\eps$ around $x$.
 
 \begin{definition} \label{def:deg} The up-degree of $x \in \MM$ is the number of $(f(x) + \delta)$-contours that intersect $B_\eps(x)$
@@ -437,14 +493,25 @@ Non-regular points are called \emph{critical}. Joins and splits are called \emph
 Maxima and minima are called \emph{extrema}.
 \end{definition}
 
+\begin{remark}
+ For two manifolds, at each saddle point either two contours join together or split apart, and hence the terminology.  In higher dimensions this may not be the case, however, it always holds that at a join or split vertex the topology of the level set changes, and hence such vertices are still 'critical'.  Note that determining which category each vertex falls into according to the above definition can be determined for all vertices simultaneously in linear time, as it is a local neighborhood condition.
+\end{remark}
+
+
 
 We will enforce a special constraint on boundaries, encapsulated in the following definition.
 
 \begin{definition} \label{def:bound} $f$ is \emph{boundary critical} if the following holds.
 Consider a boundary simplex $F$. All vertices of $F$ have the same function value. Furthermore, all
-neighbors of $F$ not in $F$ either have function values strictly greater or strictly less
+neighbors of $F$ not in $F$ either have all function values strictly greater or strictly less
 than this value.
 \end{definition}
+
+\begin{remark}
+Note that by assuming that our manifold is boundary critical, the vertices on a given boundary are either all maxima or all minima.  
+Since all such vertices on a boundary component are in the same contour, we will abuse notation and refer to this entire set of vertices as a maxima (resp. minima).
+In particular, we do not view this as a violation of the Morse condition on $f$, which requires distinct heights for critical points.
+\end{remark}
 
 We use $\cV$ to denote the set of critical points in $\MM$.
 Because $f$ is piecewise-linear, all critical points are vertices in $\MM$. 
@@ -467,14 +534,24 @@ to be created at $x_i$ and destroyed at $x_j$.
 
 \begin{definition} \label{def:tree} The contour tree is the graph on vertex set $\cV$, where
 edges are formed as follows. For every contour class that is created at $v_i$ and destroyed $v_j$,
-there is an edge $(v_i,v_j)$. (Conventially, edges are directed from higher function value to lower.)
+there is an edge $(v_i,v_j)$. (Conventionally, edges are directed from higher function value to lower.)
 \end{definition}
 
-(It is not immediately obvious that this graph is a tree. But it is equivalent to the Reeb graph
-of $f:\MM \rightarrow \RR$, which is known to be a tree.) We denote the contour tree of $\MM$
-by $\reeb(\MM,f)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
+We denote the contour tree of $\MM$
+by $\reeb(\MM) = \reeb(\MM,f)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
+%
+It is not immediately obvious that this graph is a tree, but the above definition is equivalent to that of the Reeb graph of $f:\MM \rightarrow \RR$ on $\MM$, and this is known to be a tree for PL functions defined over PL manifolds.  
 
-We use a key theorem from~\cite{Carr} (Theorem 6.6) that maps paths in $\cC(\MM)$ and $\MM$.
+\begin{remark}
+Note that the contour tree as defined above contains vertices for all critical points, 
+which differs slightly from the usual definition which only contains critical points corresponding to a change in the number of contours.  Specifically, if a vertex in the tree we defined has degree $2$ then only the topology of a contour is changing rather than the number of contour.  As such the standard contour tree can be computed from ours by a linear time pass to contract maximal degree 2 vertex paths.
+
+For simplicity we will also make the standard assumption that vertices in the contour 
+tree have degree at most $3$, i.e. there are no multi-saddles.
+\end{remark}
+
+
+We use a key theorem from \cite{c-tmi-04} (Theorem 6.6) that maps paths in $\cC(\MM)$ and $\MM$.
 
 \begin{theorem} \label{thm:carr-path} For every path $P$ in $\MM$, there exists a path $Q$ in the contour tree to which $P$
 maps, and for every path $Q$ in the contour tree, there exists at least one path $P$ in $\MM$ that maps to $Q$.
@@ -486,10 +563,10 @@ maps, and for every path $Q$ in the contour tree, there exists at least one path
 a new simplicial complex with an added boundary. Given contour $\phi$, this is constructing the simplicial complex $\MM \setminus \phi$. 
 We will always enforce the condition that $\phi$ never passes through a vertex of $\MM$.
 Again, we use $\eps$ for an infinitesimally small value. We denote $\phi^+$ (resp. $\phi^-$) to be
-the contour at value $f(\phi^+) + \eps$ (resp. $f(\phi^-) - \eps$), which is at distance $\eps$
+the contour at value $f(\phi) + \eps$ (resp. $f(\phi) - \eps$), which is at distance $\eps$
 from $\phi$. 
 
-An $h$-contour is achieved by intersecting $\MM$ with the hyperplane $x_{d+1} = h$. (Think of the $d+1$-dimension
+An $h$-contour is achieved by intersecting $\MM$ with the hyperplane $x_{d+1} = h$ and taking a connected component. (Think of the $d+1$-dimension
 as height.) Given some point $x$
 on an $h$-contour $\phi$ (with some simplex that $x$ is present in), we can walk along $\MM$ from $x$ and determine $\phi$.
 We can ``cut" along $\phi$ to get a new (possibly) disconnected simplicial complex $\MM'$. This is achieved
@@ -553,8 +630,8 @@ We now describe a high-level approach to construct $\reeb(\MM)$.
 
 The main theorem is a direct consequence of the following lemma. 
 
-\begin{lemma} \label{lem:cut} Consider a regular contour $\phi$ contain in contour class (edge of $\reeb(\MM))$
-$(u,v)$ and denote $\MM' = \cut(\phi,\MM)$. Then $\cV(\reeb(\MM')) = \{\phi^+,\phi^-\} \cup (\cV(\MM) \setminus \phi)$
+\begin{lemma} \label{lem:cut} Consider a regular contour $\phi$ contained in a contour class (of an edge of $\reeb(\MM))$
+$(u,v)$ and denote $\MM' = \cut(\phi,\MM)$. Then $\cV(\reeb(\MM')) = \{\phi^+,\phi^-\} \cup \cV(\MM)$
 and $\cE(\reeb(\MM')) = \{(u,\phi^+),(\phi^-,v)\} \cup (\cE(\MM) \setminus (u,v))$.
 \end{lemma}
 
@@ -564,7 +641,7 @@ All new vertices created in $\MM'$ are present on $\phi^+$ and $\phi^-$. That pr
 Any contour class in $\MM'$ (edge in $\cC(\MM')$) that does not involve $\phi^+$ or $\phi^-$ is also
 a contour class in $\MM$. Furthermore, a maximal contour class satisfying these properties is also
 maximal in $\MM$. So all edges of $\cC(\MM')$ that do not involve $\phi^+$ or $\phi^-$ are edges of $\cC(\MM)$.
-Analogously, every edge of $\cC(\MM)$ not involving $\phi$ is an edge of $\cC(\MM)$.
+Analogously, every edge of $\cC(\MM)$ not involving $\phi$ is an edge of $\cC(\MM')$.
 
 Consider the contour class corresponding to edge $(u,v)$ of $\cC(\MM)$. There is a natural ordering
 of the contours by function value, ranging from $f(u)$ to $f(v)$. All contours in this class ``above" $\phi$
@@ -583,7 +660,7 @@ disconnected simplicial complices.
 \begin{proof} Denote (as in \Lem{cut}) the edge containing $\phi$ to be $(u,v)$. Suppose for contradiction that there is a path between vertices $u$ and $v$
 in $\MM' = \cut(\phi,\MM)$. By \Thm{carr-path}, there is a path in $\cC(\MM')$ between $u$ and $v$. Since $\phi^+$ and $\phi^-$
 are leaves in $\cC(\MM')$, this path obviously cannot use edges incident to them. By \Lem{cut},
-all the edges of this path are in $\cE(\cC(\MM)) \setminus (u,v)$. So we get a cycle in $\cC(\MM)$. Contradiction.
+all the edges of this path are in $\cE(\cC(\MM)) \setminus (u,v)$. So we get a cycle in $\cC(\MM)$, a contradiction.
 To show that there are exactly two connected components in $\cut(\phi,\MM)$, it suffices
 to see that $\cC(\MM')$ has two connected components (by \Lem{cut}) and apply \Thm{carr-path}.
 \end{proof}
@@ -594,7 +671,7 @@ In this section, we describe a linear time procedure that partitions $\MM$ into 
 \emph{extremum dominant} simplicial complices.
 
 \begin{definition} \label{def:dom} A simplicial complex is \emph{minimum dominant} if there exists
-a minimum $x$ such that every non-minimal \emph{vertex} in the manifold has decreasing path to $x$.
+a minimum $x$ such that every non-minimal \emph{vertex} in the manifold has a decreasing path to $x$.
 Analogously define \emph{maximum dominant}. 
 \end{definition}
 
@@ -603,7 +680,7 @@ The water will flow downwards along descending paths and ``wet" all the points e
 of the manifold, not just vertices.
 
 \begin{definition} \label{def:wet} Fix $\MM$ and $x \in \MM$. The set of points $y \in \MM$ such that there is a non-ascending path from $x$ to $y$
-is denoted by $\wet(x,\MM)$ (which is in turn represented as a simplicial complex). A point $z$ is at the \emph{interface} of $\wet(x,\MM)$ if every neighborhood of $z$
+is denoted by $\wet(x,\MM)$ (which is in turn is represented as a simplicial complex). A point $z$ is at the \emph{interface} of $\wet(x,\MM)$ if every neighborhood of $z$
 has non-trivial intersection with $\wet(x,\MM)$.
 \end{definition}
 
@@ -613,29 +690,28 @@ The following claim gives a description of the interface. While its meaning is q
 each containing a join vertex.
 \end{claim}
 
-\begin{proof} If $y \in \wet(x,\MM)$, all the points in any contour containing $y$ are also in $\wet(x,\MM)$.
- (Follow the non-ascending path to from $x$ to $y$ and then walk along the contour.) The converse is also true,
+\begin{proof} If $p \in \wet(x,\MM)$, all the points in any contour containing $p$ are also in $\wet(x,\MM)$.
+ (Follow the non-ascending path to from $x$ to $p$ and then walk along the contour.) The converse is also true,
  so $\wet(x,\MM)$ contains entire contours.
 
 Let $\eps, \delta$ be sufficiently small as usual. Fix some $y$ at the interface.
 Note that $y \in \wet(x,\MM)$. (Otherwise, $B_\eps(y)$ is dry.)
 The points in $B_\eps(y)$ that lie below $y$ have a descending path from $y$ and hence must be wet.
-There must be a dry point in $B_\eps(y)$ that is above $y$, and hence,
+There must also be a dry point in $B_\eps(y)$ that is above $y$, and hence,
 there exists a dry, regular $(f(y)+\delta)$-contour $\phi$ intersecting $B_\eps(y)$.
 
-Suppose $y$ is in the interface. Consider the set $\Gamma_y$ of points connected to $y$
-by a path with all points at height $f(y)$. (This is a set of $f(y)$-contours.) Suppose for contradiction
-that $\forall z \in \Gamma_y$, $z$ has up-degree $1$. Consider the non-ascending path from $x$ to $y$ and let $z$
+Let $\Gamma_y$ be the contour containing $y$.  Suppose for contradiction
+that $\forall p \in \Gamma_y$, $p$ has up-degree $1$ (see \Def{deg}). Consider the non-ascending path from $x$ to $y$ and let $z$
 be the first point of $\Gamma_y$ encountered. There exists a wet, regular $(f(y) + \delta)$-contour $\psi$ 
 intersecting $B_\eps(z)$. Now, walk from $z$ to $y$ along $\Gamma_y$. If all points $w$ in this walk
-have up-degree $1$ (ref. to \Def{deg}), then $\psi$ is the unique $f(y)+\delta$-contour
-intersecting $B_\eps(w)$. This would imply that $\phi = \psi$, contradicting the fact that $\phi$ is wet
-and $\psi$ is dry.
+have up-degree $1$, then $\psi$ is the unique $f(y)+\delta$-contour
+intersecting $B_\eps(w)$. This would imply that $\phi = \psi$, contradicting the fact that $\psi$ is wet
+and $\phi$ is dry.
 
 Therefore, there must exist a join vertex $w$ in $\Gamma_y$, such that $B_\eps(w)$ intersects
 both $\phi$ and $\psi$. As $\delta, \eps \rightarrow 0^+$, the limit of $\phi$ (which is dry)
-lies in $\Gamma_y$ (which is wet). Hence, this gives the interface, which is a contour containing
-the join $w$.
+lies in $\Gamma_y$ (which is wet). 
+Hence this limit gives a contour of the interface containing the join $w$.
 \end{proof}
 
 \ignore{
@@ -660,7 +736,7 @@ the join $w$.
 
 
 Note that $\wet(x,\MM)$ (and its interface) can be computed in time linear in the size of the wet simplicial complex.
-We perform a non-ascending walk from $x$. Any facet $F$ of $\MM$ encountered has some (if not all) portion of in $\wet(x,\MM)$.
+We perform a non-ascending search from $x$. Any facet $F$ of $\MM$ encountered is partially (if not entirely) in $\wet(x,\MM)$.
 This portion is determined by cutting $F$ along the interface. Since the interface is a contour, this is equivalent
 to cutting $F$ by a hyperplane. All these operations can be performed to output $\wet(x,\MM)$ in time linear in $|\wet(x,\MM)|$.
 
@@ -682,7 +758,7 @@ to cutting $F$ by a hyperplane. All these operations can be performed to output 
 
 We define a simple \lift{} operation on the interface contours. Consider such a contour $\phi$ containing
 a merge vertex $y$. Take any dry increasing edge incident to $y$, and pick the point $z$ on this edge at height
-$f(y) + \delta$. Let $\lift(\phi)$ be the unique contour through regular point $z$. Note that $\lift(\phi)$ is dry.
+$f(y) + \delta$. Let $\lift(\phi)$ be the unique contour through the regular point $z$. Note that $\lift(\phi)$ is dry.
 
 \begin{claim} \label{clm:cut-int} Let $\phi$ be an interface contour. Then $\cut(\MM,\lift(\phi))$
 results in two disjoint simplicial complices, one consisting entirely of dry points.
@@ -699,12 +775,22 @@ Any path from $x$ to $\NN'$ must intersect $\lift(\phi)$, which is dry. Hence $\
 \end{proof}
 
 
+\begin{figure}[h]\centering
+    \includegraphics[width=.18\linewidth,height=.35\linewidth]{figs/orderGray1}%
+    \hspace{.8in}
+    \includegraphics[width=.18\linewidth,height=.35\linewidth]{figs/orderGray2}
+    \caption{On left, downward paint spilling only (each shade of gray represents a different color), producing a grid.  On right, flipping the direction of paint spilling.}
+    \label{fig:order}
+\end{figure}
+
 We describe the main partitioning procedure that cuts a simplicial complex $\NN$ into extremum
 dominant complices. It takes an additional input of a maximum $x$. To initialize,
 we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum. One of the critical aspects
-of the procedure is that the rain alternately flows downwards and upwards. In other words, when
+of the procedure is that the rain alternately flows downwards and upwards, 
+since otherwise faces may be cut a super constant number of times (see \Fig{order}).
+In other words, when
 we start, rain flows downwards. In each recursive call, the direction of rain is switched to the 
-opposite direction. While this is way of implementing $\rain$, it is conceptually easier
+opposite direction. While one can implement $\rain$ this way, it is conceptually easier
 to think of \emph{inverting} a complex $\NN'$ when a recursive call is made. Inversion
 is easily achieved by just negating the height values. (From a running time standpoint, it suffices
 to maintain a single bit associated with $\NN'$ that determines whether heights are inverted or not.)
@@ -755,14 +841,14 @@ in any simplicial complex $\NN$ that is recursively invoked, is achieved by cutt
 The key to the running time of $\rain(x,\MM)$ is bounding the number of newly created facets, for which we have the following lemma.
 
 \begin{lemma}\label{lem:new-verts}
-A facet $F \in \MM$ is cut at most once during the $\rain(x,\MM)$.
+A facet $F \in \MM$ is cut at most once during $\rain(x,\MM)$.
 \end{lemma}
 \begin{proof} All notation here follows that in the pseudocode of $\rain$.
-Firstly, by \Thm{jordan}, all the pieces of which $\rain$ is invoked are disjoint.
-Secondly, all recursive calls are made on dry complices.
+First, by \Thm{jordan}, all the pieces on which $\rain$ is invoked are disjoint.
+Second, all recursive calls are made on dry complices.
 
 Consider the first time that $F$ is cut, say, during the call to $\rain(x,\NN)$.
-Specially, say this happens when $\cut(\phi'_i,\NN_i)$ is constructed. 
+Specifically, say this happens when $\cut(\phi'_i,\NN_i)$ is constructed. 
 So $F$ is cut by some hyperplane into lower and upper portions (which are then triangulated).
 Since the cut is infinitesimally above an interface, the lower portion is basically wet.
 It can never be part of $\LL_1, \LL_2, \ldots$, which go into recursive calls. This portion
@@ -789,7 +875,7 @@ all of $e'$ becomes wet. So there is no further interface contour that can inter
 \end{theorem}
 
 \begin{proof} The operations performed are the raining and cutting. We can bound this by the total
-complexities of the wet complices and the new boundaries created. No facet is every wet twice,
+complexities of the wet complices and the new boundaries created. No facet is ever wet twice,
 and by \Lem{new-verts}, the total number of facets that every appear is $O(|\MM|)$. This also 
 bounds the complexities of the boundaries created.
 \end{proof}
@@ -1859,6 +1945,36 @@ For the same reason that \Cor{mergeLB} followed from \Lem{pathDecomp}, we now ha
 \bibliographystyle{alpha}
 \bibliography{contour}
 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+%end of writup
+%stuff below should be deleted
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+\remove{
+
 \appendix
 
 \section{Old stuff}
@@ -2622,7 +2738,7 @@ $\Phi$ such that $f(\Phi) = (f(x),f(y))$.
 \end{definition}
 
 
-
+}
 
 
 
