@@ -156,6 +156,7 @@
 \newcommand{\build}{{\tt build}}
 \newcommand{\col}{col}
 \newcommand{\fcol}{full}
+\newcommand{\cur}{cur}
 \newcommand{\cut}{{\tt cut}}
 \newcommand{\cont}{\psi}
 \newcommand{\cost}{\mathop{cost}}
@@ -165,6 +166,7 @@
 \newcommand{\merge}{{\tt merge}}
 \newcommand{\onestep}{{\tt piece}}
 \newcommand{\paint}{{\tt paint}}
+\newcommand{\pal}{P}
 \newcommand{\pmax}{P_{\max}}
 \newcommand{\rain}{{\tt rain}}
 \newcommand{\reeb}{\cC}
@@ -475,11 +477,19 @@ there is an edge $(v_i,v_j)$. (Conventially, edges are directed from higher func
 of $f:\MM \rightarrow \RR$, which is known to be a tree.) We denote the contour tree of $\MM$
 by $\reeb(\MM,f)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
 
-We use a key theorem from~\cite{Carr} (Theorem 6.6) that maps paths in $\cC(\MM)$ and $\MM$.
+We use key theorems from~\cite{Carr} (Theorem 6.6) that maps paths in $\cC(\MM)$ and $\MM$.
 
-\begin{theorem} \label{thm:carr-path} For every path $P$ in $\MM$, there exists a path $Q$ in the contour tree to which $P$
-maps, and for every path $Q$ in the contour tree, there exists at least one path $P$ in $\MM$ that maps to $Q$.
+\begin{theorem} \label{thm:carr-path} For every path $P$ in $\MM$, there exists a path $Q$ in the contour tree corresponding
+to the contours passing through points in $P$.
+For every path $Q$ in the contour tree, there exists at least one path $P$ in $\MM$ through points present
+in contours involving $Q$.
 \end{theorem}
+
+\begin{theorem} \label{thm:carr-mono} For every monotone path $P$ in $\MM$, there exists a monotone path $Q$ in the contour tree to which $P$
+maps (as in the previous theorem), and vice versa.
+\end{theorem}
+
+
 
 \section{Divide and conquer through contour surgery} \label{sec:surgery}
 
@@ -964,16 +974,17 @@ do not mix, so eventually, every vertex and edge of $\MM$ gets a unique color. T
 works purely on the 1-skeleton of $\MM$, which is just a graph.
 %
 \begin{definition} \label{def:paint} Let the 1-skeleton of $\MM$ be denoted $G(\MM) = (\cV,E)$.
-A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \mapsto [|X|]$ with the following properties. 
-\begin{asparaitem}
-	\item The restriction $\chi:X \mapsto [|X|]$ is a bijection.
-	\item Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
+A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \mapsto [|X|]$ with the following property. 
+ Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
 	consisting of edges in $E$, such that all edges along this path have the same color as $x$. (The maximum $x$
 	is well-defined to be the unique maximum with the same color as $e$.)
-\end{asparaitem}
+
+An \emph{initial} painting has the additional restriction that the restriction $\chi:X \mapsto [|X|]$ is a bijection.
 \end{definition}
 %
-Note that paintings are not unique. It is straightforward to construct a painting of $\MM$ in $O(|\MM|)$ time, using a descending BFS from each maximum that does not explore previously colored edges. 
+Paintings are not unique. It is straightforward to construct an initial painting of $\MM$ in $O(|\MM|)$ time, 
+using a descending BFS from each maximum that does not explore previously colored edges. 
+As the algorithm proceeds, the bijection property will not hold, though we always maintain a valid painting.
 
 {\bf Colors of vertices:} Note that a painting only colors edges, not vertices. We associate certain
 sets of colors with vertices.
@@ -985,25 +996,58 @@ edge with $v$ at the lower endpoint. For $v$, $\col(v)$ is the set of colors tha
 
 Abusing notation, we say a contour $\phi$ is of color $c$ if all edges that intersect $\phi$ have color $c$.
 
-\begin{definition} \label{def:color-full} Consider vertex $v$, and let $\phi$ be a $(f(v)+\delta)$-contour in
-$f|_{B_\eps(v)}$. If $\phi$ is monochromatic of color $c$, then $v$ is \emph{fully touched by $c$}. The set of colors
-that fully touch $v$ is denoted $\fcol(v)$.
+\begin{definition} \label{def:color-full} Consider vertex $v$. An \emph{up-star} of $v$ is the set 
+of edges that all connected to a fixed component of $\MM^+_v$. (Each $v$
+participates in at mot $2$ up-stars. A color $c \in \col(v)$ \emph{fully touches} $v$
+if all edges in an up-star are colored $v$.
+%and let $\phi$ be a $(f(v)+\delta)$-contour in
+%$f|_{B_\eps(v)}$. If $\phi$ is monochromatic of color $c$, then $v$ is \emph{fully touched by $c$}. The set of colors
+%that fully touch $v$ is denoted $\fcol(v)$.
 \end{definition}
 
-Note that $\fcol(v)$ has size at most $2$, by the Morse condition. Note that $\col(v)$ and $\fcol(v)$ can
+%Note that $\fcol(v)$ has size at most $2$, by the Morse condition. 
+Note that $\col(v)$ 
+%and $\fcol(v)$ can
 be initially determined in $O(|\MM|)$ time, by a simple linear scan.
 
-\subsection{The data structures} \label{sec:struct}
-
+\begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component of $\MM^+_v$
+by edge $e$ of color $c$. Either all edges in $\MM^+_v$ are colored $c$, or there
+exists critical vertex $w \in \MM^+_v$ fully touched by $c$ and touched by another color.
 %
-%We will store each set $\touch(c)$ in a binomial heap, keyed by the heights. 
-Abusing notation, $\touch(c)$ refers
-both to the set and the data structure used to store it.
+%and take $(f(v)+\delta)$-contour $\phi$ intersecting
+%$B_\eps(v)$. Suppose the edges incident to $v$ intersecting $\phi$ do not have the same color. For any such
+%color $c$, there exists a critical vertex $w$ strictly higher than $v$ such that $c \in \fcol(v)$.
+\end{lemma}
+
+\begin{proof} Since $e$ has color $c$,
+there must exist vertices in $\MM^+_v$ touched by $c$. Consider the highest
+vertex $w$ in $\MM^+_v$ that is touched by $c$ and some other color. If no such vertex exists,
+this means all edges incident the a vertex touched by $c$ are colored $c$. By walking through
+$\MM^+_v$, we deduce that all edges are colored $c$. 
+
+So assume $w$ exists. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
+and intersect some $c$-colored edge incident to $w$. Note that all edges intersecting $\phi$ are also colored $c$,
+since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
+edges from the maximum to $w$. For any point on this path, the contour passing through this point must
+be colored $c$.) Hence, $c$ fully touches $w$. 
+But $w$ is touched by another color, and the corresponding edge cannot intersect $\phi$. So $w$
+must have up-degree $2$ and is critical.
+\end{proof}
+
+
+\subsection{The overall approach and the data structures} \label{sec:struct}
+
+We first list out the basic data structures used, and then summarize our approach.
 
 \medskip
 \noindent
-{\bf The binomial heaps $\touch(c)$:} For each color $c$, $T(c) = \{v | c \in \fcol(v)\}$.
-This is stored as a \emph{binomial max-heap} $T(c)$, keyed by vertex heights.
+{\bf The binomial heaps $\touch(c)$:} For each color $c$, $\touch(c)$ is a subset of vertices touched by $c$,
+This is stored as a \emph{binomial max-heap} keyed by vertex heights. Abusing notation, $\touch(c)$ refers
+both to the set and the data structure used to store it.
+
+We initialize as follows. For each critical vertex $v$ and from each of its up-stars, we pick an arbitrary color $c$ touching $v$. 
+We insert $v$ into $T(c)$. Observe that $v$ participates in at least $1$ and at most $2$ heaps.
+
 
 \medskip
 \noindent
@@ -1034,38 +1078,62 @@ the following invariants.
 \noindent
 {\bf Attachment vertex $\h(c)$:} For each color $c$, we maintain a critical point $\h(c)$ of this color.
 We will maintain the guarantee that the portion of the contour tree above (and including) $\h(c)$ has already been constructed.
+This is initialized to the maximum corresponding to $c$.
 
-\subsection{Properties of a painted simplicial complex} \label{sec:prop}
+\medskip
+As the algorithm proceeds, it is convenient to imagine
+it maintaining a set of contours $\Phi = \{\phi_1, \phi_2, \ldots, \phi_k\}$, which are contained
+in incomparable edges of $\cC(\MM)$. Suppose we cut $\MM$ by each of these contours, and took
+the simplicial complex $\NN$ where $\phi^-_i$'s are all boundary maxima. The algorithm will
+have already determined the contour trees of the simplicial complices
+where $\phi^+_i$ is a boundary maxima. 
 
-\begin{lemma} \label{lem:full} Consider vertex $v$ and take $(f(v)+\delta)$-contour $\phi$ intersecting
-$B_\eps(v)$. Suppose the edges incident to $v$ intersecting $\phi$ do not have the same color. For any such
-color $c$, there exists a critical vertex $w$ strictly higher than $v$ such that $c \in \fcol(v)$.
-\end{lemma}
+During this process, various colors will be \emph{merged}. This involves merging the respective $T(c)$'s and
+updating the union-find data structure. The only operation performed on $T(c)$'s are delete-max and merge.
+No new vertex is ever inserted into the heaps. As colors merge, the initial painting is obviously modified.
+But it would be too expensive to explicitly update colors. So the new painting is given by $\rep(c)$,
+while we only have access to the original painting. By union-find bounds, the only adds an $\alpha(|\MM|)$
+overhead to the data structure operations. The new coloring is guaranteed to be a painting of $\NN$.
 
-\begin{proof} Consider the highest
-vertex $w$ that is touched by $c$ and some other color. Clearly such a vertex exists, since the condition
-is also satisfied by $v$. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
-and intersect some $c$-colored edge incident to $w$. Note that $\phi$ is also colored $c$,
-since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
-edges from the maximum to $w$. For any point on this path, the contour passing through this point must
-be colored $c$.) Hence, $c \in \fcol(w)$ and $w \neq v$. Furthermore, $w$ is a critical point,
-since $w$ is touched by another color. The corresponding edge cannot intersect $\phi$, so $w$
-must have up-degree $2$.
-\end{proof}
+While this is the intuitive viewpoint, we describe how this information is actually maintained.
+The vertices $\{\h(\rep(c))\}$ represent the set of contours $\Phi$. In terms of the contour tree, 
+we have already constructed the contour trees rooted at each $h(\rep(c))$. This is trivially true at the initialization,
+when each $h(c)$ is a maximum. One can now treat each $h(\rep(c))$ as a maximum, corresponding to (a possibly new) color $\rep(c)$.
+To reduce confusion between the original painting and the new colors, we will assume that $\col(v)$ and $\fcol(v)$
+are as given by the original painting. 
+	
+\subsection{The algorithm} \label{sec:algo}
+
+We formally describe the algorithm below. We require a technical definition of \emph{ripe} vertices.
 
 
-\begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \fcol(v)$, $v$
-is the highest vertex in $T(c)$. Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(c)$ is empty.
+\begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \col(v)$, $v$
+is present in $T(\rep(c))$ and is also highest vertex in the heap. 
+%Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(\rep(c))$ is empty.
 \end{definition} 
 
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
+{\bf $\build(\MM)$}
 
-
-
-\subsection{Updating the stack} \label{sec:stack}
-
-We have an imporant procedure that updates the stack $\st$.
-
-
+\smallskip
+\begin{compactenum}
+	\item While there are unprocessed critical points:
+	\begin{compactenum}
+		\item Run $\update(\st)$. Pop $\st$ to get $h$.
+		\item Let $\cur(h) = \{\rep(c) | c \in \col(h)\}$.
+		\item For all $c' \in \cur(h)$:
+		\begin{compactenum}
+			\item Add edge $(\h(c'),h)$ to $\cC(\MM)$.
+			\item Delete $h$ from $T(c')$ (if present).
+		\end{compactenum}
+	\item Merge heaps $\{T(c') | c' \in \cur(h)\}$.
+	\item Take union of $\cur(h)$ and denote resulting color by $\widehat{c}$.
+	\item Set $\h(\widehat{c}) = h$ and mark $h$ as processed.
+	\end{compactenum}
+\end{compactenum}
+\end{minipage}}
 
 \medskip
 \fbox{
@@ -1078,109 +1146,22 @@ We have an imporant procedure that updates the stack $\st$.
 	\item Let $h$ be head of $\st$.
 	\item While $h$ is not ripe:
 	\begin{compactenum}
-		\item (Either (i) there is $c \in \fcol(v)$ such that $v$ is not the highest in $T(c)$ or (ii) there is 
-		$c \in \col(v) \setminus \fcol(v)$, such that $T(c)$ is non-empty.)
-		\item In either case, push the highest of $T(c)$ onto $\st$, and update head $h$.
+		\item Find $c \in \col(h)$ such that $h$ is not present or not the highest in $T(\rep(c))$.
+		\item Push the highest of $T(\rep(c))$ onto $\st$, and update head $h$.
 	\end{compactenum}
 \end{compactenum}
 \end{minipage}}
 
-\medskip
-Clearly, when $\update(\st)$ terminates, the head $h$ is ripe. The following crucial claim demonstrates
-the utility of the stack.
+A few simple facts:
+\begin{asparaitem}
+	\item When $\update(\st)$ terminates, the head $h$ is ripe. 
+	\item After $v$ is processed, all edges incident to $v$ has the same color.
+\end{asparaitem}
 
-\begin{claim} \label{clm:stack} Vertices are always pushed onto $\st$ in increasing order of height.
-\end{claim}
-
-\begin{proof} Consider a single push onto the stack. In Case (i), the increase in height is obvious.
-Consider Case (ii). There is a vertex $v$ touched by color $c \notin \fcol(v)$. Consider the highest
-vertex $w$ that is touched by $c$ and some other color. Clearly such a vertex exists, since the condition
-is also satisfied by $v$. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
-and intersect some $c$-colored edge incident to $w$. Note that $\phi$ is also colored $c$,
-since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
-edges from the maximum to $w$. For any point on this path, the contour passing through this point must
-be colored $c$.) Hence, $c \in \fcol(w)$ and $w \neq v$. Furthermore, $w$ is a critical point,
-since $w$ is touched by another color. The corresponding edge cannot intersect $\phi$, so $w$
-must have up-degree $2$.
-
-All in all, when a new vertex is pushed onto the stack, it is always higher than the previous head.
-\end{proof}
-
-The painting evolves over time, and is primarily updated through \emph{color merges}. The best way
-of thinking about this is to imagine that two colors are suddenly replaced by one new common color.
-Of course, it is not possible to explicitly redo the painting, but this is implictly done
-through the union-find data structure on colors. So, when we process some vertex $v$,
-which has (say) $\col(v) = \{c_1, c_2, \ldots\}$, it may be the case that all these colors
-have merged.
-
-
-
-\begin{claim} \label{clm:cont} Consider an increasing path from $h$ to some maxima $x$.
-For any $y$ in this path, $\cont(y)$ only contains points of color $c(x)$.
-Furthermore, for all vertices on $\cont(y)$, their increasing edges are colored $c(x)$.
-\end{claim}
-
-\begin{proof} Consider this increasing path, and think of moving $y$ continuously downwards from $x$
-to $h$. Initially (when $y = x$), the lemma is trivially true. Consider the first $y$
-when the condition fails. We have $\cont(y)$ only containing points of color $c(x)$,
-but there is a vertex $z \in \cont(y)$ that has increasing edges of a different color $c'$.
-All the increasing edges of $z$ that are colored $c(x)$ are contiguous (since we can construct
-a contour intersecting all of them). Thus, there are two disjoint increasing neighborhoods for $z$,
-and $z$ is a saddle point. But that contradicts the fact that $h$ is the highest saddle point
-of color $c(x)$.
-
-So, as $y$ decreases, for all vertices on $\cont(y)$, their increasing edges are colored $c(x)$.
-This also means that $\cont(y)$ only contains points of color $c(x)$.
-\end{proof}
-
-We have important lemmas characterizing $|\col(h)|$.
-
-\begin{lemma} \label{lem:mono} If $h$ is a merge vertex, then $|\col(h)| > 1$.
-\end{lemma}
-
-\begin{proof} Suppose not. Consider the edges incident to $h$ in circular order. There exist (at least) $2$
-disjoint contiguous stretches of edges that are increasing. 
-All these edges have the same color $c$, associated with some maximum $x$. Consider two neighbors $y,z$
-that lie in different stretches. By the definition of a painting, there exist descending paths (along
-edges) from $x$ to $y$ and $x$ to $z$. We can construct a Jordan curve $C$ from $x \rightarrow y
-\rightarrow h \rightarrow z \rightarrow x$. All points in this curve except $h$ have 
-heights larger than $f(h)$. By the Jordan Curve Theorem, this partitions $\MM$ into
-an ``inside" and an ``outside". 
-
-One of the lower neighbors of $h$ (say $p$) is inside, and another (say $q$) is outside.
-Because $h$ is a merge, neither of these can a minimum other than the dominant minimum $u$.
-Hence, both $p$ and $q$ have descending paths to $u$. So there is a path from $p$
-to $q$ where all heights are strictly less than $f(h)$. But this path must intersect $C$.
-Contradiction.
-\end{proof}
-
-\begin{lemma} \label{lem:col} If $h$ is a merge vertex, $|\col(h)| = 2$.
-If $h$ is a split vertex, $|\col(h)| = 1$.
-\end{lemma}
-
-\begin{proof} Consider one contiguous sequence of increasing edges from $h$.
-There exists a contour intersecting all of these edges. By \Clm{cont}, they all
-must have the same color. There are two such contiguous sequences.
-
-If $h$ is a merge vertex, then $|\col(h)| = 2$ by \Lem{mono}. If $h$ is a split vertex,
-there is a single contour passing through all increasing edges. By \Clm{cont}, they
-all have the same color.
-\end{proof}
-
-\subsection{Constructing $\reeb(\MM)$} \label{sec:const}
-
-The main construction procedure is $\onestep(\MM)$. It pieces together $\reeb(\MM)$
-incrementally. 
 
 \medskip
-\fbox{
-\begin{minipage}{0.9\textwidth}
-{\bf $\onestep(\MM)$}
-
-\smallskip
-\begin{compactenum}
-	\item Run $\update(\st)$. Pop $\st$ to get $h$.
-	\item Suppose $\mcol(h) = \{c\}$ (so $h$ is split). 
+\ignore{	
+	Suppose $\mcol(h) = \{c\}$ (so $h$ is split). 
 	\begin{compactenum}
 		\item Connect $h$ (in $\reeb(\MM)$) to $\h(c)$ and the unique minimum corresponding to split $h$. 
 		\item Delete $h$ from $T(c)$, set $\h(c) = h$.
@@ -1192,29 +1173,105 @@ incrementally.
 	\item Perform union of colors $c_1$ and $c_2$ (denote merged color as $c$). Merge heaps
 	to get $T(c) = T(c_1) \cup T(c_2)$.
 	\item Set $\h(c) = h$.	
-\end{compactenum}
-\end{minipage}}
+
+We state the primary invariant below.
+First, some notation. For any $v$, let $\psi^-_v$ denote the $(f(v)-\delta)$-contour intersecting
+$B_\eps(v)$. If there are two such contours (so $v$ is a split), choose the one that contains
+the dominant minimum. The \emph{palette} $\pal$ is the set of colors currently used,
+which is $\{T(\rep(c)) | c \in |X|\}$.
+
+
+Observe that $\build(\MM)$ loops over all unprocessed critical point.
+The invariant is true at the starting point of each such iteration.
 
 \medskip
-\begin{theorem} \label{thm:piece} Consider the very first call to $\onestep(\MM)$. Let $y$ be a point
-infinitesimally below $h$ on a decreasing edge. Consider $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$ (the upper and lower manifolds). Then $\onestep(\MM)$
-outputs $\reeb(\MM_u)$ and implicitly gives a valid painting of $\MM_\ell$.
-\end{theorem}
+\textbf{Invariant:} 
+\begin{compactenum}
+	\item For every $c \in \pal$, the subtree of $\cJ(\MM)$ rooted at $\h(c)$ has been constructed.
+	\item Fix $c \in \pal$. Consider the set $S$ of maxima of $\MM$ in the subtree of $\cJ(\MM)$ rooted at $\h(c)$.
+	Then $\rep(c) = \bigcup_{s \in S} \chi(s)$.
+	\item Let $\Psi = \{\psi^-_{\h(c)} | c \in \pal\}$. The coloring given by $\rep(\cdot)$
+	is a valid painting of $\cut(\MM,\Psi)$, where $\psi^-_{\h(c)}$ has color $c$.
+\end{compactenum}
 
-We have an important lemma that helps to bound the running time.
+\medskip
+It is easy to see that the invariant is true at the very beginning of the algorithm.
+Each $\h(c)$ is simply the maximum colored with $c$, and we have a valid painting of $\MM$.
+}
 
-\begin{lemma} \label{lem:tree} For every color $c$, all points in $T(c)$ lie along a monotone path in 
-$\reeb(\MM)$.
-\end{lemma}
 
-\begin{proof} Prove by induction of the number of edges in $\reeb(\MM)$. Consider the head $h$ of $\st$ in the first call to $\onestep(\MM)$,
-and the contour $\cont(y)$ as defined in \Thm{piece}. Take $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$. Apply induction
-hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in the original manifold.
+\section{Proving correctness} \label{sec:correct}
+
+\ignore{
+\begin{claim} \label{clm:process} Assume the invariant. Any vertex with a non-increasing path to some $\h(c)$
+for $c \in \pal$ has been processed.
+\end{claim}
+
+\begin{proof} This is a direct consequence of \Thm{carr-mono}, which relates monotone paths in $\MM$ to $\cC(\MM)$.
+Since the subtree of $\cJ(\MM)$ (which is basically the subtree of $\cC(\MM)$) rooted at $\h(c)$ 
+has been found, all vertices in this subtree must be processed. These are all the vertices with non-increasing paths
+to $\h(c)$ in $\cC(\MM)$, which by \Thm{carr-mono} is the same as those in $\cC(\MM)$.
+\end{proof}
+}
+
+The following crucial claim demonstrates the utility of the stack.
+
+\begin{claim} \label{clm:stack} Vertices are always pushed onto $\st$ in increasing order of height.
+\end{claim}
+
+\begin{proof} Consider a single push onto the stack and the current painting. We have $c \in \col(h)$, as given in pseudocode of $\update$.
+If $h \in T(\rep(c))$, then obviously the next head is higher. So assume that $h \notin T(\rep(c))$.
+There is obviously an edge of color $\rep(c)$ touching $h$ connected to a component $\SS$ of $\MM^+_v$. 
+From the initialization, $h \in T(\rep(c'))$, for some $c'$ touching $h$ (where $c'$ is the color
+of some edge connecting $h$ to $\SS$).
+Applying \Lem{full},  either all edges in $\SS$ are colored $\rep(c)$ or 
+there exists critical vertex $w \in \SS$ fully touched by $\rep(c)$ and another color.
+In the former case, all edges connecting $\SS$ to $h$ are also colored $\rep(c)$
+(since this is a painting). Hence, $\rep(c') = \rep(c)$ and $h \in T(\rep(c))$.
+As we assumed this is not the case, we conclude the existence of critical vertex $w$.
+Since $w$ is fully touched by $\rep(c)$, $w \in T(\rep(c))$. Since $w$
+is touched by another color, $w$ has not been processed. So the highest of $T(\rep(c))$
+is higher than $h$, as desired.
+\ignore{
+If all edges touching $h$ that connect to this component are also colored $\rep(c)$, then
+In Case (i), the increase in height is obvious.
+Consider Case (ii). There is a vertex $v$ touched by color $c \notin \fcol(v)$. Consider the highest
+vertex $w$ that is touched by $c$ and some other color. Clearly such a vertex exists, since the condition
+is also satisfied by $v$. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
+and intersect some $c$-colored edge incident to $w$. Note that $\phi$ is also colored $c$,
+since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
+edges from the maximum to $w$. For any point on this path, the contour passing through this point must
+be colored $c$.) Hence, $c \in \fcol(w)$ and $w \neq v$. Furthermore, $w$ is a critical point,
+since $w$ is touched by another color. The corresponding edge cannot intersect $\phi$, so $w$
+must have up-degree $2$.
+All in all, when a new vertex is pushed onto the stack, it is always higher than the previous head.
+}
 \end{proof}
 
 
+\begin{claim} \label{clm:ripe} For ripe vertex $v$, $\{\h(\rep(c)) | c \in \col(v)\}$ is exactly
+the set of parents of $v$.
+\end{claim}
 
-\pagebreak
+\begin{proof} \Sesh{proof is a little sketchy.}
+Suppose $v$ is ripe. For any $c$ touching $v$, $v$ is the highest in $T(\rep(c))$.
+Consider some such $\rep(c)$, for an edge connecting to component $\SS$ of $\MM^+_v$.
+Either all edges in $\SS$ are colored $\rep(c)$ or there exists critical vertex $w \in \SS$
+fully touched by $\rep(c)$ and another color. In the latter case, $w$ has not been processed,
+so $w \in T(\rep(c))$ (contradiction). Therefore, all edges in $\SS$ are colored $\rep(c)$.
+Suppose there is some critical vertex in $\SS$. If it is not processed yet, it will
+be in $T(\rep(c))$, which is not possible. Thus, all critical vertices in $\SS$ have been processed.
+
+Consider $w$, the lowest critical vertex in $\SS$. When $w$ was processed, it was set to $\h(c')$, for
+some color $c'$. At this stage, all edges in $\SS$ above $w$ were also colored $c'$ (just apply the argument
+above for $w$). Since there are no critical points below $w$, all edges in $\SS$ below $w$
+are also colored $c'$ (the painting property). This means that the edges connecting $\SS$
+are also colored $c'$. So $c' = \rep(c)$, and $\h(\rep(c)) = w$ is a parent of $v$. 
+
+This argument can be repeated for all such components $\SS$ to complete the proof.
+\end{proof}
+
+
 \newcommand{\pathTree}{P_{\mathcal{S}}}
 \newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
 \section{Leaf assignments and path decompositions}
@@ -2696,6 +2753,123 @@ $\Phi$ such that $f(\Phi) = (f(x),f(y))$.
 \end{definition}
 
 
+\section{Old proof stuff}
+
+\begin{claim}
+Suppose ripe vertex $v$ is connected to a component of $\MM^+_v$. For every edge $e$ incident to a vertex of $\MM^+_v$,
+$\rep(\chi(e))$ is identical. Furthermore, all vertices in $\MM^+_v$ have been processed.
+\end{claim}
+
+\begin{proof} Consider the painting of the lower simplicial complex $\cut(\MM,\Psi)$ (call it $\NN$). 
+By the invariant, $\rep(\cdot)$ provides a valid coloring. Note that $v$ is not processed (it is ripe),
+so if we take $(f(v)+\delta)$-contours intersecting $B_\eps(v)$, these contours could not have been
+processed. Therefore, there must exist a non-trivial component of $\NN^+_v$ that $v$
+is connected to. By \Lem{full}, either all edges in this component have the same color
+or 
+
+
+Suppose ripe vertex $v$
+is connected to some component in $\NN^+_v$. 
+Consider edge $e$ incident to $v$ intersecting $\phi$ of color $c$. 
+By \Lem{full}, there exists critical vertex $w \in \MM^+_v$ such that $w \in \fcol(c)$. 
+Regardless of whether $v \in \fcol(c)$ or not, the vertex $w$ must have been processed. 
+
+\end{proof}
+
+\subsection{Updating the stack} \label{sec:stack}
+
+We have an imporant procedure that updates the stack $\st$.
+
+
+
+
+The painting evolves over time, and is primarily updated through \emph{color merges}. The best way
+of thinking about this is to imagine that two colors are suddenly replaced by one new common color.
+Of course, it is not possible to explicitly redo the painting, but this is implictly done
+through the union-find data structure on colors. So, when we process some vertex $v$,
+which has (say) $\col(v) = \{c_1, c_2, \ldots\}$, it may be the case that all these colors
+have merged.
+
+
+
+\begin{claim} \label{clm:cont} Consider an increasing path from $h$ to some maxima $x$.
+For any $y$ in this path, $\cont(y)$ only contains points of color $c(x)$.
+Furthermore, for all vertices on $\cont(y)$, their increasing edges are colored $c(x)$.
+\end{claim}
+
+\begin{proof} Consider this increasing path, and think of moving $y$ continuously downwards from $x$
+to $h$. Initially (when $y = x$), the lemma is trivially true. Consider the first $y$
+when the condition fails. We have $\cont(y)$ only containing points of color $c(x)$,
+but there is a vertex $z \in \cont(y)$ that has increasing edges of a different color $c'$.
+All the increasing edges of $z$ that are colored $c(x)$ are contiguous (since we can construct
+a contour intersecting all of them). Thus, there are two disjoint increasing neighborhoods for $z$,
+and $z$ is a saddle point. But that contradicts the fact that $h$ is the highest saddle point
+of color $c(x)$.
+
+So, as $y$ decreases, for all vertices on $\cont(y)$, their increasing edges are colored $c(x)$.
+This also means that $\cont(y)$ only contains points of color $c(x)$.
+\end{proof}
+
+We have important lemmas characterizing $|\col(h)|$.
+
+\begin{lemma} \label{lem:mono} If $h$ is a merge vertex, then $|\col(h)| > 1$.
+\end{lemma}
+
+\begin{proof} Suppose not. Consider the edges incident to $h$ in circular order. There exist (at least) $2$
+disjoint contiguous stretches of edges that are increasing. 
+All these edges have the same color $c$, associated with some maximum $x$. Consider two neighbors $y,z$
+that lie in different stretches. By the definition of a painting, there exist descending paths (along
+edges) from $x$ to $y$ and $x$ to $z$. We can construct a Jordan curve $C$ from $x \rightarrow y
+\rightarrow h \rightarrow z \rightarrow x$. All points in this curve except $h$ have 
+heights larger than $f(h)$. By the Jordan Curve Theorem, this partitions $\MM$ into
+an ``inside" and an ``outside". 
+
+One of the lower neighbors of $h$ (say $p$) is inside, and another (say $q$) is outside.
+Because $h$ is a merge, neither of these can a minimum other than the dominant minimum $u$.
+Hence, both $p$ and $q$ have descending paths to $u$. So there is a path from $p$
+to $q$ where all heights are strictly less than $f(h)$. But this path must intersect $C$.
+Contradiction.
+\end{proof}
+
+\begin{lemma} \label{lem:col} If $h$ is a merge vertex, $|\col(h)| = 2$.
+If $h$ is a split vertex, $|\col(h)| = 1$.
+\end{lemma}
+
+\begin{proof} Consider one contiguous sequence of increasing edges from $h$.
+There exists a contour intersecting all of these edges. By \Clm{cont}, they all
+must have the same color. There are two such contiguous sequences.
+
+If $h$ is a merge vertex, then $|\col(h)| = 2$ by \Lem{mono}. If $h$ is a split vertex,
+there is a single contour passing through all increasing edges. By \Clm{cont}, they
+all have the same color.
+\end{proof}
+
+\subsection{Constructing $\reeb(\MM)$} \label{sec:const}
+
+The main construction procedure is $\onestep(\MM)$. It pieces together $\reeb(\MM)$
+incrementally. 
+
+
+\medskip
+\begin{theorem} \label{thm:piece} Consider the very first call to $\onestep(\MM)$. Let $y$ be a point
+infinitesimally below $h$ on a decreasing edge. Consider $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$ (the upper and lower manifolds). Then $\onestep(\MM)$
+outputs $\reeb(\MM_u)$ and implicitly gives a valid painting of $\MM_\ell$.
+\end{theorem}
+
+We have an important lemma that helps to bound the running time.
+
+\begin{lemma} \label{lem:tree} For every color $c$, all points in $T(c)$ lie along a monotone path in 
+$\reeb(\MM)$.
+\end{lemma}
+
+\begin{proof} Prove by induction of the number of edges in $\reeb(\MM)$. Consider the head $h$ of $\st$ in the first call to $\onestep(\MM)$,
+and the contour $\cont(y)$ as defined in \Thm{piece}. Take $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$. Apply induction
+hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in the original manifold.
+\end{proof}
+
+
+
+\pagebreak
 
 
 
