@@ -219,9 +219,16 @@ In the case when this graph is loop free it is called a contour tree.  Due to th
 there has been significant previous work in developing algorithms for their efficient computation. 
 
 Here we present the first contour tree algorithm which takes into account the shape of the contour tree, 
-and in doing so yields instance optimal results (on all instances requiring $\Omega(n\alpha(n))$ time).
-In particular, our algorithm runs in $O(n\alpha(n))$ time when the tree is balanced, yet still 
-matches the previous worst case $O(n\log n)$ bound when the tree is long and skinny.
+and in doing so yields instance optimal results.
+Specifically, we prove that for any partition of the contour tree into a set of descending paths, $P$, 
+any comparison based algorithm requires $\sum_{p\in P} |p|\log|p|$ time.  Moreover, we show there   
+exists some partition $P'$ such that the running time of our algorithm is 
+$O(\sum_{p\in P'} |p|\log|p| + N\alpha(N))$, where $N$ is total complexity of the input manifold 
+(and hence this is optimal on all instances requiring $\Omega(N\alpha(N))$ time).
+In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balanced, 
+while previous algorithms ran in $O(N+t\log t)$ (where $t$ is the size of the contour tree).
+%In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balanced, yet still 
+%matches the previous worst case $O(N+n\log n)$ bound when the tree is long and skinny.
 
 In order to produce our instance optimal results we introduce a novel linear time surface partitioning scheme which is likely to have applications elsewhere.
 Moreover, in order to prove the optimality we use a non-trivial combinatorial discharging argument which we believe is of independent interest and in particular uses 
@@ -241,16 +248,17 @@ called a \emph{contour tree}.  This is the case if, for example, the input is a 
 There is a long list of practical applications of the study of contour trees (see for example \cite{c-tmi-04} and references therein).
 Often these applications involve massive data sets, and so consequently there has also been a long series 
 of results on efficient algorithms for their computation \cite{kobps-ctsssit-97,tv-cct-98,csa-cctad-00,pc-ectls-02,cllr-sooscctmp-05}.
-As an initial step these algorithms require that all $n$ contour tree vertices be sorted.  
-In particular, \cite{cllr-sooscctmp-05} provide an $O(n\log n)$ time algorithm, and since in the worst case computing the contour tree 
-requires $\Omega(n\log n)$ time, this algorithm is optimal with respect to the size of the output.  
-Here we present the first contour tree algorithm which is optimal (for instances requiring $\Omega(n\alpha(n))$ 
-time\footnote{Where $\alpha(n)$ is the inverse Ackermann function, which is $< 5$ for computation in this universe.}) 
+Let $N$ be the total size of the input manifold, $n$ the number of vertices, and $t$ the number of critical points. (Note that in many applications $N=O(n)$.)
+As an initial step these algorithms require that all $t$ contour tree vertices be sorted.  
+In particular, \cite{cllr-sooscctmp-05} provide an $O(N+t\log t)$ time algorithm, and since in the worst case computing the contour tree 
+requires $\Omega(N+t\log t)$ time, this algorithm is optimal with respect to the size of the output.  
+Here we present the first contour tree algorithm which is optimal (for instances requiring $\Omega(N\alpha(N))$ 
+time\footnote{Where $\alpha(\cdot)$ is the inverse Ackermann function, which is $< 5$ for computation in this universe.}) 
 with respect not just to the size of the output, but also its structure.  This is accomplished by introducing a simple linear time 
 surface partitioning scheme to avoid sorting, which is likely to have applications elsewhere.  
 For all instances the bound for our algorithm either matches the best previous bound, or is faster.
-For, example when the contour tree is a balanced, our algorithm runs in $O(n\alpha(n))$ time, whereas all 
-previous algorithms had a running time of $\Omega(n\log n)$
+For, example when the contour tree is a balanced, our algorithm runs in $O(N\alpha(N))$ time, whereas all 
+previous algorithms had a running time of $\Omega(N+t\log t)$
 
 %In particular, the algorithm in \cite{cllr-sooscctmp-05} is worst case optimal with respect to the size of the output.  
 %Here we present the first contour tree algorithm which is (near\footnote{Our algorithm is optimal on all instance requiring $\Omega(n\alpha(n))$ time.}) 
@@ -325,12 +333,12 @@ Similarly, the second stage does a bottom up sweep to compute the split tree, wh
 Their main contribution is the third and final step where they present an $O(n)$ time algorithm to merge 
 together the join and split trees to get the contour tree.  
 
-There have also been some output sensitive results for computing the contour tree.  Let $t'$ be the number 
+There have also been some output sensitive results for computing the contour tree.  Let $t$ be the number 
 of critical points in the input mesh, which could potentially be much smaller than $n$.  
-Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t'\log n)$ time algorithm for the case of 
+Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for the case of 
 $3$-dimensional structured meshes (note $N$ does not show up in the running time as the mesh is structured).
-Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t\log t)$ algorithm 
-which works for structured or unstructured meshes in any dimension, where $t$ is the number of component 
+Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t'\log t')$ algorithm 
+which works for structured or unstructured meshes in any dimension, where $t'$ is the number of component 
 critical vertices.  This is provably optimal with respect to the output size but not the output structure, 
 as discussed below.
 
@@ -407,7 +415,7 @@ describe how this is accomplished.
  
  The benefit of this partitioning is that each resulting piece 
  is maxima dominant, i.e. there is a single maxima that has a non-ascending path to each point.  
- This implies the contour of this submanifold is the same as its split tree, or in other words 
+ This implies the contour tree of this submanifold is the same as its split tree, or in other words 
  its contour tree is a rooted binary tree. 
  
  %
@@ -443,7 +451,21 @@ describe how this is accomplished.
 \end{compactitem}
 
 \paragraph{Lower Bound Overview.}
-\Ben{To be Written}
+In order to show that our algorithm for computing the join tree is optimal we consider paritioing the tree into disjoint 
+descending paths, each containing a leaf.  It turns out that each such partition into paths, $P$, 
+defines a lower bound of $\sum_{p\in P} |p|\log|p|$ for computing the contour tree, as you need to know the 
+sorted order of the vertices along each path in order to determine the tree.
+Specifically, we show that there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, 
+all of which have the same defining mesh, and for which each sorted order of each group of saddles determines a different join tree.
+
+This instance optimality of our algorithm then follows, as we also show that there is a particular path decomposition 
+whose cost upper bounds our.  Specifically, we assign a weight to each node in the tree which is determined by 
+the painting procedure described above (which represents the time it takes to process this node).  
+The path decomposition then turns out to be the heavy-light path decomposition 
+described by Sleator and Tarjan \cite{st-dsdt-83}, according to this weight function.
+However, this decomposition is just the first step in the analysis, which 
+requires further case analysis depending on the relative size of the length of each path 
+and the weights of its vertices.
 
 \paragraph{Our Contribution.}
 Our contribution can be broken into three main aspects.  The first two are algorithmic.  Namely, 
@@ -523,7 +545,7 @@ implies that all critical points have distinct values. A contour that involves a
 point is also denoted as critical. Note that the vertices in a boundary face collectively behaves like an extremum.
 Abusing notation, the term ``critical point", ``maxima", and ``minima" will include boundaries.
 Critical values include these boundary values. By boundary criticality, all contours are themselves
-represented as $d-1$-dimensional simplicial complices.
+represented as $d-1$-dimensional simplicial complexes.
 
 \begin{definition} \label{def:equiv} Two contours $\psi$ and $\psi'$ are equivalent 
 if the following holds. There exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$,
@@ -951,7 +973,7 @@ numerous connected components. The following definition of join and split trees 
 Conventially, all edges are directed from higher to lower function value.
 
 \begin{definition} \label{join} The join tree $\cJ(\MM)$ of $\MM$ is built on vertex set $V(\MM)$.
-The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex is a connected component of $\MM^+_v$
+The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in a connected component of $\MM^+_v$
 \emph{and} $v$ is connected to this component (in $\MM$). The split tree $\cS(\MM)$ is obtained
 by looking at $\MM^-_v$ (or alternately, by taking the join tree of the inversion of $\MM$). 
 \end{definition}
@@ -970,16 +992,16 @@ The key observation is that $\cS(\MM)$ is trivial for minimum dominant $\MM$.
 \end{asparaitem}
 \end{lemma}
 
-\begin{proof} First, let us complete the proof assuming that each split $v$ has one child that is just a leaf, which
-is a non-dominant minimum. Any minimum is a leaf in $\cS(\MM)$, and thereby attached to a split. If we removed
-all non-dominant minima, we must end up with a path, as asserted above.
+\begin{proof} It suffices to prove that each split $v$ has one child that is just a leaf, which
+is a non-dominant minimum.  Specifically, any minimum is a leaf in $\cS(\MM)$ and thereby attached to a split, 
+which implies that if we removed all non-dominant minima, we must end up with a path, as asserted above.
 
 Consider a split $v$. For sufficiently small $\eps, \delta$, there are exactly two $(f(v) - \delta)$-contours
 $\phi$ and $\psi$ intersecting $B_\eps(v)$. Both of these are regular contours. There must be a non-ascending
 path from $v$ to the dominant minimum $m^*$. Consider the first edge (necessarily decreasing from $v$)
-on this path. It must intersect some contour, say $\phi$. By \Thm{jordan}, $\cut(\MM,\phi)$ has
+on this path. It must intersect one of the $(f(v) - \delta)$-contours, say $\phi$. By \Thm{jordan}, $\cut(\MM,\phi)$ has
 two connected components, with one (call it $\LL$) having $\phi^-$ as a boundary maximum. This complex
-contains $m^*$ as the non-ascending path $\phi$ intersects $\phi$ only once. Let the other
+contains $m^*$ as the non-ascending path intersects $\phi$ only once. Let the other
 component be called $\MM'$.
 
 Consider $\cut(\MM',\psi)$ with connected component $\NN$ having $\psi^-$ as a boundary. $\NN$
@@ -1045,14 +1067,14 @@ points from $\cJ(\MM) \ominus \{m_i\}$ exactly yields the edges described in the
 \section{Painting to compute contour trees}
 
 Now we come to the main algorithmic contribution. We design a new algorithm for computing contour
-trees of a minimum dominant simplicial complice $\MM$. As part of the initialization, we determine
+trees of a minimum dominant simplicial complex $\MM$. As part of the initialization, we determine
 all critical points in $\MM$. For any vertex $v$, we can look at $f(v) \pm \delta$-contours 
 in $f|_{B_\eps(v)}$ to determine the up and down degrees. This determines the criticality (and type)
 of $v$. This requires $O(|\MM|)$ time, since every facet is looked at proportional to the number of its
 vertices.
 
 {\bf Painting:} The central tool is a notion 
-of \emph{painting} of $\MM$. Initially associate a color with each maximum. Denoting the set of maxima is $X$,
+of \emph{painting} of $\MM$. Initially associate a color with each maximum. Denoting the set of maxima by $X$,
 this is an arbitrary bijection $\chi:X \mapsto [|X|]$. Imagine there being a large
 can of paint of color $\chi(x)$ at maxima $x$. We will spill different paint from each maximum and watch it flow down.
 This is analogous to the raining in the previous section, but paint is a much more viscous liquid.
@@ -1066,7 +1088,7 @@ A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \mapsto [|X|]$ with the foll
 	consisting of edges in $E$, such that all edges along this path have the same color as $x$. (The maximum $x$
 	is well-defined to be the unique maximum with the same color as $e$.)
 
-An \emph{initial} painting has the additional restriction that the restriction $\chi:X \mapsto [|X|]$ is a bijection.
+An \emph{initial} painting has the additional property that the restriction $\chi:X \mapsto [|X|]$ is a bijection.
 \end{definition}
 %
 Paintings are not unique. It is straightforward to construct an initial painting of $\MM$ in $O(|\MM|)$ time, 
@@ -1084,8 +1106,8 @@ edge with $v$ at the lower endpoint. For $v$, $\col(v)$ is the set of colors tha
 Abusing notation, we say a contour $\phi$ is of color $c$ if all edges that intersect $\phi$ have color $c$.
 
 \begin{definition} \label{def:color-full} Consider vertex $v$. An \emph{up-star} of $v$ is the set 
-of edges that all connected to a fixed component of $\MM^+_v$. (Each $v$
-participates in at mot $2$ up-stars. A color $c \in \col(v)$ \emph{fully touches} $v$
+of edges that all connect to a fixed component of $\MM^+_v$. (Each $v$
+participates in at mot $2$ up-stars.) A color $c \in \col(v)$ \emph{fully touches} $v$
 if all edges in an up-star are colored $v$.
 %and let $\phi$ be a $(f(v)+\delta)$-contour in
 %$f|_{B_\eps(v)}$. If $\phi$ is monochromatic of color $c$, then $v$ is \emph{fully touched by $c$}. The set of colors
@@ -1095,7 +1117,7 @@ if all edges in an up-star are colored $v$.
 %Note that $\fcol(v)$ has size at most $2$, by the Morse condition. 
 Note that $\col(v)$ 
 %and $\fcol(v)$ can
-be initially determined in $O(|\MM|)$ time, by a simple linear scan.
+can be initially determined in $O(|\MM|)$ time, by a simple linear scan.
 
 \begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component of $\MM^+_v$
 by edge $e$ of color $c$. Either all edges in $\MM^+_v$ are colored $c$, or there
@@ -1109,14 +1131,14 @@ exists critical vertex $w \in \MM^+_v$ fully touched by $c$ and touched by anoth
 \begin{proof} Since $e$ has color $c$,
 there must exist vertices in $\MM^+_v$ touched by $c$. Consider the highest
 vertex $w$ in $\MM^+_v$ that is touched by $c$ and some other color. If no such vertex exists,
-this means all edges incident the a vertex touched by $c$ are colored $c$. By walking through
+this means all edges incident to a vertex touched by $c$ are colored $c$. By walking through
 $\MM^+_v$, we deduce that all edges are colored $c$. 
 
 So assume $w$ exists. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
 and intersect some $c$-colored edge incident to $w$. Note that all edges intersecting $\phi$ are also colored $c$,
 since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
 edges from the maximum to $w$. For any point on this path, the contour passing through this point must
-be colored $c$.) Hence, $c$ fully touches $w$. 
+be colored $c$.) Hence $c$ fully touches $w$. 
 But $w$ is touched by another color, and the corresponding edge cannot intersect $\phi$. So $w$
 must have up-degree $2$ and is critical.
 \end{proof}
@@ -1179,10 +1201,10 @@ During this process, various colors will be \emph{merged}. This involves merging
 updating the union-find data structure. The only operation performed on $T(c)$'s are delete-max and merge.
 No new vertex is ever inserted into the heaps. As colors merge, the initial painting is obviously modified.
 But it would be too expensive to explicitly update colors. So the new painting is given by $\rep(c)$,
-while we only have access to the original painting. By union-find bounds, the only adds an $\alpha(|\MM|)$
+while we only have access to the original painting. By union-find bounds, this only adds an $\alpha(|\MM|)$
 overhead to the data structure operations. The new coloring is guaranteed to be a painting of $\NN$.
 
-While this is the intuitive viewpoint, we describe how this information is actually maintained.
+%While this is the intuitive viewpoint, we describe how this information is actually maintained.
 The vertices $\{\h(\rep(c))\}$ represent the set of contours $\Phi$. In terms of the contour tree, 
 we have already constructed the contour trees rooted at each $h(\rep(c))$. This is trivially true at the initialization,
 when each $h(c)$ is a maximum. One can now treat each $h(\rep(c))$ as a maximum, corresponding to (a possibly new) color $\rep(c)$.
