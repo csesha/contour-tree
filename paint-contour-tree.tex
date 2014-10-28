@@ -974,10 +974,7 @@ numerous connected components.
 The main theorem of this section asserts that the contours trees of minimum dominant manifolds have a simple description.
 The exact statement will require some definitions and notation.
 We required the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-00}.
-Conventially, all edges are directed from higher to lower function value. We will use the terminology
-``parent" for an adjacent node that is higher. Because of the orientation, a node
-may have multiple parents.
-%We first explain what these trees are.
+Conventially, all edges are directed from higher to lower function value. 
 
 \begin{definition} \label{join} The join tree $\cJ(\MM)$ of $\MM$ is built on vertex set $V(\MM)$.
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in a connected component of $\MM^+_v$
@@ -991,7 +988,15 @@ Some basic facts about these trees.
 All outdegrees in $\cJ(\MM)$ are at most $1$, all indegree $2$ vertices are joins, all leaves are maxima,
 and the global minimum is the root. All indegrees in $\cS(\MM)$ are at most $1$, all outdegree $2$
 vertices are splits, leaves are minima, and the global maximum is the root.
+%
+As these trees rooted, we can use ancestor-descendant terminology.  
+Specifically, for two adjacent vertices $u$ and $v$, $u$ is the parent of $v$ if $u$ is closer to the root 
+(i.e. each node can have at most one parent, but can have two children).  
+
+
 The key observation is that $\cS(\MM)$ is trivial for a minimum dominant $\MM$.
+
+
 
 \begin{lemma} \label{lem:split} $\cS(\MM)$ consists of:
 \begin{asparaitem}
@@ -1162,7 +1167,7 @@ indicates that $v$ joins the blue maxima and red maxima in $\jc(\MM)$.
 
 This is precisely how we hope to exploit the information in the painting. We prove later that
 when some join $v$ has both up-stars fully colored, the corresponding maxima (of those colors) are exactly
-the parents of $v$ in $\jc(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
+the children of $v$ in $\jc(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
 we replace all red and blue edges by purple edges. This indicates that the red and blue maxima have been
 handled. Imagine flattening the red and blue mounds until reaching $v$, so that the former join $v$
 is now a new maxima. Suppose purple paint was poured from $v$. In terms of $\jc(\MM)$, this
@@ -1299,7 +1304,7 @@ is present in $T(\rep(c))$ and is also highest vertex in the heap.
 		\item For all $c' \in \cur(h)$:
 		\begin{compactenum}
 			\item Add edge $(\h(c'),h)$ to $\jc(\MM)$.
-			\item Delete $h$ from $T(c')$ (if present).
+			\item Delete $h$ from $T(c')$.
 		\end{compactenum}
 	\item Merge heaps $\{T(c') | c' \in \cur(h)\}$.
 	\item Take union of $\cur(h)$ and denote resulting color by $\widehat{c}$.
@@ -1319,7 +1324,7 @@ is present in $T(\rep(c))$ and is also highest vertex in the heap.
 	\item Let $h$ be head of $\st$.
 	\item While $h$ is not ripe:
 	\begin{compactenum}
-		\item Find $c \in \col(h)$ such that $h$ is not present or not the highest in $T(\rep(c))$.
+		\item Find $c \in \col(h)$ such that $h$ is not the highest in $T(\rep(c))$.
 		\item Push the highest of $T(\rep(c))$ onto $\st$, and update head $h$.
 	\end{compactenum}
 \end{compactenum}
@@ -1328,12 +1333,13 @@ is present in $T(\rep(c))$ and is also highest vertex in the heap.
 \bigskip
 
 A few simple facts:
-\begin{asparaitem}
+\begin{compactitem}
 	\item At all times, the colors form a valid painting.
 	\item Each vertex is present in at most $2$ heaps. After processing, it is removed from all heaps.
 	\item After $v$ is processed, all edges incident to $v$ have the same color (technically, same representative). 
-	\item When $\update(\st)$ terminates, the head $h$ is ripe. 
-\end{asparaitem}
+%	\item When $\update(\st)$ terminates, the head $h$ is ripe. 
+	\item Vertices on the stack are in increasing height order. 
+\end{compactitem}
 
 
 \medskip
@@ -1377,7 +1383,7 @@ Each $\h(c)$ is simply the maximum colored with $c$, and we have a valid paintin
 }
 
 
-\section{Proving correctness} \label{sec:correct}
+\subsection{Proving correctness} \label{sec:correct}
 
 \ignore{
 \begin{claim} \label{clm:process} Assume the invariant. Any vertex with a non-increasing path to some $\h(c)$
@@ -1393,9 +1399,9 @@ to $\h(c)$ in $\cC(\MM)$, which by \Thm{carr-mono} is the same as those in $\cC(
 
 Our main workhorse is the following technical lemma. 
 
-\begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component of $\MM^+_v$
-by edge $e$ of color $c$. Either all edges in $\MM^+_v$ are colored $c$, or there
-exists critical vertex $w \in \MM^+_v$ fully touched by $c$ and touched by another color.
+\begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component $\PP$ of $\MM^+_v$
+by edge $e$ of color $c$. Either all edges in $\PP$ are colored $c$, or there
+exists critical vertex $w \in \PP$ fully touched by $c$ and touched by another color.
 %
 %and take $(f(v)+\delta)$-contour $\phi$ intersecting
 %$B_\eps(v)$. Suppose the edges incident to $v$ intersecting $\phi$ do not have the same color. For any such
@@ -1403,10 +1409,10 @@ exists critical vertex $w \in \MM^+_v$ fully touched by $c$ and touched by anoth
 \end{lemma}
 
 \begin{proof} Since $e$ has color $c$,
-there must exist vertices in $\MM^+_v$ touched by $c$. Consider the highest
-vertex $w$ in $\MM^+_v$ that is touched by $c$ and some other color. If no such vertex exists,
-this means all edges incident the a vertex touched by $c$ are colored $c$. By walking through
-$\MM^+_v$, we deduce that all edges are colored $c$. 
+there must exist vertices in $\PP$ touched by $c$. Consider the highest
+vertex $w$ in $\PP$ that is touched by $c$ and some other color. If no such vertex exists,
+this means all edges incident to a vertex touched by $c$ are colored $c$. By walking through
+$\PP$, we deduce that all edges are colored $c$. 
 
 So assume $w$ exists. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
 and intersect some $c$-colored edge incident to $w$. Note that all edges intersecting $\phi$ are also colored $c$,
@@ -1415,6 +1421,30 @@ edges from the maximum to $w$. For any point on this path, the contour passing t
 be colored $c$.) Hence, $c$ fully touches $w$. 
 But $w$ is touched by another color, and the corresponding edge cannot intersect $\phi$. So $w$
 must have up-degree $2$ and is critical.
+\end{proof}
+
+\begin{corollary}
+\label{cor:terminate}
+ Each time $\update(K)$ is called, it terminates with a ripe vertex on top of the stack.
+\end{corollary}
+\begin{proof}
+ $\update(K)$ is only called if there are unprocessed vertices remaining, and so by the time we reach step 3 in 
+ $\update(K)$, the stack has some unprocessed vertex $h$ on it.  
+ If $h$ is ripe, then we are done, so suppose otherwise.
+ 
+ Let $\PP$ be one of the components of $\MM^+_h$.  By construction, $h$ was put in the heap of some initial 
+ adjacent color $c$.  Therefore, $h$ must be in the current heap of $\rep(c)$ (since elements are only removed 
+ from heaps when being processed).  Now by \Lem{full}, either all edges in $\PP$ are colored $\rep(c)$ or  
+ there is some vertex $w$ fully touched by $\rep(c)$ and some other color.  
+ The former case implies that if there are any unprocessed vertices in $\PP$ then they are all in $T(\rep(c))$, 
+ implying that $h$ is not the highest vertex.  Otherwise, all the vertices in $\PP$ have been processed.  
+ However, it cannot be the case that all vertices in all components of $\MM^+_h$ have already been processed, 
+ since this would imply that $h$ was ripe and so $h$ so can apply the same argument to the other non-fully processed component. 
+ 
+ Now consider the latter case, where we have a non-monochromatic vertex $w$.
+ In this case $w$ cannot have been processed (since after being processed it is touched only by one color), 
+ and so it must be in $T(\rep(c))$ since it must be in some heap of a color in each upstar (and one upstar is entirely colored $\rep(c)$).
+ As $w$ lies above $h$ in $\MM$, this implies $h$ is not on the top of this heap.
 \end{proof}
 
 We prove a series of claims that will lead to the correctness proof.
@@ -1437,60 +1467,83 @@ the restriction of $\jc(\MM)$ to these vertices.
 \end{claim}
 
 \begin{proof} More generally, we prove the following: all outputs on processed vertices
-are edges of $\cC(\MM)$ and for any color $c$, $\h(c)$ is the lowest processed vertex
-of that color. We prove by induction on the processing order. Initially, this is trivially
-true, handling these base case. For the induction step, consider the situation
+are edges of $\jc(\MM)$ and for any color $c$, $\h(c)$ is the lowest processed vertex
+of that color. We prove this by induction on the processing order. The base case is is trivially
+true, as initially the processed vertices and attachments of the color classes are the set of maxima.
+For the induction step, consider the situation
 when $v$ is being processed.
 
-The vertex $v$ is ripe. Take any up-star, and the corresponding component $\PP$
+Since $v$ is being processed, we know by \Cor{terminate} that it is ripe. Take any up-star of $v$, and the corresponding component $\PP$
 of $\MM^+_v$ that it connects to. By \Clm{upstar}, all edges in $\PP$ and the up-star
 have the same color (say $c$). If some critical vertex in $\PP$ is not processed,
 it must be in $T(c)$, which violates the ripeness of $v$.
-Thus, all critical vertices in $\PP$ have been processed.
+Thus, all critical vertices in $\PP$ have been processed, and so by the induction hypothesis, the restriction of $\jc(\MM)$ to $\PP$ has been correctly computed.
+Additionally, since all critical vertices in $\PP$ have processed, they all have the same color $c$ of the lowest critical vertex in $\PP$.
+Thus by the strengthened induction hypothesis, this lowest critical vertex is $\h(c)$.
 
-Consider $w$, the lowest critical vertex in $\PP$. Note that $w$ is a parent of $v$. When $w$ was processed, it was set to $\h(c')$, for
-some color $c'$. At this stage, all edges in $\PP$ above $w$ were also colored $c'$ (just apply the argument
-above for $w$). Since there are no critical points below $w$, all edges in $\PP$ below $w$
-are also colored $c'$ (the painting property). This means that the edges connecting $\PP$
-are also colored $c'$. So $c' = \rep(c)$, and $\h(\rep(c)) = w$ is a parent of $v$. 
+If there is another component of $\MM^+_v$, the same argument implies 
+the lowest critical vertex in this component is $\h(c')$ (where $c'$ is the color of edges in the respective component).
+Now by the definition of $\jc(\MM)$, the critical vertex $v$ connects to the lowest critical vertex in each component of $\MM^+_v$, 
+and so by the above $v$ should connect to $\h(c)$ and $\h(c')$, which is precisely what $v$ is connected to by $\build(\MM)$.
+Moreover, $\build$ merges the colors $c$ and $c'$ and correctly sets $v$ to be the attachment, 
+as $v$ is the lowest processed vertex of this merged color (as by induction $\h(c)$ and $\h(c')$ where the lowest vertices before merging colors).
 
-This argument can be repeated for all such components $\PP$ to complete the proof.
+
+% Consider $w$, the lowest critical vertex in $\PP$. Note that $w$ is a parent of $v$. When $w$ was processed, it was set to $\h(c')$, for
+% some color $c'$. At this stage, all edges in $\PP$ above $w$ were also colored $c'$ (just apply the argument
+% above for $w$). Since there are no critical points below $w$, all edges in $\PP$ below $w$
+% are also colored $c'$ (the painting property). This means that the edges connecting $\PP$
+% are also colored $c'$. So $c' = \rep(c)$, and $\h(\rep(c)) = w$ is a parent of $v$. 
+%
+%This argument can be repeated for all such components $\PP$ to complete the proof.
+\end{proof}
+
+\begin{theorem}
+ Given an input complex $\MM$, $\build(\MM)$ terminates and outputs $\jc(\MM)$.
+\end{theorem}
+\begin{proof}
+ First observe that each vertex can be processed at most once by $\build(\MM)$.  By \Cor{terminate}, we know that as long as there 
+ is an unprocessed vertex, $\update(K)$ will be called and will terminate with a ripe vertex which is ready to be processed. 
+ Therefore, eventually all vertices will be processed, and so by \Clm{process} the algorithm will terminate having 
+ computed $\jc(\MM)$.
 \end{proof}
 
 
-The following crucial claim demonstrates the utility of the stack.
 
-\begin{claim} \label{clm:stack} Vertices are always pushed onto $\st$ in increasing order of height.
-\end{claim}
 
-\begin{proof} Consider a single push onto the stack and the current painting. We have $c \in \col(h)$, as given in pseudocode of $\update$.
-If $h \in T(\rep(c))$, then obviously the next head is higher. So assume that $h \notin T(\rep(c))$.
-There is obviously an edge of color $\rep(c)$ touching $h$ connected to a component $\PP$ of $\MM^+_v$. 
-From the initialization, $h \in T(\rep(c'))$, for some $c'$ touching $h$ (where $c'$ is the color
-of some edge connecting $h$ to $\PP$).
-Applying \Lem{full},  either all edges in $\PP$ are colored $\rep(c)$ or 
-there exists critical vertex $w \in \PP$ fully touched by $\rep(c)$ and another color.
-In the former case, all edges connecting $\PP$ to $h$ are also colored $\rep(c)$
-(since this is a painting). Hence, $\rep(c') = \rep(c)$ and $h \in T(\rep(c))$.
-As we assumed this is not the case, we conclude the existence of critical vertex $w$.
-Since $w$ is fully touched by $\rep(c)$, $w \in T(\rep(c))$. Since $w$
-is touched by another color, $w$ has not been processed. So the highest of $T(\rep(c))$
-is higher than $h$, as desired.
-\ignore{
-If all edges touching $h$ that connect to this component are also colored $\rep(c)$, then
-In Case (i), the increase in height is obvious.
-Consider Case (ii). There is a vertex $v$ touched by color $c \notin \fcol(v)$. Consider the highest
-vertex $w$ that is touched by $c$ and some other color. Clearly such a vertex exists, since the condition
-is also satisfied by $v$. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
-and intersect some $c$-colored edge incident to $w$. Note that $\phi$ is also colored $c$,
-since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
-edges from the maximum to $w$. For any point on this path, the contour passing through this point must
-be colored $c$.) Hence, $c \in \fcol(w)$ and $w \neq v$. Furthermore, $w$ is a critical point,
-since $w$ is touched by another color. The corresponding edge cannot intersect $\phi$, so $w$
-must have up-degree $2$.
-All in all, when a new vertex is pushed onto the stack, it is always higher than the previous head.
-}
-\end{proof}
+% The following crucial claim demonstrates the utility of the stack.
+% 
+% \begin{claim} \label{clm:stack} Vertices are always pushed onto $\st$ in increasing order of height.
+% \end{claim}
+% 
+% \begin{proof} Consider a single push onto the stack and the current painting. We have $c \in \col(h)$, as given in pseudocode of $\update$.
+% If $h \in T(\rep(c))$, then obviously the next head is higher. So assume that $h \notin T(\rep(c))$.
+% There is obviously an edge of color $\rep(c)$ touching $h$ connected to a component $\PP$ of $\MM^+_v$. 
+% From the initialization, $h \in T(\rep(c'))$, for some $c'$ touching $h$ (where $c'$ is the color
+% of some edge connecting $h$ to $\PP$).
+% Applying \Lem{full},  either all edges in $\PP$ are colored $\rep(c)$ or 
+% there exists critical vertex $w \in \PP$ fully touched by $\rep(c)$ and another color.
+% In the former case, all edges connecting $\PP$ to $h$ are also colored $\rep(c)$
+% (since this is a painting). Hence, $\rep(c') = \rep(c)$ and $h \in T(\rep(c))$.
+% As we assumed this is not the case, we conclude the existence of critical vertex $w$.
+% Since $w$ is fully touched by $\rep(c)$, $w \in T(\rep(c))$. Since $w$
+% is touched by another color, $w$ has not been processed. So the highest of $T(\rep(c))$
+% is higher than $h$, as desired.
+% \ignore{
+% If all edges touching $h$ that connect to this component are also colored $\rep(c)$, then
+% In Case (i), the increase in height is obvious.
+% Consider Case (ii). There is a vertex $v$ touched by color $c \notin \fcol(v)$. Consider the highest
+% vertex $w$ that is touched by $c$ and some other color. Clearly such a vertex exists, since the condition
+% is also satisfied by $v$. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
+% and intersect some $c$-colored edge incident to $w$. Note that $\phi$ is also colored $c$,
+% since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
+% edges from the maximum to $w$. For any point on this path, the contour passing through this point must
+% be colored $c$.) Hence, $c \in \fcol(w)$ and $w \neq v$. Furthermore, $w$ is a critical point,
+% since $w$ is touched by another color. The corresponding edge cannot intersect $\phi$, so $w$
+% must have up-degree $2$.
+% All in all, when a new vertex is pushed onto the stack, it is always higher than the previous head.
+% }
+% \end{proof}
 
 
 
@@ -1499,8 +1552,7 @@ All in all, when a new vertex is pushed onto the stack, it is always higher than
 \newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
 \section{Leaf assignments and path decompositions}
 
-\Ben{All merge tree references need to be switched to join.  Also, need to make sure that not assuming the bin trees are full was safe to drop.
-Also, the parent and child relationship is the opposite in this section as in earlier ones.}
+\Ben{All merge tree references need to be switched to join.  Also, need to make sure that not assuming the bin trees are full was safe to drop.}
 
 In this section, we set up a framework to analyze the time taken to compute a critical join tree $\jc(\MM)$ (see \Def{criticalJoin}).
 %
