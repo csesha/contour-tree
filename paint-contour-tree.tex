@@ -991,7 +991,7 @@ Some basic facts about these trees.
 All outdegrees in $\cJ(\MM)$ are at most $1$, all indegree $2$ vertices are joins, all leaves are maxima,
 and the global minimum is the root. All indegrees in $\cS(\MM)$ are at most $1$, all outdegree $2$
 vertices are splits, leaves are minima, and the global maximum is the root.
-The key observation is that $\cS(\MM)$ is trivial for minimum dominant $\MM$.
+The key observation is that $\cS(\MM)$ is trivial for a minimum dominant $\MM$.
 
 \begin{lemma} \label{lem:split} $\cS(\MM)$ consists of:
 \begin{asparaitem}
@@ -1047,7 +1047,7 @@ Consider tree $T$ with vertex $v$ of in and outdegree at most $1$.
 	\item While candidate queue is non-empty: 
 	\begin{compactenum}
 		\item Let $v$ be head of queue. If $v$ is leaf in $\cJ$, consider its edge in $\cJ$. Otherwise
-		consider edge in $\cS$. In either case, let edge by $(v,w)$.
+		consider its edge in $\cS$. In either case, denote the edge by $(v,w)$.
 		\item Insert $(v,w)$ in $\cA(\MM)$. 
 		\item Set $\cJ = \cJ \ominus v$ and $\cS = \cS \ominus v$. Enqueue any new candidates.
 	\end{compactenum}
@@ -1057,8 +1057,10 @@ Consider tree $T$ with vertex $v$ of in and outdegree at most $1$.
 
 \medskip
 
-\begin{definition} The critical join tree $\jc(\MM)$ is built on the set $V'$ of all
-critical points that are \emph{not} non-dominant minima. 
+\begin{definition} 
+\label{def:criticalJoin}
+The critical join tree $\jc(\MM)$ is built on the set $V'$ of all
+critical points other than the non-dominant minima. 
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
 and $v$ is connected to this component (in $\MM$). 
 \end{definition}
@@ -1149,7 +1151,7 @@ be initially determined in $O(|\MM|)$ time, by a simple linear scan.
 We give an informal description of the algorithm, which might motivate the data structures.
 
 Our algorithm incrementally builds $\jc(\MM)$ from the leaves (maxima) to the root (dominant minimum). 
-Let us focus on an initial painting, where each colors has 1-1 correspondence with the maxima.
+Let us focus on an initial painting, where the colors have 1-1 correspondence with the maxima.
 Consider two sibling leaves $\ell_1, \ell_2$ and their common parent $v$. The leaves are maxima,
 and $v$ is a join that ``merges" $\ell_1, \ell_2$. A nice mental picture is given when $\MM$ is 2-dimensional.
 In that case, there are ``mounds" corresponding to each $\ell_1$ and $\ell_2$ that merge
@@ -1162,9 +1164,9 @@ This is precisely how we hope to exploit the information in the painting. We pro
 when some join $v$ has both up-stars fully colored, the corresponding maxima (of those colors) are exactly
 the parents of $v$ in $\jc(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
 we replace all red and blue edges by purple edges. This indicates that the red and blue maxima have been
-handled. Imagine flattening the red and blue mounds till $v$, so now that erstwhile join $v$
-is a new maxima. Suppose purple paint was poured from $v$. In terms on $\jc(\MM)$, this
-is equivalent to remove leaves $\ell_1$ and $\ell_2$, now making $v$ as a leaf.
+handled. Imagine flattening the red and blue mounds until reaching $v$, so that the former join $v$
+is now a new maxima. Suppose purple paint was poured from $v$. In terms of $\jc(\MM)$, this
+is equivalent to removing leaves $\ell_1$ and $\ell_2$, making $v$ a new leaf.
 Alternately, $\jc(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
 
 Of course, things are more complicated when there are other mounds. There may be a yellow mound,
@@ -1175,7 +1177,7 @@ We know that $u$ must also be (fully) touched by blue. So all critical vertices 
 are put into a priority queue keyed by height, and vertices are handled in that order.
 
 What happens when finally blue and red join at $v$? We merge the two colors, but now have
-a blue heap and red queues of critical vertices. We also need to merge the priority queues
+blue and red queues of critical vertices. We also need to merge the priority queues
 to get a consistent painting. And that decides the use of \emph{binomial heaps} to store the
 critical points of one color. Merges can be done in logarithmic time, the same time
 required for deletes.
@@ -1184,8 +1186,8 @@ In this discussion, we have ignored a somewhat annoying problem. Up-stars of cri
 may actually be touched by numerous colors, not just one as we assumed above. A simple solution
 would be to insert vertices into heaps corresponding to all colors touching it. But there could
 be super-constant numbers of copies of a vertex, and handling all these copies would lead
-to an extra overhead. We show that it suffices to simply put each vertex $v$ into at most two heaps,
-one for each up-star. We are guaranteed that when $v$ needs to processed, its up-stars
+to extra overhead. We show that it suffices to simply put each vertex $v$ into at most two heaps,
+one for each up-star. We are guaranteed that when $v$ needs to be processed, its up-stars
 automatically have one color, because of all the color merges that previously occured.
 
 With this preamble, we are ready to discuss our data structures. We discuss all the initializations
@@ -1417,11 +1419,11 @@ must have up-degree $2$ and is critical.
 
 We prove a series of claims that will lead to the correctness proof.
 
-\begin{claim} \label{clm:upstar} Consider ripe vertex $v$ and take the up-star connecting
+\begin{claim} \label{clm:upstar} Consider a ripe vertex $v$ and take the up-star connecting
 to some component of $\MM^+_v$. All edges in this component and the up-star have the same color.
 \end{claim}
 
-\begin{proof} Let $c$ be the color of some edge in this up-star
+\begin{proof} Let $c$ be the color of some edge in this up-star.
 By ripeness, $v$ is the highest in $T(\rep(c))$.
 Denote the component of $\MM^+_v$ by $\PP$.
 By \Lem{full}, either all edges in $\PP$ are colored $\rep(c)$ or there exists critical vertex $w \in \PP$
@@ -1497,24 +1499,26 @@ All in all, when a new vertex is pushed onto the stack, it is always higher than
 \newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
 \section{Leaf assignments and path decompositions}
 
-In this section, we set up a framework to analyze the time taken to compute a merge tree.
+\Ben{All merge tree references need to be switched to join.  Also, need to make sure that not assuming the bin trees are full was safe to drop.
+Also, the parent and child relationship is the opposite in this section as in earlier ones.}
 
-\begin{definition}
- We say that a contour tree of a $2$-manifold is a \emph{merge tree} if it has a well defined root vertex such that height values 
- strictly increase along any root to leaf path.
-\end{definition}
-
-\begin{observation}
- The contour tree of a minimum dominant manifold (see \Def{dom}) is close to a merge tree.  Specifically, there is a root such that on any root 
- to leaf path height values strictly increase, with the only exception being potentially at the leaves themselves.  As such, up to constant 
- factors, any lower bound for computing the merge tree is a lower bound for computing the contour tree of a minimum dominant
- manifold (i.e. intuitively just clip off the leaves or shift them to lie above their parent).
-\end{observation}
-
-
-Any tree $T$ considered in this section will be a rooted full binary tree\footnote{Note 
+In this section, we set up a framework to analyze the time taken to compute a critical join tree $\jc(\MM)$ (see \Def{criticalJoin}).
+%
+% \begin{definition}
+%  We say that a contour tree of a $2$-manifold is a \emph{merge tree} if it has a well defined root vertex such that height values 
+%  strictly increase along any root to leaf path.
+% \end{definition}
+% 
+% \begin{observation}
+%  The contour tree of a minimum dominant manifold (see \Def{dom}) is close to a merge tree.  Specifically, there is a root such that on any root 
+%  to leaf path height values strictly increase, with the only exception being potentially at the leaves themselves.  As such, up to constant 
+%  factors, any lower bound for computing the merge tree is a lower bound for computing the contour tree of a minimum dominant
+%  manifold (i.e. intuitively just clip off the leaves or shift them to lie above their parent).
+% \end{observation}
+%
+As such any tree $T$ considered in this section will be a rooted binary tree\footnote{Note 
 that technically the trees considered should have a leaf vertex hanging below the root of this 
-full binary tree in order to represent the global minimum of the surface.  This vertex is 
+in order to represent the global minimum of the complex.  This vertex is 
 (safely) ignored to simplify the presentation.} where the height of a vertex is its distance 
 from the root $r$.  As such, the children of a vertex $v\in T$ are the adjacent vertices of larger height
 (and $v$ is the parent of such vertices).  Then the subtree rooted at $v$, denoted $T_v$ consists of the graph induced on all 
@@ -1534,14 +1538,46 @@ Formally, $H_v = \{u | u \in A(v), \chi(u) \cap L(T_v) \neq \emptyset\}$.
 In words, $H_v$ is the set of ancestors of $v$ which are colored by some leaf in $T_v$.
 The following lemma should justify these technical definitions.
 
+Note that the subroutine $\init(\MM)$ from \Sec{algo} naturally defines a leaf assignment to $\jc(\MM)$ 
+according to the priority queue for each upstar we put a given vertex in.
+
 \begin{lemma}
-The running time of our algorithm is $O(\sum_{v \in T} \log |H_v|)$.
+Let $\MM$ be a simplicial complex with $m$ edges.  For every vertex in $\jc(\MM)$, 
+let $H_v$ be defined by the leaf assignment determined by $\init(\MM)$.
+The running time of our algorithm is $O(m\alpha(m) + \sum_{v \in \jc(\MM)} \log |H_v|)$.
 % where $T$ is the merge tree of the given input, 
 %and $\chi$ is any valid coloring of $T$.  (maybe add one in the definition of $H_v$ so that $\log |H_v|$ is always $>1$).
 \end{lemma}
 
-\begin{proof} \Sesh{add}
+\begin{proof}
+First we look at the initialization procedure $\init(\MM)$.  This procedure runs in $O(m)$ time (note that as the input complex is connected, $N=O(m)$).
+Indeed, the painting procedure consists of several BFS's but as each vertex is only explored by one of the BFS's, it is linear time overall.
+Determining the critical points is a local computation on the neighborhood of each vertex as so is linear (i.e. each edge is viewed at most twice).
+Finally, each vertex is inserted into at most two heaps and so initializing the heaps takes linear time in the number of vertices.
 
+Now consider the union-find operations performed by $\init$ and $\update$.  
+Initially the union find data structure has a singleton component for each leaf (and no new components are ever created), 
+and so each union-find operation takes $O(m)$ time.
+The $\update(K)$ procedure performs at most one find for each edge and no unions.  
+$\init(\MM)$ performs one union and at most two finds for each vertex.  Therefore the total number of union find 
+operations is $O(m)$.
+
+For the remaining operations, observe that every time $\update$ is called a vertex is pushed onto the stack and each
+vertex can only be pushed onto the stack once (since the only way it leaves the stack is by being processed). 
+Therefore the total running time due to $\update$ is linear (ignoring the find operations).
+
+What remains is the time it takes process a vertex $v$ in $\init(\MM)$.  
+In order to process a vertex there are a few constant time operations, union-find operations, and queue operations.
+Therefore the only thing we must bound are the queue operations.
+Let $v$ be a vertex in $\jc(\MM)$, and let $p_1$ and $p_2$ be its parents (the same argument holds if $v$ has only one parent).
+At the time $v$ is handled, the colors and queues of all vertices in a given component of $\MM^+_v$ have merged together.
+In particular, when $v$ is handled we know it is ripe and so all vertices above $v$ in each component of $\MM^+_v$ have been processed, implying 
+these merged queues are the queues of the current colors of $p_1$ and $p_2$.  Again since $v$ is ripe, it must be on the top of these queues and so 
+the only vertices of left in these queues are those in $H_{p_1}$ and $H_{p_2}$. 
+
+Now when $v$ is handled, three queue operations are performed.  Specifically, $v$ is removed from the queues of $p_1$ and $p_2$, and then the queues are 
+are merged together.  By the above arguments the sizes of the queues for each of these operations are $H_{p_1}$, $H_{p_2}$, and $H_v$, respectively.  
+As merging and deleting takes logarithmic time in the heap size for binomial heaps, the claim now follows.
 \end{proof}
 
 %vertices along the path from the root to $v$ such that one of the two colors of each vertex is in $L(T_v)$.
