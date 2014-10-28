@@ -162,6 +162,7 @@
 \newcommand{\cont}{\psi}
 \newcommand{\cost}{\mathop{cost}}
 \newcommand{\h}{att}
+\newcommand{\init}{{\tt init}}
 \newcommand{\jc}{\cJ_C}
 \newcommand{\lift}{{\tt lift}}
 \newcommand{\mcol}{mcol}
@@ -971,32 +972,31 @@ keeping vertices $u$ such that $f(u) > f(v)$. Analogously, define $\MM^-_v$. Not
 numerous connected components. 
 
 The main theorem of this section asserts that the contours trees of minimum dominant manifolds have a simple description.
-This description is based on \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-00}.
-Conventially, all edges are directed from higher to lower function value.
-We first explain what these trees are.
+The exact statement will require some definitions and notation.
+We required the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-00}.
+Conventially, all edges are directed from higher to lower function value. We will use the terminology
+``parent" for an adjacent node that is higher. Because of the orientation, a node
+may have multiple parents.
+%We first explain what these trees are.
 
 \begin{definition} \label{join} The join tree $\cJ(\MM)$ of $\MM$ is built on vertex set $V(\MM)$.
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in a connected component of $\MM^+_v$
 \emph{and} $v$ is connected to this component (in $\MM$). The split tree $\cS(\MM)$ is obtained
 by looking at $\MM^-_v$ (or alternately, by taking the join tree of the inversion of $\MM$). 
-
-The critical join tree $\jc(\MM)$ is built on $V(\MM) \setminus M$. 
-The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V(\MM) \setminus M$ in a connected component of $\MM^+_v$
-and $v$ is connected to this component (in $\MM$). 
 \end{definition}
 
 
 Some basic facts about these trees. 
 %Note that unlike the contour tree, all vertices in $\MM$ are present in $\cJ(\MM)$ and $\cS(\MM)$. 
-All outdegrees in $\cJ(\MM)$ and all indegrees in $\cS(\MM)$ are at most $1$.
-Indegree $2$ vertices in $\cJ(\MM)$ are joins, and outdegree $2$ vertices in $\cS(\MM)$ are splits.
-Leaves in $\cJ(\MM)$ are maxima, and leaves in $\cS(\MM)$ are minima.
+All outdegrees in $\cJ(\MM)$ are at most $1$, all indegree $2$ vertices are joins, all leaves are maxima,
+and the global minimum is the root. All indegrees in $\cS(\MM)$ are at most $1$, all outdegree $2$
+vertices are splits, leaves are minima, and the global maximum is the root.
 The key observation is that $\cS(\MM)$ is trivial for minimum dominant $\MM$.
 
 \begin{lemma} \label{lem:split} $\cS(\MM)$ consists of:
 \begin{asparaitem}
 	\item A single path (in sorted order) with all vertices except non-dominant minima.
-	\item Each non-dominant minimum is attached to a unique split.
+	\item Each non-dominant minimum is attached to a unique split (which is adjacent to it).
 \end{asparaitem}
 \end{lemma}
 
@@ -1022,6 +1022,8 @@ The split $v$ has two children in $\cS(\MM)$, one in $\NN$ and one in $\LL$. The
 be the non-dominant minimum $w$, which is a leaf. 
 \end{proof}
 
+It is convenient to denote the non-dominant minima as $m_1, m_2, \ldots, m_k$
+and the corresponding splits (as given by the lemma above) as $s_1, s_2, \ldots, s_k$. 
 
 To prove our main theorem, we use the merging procedure from~\cite{csa-cctad-00} that constructs the contour tree
 from the join and split trees. 
@@ -1055,6 +1057,11 @@ Consider tree $T$ with vertex $v$ of in and outdegree at most $1$.
 
 \medskip
 
+\begin{definition} The critical join tree $\jc(\MM)$ is built on the set $V'$ of all
+critical points that are \emph{not} non-dominant minima. 
+The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
+and $v$ is connected to this component (in $\MM$). 
+\end{definition}
 
 
 \begin{theorem} \label{thm:contour-tree} Let $\MM$ have a dominant minimum. 
@@ -1078,14 +1085,15 @@ points from $\cJ(\MM) \ominus \{m_i\}$ exactly yields the edges described in the
 The main algorithmic contribution is a new algorithm for computing join trees of any triangulated simplicial
 complex $\MM$.
 
-As part of the initialization, we determine
-all critical points in $\MM$. For any vertex $v$, we can look at $f(v) \pm \delta$-contours 
-in $f|_{B_\eps(v)}$ to determine the up and down degrees. This determines the criticality (and type)
-of $v$. This requires $O(|\MM|)$ time, since every facet is looked at proportional to the number of its
-vertices.
+%
+%As part of the initialization, we determine
+%all critical points in $\MM$. For any vertex $v$, we can look at $f(v) \pm \delta$-contours 
+%in $f|_{B_\eps(v)}$ to determine the up and down degrees. This determines the criticality (and type)
+%of $v$. This requires $O(|\MM|)$ time, since every facet is looked at proportional to the number of its
+%vertices.
 
 {\bf Painting:} The central tool is a notion 
-of \emph{painting} of $\MM$. Initially associate a color with each maximum. Imagine there being a large
+of \emph{painting} $\MM$. Initially associate a color with each maximum. Imagine there being a large
 can of paint of a distinct color at each maxima $x$. We will spill different paint from each maximum and watch it flow down.
 This is analogous to the raining in the previous section, but paint is a much more viscous liquid.
 \emph{So paint only flows down edges, and it does not color the interior of facets.} Furthermore, paints
@@ -1095,30 +1103,35 @@ works purely on the 1-skeleton of $\MM$, which is just a graph.
 \begin{definition} \label{def:paint} Let the 1-skeleton of $\MM$ have edge set $E$ and maxima $X$.
 A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \mapsto [|X|]$ with the following property. 
  Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
-	consisting of edges in $E$, such that all edges along this path have the same color as $x$. (The maximum $x$
-	is well-defined to be the unique maximum with the same color as $e$.)
+	consisting of edges in $E$, such that all edges along this path have the same color as $x$. 
 
 An \emph{initial} painting has the additional property that the restriction $\chi:X \mapsto [|X|]$ is a bijection.
 \end{definition}
 %
-Paintings are not unique. It is straightforward to construct an initial painting of $\MM$ in $O(|\MM|)$ time, 
-using a descending BFS from each maximum that does not explore previously colored edges. 
-As the algorithm proceeds, the bijection property will not hold, though we always maintain a valid painting.
+%Paintings are not unique. It is straightforward to construct an initial painting of $\MM$ in $O(|\MM|)$ time, 
+%using a descending BFS from each maximum that does not explore previously colored edges. 
+%As the algorithm proceeds, the bijection property will not hold, though we always maintain a valid painting.
 
-{\bf Colors of vertices:} Note that a painting only colors edges, not vertices. We associate certain
+A painting only colors edges, not vertices. We associate certain
 sets of colors with vertices.
 
-\begin{definition} \label{def:color-set} Fix a painting $\chi$, and a color $c$.
-A vertex $v$ is \emph{touched by $c$} if $x$ is incident to a $c$-colored
-edge with $v$ at the lower endpoint. For $v$, $\col(v)$ is the set of colors that touch $v$.
+\begin{definition} \label{def:color-set} Fix a painting $\chi$ and vertex $v$.
+\begin{asparaitem}
+	 \item An \emph{up-star} of $v$ is the set of edges that all connected to a fixed component of $\MM^+_v$.
+	 \item A vertex $v$ is \emph{touched by color $c$} if $x$ is incident to a $c$-colored
+	 edge with $v$ at the lower endpoint. For $v$, $\col(v)$ is the set of colors that touch $v$.
+	 \item A color $c \in \col(v)$ \emph{fully touches} $v$ if all edges in an up-star are colored $v$.
+\end{asparaitem}
 \end{definition}
 
+Each non-maxima $v$ participates in at least $1$ and at most $2$ up-stars (the latter iff
+$v$ is a join).
+
+\ignore{
 Abusing notation, we say a contour $\phi$ is of color $c$ if all edges that intersect $\phi$ have color $c$.
 
 \begin{definition} \label{def:color-full} Consider vertex $v$. An \emph{up-star} of $v$ is the set 
-of edges that all connect to a fixed component of $\MM^+_v$. (Each $v$
-participates in at mot $2$ up-stars.) A color $c \in \col(v)$ \emph{fully touches} $v$
-if all edges in an up-star are colored $v$.
+of edges that all connected to a fixed component of $\MM^+_v$. 
 %and let $\phi$ be a $(f(v)+\delta)$-contour in
 %$f|_{B_\eps(v)}$. If $\phi$ is monochromatic of color $c$, then $v$ is \emph{fully touched by $c$}. The set of colors
 %that fully touch $v$ is denoted $\fcol(v)$.
@@ -1127,36 +1140,56 @@ if all edges in an up-star are colored $v$.
 %Note that $\fcol(v)$ has size at most $2$, by the Morse condition. 
 Note that $\col(v)$ 
 %and $\fcol(v)$ can
-can be initially determined in $O(|\MM|)$ time, by a simple linear scan.
-
-\begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component of $\MM^+_v$
-by edge $e$ of color $c$. Either all edges in $\MM^+_v$ are colored $c$, or there
-exists critical vertex $w \in \MM^+_v$ fully touched by $c$ and touched by another color.
-%
-%and take $(f(v)+\delta)$-contour $\phi$ intersecting
-%$B_\eps(v)$. Suppose the edges incident to $v$ intersecting $\phi$ do not have the same color. For any such
-%color $c$, there exists a critical vertex $w$ strictly higher than $v$ such that $c \in \fcol(v)$.
-\end{lemma}
-
-\begin{proof} Since $e$ has color $c$,
-there must exist vertices in $\MM^+_v$ touched by $c$. Consider the highest
-vertex $w$ in $\MM^+_v$ that is touched by $c$ and some other color. If no such vertex exists,
-this means all edges incident to a vertex touched by $c$ are colored $c$. By walking through
-$\MM^+_v$, we deduce that all edges are colored $c$. 
-
-So assume $w$ exists. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
-and intersect some $c$-colored edge incident to $w$. Note that all edges intersecting $\phi$ are also colored $c$,
-since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
-edges from the maximum to $w$. For any point on this path, the contour passing through this point must
-be colored $c$.) Hence $c$ fully touches $w$. 
-But $w$ is touched by another color, and the corresponding edge cannot intersect $\phi$. So $w$
-must have up-degree $2$ and is critical.
-\end{proof}
+be initially determined in $O(|\MM|)$ time, by a simple linear scan.
+}
 
 
 \subsection{The overall approach and the data structures} \label{sec:struct}
 
-We first list out the basic data structures used, and then summarize our approach.
+We give an informal description of the algorithm, which might motivate the data structures.
+
+Our algorithm incrementally builds $\jc(\MM)$ from the leaves (maxima) to the root (dominant minimum). 
+Let us focus on an initial painting, where each colors has 1-1 correspondence with the maxima.
+Consider two sibling leaves $\ell_1, \ell_2$ and their common parent $v$. The leaves are maxima,
+and $v$ is a join that ``merges" $\ell_1, \ell_2$. A nice mental picture is given when $\MM$ is 2-dimensional.
+In that case, there are ``mounds" corresponding to each $\ell_1$ and $\ell_2$ that merge
+at a valley $v$. Suppose this was the entire input, and $\ell_1$ was colored blue and $\ell_2$ was colored red. 
+Both the mounds are colored completely blue or red, while $v$ is touched by both colors.
+Moreover, each up-star of $v$ (one connecting to each mound) is fully colored. So this
+indicates that $v$ joins the blue maxima and red maxima in $\jc(\MM)$.
+
+This is precisely how we hope to exploit the information in the painting. We prove later that
+when some join $v$ has both up-stars fully colored, the corresponding maxima (of those colors) are exactly
+the parents of $v$ in $\jc(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
+we replace all red and blue edges by purple edges. This indicates that the red and blue maxima have been
+handled. Imagine flattening the red and blue mounds till $v$, so now that erstwhile join $v$
+is a new maxima. Suppose purple paint was poured from $v$. In terms on $\jc(\MM)$, this
+is equivalent to remove leaves $\ell_1$ and $\ell_2$, now making $v$ as a leaf.
+Alternately, $\jc(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
+
+Of course, things are more complicated when there are other mounds. There may be a yellow mound,
+corresponding to $\ell_3$ that joins with the blue mound higher up (at vertex $u$). In $\jc(\MM)$, $\ell_2$ and $\ell_3$
+are sibling leaves, and $\ell_1$ is a sibling of some ancestor of these leaves. So we cannot
+merge red and blue, until yellow and blue merge. Naturally, we use priority queues to handle this issue.
+We know that $u$ must also be (fully) touched by blue. So all critical vertices touched by blue
+are put into a priority queue keyed by height, and vertices are handled in that order.
+
+What happens when finally blue and red join at $v$? We merge the two colors, but now have
+a blue heap and red queues of critical vertices. We also need to merge the priority queues
+to get a consistent painting. And that decides the use of \emph{binomial heaps} to store the
+critical points of one color. Merges can be done in logarithmic time, the same time
+required for deletes.
+
+In this discussion, we have ignored a somewhat annoying problem. Up-stars of critical vertices
+may actually be touched by numerous colors, not just one as we assumed above. A simple solution
+would be to insert vertices into heaps corresponding to all colors touching it. But there could
+be super-constant numbers of copies of a vertex, and handling all these copies would lead
+to an extra overhead. We show that it suffices to simply put each vertex $v$ into at most two heaps,
+one for each up-star. We are guaranteed that when $v$ needs to processed, its up-stars
+automatically have one color, because of all the color merges that previously occured.
+
+With this preamble, we are ready to discuss our data structures. We discuss all the initializations
+in the next section.
 
 \medskip
 \noindent
@@ -1164,17 +1197,15 @@ We first list out the basic data structures used, and then summarize our approac
 This is stored as a \emph{binomial max-heap} keyed by vertex heights. Abusing notation, $\touch(c)$ refers
 both to the set and the data structure used to store it.
 
-We initialize as follows. For each critical vertex $v$ and from each of its up-stars, we pick an arbitrary color $c$ touching $v$. 
-We insert $v$ into $T(c)$. Observe that $v$ participates in at least $1$ and at most $2$ heaps.
-
+%We initialize as follows. For each critical vertex $v$ and from each of its up-stars, we pick an arbitrary color $c$ touching $v$. 
+%We insert $v$ into $T(c)$. Observe that $v$ participates in at least $1$ and at most $2$ heaps.
+%
 
 \medskip
 \noindent
 {\bf The union-find data structure on colors:} We will repeatedly perform unions
 of classes of colors, and this will be maintained as a standard union-find data structure.
-For any color $c$, $\rep(c)$ denotes the representative of its class. We initialize
-by simply setting $\rep(c) = c$ for all colors.
-
+For any color $c$, $\rep(c)$ denotes the representative of its class. 
 
 \medskip
 \noindent
@@ -1197,8 +1228,9 @@ the following invariants.
 \noindent
 {\bf Attachment vertex $\h(c)$:} For each color $c$, we maintain a critical point $\h(c)$ of this color.
 We will maintain the guarantee that the portion of the contour tree above (and including) $\h(c)$ has already been constructed.
-This is initialized to the maximum corresponding to $c$.
+%This is initialized to the maximum corresponding to $c$.
 
+\ignore{
 \medskip
 As the algorithm proceeds, it is convenient to imagine
 it maintaining a set of contours $\Phi = \{\phi_1, \phi_2, \ldots, \phi_k\}$, which are contained
@@ -1220,10 +1252,12 @@ we have already constructed the contour trees rooted at each $h(\rep(c))$. This 
 when each $h(c)$ is a maximum. One can now treat each $h(\rep(c))$ as a maximum, corresponding to (a possibly new) color $\rep(c)$.
 To reduce confusion between the original painting and the new colors, we will assume that $\col(v)$ and $\fcol(v)$
 are as given by the original painting. 
+}
 	
 \subsection{The algorithm} \label{sec:algo}
 
-We formally describe the algorithm below. We require a technical definition of \emph{ripe} vertices.
+We formally describe the algorithm below. 
+We require a technical definition of \emph{ripe} vertices.
 
 
 \begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \col(v)$, $v$
@@ -1234,17 +1268,35 @@ is present in $T(\rep(c))$ and is also highest vertex in the heap.
 \medskip
 \fbox{
 \begin{minipage}{0.9\textwidth}
+{\bf $\init(\MM)$}
+
+\smallskip
+\begin{compactenum}
+	\item Construct an initial painting of $\MM$ using a descending BFS from maxima that does not explore previously colored edges.
+	\item Determine all critical points in $\MM$. For each $v$, look at $(f(v) \pm \delta)$-contours in $f|_{B_\eps(v)}$ 
+	to determine the up and down degrees. 
+	\item Mark each critical $v$ as unprocessed.
+	\item For each critical $v$ and each up-star, pick arbitrary color $c$ touching $v$. Insert $v$ into $T(c)$.
+	\item Initialize $\rep(c) = c$ and set $\h(c)$ to be the unique maximum colored $c$.
+\end{compactenum}
+\end{minipage}}
+
+
+\medskip
+\fbox{
+\begin{minipage}{0.9\textwidth}
 {\bf $\build(\MM)$}
 
 \smallskip
 \begin{compactenum}
+	\item Run $\init(\MM)$.
 	\item While there are unprocessed critical points:
 	\begin{compactenum}
 		\item Run $\update(\st)$. Pop $\st$ to get $h$.
 		\item Let $\cur(h) = \{\rep(c) | c \in \col(h)\}$.
 		\item For all $c' \in \cur(h)$:
 		\begin{compactenum}
-			\item Add edge $(\h(c'),h)$ to $\cC(\MM)$.
+			\item Add edge $(\h(c'),h)$ to $\jc(\MM)$.
 			\item Delete $h$ from $T(c')$ (if present).
 		\end{compactenum}
 	\item Merge heaps $\{T(c') | c' \in \cur(h)\}$.
@@ -1271,10 +1323,14 @@ is present in $T(\rep(c))$ and is also highest vertex in the heap.
 \end{compactenum}
 \end{minipage}}
 
+\bigskip
+
 A few simple facts:
 \begin{asparaitem}
+	\item At all times, the colors form a valid painting.
+	\item Each vertex is present in at most $2$ heaps. After processing, it is removed from all heaps.
+	\item After $v$ is processed, all edges incident to $v$ have the same color (technically, same representative). 
 	\item When $\update(\st)$ terminates, the head $h$ is ripe. 
-	\item After $v$ is processed, all edges incident to $v$ has the same color.
 \end{asparaitem}
 
 
@@ -1333,6 +1389,73 @@ to $\h(c)$ in $\cC(\MM)$, which by \Thm{carr-mono} is the same as those in $\cC(
 \end{proof}
 }
 
+Our main workhorse is the following technical lemma. 
+
+\begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component of $\MM^+_v$
+by edge $e$ of color $c$. Either all edges in $\MM^+_v$ are colored $c$, or there
+exists critical vertex $w \in \MM^+_v$ fully touched by $c$ and touched by another color.
+%
+%and take $(f(v)+\delta)$-contour $\phi$ intersecting
+%$B_\eps(v)$. Suppose the edges incident to $v$ intersecting $\phi$ do not have the same color. For any such
+%color $c$, there exists a critical vertex $w$ strictly higher than $v$ such that $c \in \fcol(v)$.
+\end{lemma}
+
+\begin{proof} Since $e$ has color $c$,
+there must exist vertices in $\MM^+_v$ touched by $c$. Consider the highest
+vertex $w$ in $\MM^+_v$ that is touched by $c$ and some other color. If no such vertex exists,
+this means all edges incident the a vertex touched by $c$ are colored $c$. By walking through
+$\MM^+_v$, we deduce that all edges are colored $c$. 
+
+So assume $w$ exists. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
+and intersect some $c$-colored edge incident to $w$. Note that all edges intersecting $\phi$ are also colored $c$,
+since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
+edges from the maximum to $w$. For any point on this path, the contour passing through this point must
+be colored $c$.) Hence, $c$ fully touches $w$. 
+But $w$ is touched by another color, and the corresponding edge cannot intersect $\phi$. So $w$
+must have up-degree $2$ and is critical.
+\end{proof}
+
+We prove a series of claims that will lead to the correctness proof.
+
+\begin{claim} \label{clm:upstar} Consider ripe vertex $v$ and take the up-star connecting
+to some component of $\MM^+_v$. All edges in this component and the up-star have the same color.
+\end{claim}
+
+\begin{proof} Let $c$ be the color of some edge in this up-star
+By ripeness, $v$ is the highest in $T(\rep(c))$.
+Denote the component of $\MM^+_v$ by $\PP$.
+By \Lem{full}, either all edges in $\PP$ are colored $\rep(c)$ or there exists critical vertex $w \in \PP$
+fully touched by $\rep(c)$ and another color. In the latter case, $w$ has not been processed,
+so $w \in T(\rep(c))$ (contradiction to ripeness). Therefore, all edges in $\PP$ are colored $\rep(c)$.
+\end{proof}
+
+
+\begin{claim} \label{clm:process} The partial output on the processed vertices is exactly
+the restriction of $\jc(\MM)$ to these vertices.
+\end{claim}
+
+\begin{proof} More generally, we prove the following: all outputs on processed vertices
+are edges of $\cC(\MM)$ and for any color $c$, $\h(c)$ is the lowest processed vertex
+of that color. We prove by induction on the processing order. Initially, this is trivially
+true, handling these base case. For the induction step, consider the situation
+when $v$ is being processed.
+
+The vertex $v$ is ripe. Take any up-star, and the corresponding component $\PP$
+of $\MM^+_v$ that it connects to. By \Clm{upstar}, all edges in $\PP$ and the up-star
+have the same color (say $c$). If some critical vertex in $\PP$ is not processed,
+it must be in $T(c)$, which violates the ripeness of $v$.
+Thus, all critical vertices in $\PP$ have been processed.
+
+Consider $w$, the lowest critical vertex in $\PP$. Note that $w$ is a parent of $v$. When $w$ was processed, it was set to $\h(c')$, for
+some color $c'$. At this stage, all edges in $\PP$ above $w$ were also colored $c'$ (just apply the argument
+above for $w$). Since there are no critical points below $w$, all edges in $\PP$ below $w$
+are also colored $c'$ (the painting property). This means that the edges connecting $\PP$
+are also colored $c'$. So $c' = \rep(c)$, and $\h(\rep(c)) = w$ is a parent of $v$. 
+
+This argument can be repeated for all such components $\PP$ to complete the proof.
+\end{proof}
+
+
 The following crucial claim demonstrates the utility of the stack.
 
 \begin{claim} \label{clm:stack} Vertices are always pushed onto $\st$ in increasing order of height.
@@ -1368,27 +1491,6 @@ All in all, when a new vertex is pushed onto the stack, it is always higher than
 \end{proof}
 
 
-\begin{claim} \label{clm:ripe} For ripe vertex $v$, $\{\h(\rep(c)) | c \in \col(v)\}$ is exactly
-the set of parents of $v$.
-\end{claim}
-
-\begin{proof} \Sesh{proof is a little sketchy.}
-Suppose $v$ is ripe. For any $c$ touching $v$, $v$ is the highest in $T(\rep(c))$.
-Consider some such $\rep(c)$, for an edge connecting to component $\PP$ of $\MM^+_v$.
-Either all edges in $\PP$ are colored $\rep(c)$ or there exists critical vertex $w \in \PP$
-fully touched by $\rep(c)$ and another color. In the latter case, $w$ has not been processed,
-so $w \in T(\rep(c))$ (contradiction). Therefore, all edges in $\PP$ are colored $\rep(c)$.
-Suppose there is some critical vertex in $\PP$. If it is not processed yet, it will
-be in $T(\rep(c))$, which is not possible. Thus, all critical vertices in $\PP$ have been processed.
-
-Consider $w$, the lowest critical vertex in $\PP$. Note that $w$ is a parent of $v$. When $w$ was processed, it was set to $\h(c')$, for
-some color $c'$. At this stage, all edges in $\PP$ above $w$ were also colored $c'$ (just apply the argument
-above for $w$). Since there are no critical points below $w$, all edges in $\PP$ below $w$
-are also colored $c'$ (the painting property). This means that the edges connecting $\PP$
-are also colored $c'$. So $c' = \rep(c)$, and $\h(\rep(c)) = w$ is a parent of $v$. 
-
-This argument can be repeated for all such components $\PP$ to complete the proof.
-\end{proof}
 
 
 \newcommand{\pathTree}{P_{\mathcal{S}}}
