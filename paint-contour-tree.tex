@@ -83,6 +83,7 @@
 \newcommand{\LL}{\mathbb{L}}
 \newcommand{\MM}{\mathbb{M}}
 \newcommand{\NN}{\mathbb{N}}
+\newcommand{\PP}{\mathbb{P}}
 \newcommand{\RR}{\mathbb{R}}
 \newcommand{\SSS}{\mathbb{S}}
 
@@ -161,6 +162,7 @@
 \newcommand{\cont}{\psi}
 \newcommand{\cost}{\mathop{cost}}
 \newcommand{\h}{att}
+\newcommand{\jc}{\cJ_C}
 \newcommand{\lift}{{\tt lift}}
 \newcommand{\mcol}{mcol}
 \newcommand{\merge}{{\tt merge}}
@@ -223,7 +225,7 @@ and in doing so yields instance optimal results.
 Specifically, we prove that for any partition of the contour tree into a set of descending paths, $P$, 
 any comparison based algorithm requires $\sum_{p\in P} |p|\log|p|$ time.  Moreover, we show there   
 exists some partition $P'$ such that the running time of our algorithm is 
-$O(\sum_{p\in P'} |p|\log|p| + N\alpha(N))$, where $N$ is total complexity of the input manifold 
+$O(\sum_{p\in P'} |p|\log|p| + N\alpha(N))$, where $N$ is the total complexity of the input manifold 
 (and hence this is optimal on all instances requiring $\Omega(N\alpha(N))$ time).
 In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balanced, 
 while previous algorithms ran in $O(N+t\log t)$ (where $t$ is the size of the contour tree).
@@ -283,8 +285,8 @@ Of particular note is the use of heavy-light path decompositions, first introduc
 
 \subsubsection{Worst Case Alternatives}
 In worst case analysis an algorithm's running time is judged in terms of its worst 
-case behavior over all inputs of a given size.  While there are benefits to such a 
-pessimistic view, it fails to capture the whole story.  As such, many alternatives 
+case behavior over all inputs of a given size.  While there are benefits to this viewpoint, 
+such as robustness,  it fails to capture the whole story.  As such, many alternatives 
 have been considered.  For example, one can make assumptions on the distribution of 
 inputs, which has led to a number interesting results on average case and probabilistic 
 analysis, and also smoothed analysis \cite{st-saa-04}.  However, even without making 
@@ -963,26 +965,32 @@ Each $\surgery$ call is constant time, and the total time is the size of the rec
 The previous section allows us to restrict attention to extremum dominant manifolds.
 We will orient so that the extremum in question is always a \emph{minimum}.
 We will fix such a simplicial complex $\MM$, with the dominant minimum $m^*$. 
-We observe that the contours trees of minimum dominant manifolds have a relatively simple description.
-This description is directly inspired by (and proven using) the \emph{join tree} of~\cite{csa-cctad-00}.
-We first explain what these trees are.
-
+The set of non-dominant minima is denoted by $M$.
 For vertex $v$, we use $\MM^+_v$ to denote the simplicial complex obtained by only
-keeping vertices $u$ such that $f(u) > f(v)$. Analogously, define $\MM^-_v$. Note that $\MM^+$ may contain
-numerous connected components. The following definition of join and split trees were given by~\cite{csa-cctad-00}.
+keeping vertices $u$ such that $f(u) > f(v)$. Analogously, define $\MM^-_v$. Note that $\MM^+_v$ may contain
+numerous connected components. 
+
+The main theorem of this section asserts that the contours trees of minimum dominant manifolds have a simple description.
+This description is based on \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-00}.
 Conventially, all edges are directed from higher to lower function value.
+We first explain what these trees are.
 
 \begin{definition} \label{join} The join tree $\cJ(\MM)$ of $\MM$ is built on vertex set $V(\MM)$.
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in a connected component of $\MM^+_v$
 \emph{and} $v$ is connected to this component (in $\MM$). The split tree $\cS(\MM)$ is obtained
 by looking at $\MM^-_v$ (or alternately, by taking the join tree of the inversion of $\MM$). 
+
+The critical join tree $\jc(\MM)$ is built on $V(\MM) \setminus M$. 
+The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V(\MM) \setminus M$ in a connected component of $\MM^+_v$
+and $v$ is connected to this component (in $\MM$). 
 \end{definition}
 
-Note that unlike the contour tree, all vertices in $\MM$ are present in $\cJ(\MM)$ and $\cS(\MM)$. 
-Some basic facts about these trees. All outdegrees in $\cJ(\MM)$ and all indegrees in $\cS(\MM)$ are at most $1$.
+
+Some basic facts about these trees. 
+%Note that unlike the contour tree, all vertices in $\MM$ are present in $\cJ(\MM)$ and $\cS(\MM)$. 
+All outdegrees in $\cJ(\MM)$ and all indegrees in $\cS(\MM)$ are at most $1$.
 Indegree $2$ vertices in $\cJ(\MM)$ are joins, and outdegree $2$ vertices in $\cS(\MM)$ are splits.
 Leaves in $\cJ(\MM)$ are maxima, and leaves in $\cS(\MM)$ are minima.
-
 The key observation is that $\cS(\MM)$ is trivial for minimum dominant $\MM$.
 
 \begin{lemma} \label{lem:split} $\cS(\MM)$ consists of:
@@ -1014,16 +1022,15 @@ The split $v$ has two children in $\cS(\MM)$, one in $\NN$ and one in $\LL$. The
 be the non-dominant minimum $w$, which is a leaf. 
 \end{proof}
 
-It is convenient to denote the non-dominant minima by $m_1, m_2, \ldots, m_k$, and the associated
-splits (as given by \Lem{split}) by $s_1, s_2, \ldots, s_k$.
 
 To prove our main theorem, we use the merging procedure from~\cite{csa-cctad-00} that constructs the contour tree
 from the join and split trees. 
 It actually construsts the \emph{augmented contour tree} $\cA(\MM)$, which
 is the contour tree with regular points inserted into the edges. 
-For any tree $T$ with vertex $v$, we define \emph{erasing} $v$ from $T$,
-when both in and outdegrees are at most $1$. If $v$ is a leaf, just delete $v$. Otherwise, smooth $v$ out
+Consider tree $T$ with vertex $v$ of in and outdegree at most $1$.
+\emph{Erasing} $v$ from $T$ is the following operation: if $v$ is a leaf, just delete $v$. Otherwise, smooth $v$ out
 (delete $v$ and connect its neighbors by an edge). This tree is denoted by $T \ominus v$.
+
 
 \medskip
 \fbox{
@@ -1048,10 +1055,12 @@ when both in and outdegrees are at most $1$. If $v$ is a leaf, just delete $v$. 
 
 \medskip
 
-\begin{theorem} \label{thm:contour-tree} The contour tree $\cC(\MM)$ consists of all edges $\{(s_i, m_i)\}$
-as well as: for any critical point $v$, edge $(w,v)$ where $w$ is the lowest non-minimal critical point
-in a connected component of $\MM^+_v$ connected to $v$.
+
+
+\begin{theorem} \label{thm:contour-tree} Let $\MM$ have a dominant minimum. 
+The contour tree $\cC(\MM)$ consists of all edges $\{(s_i, m_i)\}$ and $\jc(\MM)$.
 \end{theorem}
+
 
 \begin{proof} We first show that $\cA(\MM)$ is $\cJ(\MM) \ominus \{m_i\}$ with edges $\{(s_i,m_i)\}$.
 We have flexibility in choosing the order of processing in $\merge$. We first put the non-dominant
@@ -1066,23 +1075,24 @@ points from $\cJ(\MM) \ominus \{m_i\}$ exactly yields the edges described in the
 
 \section{Painting to compute contour trees}
 
-Now we come to the main algorithmic contribution. We design a new algorithm for computing contour
-trees of a minimum dominant simplicial complex $\MM$. As part of the initialization, we determine
+The main algorithmic contribution is a new algorithm for computing join trees of any triangulated simplicial
+complex $\MM$.
+
+As part of the initialization, we determine
 all critical points in $\MM$. For any vertex $v$, we can look at $f(v) \pm \delta$-contours 
 in $f|_{B_\eps(v)}$ to determine the up and down degrees. This determines the criticality (and type)
 of $v$. This requires $O(|\MM|)$ time, since every facet is looked at proportional to the number of its
 vertices.
 
 {\bf Painting:} The central tool is a notion 
-of \emph{painting} of $\MM$. Initially associate a color with each maximum. Denoting the set of maxima by $X$,
-this is an arbitrary bijection $\chi:X \mapsto [|X|]$. Imagine there being a large
-can of paint of color $\chi(x)$ at maxima $x$. We will spill different paint from each maximum and watch it flow down.
+of \emph{painting} of $\MM$. Initially associate a color with each maximum. Imagine there being a large
+can of paint of a distinct color at each maxima $x$. We will spill different paint from each maximum and watch it flow down.
 This is analogous to the raining in the previous section, but paint is a much more viscous liquid.
 \emph{So paint only flows down edges, and it does not color the interior of facets.} Furthermore, paints
-do not mix, so eventually, every vertex and edge of $\MM$ gets a unique color. This process (and indeed the entire algorithm)
+do not mix, so every edge of $\MM$ gets a unique color. This process (and indeed the entire algorithm)
 works purely on the 1-skeleton of $\MM$, which is just a graph.
 %
-\begin{definition} \label{def:paint} Let the 1-skeleton of $\MM$ be denoted $G(\MM) = (\cV,E)$.
+\begin{definition} \label{def:paint} Let the 1-skeleton of $\MM$ have edge set $E$ and maxima $X$.
 A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \mapsto [|X|]$ with the following property. 
  Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
 	consisting of edges in $E$, such that all edges along this path have the same color as $x$. (The maximum $x$
@@ -1330,12 +1340,12 @@ The following crucial claim demonstrates the utility of the stack.
 
 \begin{proof} Consider a single push onto the stack and the current painting. We have $c \in \col(h)$, as given in pseudocode of $\update$.
 If $h \in T(\rep(c))$, then obviously the next head is higher. So assume that $h \notin T(\rep(c))$.
-There is obviously an edge of color $\rep(c)$ touching $h$ connected to a component $\SS$ of $\MM^+_v$. 
+There is obviously an edge of color $\rep(c)$ touching $h$ connected to a component $\PP$ of $\MM^+_v$. 
 From the initialization, $h \in T(\rep(c'))$, for some $c'$ touching $h$ (where $c'$ is the color
-of some edge connecting $h$ to $\SS$).
-Applying \Lem{full},  either all edges in $\SS$ are colored $\rep(c)$ or 
-there exists critical vertex $w \in \SS$ fully touched by $\rep(c)$ and another color.
-In the former case, all edges connecting $\SS$ to $h$ are also colored $\rep(c)$
+of some edge connecting $h$ to $\PP$).
+Applying \Lem{full},  either all edges in $\PP$ are colored $\rep(c)$ or 
+there exists critical vertex $w \in \PP$ fully touched by $\rep(c)$ and another color.
+In the former case, all edges connecting $\PP$ to $h$ are also colored $\rep(c)$
 (since this is a painting). Hence, $\rep(c') = \rep(c)$ and $h \in T(\rep(c))$.
 As we assumed this is not the case, we conclude the existence of critical vertex $w$.
 Since $w$ is fully touched by $\rep(c)$, $w \in T(\rep(c))$. Since $w$
@@ -1364,20 +1374,20 @@ the set of parents of $v$.
 
 \begin{proof} \Sesh{proof is a little sketchy.}
 Suppose $v$ is ripe. For any $c$ touching $v$, $v$ is the highest in $T(\rep(c))$.
-Consider some such $\rep(c)$, for an edge connecting to component $\SS$ of $\MM^+_v$.
-Either all edges in $\SS$ are colored $\rep(c)$ or there exists critical vertex $w \in \SS$
+Consider some such $\rep(c)$, for an edge connecting to component $\PP$ of $\MM^+_v$.
+Either all edges in $\PP$ are colored $\rep(c)$ or there exists critical vertex $w \in \PP$
 fully touched by $\rep(c)$ and another color. In the latter case, $w$ has not been processed,
-so $w \in T(\rep(c))$ (contradiction). Therefore, all edges in $\SS$ are colored $\rep(c)$.
-Suppose there is some critical vertex in $\SS$. If it is not processed yet, it will
-be in $T(\rep(c))$, which is not possible. Thus, all critical vertices in $\SS$ have been processed.
+so $w \in T(\rep(c))$ (contradiction). Therefore, all edges in $\PP$ are colored $\rep(c)$.
+Suppose there is some critical vertex in $\PP$. If it is not processed yet, it will
+be in $T(\rep(c))$, which is not possible. Thus, all critical vertices in $\PP$ have been processed.
 
-Consider $w$, the lowest critical vertex in $\SS$. When $w$ was processed, it was set to $\h(c')$, for
-some color $c'$. At this stage, all edges in $\SS$ above $w$ were also colored $c'$ (just apply the argument
-above for $w$). Since there are no critical points below $w$, all edges in $\SS$ below $w$
-are also colored $c'$ (the painting property). This means that the edges connecting $\SS$
+Consider $w$, the lowest critical vertex in $\PP$. Note that $w$ is a parent of $v$. When $w$ was processed, it was set to $\h(c')$, for
+some color $c'$. At this stage, all edges in $\PP$ above $w$ were also colored $c'$ (just apply the argument
+above for $w$). Since there are no critical points below $w$, all edges in $\PP$ below $w$
+are also colored $c'$ (the painting property). This means that the edges connecting $\PP$
 are also colored $c'$. So $c' = \rep(c)$, and $\h(\rep(c)) = w$ is a parent of $v$. 
 
-This argument can be repeated for all such components $\SS$ to complete the proof.
+This argument can be repeated for all such components $\PP$ to complete the proof.
 \end{proof}
 
 
