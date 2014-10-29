@@ -383,8 +383,8 @@ See \Fig{relative} for an example.
     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/shaded}%
     \hspace{.5in}
     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/trees2}
-    \caption{On the left, a surface will a balanced contour tree, but whose merge and split trees have long tails.  
-    On the right (in clockwise order from the top) the contour, split and merge trees.}
+    \caption{On the left, a surface will a balanced contour tree, but whose join and split trees have long tails.  
+    On the right (in clockwise order from the top) the contour, split and join trees.}
     \label{fig:sorting}
 \end{figure}
 
@@ -688,10 +688,10 @@ completing the proof.
 \end{proof}
 
 A useful corollary of this lemma shows that a contour actually splits the simplicial complex into
-two disconnected complices.
+two disconnected complexes.
 
 \begin{theorem} \label{thm:jordan} $\cut(\phi,\MM)$ consists of two
-disconnected simplicial complices.
+disconnected simplicial complexes.
 \end{theorem}
 
 \begin{proof} Denote (as in \Lem{cut}) the edge containing $\phi$ to be $(u,v)$. Suppose for contradiction that there is a path between vertices $u$ and $v$
@@ -705,7 +705,7 @@ to see that $\cC(\MM')$ has two connected components (by \Lem{cut}) and apply \T
 \section{Raining to partition $\MM$} \label{sec:rain}
 
 In this section, we describe a linear time procedure that partitions $\MM$ into special
-\emph{extremum dominant} simplicial complices.
+\emph{extremum dominant} simplicial complexes.
 
 \begin{definition} \label{def:dom} A simplicial complex is \emph{minimum dominant} if there exists
 a minimum $x$ such that every non-minimal \emph{vertex} in the manifold has a decreasing path to $x$.
@@ -794,14 +794,14 @@ to cutting $F$ by a hyperplane. All these operations can be performed to output 
 % \end{proof}
 
 We define a simple \lift{} operation on the interface contours. Consider such a contour $\phi$ containing
-a merge vertex $y$. Take any dry increasing edge incident to $y$, and pick the point $z$ on this edge at height
+a join vertex $y$. Take any dry increasing edge incident to $y$, and pick the point $z$ on this edge at height
 $f(y) + \delta$. Let $\lift(\phi)$ be the unique contour through the regular point $z$. Note that $\lift(\phi)$ is dry.
 
 \begin{claim} \label{clm:cut-int} Let $\phi$ be an interface contour. Then $\cut(\MM,\lift(\phi))$
-results in two disjoint simplicial complices, one consisting entirely of dry points.
+results in two disjoint simplicial complexes, one consisting entirely of dry points.
 \end{claim}
 
-\begin{proof} By \Thm{jordan}, $\cut(\MM,\lift(\phi))$ results in two disjoint simplicial complices. Let $\NN$ be the complex containing
+\begin{proof} By \Thm{jordan}, $\cut(\MM,\lift(\phi))$ results in two disjoint simplicial complexes. Let $\NN$ be the complex containing
 the point $x$ (the argument in $\wet(x,\MM)$), and let $\NN'$ be the other complex. 
 Any path from $x$ to $\NN'$ must intersect $\lift(\phi)$, which is dry. Hence $\NN'$ is dry.
 %
@@ -821,7 +821,7 @@ Any path from $x$ to $\NN'$ must intersect $\lift(\phi)$, which is dry. Hence $\
 \end{figure}
 
 We describe the main partitioning procedure that cuts a simplicial complex $\NN$ into extremum
-dominant complices. It takes an additional input of a maximum $x$. To initialize,
+dominant complexes. It takes an additional input of a maximum $x$. To initialize,
 we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum. One of the critical aspects
 of the procedure is that the rain alternately flows downwards and upwards, 
 since otherwise faces may be cut a super constant number of times (see \Fig{order}).
@@ -853,7 +853,7 @@ We can now let rain flow downwards, as it usually does in our world.
 		\item Let the newly created boundary of $\LL_i$ be $B_i$. Invert $\LL_i$ so that $B_i$ is a maximum. Recursively
 		call $\rain(B_i,\LL_i)$.
 	\end{compactenum}
-	\item Output $\NN_{k+1}$ together with any complices output by recursive calls.
+	\item Output $\NN_{k+1}$ together with any complexes output by recursive calls.
 \end{compactenum}
 \end{minipage}}
 
@@ -882,7 +882,7 @@ A facet $F \in \MM$ is cut at most once during $\rain(x,\MM)$.
 \end{lemma}
 \begin{proof} All notation here follows that in the pseudocode of $\rain$.
 First, by \Thm{jordan}, all the pieces on which $\rain$ is invoked are disjoint.
-Second, all recursive calls are made on dry complices.
+Second, all recursive calls are made on dry complexes.
 
 Consider the first time that $F$ is cut, say, during the call to $\rain(x,\NN)$.
 Specifically, say this happens when $\cut(\phi'_i,\NN_i)$ is constructed. 
@@ -912,7 +912,7 @@ all of $e'$ becomes wet. So there is no further interface contour that can inter
 \end{theorem}
 
 \begin{proof} The operations performed are the raining and cutting. We can bound this by the total
-complexities of the wet complices and the new boundaries created. No facet is ever wet twice,
+complexities of the wet complexes and the new boundaries created. No facet is ever wet twice,
 and by \Lem{new-verts}, the total number of facets that every appear is $O(|\MM|)$. This also 
 bounds the complexities of the boundaries created.
 \end{proof}
@@ -1030,8 +1030,9 @@ be the non-dominant minimum $w$, which is a leaf.
 It is convenient to denote the non-dominant minima as $m_1, m_2, \ldots, m_k$
 and the corresponding splits (as given by the lemma above) as $s_1, s_2, \ldots, s_k$. 
 
-To prove our main theorem, we use the merging procedure from~\cite{csa-cctad-00} that constructs the contour tree
-from the join and split trees. 
+Using the above lemma we can now prove that computing the contour tree for a minimum dominant manifold 
+amounts to computing its join tree.  Specifically, to prove our main theorem, we rely on the correctness of the
+merging procedure from~\cite{csa-cctad-00} that constructs the contour tree from the join and split trees. 
 It actually construsts the \emph{augmented contour tree} $\cA(\MM)$, which
 is the contour tree with regular points inserted into the edges. 
 Consider tree $T$ with vertex $v$ of in and outdegree at most $1$.
@@ -1181,6 +1182,19 @@ merge red and blue, until yellow and blue merge. Naturally, we use priority queu
 We know that $u$ must also be (fully) touched by blue. So all critical vertices touched by blue
 are put into a priority queue keyed by height, and vertices are handled in that order.
 
+\Ben{This figure will not show up in black and white printout.}
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.27\linewidth]{figs/mounds}%
+    \hspace{.35in}
+    \includegraphics[width=.27\linewidth]{figs/mound2}%
+    \hspace{.4in}
+    \includegraphics[width=.22\linewidth]{figs/mound3}
+    \caption{On the left, three initial colors.  In the middle, yellow and blue merge into green.  On the right, green and red merge into purple.}
+    \label{fig:colors}
+\end{figure}
+
+
 What happens when finally blue and red join at $v$? We merge the two colors, but now have
 blue and red queues of critical vertices. We also need to merge the priority queues
 to get a consistent painting. And that decides the use of \emph{binomial heaps} to store the
@@ -1243,7 +1257,7 @@ As the algorithm proceeds, it is convenient to imagine
 it maintaining a set of contours $\Phi = \{\phi_1, \phi_2, \ldots, \phi_k\}$, which are contained
 in incomparable edges of $\cC(\MM)$. Suppose we cut $\MM$ by each of these contours, and took
 the simplicial complex $\NN$ where $\phi^-_i$'s are all boundary maxima. The algorithm will
-have already determined the contour trees of the simplicial complices
+have already determined the contour trees of the simplicial complexes
 where $\phi^+_i$ is a boundary maxima. 
 
 During this process, various colors will be \emph{merged}. This involves merging the respective $T(c)$'s and
@@ -1341,6 +1355,15 @@ A few simple facts:
 	\item Vertices on the stack are in increasing height order. 
 \end{compactitem}
 
+\begin{observation}
+\label{obs:twoQueues}
+ Each unprocessed vertex is always in exactly one queue of the colors in each up-star.  Specifically, 
+ for a given up-star of a vertex $v$, $\init(\MM)$ puts $v$ into the queue of exactly one color, say $c$.  As time goes on this queue 
+ may merge with other queues, but while unprocessed $v$ is only ever (and always) in the queue of $\rep(c)$,  
+ since $v$ is never added to a new queue and is not removed until it is processed.  
+ In particular, finding the queues of a vertex in $\update(K)$ requires at most two union find operations (assuming each vertex records its two colors from $\init(\MM)$)
+\end{observation}
+
 
 \medskip
 \ignore{	
@@ -1400,7 +1423,7 @@ to $\h(c)$ in $\cC(\MM)$, which by \Thm{carr-mono} is the same as those in $\cC(
 Our main workhorse is the following technical lemma. 
 
 \begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component $\PP$ of $\MM^+_v$
-by edge $e$ of color $c$. Either all edges in $\PP$ are colored $c$, or there
+by edge $e$ which is currently colored $c$. Either all edges in $\PP$ are currently colored $c$, or there
 exists critical vertex $w \in \PP$ fully touched by $c$ and touched by another color.
 %
 %and take $(f(v)+\delta)$-contour $\phi$ intersecting
@@ -1433,17 +1456,18 @@ must have up-degree $2$ and is critical.
  If $h$ is ripe, then we are done, so suppose otherwise.
  
  Let $\PP$ be one of the components of $\MM^+_h$.  By construction, $h$ was put in the heap of some initial 
- adjacent color $c$.  Therefore, $h$ must be in the current heap of $\rep(c)$ (since elements are only removed 
- from heaps when being processed).  Now by \Lem{full}, either all edges in $\PP$ are colored $\rep(c)$ or  
+ adjacent color $c$.  Therefore, $h$ must be in the current heap of $\rep(c)$ (see \Obs{twoQueues}).  
+ Now by \Lem{full}, either all edges in $\PP$ are colored $\rep(c)$ or  
  there is some vertex $w$ fully touched by $\rep(c)$ and some other color.  
  The former case implies that if there are any unprocessed vertices in $\PP$ then they are all in $T(\rep(c))$, 
- implying that $h$ is not the highest vertex.  Otherwise, all the vertices in $\PP$ have been processed.  
+ implying that $h$ is not the highest vertex and a new higher up unprocessed vertex will be put on the stack for the next iteration of the while loop.  
+ Otherwise, all the vertices in $\PP$ have been processed.  
  However, it cannot be the case that all vertices in all components of $\MM^+_h$ have already been processed, 
- since this would imply that $h$ was ripe and so $h$ so can apply the same argument to the other non-fully processed component. 
+ since this would imply that $h$ was ripe, and so one can apply the same argument to the other non-fully processed component. 
  
  Now consider the latter case, where we have a non-monochromatic vertex $w$.
  In this case $w$ cannot have been processed (since after being processed it is touched only by one color), 
- and so it must be in $T(\rep(c))$ since it must be in some heap of a color in each upstar (and one upstar is entirely colored $\rep(c)$).
+ and so it must be in $T(\rep(c))$ since it must be in some heap of a color in each up-star (and one up-star is entirely colored $\rep(c)$).
  As $w$ lies above $h$ in $\MM$, this implies $h$ is not on the top of this heap.
 \end{proof}
 
@@ -1467,7 +1491,7 @@ the restriction of $\jc(\MM)$ to these vertices.
 \end{claim}
 
 \begin{proof} More generally, we prove the following: all outputs on processed vertices
-are edges of $\jc(\MM)$ and for any color $c$, $\h(c)$ is the lowest processed vertex
+are edges of $\jc(\MM)$ and for any current color $c$, $\h(c)$ is the lowest processed vertex
 of that color. We prove this by induction on the processing order. The base case is is trivially
 true, as initially the processed vertices and attachments of the color classes are the set of maxima.
 For the induction step, consider the situation
@@ -1486,7 +1510,7 @@ the lowest critical vertex in this component is $\h(c')$ (where $c'$ is the colo
 Now by the definition of $\jc(\MM)$, the critical vertex $v$ connects to the lowest critical vertex in each component of $\MM^+_v$, 
 and so by the above $v$ should connect to $\h(c)$ and $\h(c')$, which is precisely what $v$ is connected to by $\build(\MM)$.
 Moreover, $\build$ merges the colors $c$ and $c'$ and correctly sets $v$ to be the attachment, 
-as $v$ is the lowest processed vertex of this merged color (as by induction $\h(c)$ and $\h(c')$ where the lowest vertices before merging colors).
+as $v$ is the lowest processed vertex of this merged color (as by induction $\h(c)$ and $\h(c')$ were the lowest vertices before merging colors).
 
 
 % Consider $w$, the lowest critical vertex in $\PP$. Note that $w$ is a parent of $v$. When $w$ was processed, it was set to $\h(c')$, for
@@ -1507,9 +1531,6 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
  Therefore, eventually all vertices will be processed, and so by \Clm{process} the algorithm will terminate having 
  computed $\jc(\MM)$.
 \end{proof}
-
-
-
 
 % The following crucial claim demonstrates the utility of the stack.
 % 
@@ -1545,44 +1566,31 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
 % }
 % \end{proof}
 
+\subsection{Running Time}
+\label{sec:runTime}
 
+We now bound the running time of the above algorithm.  In the subsequent sections we will then provide a 
+matching lower bound for the running time.  Therefore, it will be useful to set up some terminology that can 
+be used consistently in both places.  Specifically, the lower bound proof will be a purely combinatorial 
+statement on colored rooted trees, and so the terminology is of this form.
 
-
-\newcommand{\pathTree}{P_{\mathcal{S}}}
-\newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
-\section{Leaf assignments and path decompositions}
-
-\Ben{All merge tree references need to be switched to join.  Also, need to make sure that not assuming the bin trees are full was safe to drop.}
-
-In this section, we set up a framework to analyze the time taken to compute a critical join tree $\jc(\MM)$ (see \Def{criticalJoin}).
-%
-% \begin{definition}
-%  We say that a contour tree of a $2$-manifold is a \emph{merge tree} if it has a well defined root vertex such that height values 
-%  strictly increase along any root to leaf path.
-% \end{definition}
-% 
-% \begin{observation}
-%  The contour tree of a minimum dominant manifold (see \Def{dom}) is close to a merge tree.  Specifically, there is a root such that on any root 
-%  to leaf path height values strictly increase, with the only exception being potentially at the leaves themselves.  As such, up to constant 
-%  factors, any lower bound for computing the merge tree is a lower bound for computing the contour tree of a minimum dominant
-%  manifold (i.e. intuitively just clip off the leaves or shift them to lie above their parent).
-% \end{observation}
-%
-As such any tree $T$ considered in this section will be a rooted binary tree\footnote{Note 
+Any tree $T$ considered in following will be a rooted binary tree\footnote{Note 
 that technically the trees considered should have a leaf vertex hanging below the root of this 
 in order to represent the global minimum of the complex.  This vertex is 
 (safely) ignored to simplify the presentation.} where the height of a vertex is its distance 
-from the root $r$.  As such, the children of a vertex $v\in T$ are the adjacent vertices of larger height
+from the root $r$ (i.e. conceptually $T$ will be a join tree with $r$ at the bottom).  
+As such, the children of a vertex $v\in T$ are the adjacent vertices of larger height
 (and $v$ is the parent of such vertices).  Then the subtree rooted at $v$, denoted $T_v$ consists of the graph induced on all 
 vertices which are descendants of $v$ (including $v$ itself).  For two vertices $v$ and $w$ in $T$ let $d(v,w)$ denote the 
 length of the path between $v$ and $w$.
 We use $A(v)$ to denote the set of ancestors of $v$.
-For set of nodes $U$, $A(U) = \bigcup_{u \in U} A(u)$.
+For a set of nodes $U$, $A(U) = \bigcup_{u \in U} A(u)$.
 
 
 \begin{definition}
- A \emph{leaf assignment} $\chi$ of a tree $T$ assigns \emph{two} distinct leaves in each internal vertex $v$,
- one from the left child and one from the right child subtree of $v$.
+ A \emph{leaf assignment} $\chi$ of a tree $T$ assigns \emph{two} distinct leaves to each internal vertex $v$,
+ one from the left child and one from the right child subtree of $v$ (naturally if $v$ has only one child it is assigned 
+ only one color).
 \end{definition}
 
 For a vertex $v\in T$, we use $H_v$ to denote the \emph{heap} at $v$.
@@ -1591,60 +1599,61 @@ In words, $H_v$ is the set of ancestors of $v$ which are colored by some leaf in
 The following lemma should justify these technical definitions.
 
 Note that the subroutine $\init(\MM)$ from \Sec{algo} naturally defines a leaf assignment to $\jc(\MM)$ 
-according to the priority queue for each upstar we put a given vertex in.
+according to the priority queue for each up-star we put a given vertex in.
 
 \begin{lemma}
-Let $\MM$ be a simplicial complex with $m$ edges.  For every vertex in $\jc(\MM)$, 
+\label{lem:runTimeUpper}
+Let $\MM$ be a simplicial complex with $t$ critical points.  For every vertex in $\jc(\MM)$, 
 let $H_v$ be defined by the leaf assignment determined by $\init(\MM)$.
-The running time of our algorithm is $O(m\alpha(m) + \sum_{v \in \jc(\MM)} \log |H_v|)$.
-% where $T$ is the merge tree of the given input, 
-%and $\chi$ is any valid coloring of $T$.  (maybe add one in the definition of $H_v$ so that $\log |H_v|$ is always $>1$).
+The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$.
 \end{lemma}
 
 \begin{proof}
-First we look at the initialization procedure $\init(\MM)$.  This procedure runs in $O(m)$ time (note that as the input complex is connected, $N=O(m)$).
+First we look at the initialization procedure $\init(\MM)$.  This procedure runs in $O(N)$ time.
 Indeed, the painting procedure consists of several BFS's but as each vertex is only explored by one of the BFS's, it is linear time overall.
 Determining the critical points is a local computation on the neighborhood of each vertex as so is linear (i.e. each edge is viewed at most twice).
 Finally, each vertex is inserted into at most two heaps and so initializing the heaps takes linear time in the number of vertices.
 
-Now consider the union-find operations performed by $\init$ and $\update$.  
+Now consider the union-find operations performed by $\build$ and $\update$.  
 Initially the union find data structure has a singleton component for each leaf (and no new components are ever created), 
-and so each union-find operation takes $O(m)$ time.
-The $\update(K)$ procedure performs at most one find for each edge and no unions.  
-$\init(\MM)$ performs one union and at most two finds for each vertex.  Therefore the total number of union find 
-operations is $O(m)$.
+and so each union-find operation takes $O(\alpha(t))$ time.
+For $\update$, by \Obs{twoQueues}, each iteration of the while loop requires a constant number of finds (and no unions).
+Specifically, if a vertex is found to be ripe (and hence processed next) then these can be charged to that vertex.
+If a vertex is not ripe, then these can be charged to the vertex put on the stack.
+As each vertex is put on the stack or processed at most once, $\update$ performs $O(t)$ finds overall.
+Finally, $\build(\MM)$ performs one union and at most two finds for each vertex.  Therefore the total number of union find 
+operations is $O(t)$.
 
-For the remaining operations, observe that every time $\update$ is called a vertex is pushed onto the stack and each
+For the remaining operations, observe that for every iteration of the loop in $\update$, a vertex is pushed onto the stack and each
 vertex can only be pushed onto the stack once (since the only way it leaves the stack is by being processed). 
 Therefore the total running time due to $\update$ is linear (ignoring the find operations).
 
-What remains is the time it takes process a vertex $v$ in $\init(\MM)$.  
+What remains is the time it takes to process a vertex $v$ in $\build(\MM)$.  
 In order to process a vertex there are a few constant time operations, union-find operations, and queue operations.
-Therefore the only thing we must bound are the queue operations.
-Let $v$ be a vertex in $\jc(\MM)$, and let $p_1$ and $p_2$ be its parents (the same argument holds if $v$ has only one parent).
-At the time $v$ is handled, the colors and queues of all vertices in a given component of $\MM^+_v$ have merged together.
-In particular, when $v$ is handled we know it is ripe and so all vertices above $v$ in each component of $\MM^+_v$ have been processed, implying 
-these merged queues are the queues of the current colors of $p_1$ and $p_2$.  Again since $v$ is ripe, it must be on the top of these queues and so 
-the only vertices of left in these queues are those in $H_{p_1}$ and $H_{p_2}$. 
+Therefore the only thing left to bound are the queue operations.
+Let $v$ be a vertex in $\jc(\MM)$, and let $c_1$ and $c_2$ be its children (the same argument holds if $v$ has only one child).
+At the time $v$ is processed, the colors and queues of all vertices in a given component of $\MM^+_v$ have merged together.
+In particular, when $v$ is processed we know it is ripe and so all vertices above $v$ in each component of $\MM^+_v$ have been processed, implying 
+these merged queues are the queues of the current colors of $c_1$ and $c_2$.  Again since $v$ is ripe, it must be on the top of these queues and so 
+the only vertices left in these queues are those in $H_{c_1}$ and $H_{c_2}$. 
 
-Now when $v$ is handled, three queue operations are performed.  Specifically, $v$ is removed from the queues of $p_1$ and $p_2$, and then the queues are 
-are merged together.  By the above arguments the sizes of the queues for each of these operations are $H_{p_1}$, $H_{p_2}$, and $H_v$, respectively.  
+Now when $v$ is handled, three queue operations are performed.  Specifically, $v$ is removed from the queues of $c_1$ and $c_2$, and then the queues are 
+are merged together.  By the above arguments the sizes of the queues for each of these operations are $H_{c_1}$, $H_{c_2}$, and $H_v$, respectively.  
 As merging and deleting takes logarithmic time in the heap size for binomial heaps, the claim now follows.
 \end{proof}
 
-%vertices along the path from the root to $v$ such that one of the two colors of each vertex is in $L(T_v)$.
-%We will refer to $H_v$ as the \emph{heap} at $v$.
-%Then define the \emph{algorithm} cost function as $f_{alg}(\chi(T)) = \sum_{v\in T} \log |H_v|$.
-%
-%\begin{lemma}
-%\label{lem:algCost}
-%NEEDS TO BE WRITTEN:
-%Here we need a lemma showing that the running time of our algorithm is $O(f_{alg}(\chi(T)))$, where $T$ is the merge tree of the given input, 
-%and $\chi$ is any valid coloring of $T$.  (maybe add one in the definition of $H_v$ so that $\log |H_v|$ is always $>1$).
-%\end{lemma}
-%
-%Now that we have a simple expression upper bounding the running time of our algorithm, we spend the remainder 
-%of this section proving that this running time is optimal.
+
+
+
+\newcommand{\pathTree}{P_{\mathcal{S}}}
+\newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
+\section{Leaf assignments and path decompositions}
+
+In this section, we set up a framework to analyze the time taken to compute a critical join tree $\jc(\MM)$ (see \Def{criticalJoin}).
+We adopt all notation already defined in \Sec{runTime}.  From here forward we will often assume binary trees are full binary trees 
+(this assumption simplifies the presentation but is not necessary).
+
+\Ben{For now we are keeping the above full bin tree assumption. At some point this should be carefully removed.}
 
 We introduce the concept of path decompositions. A \emph{leaf path} is simply a contiguous path in $T$
 containing a leaf, which is monotonic in the height values of its vertices.
@@ -1665,7 +1674,7 @@ For each internal vertex $v\in T$, add the edge from $v$ to $\arg \max_{v_l, v_r
  where $v_l$ and $v_r$ are the children of $v$ (if $|H_{v_l}|=|H_{v_r}|$ then pick one arbitrarily).
 This is called the \emph{maximum} path decomposition, denoted by $\pmax(T)$.
 
-Our main theorem is the following. We use $|p|$ to denote the number of vertices in $p$.
+Our main theorem is the following (which by \Lem{runTimeUpper} upper bounds the running time of our algorithm). We use $|p|$ to denote the number of vertices in $p$.
 
 \begin{theorem} \label{thm:runtime} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in \pmax(T)} |p| \log |p|)$.
 \end{theorem}
@@ -2118,12 +2127,12 @@ That completes the whole proof.
 
 \section{Lower Bound by Path Decomposition}
 In this section we provide a lower bound for the time it takes to compute a contour tree in terms the cost of path decompositions.  Specially, 
-we first consider the easier case of merge trees, after which the lower bound for more general contour trees will easily follow.
+we first consider the easier case of join trees, after which the lower bound for more general contour trees will easily follow.
 
-\subsection{Merge Trees}
-In this section we show that any algorithm for computing the merge tree $T$ must pay at least $f_{path}(P(T))$ (see \Def{path}) for any path decomposition $P(T)$.
+\subsection{Join Trees}
+In this section we show that any algorithm for computing the join tree $T$ must pay at least $f_{path}(P(T))$ (see \Def{path}) for any path decomposition $P(T)$.
 
-%We say two shrubs $S_1$ and $S_2$ (of merge trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
+%We say two shrubs $S_1$ and $S_2$ (of join trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
 %between the two shrubs such that for any node $v\in S_1$ corresponding to a path of size $|v|$, $f(v)$ also corresponds to a path of size $|v|$.
 %For the purposes of the next lemma, we say two $2$-manifolds are different, if their corresponding contour trees are the different.   
 
@@ -2139,12 +2148,12 @@ In the following note that two distinct PL surfaces can have the same graph stru
 
 \begin{lemma}
 \label{lem:pathDecomp}
-Let $T$ be a merge tree, and let $P = P(T)$ any path decomposition of $T$.  %, and $\pathTree$ the corresponding shrub.  
+Let $T$ be a join tree, and let $P = P(T)$ any path decomposition of $T$.  %, and $\pathTree$ the corresponding shrub.  
 Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, all of which have the same defining mesh.
 \end{lemma}
 \begin{proof}
  We describe a simple mesh, with heights specified for all vertices except for the saddles.  The main idea is that 
- this mesh will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of merge trees 
+ this mesh will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of join trees 
  whose size is that described in the lemma statement.
  
  First, we describe the basic building block of this input mesh, which roughly speaking corresponds to a fixed path $p\in P$.  
@@ -2171,36 +2180,36 @@ Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-mani
  
  Observe now that the only saddle points in this construction are the highest connecting point on a face of an edge from the platform above.  Moreover, the only maxima are the apexes of the 
  diamonds, and there is exactly one minima corresponding to the bottom cap of the diamond representing the root of $\pathTree$.  Therefore, the saddles on a given 
- diamond will appear contiguously on a root to leaf path in the merge tree of the mesh, where the leaf corresponds to the maxima of the diamond 
+ diamond will appear contiguously on a root to leaf path in the join tree of the mesh, where the leaf corresponds to the maxima of the diamond 
  (since all these saddles have a direct line of sight to this apex).  In particular, 
- this implies that, regardless of the heights assigned to the platforms, the merge tree of this mesh has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
+ this implies that, regardless of the heights assigned to the platforms, the join tree of this mesh has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
  
  Now there is a valid instantiation of this described mesh for any relative ordering of the heights of the saddles on a given diamond.  In particular, 
  there are $(|p|-1)!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible instantiations of 
- the mesh overall.  Also, each one of these instantiations will result in a different merge tree.  Specifically, a permutation of the heights on a given diamond 
- corresponds to a permutation of the vertices along a path in $P$, as by construction all saddles on a given diamond will appear in sorted order in the merge tree.
+ the mesh overall.  Also, each one of these instantiations will result in a different join tree.  Specifically, a permutation of the heights on a given diamond 
+ corresponds to a permutation of the vertices along a path in $P$, as by construction all saddles on a given diamond will appear in sorted order in the join tree.
 \end{proof}
 
 
 
 \begin{corollary}
- \label{cor:mergeLB}
- Let $A(S)$ be any comparison based algorithm to compute the merge tree of any input surface $S$ (whose contour tree is a merge tree).  
+ \label{cor:joinLB}
+ Let $A(S)$ be any comparison based algorithm to compute the join tree of any input surface $S$ (whose contour tree is a join tree).  
  Then the running time of $A(S)$ is $\Omega(f_{path}(P))=\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$ where $P$ is any path decomposition of the 
- merge tree of $S$.
+ join tree of $S$.
 \end{corollary}
 \begin{proof}
- Given an input surface $S$, by the above lemma, any path decomposition $P$ of its merge tree defines a set of $\Pi_{p_i\in P} |p_i|!$ surfaces 
- with distinct merge trees, all of which have the same mesh.  Specifically, for each sorted ordering of the relative height values of the saddles 
- on each diamond in the mesh, yields a different merge tree.
- Therefore, any comparison based algorithm which computes the merge tree must distinguish between these possibilities, and therefore its corresponding decision tree must 
+ Given an input surface $S$, by the above lemma, any path decomposition $P$ of its join tree defines a set of $\Pi_{p_i\in P} |p_i|!$ surfaces 
+ with distinct join trees, all of which have the same mesh.  Specifically, for each sorted ordering of the relative height values of the saddles 
+ on each diamond in the mesh, yields a different join tree.
+ Therefore, any comparison based algorithm which computes the join tree must distinguish between these possibilities, and therefore its corresponding decision tree must 
  have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, this decision tree must have depth $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
 \end{proof}
 
 \subsection{Contour Trees}
 We first generalize previous terms to the case of contour trees.
 In this section $T$ will denote an arbitrary contour tree.  Specifically, every internal vertex in $T$ has degree $3$ 
-and the height function defined over the vertex set is such that every internal vertex in either a split or merge 
+and the height function defined over the vertex set is such that every internal vertex in either a split or join 
 (i.e. at most $2$ neighbors lie above or below it).
 
 Again we define a path decomposition as a partition of the vertices into 
@@ -2251,21 +2260,26 @@ Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-mani
  we add a tetrahedral cap to the uncovered bottom of this diamond (i.e. we construct the minima).  Otherwise, $P_i$ has some parent $P_j$ in which case 
  we connect the bottom of the diamond for $r_i$ to a free face of a diamond in the construction for $P_j$, specifically, the face corresponding to the 
  vertex in $T$ which $r_i$ is adjacent to. 
- If $T_i$ was created by an upward BFS, then the connection to this face should be a merge vertex, and otherwise it should be a split vertex.  
+ If $T_i$ was created by an upward BFS, then the connection to this face should be a join vertex, and otherwise it should be a split vertex.  
  See \Fig{diamond}.
  
- Just as in \Lem{pathDecomp} we now have one fixed mesh graph structure, such that each different relative ordering of the heights of the merge and split vertices 
- on each diamond produces a surface with a distinct merge tree.  The specific bound on the number of such distinct manifolds follows by applying the 
+ Just as in \Lem{pathDecomp} we now have one fixed mesh graph structure, such that each different relative ordering of the heights of the join and split vertices 
+ on each diamond produces a surface with a distinct join tree.  The specific bound on the number of such distinct manifolds follows by applying the 
  bound from \Lem{pathDecomp} to each $P_i$.
 \end{proof}
 
-For the same reason that \Cor{mergeLB} followed from \Lem{pathDecomp}, we now have the following. 
+For the same reason that \Cor{joinLB} followed from \Lem{pathDecomp}, we now have the following. 
 
 \begin{theorem}
  Let $A(S)$ be any comparison based algorithm to compute the contour tree of an input surface $S$.  
  Then the running time of $A(S)$ is $\Omega(f_{path}(P))=\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$ where $P$ 
  is any rain consistent path decomposition of the contour tree of $S$.
 \end{theorem}
+
+\begin{remark}
+ Note that for the surfaces described in this section, the number of critical points is within a constant factor of 
+ the total number of vertices.  In particular, for this family of surfaces, all previous algorithms required $\Omega(n\log n)$ time.
+\end{remark}
 
 
 
@@ -2291,7 +2305,7 @@ For the same reason that \Cor{mergeLB} followed from \Lem{pathDecomp}, we now ha
 % In this case connect the bottom of the cylinder for the path containing $u$ into a face of the cylinder for the path containing $l$.
 % \item
 % $l$ is adjacent to a max path and $u$ is adjacent to a min path:\newline
-% Connect a face of the cylinder for the $u$ path (using a split) to a face of the cylinder for the $l$ path (using a merge).
+% Connect a face of the cylinder for the $u$ path (using a split) to a face of the cylinder for the $l$ path (using a join).
 % \end{enumerate}
 
 
