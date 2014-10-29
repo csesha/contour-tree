@@ -80,6 +80,7 @@
 \newcommand{\cU}{{\cal U}}
 \newcommand{\cV}{{\cal V}}
 
+\newcommand{\DD}{\mathbb{D}}
 \newcommand{\LL}{\mathbb{L}}
 \newcommand{\MM}{\mathbb{M}}
 \newcommand{\NN}{\mathbb{N}}
@@ -217,6 +218,39 @@
 \maketitle
 
 \begin{abstract}
+Consider a scalar field $f:\MM \mapsto \RR$, where $\MM$ is a simplicial mesh in $\RR^d$. 
+A level set, or contour, at value $v$ is a connected component of $f^{-1}(v)$. 
+As $v$ is changed, these contours change topology, merge into each other, or split.
+\emph{Contour trees} are concise representations of $f$ that track this contour
+behavior. The vertices of these trees are the critical points of $f$, where the gradient is zero.
+The edges represent changes in the topology of contours.
+It is a fundamental data structure in data analysis and visualization,
+and there is much past work (theoretical and practical) on algorithms for construct contour trees.
+
+Suppose $\MM$ has $n$ vertices, $N$ facets, and $t$ critical points.
+A classic result of Carr, Snoeyink, and Axen (2000) give an algorithm that takes $O(n\log n + N\alpha(N))$ time
+(where $\alpha(\cdot)$ is the inverse Ackermann function). A further improvement to $O(t\log t + N\alpha(N))$ time
+was given by Chiang et al. All these algorithms involve a global sort of the critical points,
+which is a major bottleneck for large datasets. Unfortunately, lower bounds of $\Omega(t\log t)$ also exist.
+
+We present the first algorithm that can avoid the global sort and has a refined time complexity that
+depends on the contour tree structure. Intuitively, if the tree is short and fat, we get significant improvements 
+in running time. For a partition of the contour tree into a set of descending paths, $P$,
+our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + N\alpha(N))$. If the contour tree is a balanced
+binary tree, our running time is $O(n + N\alpha(N))$. Moreover, we prove a lower bound of
+exactly $\Omega(\sum_{p \in P} |p|\log |p|)$ for computing contour trees, thereby showing
+that the tree structure must play a role in the time complexity.
+
+
+\ignore{
+Moreover, we show there   
+exists some partition $P'$ such that the running time of our algorithm is 
+$O(\sum_{p\in P'} |p|\log|p| + N\alpha(N))$, where $N$ is the total complexity of the input manifold 
+
+All previous contour tree algorithms involve a global sort 
+of the heights of all points or critical vertices. Thereby, these algorithms always pay $\Omega(t \log t)$.
+This is a major roadblock for efficiency, since sorting is the most expensive operation
+
 Reeb graphs are a fundamental topological structure which tracks the evolution of levels sets of a real valued function over a manifold.  
 In the case when this graph is loop free it is called a contour tree.  Due to the use of the contour trees in practice on large data sets, 
 there has been significant previous work in developing algorithms for their efficient computation. 
@@ -232,6 +266,7 @@ In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balan
 while previous algorithms ran in $O(N+t\log t)$ (where $t$ is the size of the contour tree).
 %In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balanced, yet still 
 %matches the previous worst case $O(N+n\log n)$ bound when the tree is long and skinny.
+}
 
 In order to produce our instance optimal results we introduce a novel linear time surface partitioning scheme which is likely to have applications elsewhere.
 Moreover, in order to prove the optimality we use a non-trivial combinatorial discharging argument which we believe is of independent interest and in particular uses 
@@ -240,6 +275,29 @@ such tools as heavy-light path decompositions.
 
 
 \section{Introduction}
+
+A large class of data, such as satellite terrain maps, physical simulations, combustion data, can
+be thought as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
+by consider $f$ to be piecewise linear over some mesh (simplicial complex) $\MM$ in $\RR^d$.
+\emph{Contour trees} are a specific topological data structure used to represent and visualize
+the function $f$.
+
+It is convenient to think of $f$ as a $(d+1)$-dimensional manifold, or alternately consider
+$\MM$ in $\RR^{d+1}$ with the last coordinate (height) given by $f$. Imagine sweeping the hyperplane $x_{d+1} = h$
+with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection of this plane 
+with $f$ gives a set of connected components, the \emph{contours} at height $h$. At the sweeping 
+proceeds various events occur: new contours are created or destroyed, contours merge into each other,
+split into new components, contours acquire or lose handles. These are the relevant events where 
+the topology of the level set changes. The contour tree is a concise representation of all these events.
+
+For convenience, imagine $f$ to be smooth. All points where the gradient of $f$ is zero are \emph{critical point},
+exactly where the topology of the contours change. The vertices of the contour tree are exactly the critical points.
+
+
+
+
+Contour trees and related topological data structures have been applied in analysis of fluid mixing, combustion simulations,
+and studying chemical systems~\cite{LaBe+06,BrWe+10,BeWe+11,BrWe+11,MaGr+11}.
 
 Let $f$ be a real valued function defined over a manifold embedded in $\RR^d$.  
 For any real value $\alpha$, the level set $f^{-1}(\alpha)$ can be decomposed into its connected components, or ``contours''.
