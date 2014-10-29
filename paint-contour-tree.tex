@@ -276,9 +276,9 @@ such tools as heavy-light path decompositions.
 
 \section{Introduction}
 
-A large class of data, such as satellite terrain maps, physical simulations, combustion data, can
+A large class of data, such as satellite terrain maps, physical simulation output, and combustion data, can
 be thought as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
-by consider $f$ to be piecewise linear over some mesh (simplicial complex) $\MM$ in $\RR^d$.
+by considering $f$ to be piecewise linear over some mesh (simplicial complex) $\MM$ in $\RR^d$.
 \emph{Contour trees} are a specific topological data structure used to represent and visualize
 the function $f$.
 
@@ -291,7 +291,8 @@ split into new components, contours acquire or lose handles. These are the relev
 the topology of the level set changes. The contour tree is a concise representation of all these events.
 
 For convenience, imagine $f$ to be smooth. All points where the gradient of $f$ is zero are \emph{critical point},
-exactly where the topology of the contours change. The vertices of the contour tree are exactly the critical points.
+exactly where the topology of the contours change. The vertices of the contour tree are exactly these critical points,
+representing the important topological events. An edge connects two critical points if 
 
 
 
