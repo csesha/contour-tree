@@ -229,7 +229,7 @@ It is a fundamental data structure in data analysis and visualization,
 and there is much past work (theoretical and practical) on algorithms for construct contour trees.
 
 Suppose $\MM$ has $n$ vertices, $N$ facets, and $t$ critical points.
-A classic result of Carr, Snoeyink, and Axen (2000) give an algorithm that takes $O(n\log n + N\alpha(N))$ time
+A classic result of Carr, Snoeyink, and Axen (2000) gives an algorithm that takes $O(n\log n + N\alpha(N))$ time
 (where $\alpha(\cdot)$ is the inverse Ackermann function). A further improvement to $O(t\log t + N)$ time
 was given by Chiang et al. All these algorithms involve a global sort of the critical points,
 which is a major bottleneck for large datasets. Unfortunately, lower bounds of $\Omega(t\log t)$ also exist.
@@ -277,7 +277,7 @@ such tools as heavy-light path decompositions.
 \section{Introduction}
 
 A large class of data, such as satellite terrain maps, physical simulation output, and combustion data, can
-be thought as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
+be thought of as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
 by considering $f$ to be piecewise linear over some mesh (simplicial complex) $\MM$ in $\RR^d$.
 \emph{Contour trees} are a specific topological data structure used to represent and visualize
 the function $f$.
@@ -1341,8 +1341,6 @@ are sibling leaves, and $\ell_1$ is a sibling of some ancestor of these leaves. 
 merge red and blue, until yellow and blue merge. Naturally, we use priority queues to handle this issue.
 We know that $u$ must also be (fully) touched by blue. So all critical vertices touched by blue
 are put into a priority queue keyed by height, and vertices are handled in that order.
-
-\Ben{This figure will not show up in black and white printout.}
 
 \begin{figure}[h]\centering
     \includegraphics[width=.27\linewidth]{figs/mounds}%
