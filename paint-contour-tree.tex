@@ -518,14 +518,22 @@ does not care about the relative ordering of vertices which do not have an
 ancestor-descendant relationship, and so this information does not need to be computed.
 See \Fig{relative} for an example.
 
+% \begin{figure}[h]\centering
+%     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/shaded}%
+%     \hspace{.5in}
+%     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/trees2}
+%     \caption{On the left, a surface will a balanced contour tree, but whose join and split trees have long tails.  
+%     On the right (in clockwise order from the top) the contour, split and join trees.}
+%     \label{fig:sorting}
+% \end{figure}
 \begin{figure}[h]\centering
-    \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/shaded}%
-    \hspace{.5in}
-    \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/trees2}
-    \caption{On the left, a surface will a balanced contour tree, but whose join and split trees have long tails.  
-    On the right (in clockwise order from the top) the contour, split and join trees.}
+    \includegraphics[width=.7\linewidth,height=.28\linewidth]{figs/balanced2}
+    \includegraphics[width=.7\linewidth,height=.25\linewidth]{figs/trees}
+    \caption{On top, a surface will a balanced contour tree, but whose join and split trees have long tails.  
+    On bottom (from left to right), the contour, join and split trees.}
     \label{fig:sorting}
 \end{figure}
+
 
 \paragraph{Suboptimal Join and Split Trees.}
 There is also a more fundamental problem with the now standard approach of first computing 
