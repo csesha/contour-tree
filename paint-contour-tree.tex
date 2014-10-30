@@ -292,13 +292,63 @@ the topology of the level set changes. The contour tree is a concise representat
 
 For convenience, imagine $f$ to be smooth. All points where the gradient of $f$ is zero are \emph{critical point},
 exactly where the topology of the contours change. The vertices of the contour tree are exactly these critical points,
-representing the important topological events. An edge connects two critical points if 
+representing the important topological events. An edge connects two critical points if one event immediately ``follows"
+the other as the sweep plane makes its pass. (We provide formal definitions later.) 
+
+\Fig{relative} and \Fig{sorting} show examples of simplicial complices with heights and their contour trees.
+Think of the edges as point downwards, so we can talk of the ``up-degree" and ``down-degree" of vertices.
+Leaves of down-degree $1$ are maxima, because a new contour is created at such point. Leaves of up-degree
+$1$ are minimum, because a contour is destroyed there. Up-degree $2$ vertices are ``joins", where contours
+merge, and down-degree $2$ vertices are ``splits". In these examples ($d=2$), contours are closed loops.
+In dimensions $d \geq 3$, we may have internal
+vertices of both up and down-degree $1$. The correspond to contours (which are themselves manifolds) gaining or losing handles.
+
+Suppose we have $f: \MM \mapsto \RR$, where $\MM$ has $n$ vertices, $N$ facets in total, and $t \leq n$ critical points.
+It is standard to assume that $f$ is PL-Morse (a well-behaved assumption) and that the maximum degree in the contour tree
+is $3$. A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
+which runs in $O(n\log n + N\alpha(N)$ time~\cite{csa-cctad-00}. (Henceforth, $\alpha(\cdot)$ denotes the inverse
+Ackermann function.) One cannot overstate the importance of this result, since 
+subsequent practical and theoretical work in contour trees uses their ideas. It is natural to think of $N$ as $\Theta(n)$
+in practical applications (certainly true for $d=2$). The most expensive operation is an initial sort of all the vertex
+heights. Chiang et al build on this approach to get a faster algorithm that only sorts the critical vertices,
+yielding a running time of $O(t\log t + N)$~\cite{cllr-sooscctmp-05}.
+Common applications for contour trees involve turbulent combustion or noisy data, where the number of critical points is likely $\Omega(n)$.
+So we are still left with the bottleneck of sorting a large set of numbers. Unfortunately, there is a worst-case
+lower bound of $\Omega(t\log t)$ from Chiang et al~\cite{cllr-sooscctmp-05}, based on a construction of Bajaj et al~\cite{BaKr+98}.
+
+But this is only a worst-case bound. All previous algorithm begin by sorting (at least) the critical points, and
+pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound? Is there a more refined version of the complexity
+of computing contour trees? Our main result gives an affirmative answer. First, we require some technical definitions.
+
+In a contour tree $T$, a \emph{leaf path} is simply a contiguous path in $T$
+containing a leaf, which is also monotonic in the height values of its vertices. A leaf path runs either upwards
+or downwards, never both.
+% Then in the following two subsections 
+%we relate path decomposition costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
+
+\begin{definition}
+\label{def:path} For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
+\end{definition}
+
+\begin{theorem} \label{thm:alg-main} Consider $f:\MM \mapsto \RR$ that is PL-Morse, where the contour tree $T$
+has maximum degree\footnote{The maximum degree $3$ assumption is primarily there to simplify the presentation and proof. Our algorithm
+does not need the assumption.} $3$. There is an algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
+where $P(T)$ is a specific path decomposition (constructed implictly by the algorithm).
+\end{theorem}
+
+Let us interpret the running time. 
+For any path decomposition $P(T)$ and any $p \in P(T)$, obviously $|p| \leq |T| = t$.
+So the running time is clearly $O(t\log t + N)$. But this is only the case when $T$ is tall and thin.  
+An obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $P(T)$. 
+But if $P(T)$ is a rooted, balanced, binary tree, then $\sum_{p \in P(T)} |p|\log |p| = O(t)$.
+Our running time is now $O(t\alpha(t))$, a significant improvement from $O(t\log t)$.
+Consider the example of \Fig{sorting} extended to a larger binary tree both above and below.
+(In the example, $t = \Omega(n)$.) The running time promised by \Thm{alg-main}
+is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$.
 
 
 
 
-Contour trees and related topological data structures have been applied in analysis of fluid mixing, combustion simulations,
-and studying chemical systems~\cite{LaBe+06,BrWe+10,BeWe+11,BrWe+11,MaGr+11}.
 
 Let $f$ be a real valued function defined over a manifold embedded in $\RR^d$.  
 For any real value $\alpha$, the level set $f^{-1}(\alpha)$ can be decomposed into its connected components, or ``contours''.
@@ -342,6 +392,15 @@ Of particular note is the use of heavy-light path decompositions, first introduc
 % Paragraph on specific applications.  Scientific visualization, in particular combustion research.  GIS.
 
 \subsection{Previous Work}
+
+Contour trees were (unsurprisingly) used to study terrain maps by Boyell and Ruston, and Freeman and Morse~\cite{BoRu63,FrMo67}.
+They were used for isoline extraction in geometric data by van Krevald et al~\cite{kobps-ctsssit-97}, who provided
+the first formal algorithm. 
+Contour trees and related topological data structures have been applied in analysis of fluid mixing, combustion simulations,
+and studying chemical systems~\cite{LaBe+06,BrWe+10,BeWe+11,BrWe+11,MaGr+11}. Carr's thesis gives various
+applications of contour trees for data visualization~\cite{c-tmi-04}.
+
+
 
 \subsubsection{Worst Case Alternatives}
 In worst case analysis an algorithm's running time is judged in terms of its worst 
@@ -1713,18 +1772,6 @@ We adopt all notation already defined in \Sec{runTime}.  From here forward we wi
 (this assumption simplifies the presentation but is not necessary).
 
 \Ben{For now we are keeping the above full bin tree assumption. At some point this should be carefully removed.}
-
-We introduce the concept of path decompositions. A \emph{leaf path} is simply a contiguous path in $T$
-containing a leaf, which is monotonic in the height values of its vertices.
-% Then in the following two subsections 
-%we relate path decomposition costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
-
-\begin{definition}
-\label{def:path} A \emph{path decomposition}, $P(T)$, is a partition of $T$ into 
- a set of vertex disjoint leaf paths.  
-% 
-% The \emph{cost} of $P(T)$ is $\cost(P(T)) = \sum_{p\in P(T)} |p| \log |p|$. (We use $|p|$ to denote the number of vertices in $p$.)
-\end{definition}
 
 Note that the number of paths in $P(T)$ must equal the number of leaves in $T$.
 Fix $\chi$, which fixes all the heaps $H_v$. We choose a special path decomposition that is best defined as a subset of edges in $T$ such that each internal
