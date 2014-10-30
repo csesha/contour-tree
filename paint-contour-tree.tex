@@ -607,7 +607,8 @@ We detail the basic definitions about contour trees. The following is based on C
 Our input is a continuous PL function $f:\MM \mapsto \RR$, where $\MM$ is a fully triangulated simplicial complex in $\RR^d$. 
 %All simplices are isomorphic to a standard $d$-dimensional simplex, except for specially designated \emph{boundary} simplices. 
 \Sesh{Some mention of representation and data structures here.}
-We use the standard assumption that $f$ is Morse (we explain later what this entails). 
+We use the standard assumption that $f$ is Morse.  In particular, we are assuming no two critical points have the same height, 
+and that there are no multi-saddles.
 
 Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simplicial complex living in $\RR^{d+1}$.
 We can think of $f(x)$ as the ``height" of a point $x \in \MM$.
@@ -618,14 +619,20 @@ A contour is a maximal connected component of a level set. An $h$-contour is a c
 \end{definition}
 
 Note that a contour is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
-We let $\delta, \eps$ denote infinitesimals. Let $B_\eps(x)$ denote a ball of radius $\eps$ around $x$.
+We let $\delta, \eps$ denote infinitesimals. Let $B_\eps(x)$ denote a ball of radius $\eps$ around $x$, and let 
+$f|B_\eps(x)$ be the restriction of $f$ to $B_\eps(x)$.
 
-\begin{definition} \label{def:deg} The up-degree of $x \in \MM$ is the number of $(f(x) + \delta)$-contours that intersect $B_\eps(x)$
-as $\delta, \eps \rightarrow 0^+$. The down-degree is the number of $(f(x) - \delta)$-contours that intersect $B_\eps(x)$
+% \begin{definition} \label{def:deg} The up-degree of $x \in \MM$ is the number of $(f(x) + \delta)$-contours that intersect $B_\eps(x)$
+% as $\delta, \eps \rightarrow 0^+$. The down-degree is the number of $(f(x) - \delta)$-contours that intersect $B_\eps(x)$
+% as $\delta, \eps \rightarrow 0^+$.
+% \end{definition}
+
+\begin{definition} \label{def:deg} The up-degree of $x \in \MM$ is the number of $(f(x) + \delta)$-contours in $f|B_\eps(x)$
+as $\delta, \eps \rightarrow 0^+$. The down-degree is the number of $(f(x) - \delta)$-contours in $f|B_\eps(x)$
 as $\delta, \eps \rightarrow 0^+$.
 \end{definition}
 
-The definition allows us to categorize points in $\MM$ depending on the local changes in topology.
+This definition allows us to categorize points in $\MM$ depending on the local changes in topology.
 
 \begin{definition} \label{def:points} A point $x \in \MM$ is categorized as follows.
 \begin{asparaitem}
@@ -640,7 +647,11 @@ Maxima and minima are called \emph{extrema}.
 \end{definition}
 
 \begin{remark}
- For two manifolds, at each saddle point either two contours join together or split apart, and hence the terminology.  In higher dimensions this may not be the case, however, it always holds that at a join or split vertex the topology of the level set changes, and hence such vertices are still 'critical'.  Note that determining which category each vertex falls into according to the above definition can be determined for all vertices simultaneously in linear time, as it is a local neighborhood condition.
+ Note that \Def{deg} can be changed so that the up-degree (resp. down-degree) is the number of $(f(x) + \delta)$-contours (resp. $(f(x) - \delta)$-contours) that intersect $B_\eps(x)$.
+ For $2$-manifolds, the two definitions are equivalent, and at each saddle point either two contours join together or split apart, and hence the terminology.  
+ In higher dimensions though these definitions differ.  Specifically, this alternative definition only includes points at which the number of contours in a level set change.
+ These points are a subset of our defined critical points which also include points at which the topology of the contours change (and hence the term `critical' is still applicable).
+ Note that our critical point definition allows one to classify all vertices (according to \Def{points}) simultaneously in linear time, as it is a local neighborhood condition.
 \end{remark}
 
 
