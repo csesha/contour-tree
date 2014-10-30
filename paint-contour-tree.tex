@@ -210,7 +210,7 @@
   C. Seshadhri
 }
 
-\title{A Mountaintop View Requires Minimal Sorting: \break An Instance Optimal Contour Tree Algorithm}
+\title{A Mountaintop View Requires Minimal Sorting: \break A Faster Contour Tree Algorithm}
 \date{}
 
 
@@ -276,8 +276,7 @@ such tools as heavy-light path decompositions.
 
 \section{Introduction}
 
-A large class of data, such as satellite terrain maps, physical simulation output, and combustion data, can
-be thought as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
+Massive geometric data is often represented as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
 by considering $f$ to be piecewise linear over some mesh (simplicial complex) $\MM$ in $\RR^d$.
 \emph{Contour trees} are a specific topological data structure used to represent and visualize
 the function $f$.
@@ -290,25 +289,24 @@ proceeds various events occur: new contours are created or destroyed, contours m
 split into new components, contours acquire or lose handles. These are the relevant events where 
 the topology of the level set changes. The contour tree is a concise representation of all these events.
 
-For convenience, imagine $f$ to be smooth. All points where the gradient of $f$ is zero are \emph{critical point},
-exactly where the topology of the contours change. The vertices of the contour tree are exactly these critical points,
+For convenience, imagine $f$ to be smooth. All points where the gradient of $f$ is zero are \emph{critical points},
+where the topology of the contours change. The vertices of the contour tree are exactly these critical points,
 representing the important topological events. An edge connects two critical points if one event immediately ``follows"
 the other as the sweep plane makes its pass. (We provide formal definitions later.) 
 
 \Fig{relative} and \Fig{sorting} show examples of simplicial complices with heights and their contour trees.
-Think of the edges as point downwards, so we can talk of the ``up-degree" and ``down-degree" of vertices.
+Think of the edges pointing downwards, so we can talk of the ``up-degree" and ``down-degree" of vertices.
 Leaves of down-degree $1$ are maxima, because a new contour is created at such point. Leaves of up-degree
 $1$ are minimum, because a contour is destroyed there. Up-degree $2$ vertices are ``joins", where contours
 merge, and down-degree $2$ vertices are ``splits". In these examples ($d=2$), contours are closed loops.
 In dimensions $d \geq 3$, we may have internal
-vertices of both up and down-degree $1$. The correspond to contours (which are themselves manifolds) gaining or losing handles.
+vertices of both up and down-degree $1$. They correspond to contours (which are $2$-manifolds) gaining or losing handles.
 
-Suppose we have $f: \MM \mapsto \RR$, where $\MM$ has $n$ vertices, $N$ facets in total, and $t \leq n$ critical points.
+Suppose we have $f: \MM \mapsto \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ facets in total, and $t \leq n$ critical points.
 It is standard to assume that $f$ is PL-Morse (a well-behaved assumption) and that the maximum degree in the contour tree
 is $3$. A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
 which runs in $O(n\log n + N\alpha(N)$ time~\cite{csa-cctad-00}. (Henceforth, $\alpha(\cdot)$ denotes the inverse
-Ackermann function.) One cannot overstate the importance of this result, since 
-subsequent practical and theoretical work in contour trees uses their ideas. It is natural to think of $N$ as $\Theta(n)$
+Ackermann function.) It is natural to think of $N$ as $\Theta(n)$
 in practical applications (certainly true for $d=2$). The most expensive operation is an initial sort of all the vertex
 heights. Chiang et al build on this approach to get a faster algorithm that only sorts the critical vertices,
 yielding a running time of $O(t\log t + N)$~\cite{cllr-sooscctmp-05}.
@@ -317,7 +315,7 @@ So we are still left with the bottleneck of sorting a large set of numbers. Unfo
 lower bound of $\Omega(t\log t)$ from Chiang et al~\cite{cllr-sooscctmp-05}, based on a construction of Bajaj et al~\cite{BaKr+98}.
 
 But this is only a worst-case bound. All previous algorithm begin by sorting (at least) the critical points, and
-pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound? Is there a more refined version of the complexity
+pay must $\Omega(t\log t)$ for all instances. Can we beat this sorting bound? Is there a more refined version of the complexity
 of computing contour trees? Our main result gives an affirmative answer. First, we require some technical definitions.
 
 In a contour tree $T$, a \emph{leaf path} is simply a contiguous path in $T$
@@ -330,9 +328,10 @@ or downwards, never both.
 \label{def:path} For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
 \end{definition}
 
-\begin{theorem} \label{thm:main-alg} Consider $f:\MM \mapsto \RR$ that is PL-Morse, where the contour tree $T$
-has maximum degree\footnote{The maximum degree $3$ assumption is primarily there to simplify the presentation and proof. Our algorithm
-does not need the assumption.} $3$. There is an algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
+\begin{theorem} \label{thm:main-alg} Consider PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
+that all critical points have distinct values, and all the contour tree has max-degree $3$. Our algorithm
+does not need this, but it simplifies the proof and presentation.} $f:\MM \mapsto \RR$, where the contour tree $T$
+has maximum degree $3$. There is an algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implictly by the algorithm).
 \end{theorem}
 
@@ -340,6 +339,7 @@ Let us interpret the running time.
 For any path decomposition $P(T)$ and any $p \in P(T)$, obviously $|p| \leq |T| = t$.
 So the running time is clearly $O(t\log t + N)$. But this is only the case when $T$ is tall and thin.  
 An obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $P(T)$. 
+This is clearly an improvement when the tree is short and fat.
 But if $P(T)$ is a rooted, balanced, binary tree, then $\sum_{p \in P(T)} |p|\log |p| = O(t)$.
 Our running time is now $O(t\alpha(t))$, a significant improvement from $O(t\log t)$.
 Consider the example of \Fig{sorting} extended to a larger binary tree both above and below.
@@ -360,57 +360,14 @@ a refined lower bound matching \Thm{main-alg}. A \emph{height decision tree} is 
 that is allowed aribtrary computation on the domain $\MM$, and is an algebraic decision
 tree over the heights. The running time is simply the number of queries made.
 
-\begin{theorem} \label{thm:main-lb} For any valid cost $C$, there exists a set $\bF$ of functions over 2-dimensions
-with the following properties.
-For all $f \in \bF$, $\cost(f) = C$. Any height decision tree that correctly computes
+\begin{theorem} \label{thm:main-lb} Consider the set of functions $\bF_C$ that all have the same (valid) cost $C$.
+Any height decision tree that correctly computes
 the contour tree on all of $\bF$ has an average case (uniform over $\bF$) running time of $\Omega(C)$.
 \end{theorem}
 
-In other words, for any valid cost $C$, we can find a family of inputs where \Thm{main-alg}
-guarantees a running time of $C + t\alpha(t)$, and any height decision tree requires $\Omega(C)$ time.
-This shows that the cost function is inherent to the computation of contour trees.
+In other words, it is not possible to improve on \Thm{main-alg} even when restricted to the subset
+of inputs of fixed cost.
 
-
-Let $f$ be a real valued function defined over a manifold embedded in $\RR^d$.  
-For any real value $\alpha$, the level set $f^{-1}(\alpha)$ can be decomposed into its connected components, or ``contours''.
-The Reeb graph is a fundamental topological structure which represents the evolution of these contours as one sweeps the surface 
-from $-\infty$ to $\infty$ according to $f$.  Often this graph is acyclic, in which case it is 
-called a \emph{contour tree}.  This is the case if, for example, the input is a surface mesh of a mountain range 
-(and the contour tree would encode when mountain peeks form and how they merge together).
-
-There is a long list of practical applications of the study of contour trees (see for example \cite{c-tmi-04} and references therein).
-Often these applications involve massive data sets, and so consequently there has also been a long series 
-of results on efficient algorithms for their computation \cite{kobps-ctsssit-97,tv-cct-98,csa-cctad-00,pc-ectls-02,cllr-sooscctmp-05}.
-Let $N$ be the total size of the input manifold, $n$ the number of vertices, and $t$ the number of critical points. (Note that in many applications $N=O(n)$.)
-As an initial step these algorithms require that all $t$ contour tree vertices be sorted.  
-In particular, \cite{cllr-sooscctmp-05} provide an $O(N+t\log t)$ time algorithm, and since in the worst case computing the contour tree 
-requires $\Omega(N+t\log t)$ time, this algorithm is optimal with respect to the size of the output.  
-Here we present the first contour tree algorithm which is optimal (for instances requiring $\Omega(N\alpha(N))$ 
-time\footnote{Where $\alpha(\cdot)$ is the inverse Ackermann function, which is $< 5$ for computation in this universe.}) 
-with respect not just to the size of the output, but also its structure.  This is accomplished by introducing a simple linear time 
-surface partitioning scheme to avoid sorting, which is likely to have applications elsewhere.  
-For all instances the bound for our algorithm either matches the best previous bound, or is faster.
-For, example when the contour tree is a balanced, our algorithm runs in $O(N\alpha(N))$ time, whereas all 
-previous algorithms had a running time of $\Omega(N+t\log t)$
-
-%In particular, the algorithm in \cite{cllr-sooscctmp-05} is worst case optimal with respect to the size of the output.  
-%Here we present the first contour tree algorithm which is (near\footnote{Our algorithm is optimal on all instance requiring $\Omega(n\alpha(n))$ time.}) 
-%optimal with respect not just to the size of the output, but also its structure.  
-%Specifically, the bound for our algorithm either matches \cite{cllr-sooscctmp-05}, or is faster.
-%For, example when the contour tree is a balanced, our algorithm runs in $O(n\alpha(n))$ time, whereas all 
-%previous algorithms had a running time of $\Omega(n\log n)$.
-
-This work can be seen as a continuation of the study of instance-optimal geometric algorithms introduced by Afshani \etal \cite{abc-ioga-09}.
-In order to prove instance optimality we use a non-trivial combinatorial discharging argument, which we believe is of independent interest.
-Of particular note is the use of heavy-light path decompositions, first introduced by Sleator and Tarjan \cite{st-dsdt-83} in their analysis of link-cut trees.
-
-
-
-% Explain why useful:  Lets you know the ``shape of your date''.  Map of the critical points where contours change.  
-%Fast extraction of seed sets in a small sized structure, which can let you do threshold queries.
-% 
-% \medskip\noindent
-% Paragraph on specific applications.  Scientific visualization, in particular combustion research.  GIS.
 
 \subsection{Previous Work}
 
@@ -418,79 +375,24 @@ Contour trees were (unsurprisingly) used to study terrain maps by Boyell and Rus
 They were used for isoline extraction in geometric data by van Krevald et al~\cite{kobps-ctsssit-97}, who provided
 the first formal algorithm. 
 Contour trees and related topological data structures have been applied in analysis of fluid mixing, combustion simulations,
-and studying chemical systems~\cite{LaBe+06,BrWe+10,BeWe+11,BrWe+11,MaGr+11}. Carr's thesis gives various
-applications of contour trees for data visualization~\cite{c-tmi-04}.
+and studying chemical systems~\cite{LaBe+06,BrWe+10,BeWe+11,BrWe+11,MaGr+11}. Carr's thesis~\cite{c-tmi-04} gives various
+applications of contour trees for data visualization and is an excellent reference for contour trees definitions and algorithms.
 
+There has been a long series of improved algorithms for computing contour trees.
+van Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D 
+meshes and an $O(N^2)$ algorithm for higher dimensions. 
+Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case
+The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N)$.
+One cannot overstate the importance of this result, since it forms the basis 
+of subsequent practical and theoretical work in computational topology applications. 
+Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
+$3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an unconditional $O(N+t\log t)$ algorithm.
 
+Contour trees are a special case of Reeb graphs, a general topological representation for real-valued function
+on any manifold. We refer the reader to Chapter 6 in~\cite{HaEd10} for more details. Algorithms for computing Reeb graphs
+is an active topic of research~\cite{sk-crgacs-91,cehnp-lrbm-03,PaScBr07,DoNa09,HaWaWe10,Pa12}, where
+two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 
-\subsubsection{Worst Case Alternatives}
-In worst case analysis an algorithm's running time is judged in terms of its worst 
-case behavior over all inputs of a given size.  While there are benefits to this viewpoint, 
-such as robustness,  it fails to capture the whole story.  As such, many alternatives 
-have been considered.  For example, one can make assumptions on the distribution of 
-inputs, which has led to a number interesting results on average case and probabilistic 
-analysis, and also smoothed analysis \cite{st-saa-04}.  However, even without making 
-assumptions on the distribution of the input, there is still more to the story.
-For example, in the study of parametrized complexity, one takes into account other 
-parameters determined by the input other than just its size (for example the maximum 
-degree in a graph or whether it is planar).
-
-\paragraph{Output Sensitive Analysis.}
-In geometric settings often the goal is to compute a (potentially complex) geometric structure determined 
-by the input, and so it is natural to also consider how the form of this output structure affects the running time.
-One example is the standard sweep line algorithm of Bentley and Ottmann \cite{bo-arcgi-79} for line segment intersection, 
-which runs $O((n+k)\log n)$ time where k is the number of intersections, which in the worst case is quadratic.
-Another example is Chan's algorithm for computing the convex hull \cite{c-ooscha-96} which runs in $O(n\log h)$ 
-where $h$ is the number of vertices on the hull, which in the worst case is $n$.  While such algorithms represent 
-significant improvements over their worst case counterparts, their running times are only measured with respect 
-to the size of the output and not any structure it may have.
-
-\paragraph{Instance Optimality.}  
-Here we are concerned with a more refined analysis than the typical output sensitive analysis.
-Specifically, we investigate an algorithm which is instance optimal as defined by Afshani \etal \cite{abc-ioga-09}.  
-In order to prove such a result, one considers a family of allowable partitions of the input, 
-each of which is defined in terms of the structure of the output.  Each such partition then has 
-an associated entropy type cost representing the number of possible instantiations of such a partition.
-Our work differs slightly from Afshani \etal \cite{abc-ioga-09} however, in that they show any algorithm 
-(for say the convex hull) requires the minimum such cost, where as in our case it is shown that 
-any algorithm requires the maximum over these costs.
-
-
-\subsubsection{Contour Trees}
-
-\Ben{Maybe discuss contour tree applications and why they are useful here? Or maybe earlier?}
-
-\paragraph{A History of Contour Trees.}
-As discussed above, there has been a long series of improved algorithms for computing contour trees.
-Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D 
-meshes and an $O(N^2)$ algorithm for higher dimensions, where $N$ is the number of simplices in the mesh. 
-Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case by making 
-several passes over the input.
-
-Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N)$, 
-where $n$ is the number of mesh vertices.  Their algorithm works in 3 simple stages.  
-The first stage consist of a top down sweep to compute what is known as the join (or merge) tree, 
-which tracks the evolution of super-level sets (whereas the contour tree tracks level sets).  
-Similarly, the second stage does a bottom up sweep to compute the split tree, which tracks sub-level sets.  
-Their main contribution is the third and final step where they present an $O(n)$ time algorithm to merge 
-together the join and split trees to get the contour tree.  
-
-There have also been some output sensitive results for computing the contour tree.  Let $t$ be the number 
-of critical points in the input mesh, which could potentially be much smaller than $n$.  
-Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for the case of 
-$3$-dimensional structured meshes (note $N$ does not show up in the running time as the mesh is structured).
-Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t'\log t')$ algorithm 
-which works for structured or unstructured meshes in any dimension, where $t'$ is the number of component 
-critical vertices.  This is provably optimal with respect to the output size but not the output structure, 
-as discussed below.
-
-%As the the authors point out in \cite{cllr-sooscctmp-05}, by reduction from sorting, 
-%one can show that any algorithm to compute the contour tree in the worst case takes 
-%$\Omega(N+t\log t)$ time.  However, this lower bound only holds when the contour tree 
-%is very unbalanced (i.e. long and skinny) and therefore contains a sorted path with a 
-%large fraction of the vertices.  Therefore the bound of $\Omega(N+t\log t)$ is only 
-%worst case optimal.  In this paper we will consider an output sensitive approach which 
-%takes into account the shape of the contour tree.
 
 \begin{figure}[h]\centering
     \includegraphics[width=.27\linewidth]{figs/spike3}%
@@ -502,30 +404,7 @@ as discussed below.
     \label{fig:relative}
 \end{figure}
 
-\paragraph{The Issue of Sorting.}
-As discussed above, the algorithm of Carr \etal \cite{csa-cctad-00} computes the contour 
-tree by first constructing the join and split trees.  As vertices appear in sorted order 
-in any root to leaf path in the join and split trees, and in any maxima to minima path 
-in the contour tree, sorting the input vertices is a natural first step.  However, not 
-all vertices from the input need to be sorted.  In particular, Chiang \etal 
-\cite{cllr-sooscctmp-05} improved the running time by observing that as the join and 
-split trees only consist of critical points, it suffices to only sort critical points.  
-If a large fraction of the vertices appear in a single path in the join or split tree, 
-then paying to sort all the critical points is unavoidable, and therefore in the worst 
-case \cite{cllr-sooscctmp-05} is optimal.  However, if the trees are more balanced then 
-sorting all critical points together can be very costly.  Specifically, the contour tree 
-does not care about the relative ordering of vertices which do not have an 
-ancestor-descendant relationship, and so this information does not need to be computed.
-See \Fig{relative} for an example.
 
-% \begin{figure}[h]\centering
-%     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/shaded}%
-%     \hspace{.5in}
-%     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/trees2}
-%     \caption{On the left, a surface will a balanced contour tree, but whose join and split trees have long tails.  
-%     On the right (in clockwise order from the top) the contour, split and join trees.}
-%     \label{fig:sorting}
-% \end{figure}
 \begin{figure}[h]\centering
     \includegraphics[width=.7\linewidth,height=.28\linewidth]{figs/balanced2}
     \includegraphics[width=.7\linewidth,height=.25\linewidth]{figs/trees}
@@ -535,119 +414,39 @@ See \Fig{relative} for an example.
 \end{figure}
 
 
-\paragraph{Suboptimal Join and Split Trees.}
-There is also a more fundamental problem with the now standard approach of first computing 
-the join and split trees in order to compute the contour tree.  In particular, this approach 
-can never lead to an algorithm that is optimal with respect to the shape of the contour tree.  
-This is because it is possible to have join and split trees which are long and skinny (i.e. 
-costly to compute) whereas the contour tree is balanced.  For example consider the case shown 
-in \Fig{sorting}, where the mesh looks like two (thickened) balanced binary trees, one upside 
-down, and joined at their roots.  In this case the contour tree is potentially cheap to 
-compute as there is no long sorted path.  However, the join and split trees will have long 
-sorted tails (consisting of the vertices in the bottom and top balanced trees, respectively), 
-and therefore require $\Omega(n\log n)$ time to compute.
 
-\subsection{Overview and Contribution}
-
-\paragraph{Algorithm Overview.}
-At a high level, the technique is rather simple.  Break the input manifold into nicely 
-behaved pieces, compute the contour tree on each piece, and then stitch together the computed 
-contour trees according to the cuts we made to break up the manifold.  Below we informally 
-describe how this is accomplished.
-\begin{compactitem}
- \item {\bf Raining to partition.}  To start with, pick an arbitrary maxima.  Now imagine 
- ``raining'' water down on the manifold from this maxima, i.e. mark all points which are reachable 
- by non-ascending paths from the maxima.  Let the boundary between wet and dry portions of the 
- manifold be called the interface (which may have different connected components).  
- Remove the wet submanifold, and invert the remaining pieces
- of the original manifold.  Now recursively rain in each one of these pieces, but rather than 
- picking an arbitrary maxima, start from the portion of the interface that cut that piece off.
- 
- The benefit of this partitioning is that each resulting piece 
- is maxima dominant, i.e. there is a single maxima that has a non-ascending path to each point.  
- This implies the contour tree of this submanifold is the same as its split tree, or in other words 
- its contour tree is a rooted binary tree. 
- 
- %
- \item {\bf Painting trees.}  For each maxima dominant piece we want to compute the split 
- tree without sorting all the vertices.  For conceptual ease lets first flip the submanifold 
- (i.e., it is now minima dominant and we compute the join tree).  Now arbitrarily pick a maxima 
- and spill paint from it, specifically color all edges and vertices of the mesh that are reachable 
- from the maxima by descending paths.  Now go to each other maxima and spill a different color, 
- but be aware that paints do not mix, i.e. if we reach a vertex that was previosly explored 
- by another color then we do not explore it.
- 
- This procedure partitions the set of critical points into color classes.  Clearly each color 
- class is connected in the manifold.  Suppose each class was also connected in the join tree.  
- In this case we partitioned the join tree into a set of descending paths, each of which 
- can be constructed by sorting the critical points in a class.  Roughly speaking, 
- these paths can then be joined together by what amounts to doing a post-order traversal of the tree.
- However, we may not be so lucky and the color classes may not be connected in the 
- tree.  This turns out not to be a problem, but it requires proper data-structure use. 
-%  
-%  Now suppose we were lucky and the spilling of paint in the manifold corresponded with a paint 
-%  spilling in the join tree, i.e. the color classes of the critical points partition the join 
-%  tree into disjoint descending paths, each containing one leaf.   In this case 
-%  we have partitioned the tree into branches, and so the tree can be formed by gluing these 
-%  branches together.  Intuitively (i.e. not exactly true), if two branches glue together then 
-%  it means there is a join vertex which got colored by the respective colors of each branch 
-%  (only one of these colors actually explored the vertex in the mesh and this is the ``main'' 
-%  branch you are gluing into).  Therefore, the tree can be constructed by starting at the leaf 
-%  of the trunk (i.e. the branch with the global minima) and recursively building the subtrees 
-%  while walking towards the root.  In other words we are building the tree by doing a post-order traversal.
-%  Unfortunately, we may not be so lucky and the color classes may not appear contiguously in 
-%  the tree.  In this case we can still build the tree in this leaf first fashion, but doing so 
-%  efficiently requires the use of data-structures.
-\end{compactitem}
-
-\paragraph{Lower Bound Overview.}
-In order to show that our algorithm for computing the join tree is optimal we consider paritioing the tree into disjoint 
-descending paths, each containing a leaf.  It turns out that each such partition into paths, $P$, 
-defines a lower bound of $\sum_{p\in P} |p|\log|p|$ for computing the contour tree, as you need to know the 
-sorted order of the vertices along each path in order to determine the tree.
-Specifically, we show that there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, 
-all of which have the same defining mesh, and for which each sorted order of each group of saddles determines a different join tree.
-
-The instance optimality of our algorithm then follows, as we also show that there is a particular path decomposition 
-whose cost upper bounds our.  Specifically, we assign a weight to each node in the tree which is determined by 
-the painting procedure described above (which represents the time it takes to process this node).  
-The path decomposition then turns out to be the heavy-light path decomposition 
-described by Sleator and Tarjan \cite{st-dsdt-83}, according to this weight function.
-However, this decomposition is just the first step in the analysis, which 
-requires further case analysis depending on the relative size of the length of each path 
-and the weights of its vertices.
-
-\paragraph{Our Contribution.}
-Our contribution can be broken into three main aspects.  The first two are algorithmic.  Namely, 
-first we describe a new linear time manifold partitioning scheme which breaks the manifold into 
-``extremum'' dominant submanifolds.  
-Second, we describe how to compute join trees optimally with respect to shape of the tree.
-As the contour tree of each submanifold is (roughly) equal to its join tree, this leads to an 
-optimal algorithm for the contour tree of the input manifold.  
-Therefore, our third and final contribution is proving the optimality of this result, which 
-requires a non-trivial amount of work, and uses techniques we believe to be of independent interest.
-
-\paragraph{Organization.}
-\Ben{To be Written}
 
 \section{Contour tree basics} \label{sec:basics}
 
-We detail the basic definitions about contour trees. The following is based on Chapter 6 of Carr's thesis \cite{c-tmi-04}.
-Our input is a continuous PL function $f:\MM \mapsto \RR$, where $\MM$ is a fully triangulated simplicial complex in $\RR^d$. 
-%All simplices are isomorphic to a standard $d$-dimensional simplex, except for specially designated \emph{boundary} simplices. 
-\Sesh{Some mention of representation and data structures here.}
-We use the standard assumption that $f$ is Morse.  In particular, we are assuming no two critical points have the same height, 
-and that there are no multi-saddles.
+We detail the basic definitions about contour trees. We follow the terminology of Chapter 6 of Carr's thesis \cite{c-tmi-04},
+which provides one of the first rigorous, Morse-theoretic defintions of contour trees. All our assumptions and definitions
+are standard for results in this area, though there is some variability in notation.
+The input is a continuous piecewise-linear (PL) function $f:\MM \mapsto \RR$, where $\MM$ is a fully triangulated simplicial complex in $\RR^d$,
+except for specially designated \emph{boundary facets}. So $f$ is defined only on the vertices of $\MM$,
+and all other valued are obtained by interpolation. 
 
+We assume that $f$ has distinct values on all vertices, except for boundaries,
+as expressed in the following constraint.
+
+\begin{definition} \label{def:bound} $f$ is \emph{boundary critical} if the following holds.
+Consider a boundary facet $F$. All vertices of $F$ have the same function value. Furthermore, all
+neighbors of $F$ not in $F$ either have all function values strictly greater or strictly less
+than this value.
+\end{definition}
+
+This is convenient, as we can now assume that $f$ is defined on $\RR^d$. Any point inside a boundary facet
+has a well-defined height, and this includes the infinite facet. 
+We think of $d$ as constant, and assume that $\MM$ is represented in data structures that allow constant-time traversals
+in $\MM$ (e.g.~\cite{BoMa12}). (This is analogous to a DCEL for higher dimensions.)
 Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simplicial complex living in $\RR^{d+1}$.
-We can think of $f(x)$ as the ``height" of a point $x \in \MM$.
-We will often omit $f$, and assume that $f$ is encoded in the representation of $\MM$.
+We can think of $f(x)$ as the ``height" of a point $x \in \MM$, and encoded in the representation of $\MM$. 
+%Abusing notation, $\MM$ refers to this encoding, so we do not refer to $f$.
 
-\begin{definition} \label{def:level} The level set at value $h$ is the set $\{x \in \MM| f(x) = h\}$.
+\begin{definition} \label{def:level} The level set at value $h$ is the set $\{x| f(x) = h\}$.
 A contour is a maximal connected component of a level set. An $h$-contour is a contour where $f$-values are $h$.
 \end{definition}
 
-Note that a contour is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
+Note that a contour that does not contain a boundary is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
 We let $\delta, \eps$ denote infinitesimals. Let $B_\eps(x)$ denote a ball of radius $\eps$ around $x$, and let 
 $f|B_\eps(x)$ be the restriction of $f$ to $B_\eps(x)$.
 
@@ -656,57 +455,43 @@ $f|B_\eps(x)$ be the restriction of $f$ to $B_\eps(x)$.
 % as $\delta, \eps \rightarrow 0^+$.
 % \end{definition}
 
-\begin{definition} \label{def:deg} The up-degree of $x \in \MM$ is the number of $(f(x) + \delta)$-contours in $f|B_\eps(x)$
-as $\delta, \eps \rightarrow 0^+$. The down-degree is the number of $(f(x) - \delta)$-contours in $f|B_\eps(x)$
+\begin{definition} \label{def:deg} The Morse up-degree of $x$ is the number of $(f(x) + \delta)$-contours in $f|B_\eps(x)$
+as $\delta, \eps \rightarrow 0^+$. The Morse down-degree is the number of $(f(x) - \delta)$-contours in $f|B_\eps(x)$
 as $\delta, \eps \rightarrow 0^+$.
 \end{definition}
 
-This definition allows us to categorize points in $\MM$ depending on the local changes in topology.
+We categorize points depending on the local changes in topology.
 
-\begin{definition} \label{def:points} A point $x \in \MM$ is categorized as follows.
+\begin{definition} \label{def:points} A point $x$ is categorized as follows.
 \begin{asparaitem}
-	\item Regular: Both up-degree and down-degrees are $1$.
-	\item Maximum: Up-degree is $0$.
-	\item Minimum: Down-degree is $0$.
-	\item Join: Up-degree is strictly greater than $1$.
-	\item Split: Down-degree is strictly greater than $1$.
+	\item Regular: Both Morse up-degree and down-degrees are $1$.
+	\item Maximum: Morse up-degree is $0$.
+	\item Minimum: Morse down-degree is $0$.
+	\item Morse Join: Morse up-degree is strictly greater than $1$.
+	\item Morse Split: Morse down-degree is strictly greater than $1$.
 \end{asparaitem}
-Non-regular points are called \emph{critical}. Joins and splits are called \emph{saddles}.
-Maxima and minima are called \emph{extrema}.
+Non-regular points are \emph{critical}. Morse joins and splits are \emph{saddles}.
+Maxima and minima are \emph{extrema}.
 \end{definition}
 
-\begin{remark}
- Note that \Def{deg} can be changed so that the up-degree (resp. down-degree) is the number of $(f(x) + \delta)$-contours (resp. $(f(x) - \delta)$-contours) that intersect $B_\eps(x)$.
- For $2$-manifolds, the two definitions are equivalent, and at each saddle point either two contours join together or split apart, and hence the terminology.  
- In higher dimensions though these definitions differ.  Specifically, this alternative definition only includes points at which the number of contours in a level set change.
- These points are a subset of our defined critical points which also include points at which the topology of the contours change (and hence the term `critical' is still applicable).
- Note that our critical point definition allows one to classify all vertices (according to \Def{points}) simultaneously in linear time, as it is a local neighborhood condition.
-\end{remark}
 
-
-
-We will enforce a special constraint on boundaries, encapsulated in the following definition.
-
-\begin{definition} \label{def:bound} $f$ is \emph{boundary critical} if the following holds.
-Consider a boundary simplex $F$. All vertices of $F$ have the same function value. Furthermore, all
-neighbors of $F$ not in $F$ either have all function values strictly greater or strictly less
-than this value.
-\end{definition}
-
-\begin{remark}
-Note that by assuming that our manifold is boundary critical, the vertices on a given boundary are either all maxima or all minima.  
-Since all such vertices on a boundary component are in the same contour, we will abuse notation and refer to this entire set of vertices as a maxima (resp. minima).
-In particular, we do not view this as a violation of the Morse condition on $f$, which requires distinct heights for critical points.
-\end{remark}
-
-We use $\cV$ to denote the set of critical points in $\MM$.
+We use $\cV(f)$ to denote the set of critical points.
 Because $f$ is piecewise-linear, all critical points are vertices in $\MM$. 
-A value $h$ is called critical, if $f(x) = h$, for some $x \in \cV$. The Morse assumption
+A value $h$ is called critical, if $f(v) = h$, for some $v \in \cV(f)$. 
+The critical points are exactly where the topology of level sets change.
+By assuming that our manifold is boundary critical, the vertices on a given boundary are either collectively all maxima or all minima.  
+We abuse notation and refer to this entire set of vertices as a maxima or minima.
+%In particular, we do not view this as a violation of the Morse condition on $f$, which requires distinct heights for critical points.
+
+
+\ignore{
+The Morse assumption
 implies that all critical points have distinct values. A contour that involves a critical
 point is also denoted as critical. Note that the vertices in a boundary face collectively behaves like an extremum.
 Abusing notation, the term ``critical point", ``maxima", and ``minima" will include boundaries.
 Critical values include these boundary values. By boundary criticality, all contours are themselves
 represented as $d-1$-dimensional simplicial complexes.
+}
 
 \begin{definition} \label{def:equiv} Two contours $\psi$ and $\psi'$ are equivalent 
 if the following holds. There exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$,
@@ -724,9 +509,42 @@ there is an edge $(v_i,v_j)$. (Conventionally, edges are directed from higher fu
 \end{definition}
 
 We denote the contour tree of $\MM$
-by $\reeb(\MM) = \reeb(\MM,f)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
-%
-It is not immediately obvious that this graph is a tree, but the above definition is equivalent to that of the Reeb graph of $f:\MM \rightarrow \RR$ on $\MM$, and this is known to be a tree for PL functions defined over PL manifolds.  
+by $\reeb(\MM)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
+It is not immediately obvious that this graph is a tree, but the above definition is equivalent to that of the Reeb graph of $f:\MM \rightarrow \RR$, 
+known to be a tree for PL functions defined over PL manifolds (Chapter 6 of~\cite{HaEd10}). Alternate definitions of the contour tree
+in~\cite{csa-cctad-00} imply this is a tree. We can talk about up-degrees and down-degrees in $\reeb(\MM)$
+We assume there are no ``multi-saddles", so up and down-degrees are at most $2$, and the total degree is at most $3$. 
+This is again a standard assumption in topological algorithms and can be achieved by vertex unfolding (Section 6.3 in~\cite{HaEd10}).
+
+\subsection{Some technical remarks}
+
+The $(f(x)+\delta)$-contours in $f|_{B_\eps(x)}$ given by \Def{deg} might actually be the same
+contour in $f$. The up-degree is defined as the number of $(f(x)+\delta)$-contours
+that intersect $B_\eps(x)$, a potentially smaller number. This up-degree
+is exactly the up-degree of $x$ in $\reeb(\MM)$. (Analogously, for down-degree.)
+When the Morse up-degree is $2$ but the up-degree is $1$, then the level set gains a handle.
+When $d=2$, this distinction is not necessary, since any point with $>1$
+Morse degrees will have some $>1$ degree in $\reeb(\MM)$.
+
+As Carr points out in his thesis, the term contour tree can be used for a family of related structures.
+Every vertex in $\MM$ can be asociated with an edge in $\reeb(\MM)$, and sometimes the
+vertex is explictly placed in $\reeb(\MM)$ (subdividing the respective edge). This is referred
+to as augmenting the contour tree, and it is common to augment $\reeb(\MM)$ will all vertices.
+Alternately, one can smooth out all vertices of up-degree and down-degree $1$ to get the
+unaugmented contour tree. (For $d=2$, there are no such vertices in $\reeb(\MM)$.) 
+The contour tree of \Def{tree} is the typical definition in all results on output-sensitive
+contour trees, and is the smallest tree that contains all the topological changes
+of level sets. Our algorithm works for any augmentation of $\reeb(\MM)$ with a predefined
+set of vertices, though we will not delve into these aspects in this paper.
+
+\ignore{
+\begin{remark}
+ Note that \Def{deg} can be changed so that the up-degree (resp. down-degree) is the number of $(f(x) + \delta)$-contours (resp. $(f(x) - \delta)$-contours) that intersect $B_\eps(x)$.
+ For $2$-manifolds, the two definitions are equivalent, and at each saddle point either two contours join together or split apart, and hence the terminology.  
+ In higher dimensions though these definitions differ.  Specifically, this alternative definition only includes points at which the number of contours in a level set change.
+ These points are a subset of our defined critical points which also include points at which the topology of the contours change (and hence the term `critical' is still applicable).
+ Note that our critical point definition allows one to classify all vertices (according to \Def{points}) simultaneously in linear time, as it is a local neighborhood condition.
+\end{remark}
 
 \begin{remark}
 Note that the contour tree as defined above contains vertices for all critical points, 
@@ -735,20 +553,7 @@ which differs slightly from the usual definition which only contains critical po
 For simplicity we will also make the standard assumption that vertices in the contour 
 tree have degree at most $3$, i.e. there are no multi-saddles.
 \end{remark}
-
-
-We use a key theorem from \cite{c-tmi-04} (Theorem 6.6) that maps paths in $\cC(\MM)$ and $\MM$.
-
-
-\begin{theorem} \label{thm:carr-path} For every path $P$ in $\MM$, there exists a path $Q$ in the contour tree corresponding
-to the contours passing through points in $P$.
-For every path $Q$ in the contour tree, there exists at least one path $P$ in $\MM$ through points present
-in contours involving $Q$.
-\end{theorem}
-
-\begin{theorem} \label{thm:carr-mono} For every monotone path $P$ in $\MM$, there exists a monotone path $Q$ in the contour tree to which $P$
-maps (as in the previous theorem), and vice versa.
-\end{theorem}
+}
 
 
 
@@ -822,6 +627,19 @@ We now describe a high-level approach to construct $\reeb(\MM)$.
 \medskip
 \begin{theorem} \label{thm:surgery} For any regular contour $\phi$, the output of $\surgery(\MM,\phi)$ is $\reeb(\MM)$.
 \end{theorem}
+
+We require some theorems from \cite{c-tmi-04} (Theorems 6.6 and 6.7) that map paths in $\cC(\MM)$ to $\MM$.
+
+\begin{theorem} \label{thm:carr-path} For every path $P$ in $\MM$, there exists a path $Q$ in the contour tree corresponding
+to the contours passing through points in $P$.
+For every path $Q$ in the contour tree, there exists at least one path $P$ in $\MM$ through points present
+in contours involving $Q$.
+\end{theorem}
+
+\begin{theorem} \label{thm:carr-mono} For every monotone path $P$ in $\MM$, there exists a monotone path $Q$ in the contour tree to which $P$
+maps (as in the previous theorem), and vice versa.
+\end{theorem}
+
 
 The main theorem is a direct consequence of the following lemma. 
 
@@ -3374,6 +3192,244 @@ hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in t
 \pagebreak
 }
 
+\appendix
+
+\section{Old stuff}
+
+Their algorithm works in 3 simple stages.  
+The first stage consist of a top down sweep to compute what is known as the join (or merge) tree, 
+which tracks the evolution of super-level sets (whereas the contour tree tracks level sets).  
+Similarly, the second stage does a bottom up sweep to compute the split tree, which tracks sub-level sets.  
+Their main contribution is the third and final step where they present an $O(n)$ time algorithm to merge 
+together the join and split trees to get the contour tree.  
+
+There have also been some output sensitive results for computing the contour tree.  Let $t$ be the number 
+of critical points in the input mesh, which could potentially be much smaller than $n$.  
+Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for the case of 
+$3$-dimensional structured meshes (note $N$ does not show up in the running time as the mesh is structured).
+Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t'\log t')$ algorithm 
+which works for structured or unstructured meshes in any dimension, where $t'$ is the number of component 
+critical vertices.  This is provably optimal with respect to the output size but not the output structure, 
+as discussed below.
+
+
+
+
+\subsubsection{Worst Case Alternatives}
+In worst case analysis an algorithm's running time is judged in terms of its worst 
+case behavior over all inputs of a given size.  While there are benefits to this viewpoint, 
+such as robustness,  it fails to capture the whole story.  As such, many alternatives 
+have been considered.  For example, one can make assumptions on the distribution of 
+inputs, which has led to a number interesting results on average case and probabilistic 
+analysis, and also smoothed analysis \cite{st-saa-04}.  However, even without making 
+assumptions on the distribution of the input, there is still more to the story.
+For example, in the study of parametrized complexity, one takes into account other 
+parameters determined by the input other than just its size (for example the maximum 
+degree in a graph or whether it is planar).
+
+\paragraph{Output Sensitive Analysis.}
+In geometric settings often the goal is to compute a (potentially complex) geometric structure determined 
+by the input, and so it is natural to also consider how the form of this output structure affects the running time.
+One example is the standard sweep line algorithm of Bentley and Ottmann \cite{bo-arcgi-79} for line segment intersection, 
+which runs $O((n+k)\log n)$ time where k is the number of intersections, which in the worst case is quadratic.
+Another example is Chan's algorithm for computing the convex hull \cite{c-ooscha-96} which runs in $O(n\log h)$ 
+where $h$ is the number of vertices on the hull, which in the worst case is $n$.  While such algorithms represent 
+significant improvements over their worst case counterparts, their running times are only measured with respect 
+to the size of the output and not any structure it may have.
+
+\paragraph{Instance Optimality.}  
+Here we are concerned with a more refined analysis than the typical output sensitive analysis.
+Specifically, we investigate an algorithm which is instance optimal as defined by Afshani \etal \cite{abc-ioga-09}.  
+In order to prove such a result, one considers a family of allowable partitions of the input, 
+each of which is defined in terms of the structure of the output.  Each such partition then has 
+an associated entropy type cost representing the number of possible instantiations of such a partition.
+Our work differs slightly from Afshani \etal \cite{abc-ioga-09} however, in that they show any algorithm 
+(for say the convex hull) requires the minimum such cost, where as in our case it is shown that 
+any algorithm requires the maximum over these costs.
+
+
+\subsubsection{Contour Trees}
+
+\Ben{Maybe discuss contour tree applications and why they are useful here? Or maybe earlier?}
+
+\paragraph{A History of Contour Trees.}
+
+%As the the authors point out in \cite{cllr-sooscctmp-05}, by reduction from sorting, 
+%one can show that any algorithm to compute the contour tree in the worst case takes 
+%$\Omega(N+t\log t)$ time.  However, this lower bound only holds when the contour tree 
+%is very unbalanced (i.e. long and skinny) and therefore contains a sorted path with a 
+%large fraction of the vertices.  Therefore the bound of $\Omega(N+t\log t)$ is only 
+%worst case optimal.  In this paper we will consider an output sensitive approach which 
+%takes into account the shape of the contour tree.
+
+
+
+In other words, for any valid cost $C$, we can find a family of inputs where \Thm{main-alg}
+guarantees a running time of $C + t\alpha(t)$, and any height decision tree requires $\Omega(C)$ time.
+This shows that the cost function is inherent to the computation of contour trees.
+
+
+Let $f$ be a real valued function defined over a manifold embedded in $\RR^d$.  
+For any real value $\alpha$, the level set $f^{-1}(\alpha)$ can be decomposed into its connected components, or ``contours''.
+The Reeb graph is a fundamental topological structure which represents the evolution of these contours as one sweeps the surface 
+from $-\infty$ to $\infty$ according to $f$.  Often this graph is acyclic, in which case it is 
+called a \emph{contour tree}.  This is the case if, for example, the input is a surface mesh of a mountain range 
+(and the contour tree would encode when mountain peeks form and how they merge together).
+
+There is a long list of practical applications of the study of contour trees (see for example \cite{c-tmi-04} and references therein).
+Often these applications involve massive data sets, and so consequently there has also been a long series 
+of results on efficient algorithms for their computation \cite{kobps-ctsssit-97,tv-cct-98,csa-cctad-00,pc-ectls-02,cllr-sooscctmp-05}.
+Let $N$ be the total size of the input manifold, $n$ the number of vertices, and $t$ the number of critical points. (Note that in many applications $N=O(n)$.)
+As an initial step these algorithms require that all $t$ contour tree vertices be sorted.  
+In particular, \cite{cllr-sooscctmp-05} provide an $O(N+t\log t)$ time algorithm, and since in the worst case computing the contour tree 
+requires $\Omega(N+t\log t)$ time, this algorithm is optimal with respect to the size of the output.  
+Here we present the first contour tree algorithm which is optimal (for instances requiring $\Omega(N\alpha(N))$ 
+time\footnote{Where $\alpha(\cdot)$ is the inverse Ackermann function, which is $< 5$ for computation in this universe.}) 
+with respect not just to the size of the output, but also its structure.  This is accomplished by introducing a simple linear time 
+surface partitioning scheme to avoid sorting, which is likely to have applications elsewhere.  
+For all instances the bound for our algorithm either matches the best previous bound, or is faster.
+For, example when the contour tree is a balanced, our algorithm runs in $O(N\alpha(N))$ time, whereas all 
+previous algorithms had a running time of $\Omega(N+t\log t)$
+
+%In particular, the algorithm in \cite{cllr-sooscctmp-05} is worst case optimal with respect to the size of the output.  
+%Here we present the first contour tree algorithm which is (near\footnote{Our algorithm is optimal on all instance requiring $\Omega(n\alpha(n))$ time.}) 
+%optimal with respect not just to the size of the output, but also its structure.  
+%Specifically, the bound for our algorithm either matches \cite{cllr-sooscctmp-05}, or is faster.
+%For, example when the contour tree is a balanced, our algorithm runs in $O(n\alpha(n))$ time, whereas all 
+%previous algorithms had a running time of $\Omega(n\log n)$.
+
+This work can be seen as a continuation of the study of instance-optimal geometric algorithms introduced by Afshani \etal \cite{abc-ioga-09}.
+In order to prove instance optimality we use a non-trivial combinatorial discharging argument, which we believe is of independent interest.
+Of particular note is the use of heavy-light path decompositions, first introduced by Sleator and Tarjan \cite{st-dsdt-83} in their analysis of link-cut trees.
+
+
+
+% Explain why useful:  Lets you know the ``shape of your date''.  Map of the critical points where contours change.  
+%Fast extraction of seed sets in a small sized structure, which can let you do threshold queries.
+% 
+% \medskip\noindent
+% Paragraph on specific applications.  Scientific visualization, in particular combustion research.  GIS.
+
+
+\paragraph{The Issue of Sorting.}
+As discussed above, the algorithm of Carr \etal \cite{csa-cctad-00} computes the contour 
+tree by first constructing the join and split trees.  As vertices appear in sorted order 
+in any root to leaf path in the join and split trees, and in any maxima to minima path 
+in the contour tree, sorting the input vertices is a natural first step.  However, not 
+all vertices from the input need to be sorted.  In particular, Chiang \etal 
+\cite{cllr-sooscctmp-05} improved the running time by observing that as the join and 
+split trees only consist of critical points, it suffices to only sort critical points.  
+If a large fraction of the vertices appear in a single path in the join or split tree, 
+then paying to sort all the critical points is unavoidable, and therefore in the worst 
+case \cite{cllr-sooscctmp-05} is optimal.  However, if the trees are more balanced then 
+sorting all critical points together can be very costly.  Specifically, the contour tree 
+does not care about the relative ordering of vertices which do not have an 
+ancestor-descendant relationship, and so this information does not need to be computed.
+See \Fig{relative} for an example.
+
+% \begin{figure}[h]\centering
+%     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/shaded}%
+%     \hspace{.5in}
+%     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/trees2}
+%     \caption{On the left, a surface will a balanced contour tree, but whose join and split trees have long tails.  
+%     On the right (in clockwise order from the top) the contour, split and join trees.}
+%     \label{fig:sorting}
+% \end{figure}
+
+\paragraph{Suboptimal Join and Split Trees.}
+There is also a more fundamental problem with the now standard approach of first computing 
+the join and split trees in order to compute the contour tree.  In particular, this approach 
+can never lead to an algorithm that is optimal with respect to the shape of the contour tree.  
+This is because it is possible to have join and split trees which are long and skinny (i.e. 
+costly to compute) whereas the contour tree is balanced.  For example consider the case shown 
+in \Fig{sorting}, where the mesh looks like two (thickened) balanced binary trees, one upside 
+down, and joined at their roots.  In this case the contour tree is potentially cheap to 
+compute as there is no long sorted path.  However, the join and split trees will have long 
+sorted tails (consisting of the vertices in the bottom and top balanced trees, respectively), 
+and therefore require $\Omega(n\log n)$ time to compute.
+
+\subsection{Overview and Contribution}
+
+\paragraph{Algorithm Overview.}
+At a high level, the technique is rather simple.  Break the input manifold into nicely 
+behaved pieces, compute the contour tree on each piece, and then stitch together the computed 
+contour trees according to the cuts we made to break up the manifold.  Below we informally 
+describe how this is accomplished.
+\begin{compactitem}
+ \item {\bf Raining to partition.}  To start with, pick an arbitrary maxima.  Now imagine 
+ ``raining'' water down on the manifold from this maxima, i.e. mark all points which are reachable 
+ by non-ascending paths from the maxima.  Let the boundary between wet and dry portions of the 
+ manifold be called the interface (which may have different connected components).  
+ Remove the wet submanifold, and invert the remaining pieces
+ of the original manifold.  Now recursively rain in each one of these pieces, but rather than 
+ picking an arbitrary maxima, start from the portion of the interface that cut that piece off.
+ 
+ The benefit of this partitioning is that each resulting piece 
+ is maxima dominant, i.e. there is a single maxima that has a non-ascending path to each point.  
+ This implies the contour tree of this submanifold is the same as its split tree, or in other words 
+ its contour tree is a rooted binary tree. 
+ 
+ %
+ \item {\bf Painting trees.}  For each maxima dominant piece we want to compute the split 
+ tree without sorting all the vertices.  For conceptual ease lets first flip the submanifold 
+ (i.e., it is now minima dominant and we compute the join tree).  Now arbitrarily pick a maxima 
+ and spill paint from it, specifically color all edges and vertices of the mesh that are reachable 
+ from the maxima by descending paths.  Now go to each other maxima and spill a different color, 
+ but be aware that paints do not mix, i.e. if we reach a vertex that was previosly explored 
+ by another color then we do not explore it.
+ 
+ This procedure partitions the set of critical points into color classes.  Clearly each color 
+ class is connected in the manifold.  Suppose each class was also connected in the join tree.  
+ In this case we partitioned the join tree into a set of descending paths, each of which 
+ can be constructed by sorting the critical points in a class.  Roughly speaking, 
+ these paths can then be joined together by what amounts to doing a post-order traversal of the tree.
+ However, we may not be so lucky and the color classes may not be connected in the 
+ tree.  This turns out not to be a problem, but it requires proper data-structure use. 
+%  
+%  Now suppose we were lucky and the spilling of paint in the manifold corresponded with a paint 
+%  spilling in the join tree, i.e. the color classes of the critical points partition the join 
+%  tree into disjoint descending paths, each containing one leaf.   In this case 
+%  we have partitioned the tree into branches, and so the tree can be formed by gluing these 
+%  branches together.  Intuitively (i.e. not exactly true), if two branches glue together then 
+%  it means there is a join vertex which got colored by the respective colors of each branch 
+%  (only one of these colors actually explored the vertex in the mesh and this is the ``main'' 
+%  branch you are gluing into).  Therefore, the tree can be constructed by starting at the leaf 
+%  of the trunk (i.e. the branch with the global minima) and recursively building the subtrees 
+%  while walking towards the root.  In other words we are building the tree by doing a post-order traversal.
+%  Unfortunately, we may not be so lucky and the color classes may not appear contiguously in 
+%  the tree.  In this case we can still build the tree in this leaf first fashion, but doing so 
+%  efficiently requires the use of data-structures.
+\end{compactitem}
+
+\paragraph{Lower Bound Overview.}
+In order to show that our algorithm for computing the join tree is optimal we consider paritioing the tree into disjoint 
+descending paths, each containing a leaf.  It turns out that each such partition into paths, $P$, 
+defines a lower bound of $\sum_{p\in P} |p|\log|p|$ for computing the contour tree, as you need to know the 
+sorted order of the vertices along each path in order to determine the tree.
+Specifically, we show that there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, 
+all of which have the same defining mesh, and for which each sorted order of each group of saddles determines a different join tree.
+
+The instance optimality of our algorithm then follows, as we also show that there is a particular path decomposition 
+whose cost upper bounds our.  Specifically, we assign a weight to each node in the tree which is determined by 
+the painting procedure described above (which represents the time it takes to process this node).  
+The path decomposition then turns out to be the heavy-light path decomposition 
+described by Sleator and Tarjan \cite{st-dsdt-83}, according to this weight function.
+However, this decomposition is just the first step in the analysis, which 
+requires further case analysis depending on the relative size of the length of each path 
+and the weights of its vertices.
+
+\paragraph{Our Contribution.}
+Our contribution can be broken into three main aspects.  The first two are algorithmic.  Namely, 
+first we describe a new linear time manifold partitioning scheme which breaks the manifold into 
+``extremum'' dominant submanifolds.  
+Second, we describe how to compute join trees optimally with respect to shape of the tree.
+As the contour tree of each submanifold is (roughly) equal to its join tree, this leads to an 
+optimal algorithm for the contour tree of the input manifold.  
+Therefore, our third and final contribution is proving the optimality of this result, which 
+requires a non-trivial amount of work, and uses techniques we believe to be of independent interest.
+
+\paragraph{Organization.}
+\Ben{To be Written}
 
 
 \end{document}
