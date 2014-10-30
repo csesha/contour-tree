@@ -1,290 +1,307 @@
-@preamble{" \providecommand{\CNFX}[1]{{\em{\textrm{(#1)}}}} " }
-@preamble{" \providecommand{\CNFSoCG}{\CNFX{SoCG}} "}
-@preamble{" \providecommand{\CNFFOCS}{\CNFX{FOCS}} "}
-@preamble{" \providecommand{\CNFSODA}{\CNFX{SODA}} "}
-@preamble{" \providecommand{\CNFSTOC}{\CNFX{STOC}} "}
-@preamble{" \providecommand{\CNFWADS}{\CNFX{WADS}} "}%
+% This file was created with JabRef 2.8.
+% Encoding: Cp1252
 
-@string{JACM   = "J. Assoc. Comput. Mach."}
-@string{DCG    = "Discrete Comput. Geom."}
-@string{CGTA   = "Comput. Geom. Theory Appl."}
-@string{FOCS_1987 = "Proc. 28th Annu. IEEE Sympos. Found. Comput. Sci. \CNFFOCS"}
-@string{FOCS_1994 = "Proc. 35th Annu. IEEE Sympos. Found. Comput. Sci. \CNFFOCS"}
-@string{FOCS_2009 = "Proc. 50th Annu. IEEE Sympos. Found. Comput. Sci. \CNFFOCS"}
-@string{WADS_2003 = "Proc. 8th Workshop Algorithms Data Struct. \CNFWADS"}
-@string{SOCG_1997 = "Proc. 13th Annu.  Sympos. Comput. Geom. \CNFSoCG"}
-@string{SOCG_1998 = "Proc. 14th Annu.  Sympos. Comput. Geom. \CNFSoCG"}
-@string{SOCG_2003 = "Proc. 19th Annu.  Sympos. Comput. Geom. \CNFSoCG"}
-@string{SODA_2000 = "Proc. 11th ACM-SIAM Sympos. Discrete Algs. \CNFSODA"}
+@STRING{CGTA = {Computational Geometry: Theory and Applications}}
 
+@STRING{DCG = {Discrete and Computational Geometry}}
 
-@inproceedings{c-mosga-94,
-  author    = {K. L. Clarkson},
-  title     = {More Output-Sensitive Geometric Algorithms (Extended Abstract)},
-  booktitle = FOCS_1994,
-  year      = {1994},
-  pages     = {695--702},
-  url       = {http://doi.ieeecomputersociety.org/10.1109/SFCS.1994.365723},
-  doi       = {10.1109/SFCS.1994.365723},
-  timestamp = {Thu, 02 Oct 2014 18:16:44 +0200},
-  biburl    = {http://dblp.uni-trier.de/rec/bib/conf/focs/Clarkson94},
-  bibsource = {dblp computer science bibliography, http://dblp.org}
-}
+@STRING{FOCS = {Proceedings of the Foundations of Computer Science (FOCS)}}
 
-@inproceedings{bdeilmt-osacnnd-03,
-  author       = {D. Bremner and E. Demaine and J. Erickson and
-                  J. Iacono and S. Langerman and P. Morin and
-                  G. Toussaint},
-  title        = {Output-Sensitive Algorithms for Computing
-                  Nearest-Neighbor Decision Boundaries},
-  booktitle    = WADS_2003,
-  year         = {2003},
-  pages        = {451--461},
-}
+@STRING{JACM = {Journal of the ACM}}
 
-@article{c-ooscha-96,
-  author       = {T. Chan},
-  title        = {Optimal Output-Sensitive Convex Hull Algorithms in
-                  Two and Three Dimensions},
-  journal      = DCG,
-  year         = {1996},
-  volume       = {16},
-  number       = {4},
-  pages        = {361--368},
-  url          = {http://dx.doi.org/10.1007/BF02712873},
-  doi          = {10.1007/BF02712873},
-  timestamp    = {Thu, 02 Oct 2014 18:09:50 +0200},
-  biburl       =
-                  {http://dblp.uni-trier.de/rec/bib/journals/dcg/Chan96},
-  bibsource    = {dblp computer science bibliography, http://dblp.org}
-}
+@STRING{SOCG = {Proceedings of the Symposium on Computational Geometry (SoCG)}}
 
-@inproceedings{gm-osacvg-87,
-  author       = {S. K. Ghosh and D. M. Mount},
-  title        = {An Output Sensitive Algorithm for Computing
-                  Visibility Graphs},
-  booktitle    = FOCS_1987,
-  year         = {1987},
-  pages        = {11--19},
-  url          = {http://doi.ieeecomputersociety.org/10.1109/SFCS.1987.6},
-  doi          = {10.1109/SFCS.1987.6},
-  biburl       = {http://dblp.uni-trier.de/rec/bib/conf/focs/GhoshM87},
-  bibsource    = {dblp computer science bibliography, http://dblp.org}
-}
+@STRING{SODA = {Proceedings of the Symposium on Discrete Algorithms}}
 
-@article{st-saa-04,
-  author       = {D. Spielman and S. Teng},
-  title        = {Smoothed analysis of algorithms: Why the simplex
-                  algorithm usually takes polynomial time},
-  journal      = JACM,
-  year         = {2004},
-  volume       = {51},
-  number       = {3},
-  pages        = {385--463},
-  url          = {http://doi.acm.org/10.1145/990308.990310},
-  doi          = {10.1145/990308.990310},
-  timestamp    = {Thu, 02 Oct 2014 21:15:19 +0200},
-  biburl       =
-                  {http://dblp.uni-trier.de/rec/bib/journals/jacm/SpielmanT04},
-  bibsource    = {dblp computer science bibliography, http://dblp.org}
-}
+@STRING{WADS = {Proceedings of the Workshop on Algorithms and Data Structures}}
 
-@article{bo-arcgi-79,
-  keyent       = {bo-arcgi-79},
-  author       = {J. Bentley and T. Ottmann},
-  title        = {Algorithms for reporting and counting geometric intersections},
-  journal      = {IEEE Trans. Comput.},
-  volume       = {C-28},
-  number       = 9,
-  month        = sep,
-  year         = 1979,
-  pages        = {643--647}
-}
-
-
-@inproceedings{abc-ioga-09,
-  author    = {P. Afshani and
-               J. Barbay and
-               T. Chan},
-  title     = {Instance-Optimal Geometric Algorithms},
-  booktitle = FOCS_2009,
-  year      = {2009},
-  pages     = {129--138},
-  crossref  = {DBLP:conf/focs/2009},
-  url       = {http://doi.ieeecomputersociety.org/10.1109/FOCS.2009.34},
-  doi       = {10.1109/FOCS.2009.34},
+@INPROCEEDINGS{abc-ioga-09,
+  author = {P. Afshani and J. Barbay and T. Chan},
+  title = {Instance-Optimal Geometric Algorithms},
+  booktitle = FOCS,
+  year = {2009},
+  pages = {129--138},
+  bibsource = {dblp computer science bibliography, http://dblp.org},
+  biburl = {http://dblp.uni-trier.de/rec/bib/conf/focs/AfshaniBC09},
+  crossref = {DBLP:conf/focs/2009},
+  doi = {10.1109/FOCS.2009.34},
   timestamp = {Sun, 19 Oct 2014 21:27:42 +0200},
-  biburl    = {http://dblp.uni-trier.de/rec/bib/conf/focs/AfshaniBC09},
-  bibsource = {dblp computer science bibliography, http://dblp.org}
+  url = {http://doi.ieeecomputersociety.org/10.1109/FOCS.2009.34}
 }
 
-@article{st-dsdt-83,
-  author    = {D. Sleator and
-               R. Tarjan},
-  title     = {A Data Structure for Dynamic Trees},
-  journal   = {J. Comput. Syst. Sci.},
-  year      = {1983},
-  volume    = {26},
-  number    = {3},
-  pages     = {362--391},
-  url       = {http://dx.doi.org/10.1016/0022-0000(83)90006-5},
-  doi       = {10.1016/0022-0000(83)90006-5},
-  timestamp = {Sun, 19 Oct 2014 21:26:20 +0200},
-  biburl    = {http://dblp.uni-trier.de/rec/bib/journals/jcss/SleatorT83},
-  bibsource = {dblp computer science bibliography, http://dblp.org}
+@INPROCEEDINGS{csa-cctad-00,
+  author = {H. Carr and J. Snoeyink and U. Axen},
+  title = {Computing contour trees in all dimensions},
+  booktitle = SODA,
+  year = {2000},
+  pages = {918-926},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+  crossref = {DBLP:conf/soda/2000},
+  ee = {http://dl.acm.org/citation.cfm?id=338219.338659}
 }
 
-@phdthesis{c-tmi-04,
-  author    = {H. Carr},
-  school    = {University of British Columbia},
-  title     = {Topological Manipulation of Isosurfaces},
-  year      = 2004
+@INPROCEEDINGS{cehnp-lrbm-03,
+  author = {K. Cole-McLaughlin and H. Edelsbrunner and J. Harer and V. Natarajan
+	and V. Pascucci},
+  title = {Loops in reeb graphs of 2-manifolds},
+  booktitle = SOCG,
+  year = {2003},
+  pages = {344-350},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+  crossref = {DBLP:conf/compgeom/2003},
+  ee = {http://doi.acm.org/10.1145/777792.777844}
 }
 
-@inproceedings{kobps-ctsssit-97,
-  author    = {M. van Kreveld and
-               R. van Oostrum and
-               C. Bajaj and
-               V. Pascucci and
-               D. Schikore},
-  title     = {Contour Trees and Small Seed Sets for Isosurface Traversal},
-  booktitle = SOCG_1997,
-  year      = {1997},
-  pages     = {212-220},
-  ee        = {http://doi.acm.org/10.1145/262839.269238},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
+@TECHREPORT{BaKr+98,
+  author = {Bajaj, C. and Kreveld, M.~van and Oostrum, R.~W.~van and Pascucci,
+	V. and Schikore, D.~R.},
+  title = {Contour trees and small seed sets for isosurface traversal},
+  institution = {Department of Information and Computing Sciences, Utrecht University},
+  year = {1998},
+  number = {UU-CS-1998-25},
+  pubcat = {techreport},
+  urlpdf = {{http://www.cs.uu.nl/research/techreps/repo/CS-1998/1998-25.pdf}},
+  urlps = {{http://www.cs.uu.nl/research/techreps/repo/CS-1998/1998-25.ps.gz}}
 }
 
-@inproceedings{tv-cct-98,
-  author    = {S. Tarasov and
-               M. Vyalyi},
-  title     = {Construction of Contour Trees in 3D in ${O}(n \log n)$ Steps},
-  booktitle = SOCG_1998,
-  year      = {1998},
-  pages     = {68-75},
-  ee        = {http://doi.acm.org/10.1145/276884.276892},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@inproceedings{csa-cctad-00,
-  author    = {H. Carr and
-               J. Snoeyink and
-               U. Axen},
-  title     = {Computing contour trees in all dimensions},
-  booktitle = SODA_2000,
-  year      = {2000},
-  pages     = {918-926},
-  ee        = {http://dl.acm.org/citation.cfm?id=338219.338659},
-  crossref  = {DBLP:conf/soda/2000},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@article{cllr-sooscctmp-05,
-  author    = {Y. Chiang and
-               T. Lenz and
-               X. Lu and
-               G. Rote},
-  title     = {Simple and optimal output-sensitive construction of contour
-               trees using monotone paths},
-  journal   = CGTA,
-  volume    = {30},
-  number    = {2},
-  year      = {2005},
-  pages     = {165-195},
-  ee        = {http://dx.doi.org/10.1016/j.comgeo.2004.05.002},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@inproceedings{pc-ectls-02,
-  author    = {V. Pascucci and
-               K. Cole-McLaughlin},
-  title     = {Efficient Computation of the Topology of Level Set},
-  booktitle = {IEEE Visualization},
-  year      = {2002},
-  pages     = {187-194},
-  ee        = {http://doi.ieeecomputersociety.org/10.1109/VISUAL.2002.1183774},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@inproceedings{cehnp-lrbm-03,
-  author    = {K. Cole-McLaughlin and
-               H. Edelsbrunner and
-               J. Harer and
-               V. Natarajan and
-               V. Pascucci},
-  title     = {Loops in reeb graphs of 2-manifolds},
-  booktitle = SOCG_2003,
-  year      = {2003},
-  pages     = {344-350},
-  ee        = {http://doi.acm.org/10.1145/777792.777844},
-  crossref  = {DBLP:conf/compgeom/2003},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@article{sk-crgacs-91,
-  author    = {Y. Shinagawa and 
-	      T. Kunii},
-  title     = {Constructing a Reeb Graph Automatically from Cross Sections},
-  journal   = {IEEE Comput. Graphics Appl.},
-  volume    = {11},
-  number    = {6},
-  year      = {1991},
-  pages     = {44-51}
-}
-
-@inproceedings{MoWe13,
-  author    = {D. Morozov and G. Weber},
-  title     = {Distributed merge trees},
-  booktitle = {Proceedings of Symposium on Principles and Practice of Parallel Programming},
-  year      = {2013},
-  pages     = {93-102}
-}
-
-
-@inproceedings{BeWe+11,
-  author    = {K. Beketayev and G. Weber and M. Haranczyk and P.-T. Bremer and M. Hlawitschka and B. Hamann},
-  title     = {Visualization of topology of transformation pathways in complex chemical systems},
+@INPROCEEDINGS{BeWe+11,
+  author = {K. Beketayev and G. Weber and M. Haranczyk and P.-T. Bremer and M.
+	Hlawitschka and B. Hamann},
+  title = {Visualization of topology of transformation pathways in complex chemical
+	systems},
   booktitle = {Computer Graphics Forum (EuroVis 2011)},
-  year      = {2011},
-  pages     = {663-672}
+  year = {2011},
+  pages = {663-672}
 }
 
-@article{BrWe+10,
-  author    = {P.-T. Bremer and G. Weber and V. Pascucci and M. Day and J. Bell},
-  title     = {Analyzing and tracking burning structures in lean premixed hydrogen flames},
-  journal   = {IEEE Transactions on Visualization and Computer Graphics},
-  volume    = {16},
-  number    = {2},
-  year      = {2010},
-  pages     = {248-260}
+@ARTICLE{bo-arcgi-79,
+  author = {J. Bentley and T. Ottmann},
+  title = {Algorithms for reporting and counting geometric intersections},
+  journal = {IEEE Trans. Comput.},
+  year = {1979},
+  volume = {C-28},
+  pages = {643--647},
+  number = {9},
+  month = sep,
+  keyent = {bo-arcgi-79}
 }
 
-@article{BrWe+11,
-  author    = {P.-T. Bremer and G. Weber and J. Tierny and V. Pascucci and M. Day and J. Bell},
-  title     = {Analyzing and tracking burning structures in lean premixed hydrogen flames},
-  journal   = {IEEE Transactions on Visualization and Computer Graphics},
-  volume    = {17},
-  number    = {9},
-  year      = {2011},
-  pages     = {1307-1325}
+@INPROCEEDINGS{BoRu63,
+  author = {R. Boyell and H. Ruston},
+  title = {Hybrid techniques for real-time radar simulation},
+  booktitle = {Proceedings of Fall Joint Computer Conference},
+  year = {1963},
+  pages = {445-458},
+  owner = {scomand},
+  timestamp = {2014.10.29}
 }
 
-@article{LaBe+06,
-  author    = {D. Laney and P.-T. Bremer and A. Macarenhas and P. Miller, and V. Pascucci},
-  title     = {Understanding the structure of the turbulent mixing layer in hydrodynamic instabilities},
-  journal   = {IEEE Transactions on Visualization and Computer Graphics},
-  volume    = {12},
-  number    = {6},
-  year      = {2006},
-  pages     = {1053-1060}
+@ARTICLE{BrWe+10,
+  author = {P.-T. Bremer and G. Weber and V. Pascucci and M. Day and J. Bell},
+  title = {Analyzing and tracking burning structures in lean premixed hydrogen
+	flames},
+  journal = {IEEE Transactions on Visualization and Computer Graphics},
+  year = {2010},
+  volume = {16},
+  pages = {248-260},
+  number = {2}
 }
 
+@ARTICLE{BrWe+11,
+  author = {P.-T. Bremer and G. Weber and J. Tierny and V. Pascucci and M. Day
+	and J. Bell},
+  title = {Analyzing and tracking burning structures in lean premixed hydrogen
+	flames},
+  journal = {IEEE Transactions on Visualization and Computer Graphics},
+  year = {2011},
+  volume = {17},
+  pages = {1307-1325},
+  number = {9}
+}
 
-@inproceedings{MaGr+11,
-  author    = {A. Mascarenhas and R. Grout and P.-T. Bremer and V. Pascucci and E. Hawkes and J. Chen},
-  title     = {Topological feature extraction for comparison of length scales in terascale combustion simulation data},
-  booktitle = {Topological Methods in Data Analysis and Visualization: Theory, Algorithms, and Applications},
-  year      = {2011},
-  pages     = {229-240}
+@INPROCEEDINGS{bdeilmt-osacnnd-03,
+  author = {D. Bremner and E. Demaine and J. Erickson and J. Iacono and S. Langerman
+	and P. Morin and G. Toussaint},
+  title = {Output-Sensitive Algorithms for Computing Nearest-Neighbor Decision
+	Boundaries},
+  booktitle = WADS,
+  year = {2003},
+  pages = {451--461}
+}
+
+@PHDTHESIS{c-tmi-04,
+  author = {H. Carr},
+  title = {Topological Manipulation of Isosurfaces},
+  school = {University of British Columbia},
+  year = {2004}
+}
+
+@ARTICLE{c-ooscha-96,
+  author = {T. Chan},
+  title = {Optimal Output-Sensitive Convex Hull Algorithms in Two and Three
+	Dimensions},
+  journal = DCG,
+  year = {1996},
+  volume = {16},
+  pages = {361--368},
+  number = {4},
+  bibsource = {dblp computer science bibliography, http://dblp.org},
+  biburl = {http://dblp.uni-trier.de/rec/bib/journals/dcg/Chan96},
+  doi = {10.1007/BF02712873},
+  timestamp = {Thu, 02 Oct 2014 18:09:50 +0200},
+  url = {http://dx.doi.org/10.1007/BF02712873}
+}
+
+@ARTICLE{cllr-sooscctmp-05,
+  author = {Y. Chiang and T. Lenz and X. Lu and G. Rote},
+  title = {Simple and optimal output-sensitive construction of contour trees
+	using monotone paths},
+  journal = CGTA,
+  year = {2005},
+  volume = {30},
+  pages = {165-195},
+  number = {2},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+  ee = {http://dx.doi.org/10.1016/j.comgeo.2004.05.002}
+}
+
+@INPROCEEDINGS{c-mosga-94,
+  author = {K. L. Clarkson},
+  title = {More Output-Sensitive Geometric Algorithms},
+  booktitle = FOCS,
+  year = {1994},
+  pages = {695--702},
+  bibsource = {dblp computer science bibliography, http://dblp.org},
+  biburl = {http://dblp.uni-trier.de/rec/bib/conf/focs/Clarkson94},
+  doi = {10.1109/SFCS.1994.365723},
+  timestamp = {Thu, 02 Oct 2014 18:16:44 +0200},
+  url = {http://doi.ieeecomputersociety.org/10.1109/SFCS.1994.365723}
+}
+
+@ARTICLE{FrMo67,
+  author = {H. Freeman and S. Morse},
+  title = {On Searching A Contour Map for a Given Terrain Elevation Profile},
+  journal = {Journal of the Franklin Institute},
+  year = {1967},
+  volume = {284},
+  pages = {1-25},
+  number = {1},
+  owner = {scomand},
+  timestamp = {2014.10.29}
+}
+
+@INPROCEEDINGS{gm-osacvg-87,
+  author = {S. K. Ghosh and D. M. Mount},
+  title = {An Output Sensitive Algorithm for Computing Visibility Graphs},
+  booktitle = FOCS,
+  year = {1987},
+  pages = {11--19},
+  bibsource = {dblp computer science bibliography, http://dblp.org},
+  biburl = {http://dblp.uni-trier.de/rec/bib/conf/focs/GhoshM87},
+  doi = {10.1109/SFCS.1987.6},
+  url = {http://doi.ieeecomputersociety.org/10.1109/SFCS.1987.6}
+}
+
+@INPROCEEDINGS{kobps-ctsssit-97,
+  author = {M. van Kreveld and R. van Oostrum and C. Bajaj and V. Pascucci and
+	D. Schikore},
+  title = {Contour Trees and Small Seed Sets for Isosurface Traversal},
+  booktitle = SOCG,
+  year = {1997},
+  pages = {212-220},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+  ee = {http://doi.acm.org/10.1145/262839.269238}
+}
+
+@ARTICLE{LaBe+06,
+  author = {D. Laney and P.-T. Bremer and A. Macarenhas and P. Miller and V.
+	Pascucci},
+  title = {Understanding the structure of the turbulent mixing layer in hydrodynamic
+	instabilities},
+  journal = {IEEE Transactions on Visualization and Computer Graphics},
+  year = {2006},
+  volume = {12},
+  pages = {1053-1060},
+  number = {6}
+}
+
+@INPROCEEDINGS{MaGr+11,
+  author = {A. Mascarenhas and R. Grout and P.-T. Bremer and V. Pascucci and
+	E. Hawkes and J. Chen},
+  title = {Topological feature extraction for comparison of length scales in
+	terascale combustion simulation data},
+  booktitle = {Topological Methods in Data Analysis and Visualization: Theory, Algorithms,
+	and Applications},
+  year = {2011},
+  pages = {229-240}
+}
+
+@INPROCEEDINGS{MoWe13,
+  author = {D. Morozov and G. Weber},
+  title = {Distributed merge trees},
+  booktitle = {Proceedings of Symposium on Principles and Practice of Parallel Programming},
+  year = {2013},
+  pages = {93-102}
+}
+
+@INPROCEEDINGS{pc-ectls-02,
+  author = {V. Pascucci and K. Cole-McLaughlin},
+  title = {Efficient Computation of the Topology of Level Set},
+  booktitle = {IEEE Visualization},
+  year = {2002},
+  pages = {187-194},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+  ee = {http://doi.ieeecomputersociety.org/10.1109/VISUAL.2002.1183774}
+}
+
+@ARTICLE{sk-crgacs-91,
+  author = {Y. Shinagawa and T. Kunii},
+  title = {Constructing a Reeb Graph Automatically from Cross Sections},
+  journal = {IEEE Comput. Graphics Appl.},
+  year = {1991},
+  volume = {11},
+  pages = {44-51},
+  number = {6}
+}
+
+@ARTICLE{st-dsdt-83,
+  author = {D. Sleator and R. Tarjan},
+  title = {A Data Structure for Dynamic Trees},
+  journal = {Journal of Computing and System Sciences},
+  year = {1983},
+  volume = {26},
+  pages = {362--391},
+  number = {3},
+  bibsource = {dblp computer science bibliography, http://dblp.org},
+  biburl = {http://dblp.uni-trier.de/rec/bib/journals/jcss/SleatorT83},
+  doi = {10.1016/0022-0000(83)90006-5},
+  timestamp = {Sun, 19 Oct 2014 21:26:20 +0200},
+  url = {http://dx.doi.org/10.1016/0022-0000(83)90006-5}
+}
+
+@ARTICLE{st-saa-04,
+  author = {D. Spielman and S. Teng},
+  title = {Smoothed analysis of algorithms: Why the simplex algorithm usually
+	takes polynomial time},
+  journal = JACM,
+  year = {2004},
+  volume = {51},
+  pages = {385--463},
+  number = {3},
+  bibsource = {dblp computer science bibliography, http://dblp.org},
+  biburl = {http://dblp.uni-trier.de/rec/bib/journals/jacm/SpielmanT04},
+  doi = {10.1145/990308.990310},
+  timestamp = {Thu, 02 Oct 2014 21:15:19 +0200},
+  url = {http://doi.acm.org/10.1145/990308.990310}
+}
+
+@INPROCEEDINGS{tv-cct-98,
+  author = {S. Tarasov and M. Vyalyi},
+  title = {Construction of Contour Trees in 3D in ${O}(n \log n)$ Steps},
+  booktitle = SOCG,
+  year = {1998},
+  pages = {68-75},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+  ee = {http://doi.acm.org/10.1145/276884.276892}
 }
 
