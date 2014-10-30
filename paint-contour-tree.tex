@@ -63,6 +63,7 @@
 \newcommand{\nbd}{\Gamma}
 \newcommand{\outnbd}{\Gamma^+}
 
+\newcommand{\bF}{{\bf F}}
 \newcommand{\bT}{{\bf T}}
 
 \newcommand{\cA}{{\cal A}}
@@ -229,16 +230,15 @@ and there is much past work (theoretical and practical) on algorithms for constr
 
 Suppose $\MM$ has $n$ vertices, $N$ facets, and $t$ critical points.
 A classic result of Carr, Snoeyink, and Axen (2000) give an algorithm that takes $O(n\log n + N\alpha(N))$ time
-(where $\alpha(\cdot)$ is the inverse Ackermann function). A further improvement to $O(t\log t + N\alpha(N))$ time
+(where $\alpha(\cdot)$ is the inverse Ackermann function). A further improvement to $O(t\log t + N)$ time
 was given by Chiang et al. All these algorithms involve a global sort of the critical points,
 which is a major bottleneck for large datasets. Unfortunately, lower bounds of $\Omega(t\log t)$ also exist.
 
 We present the first algorithm that can avoid the global sort and has a refined time complexity that
 depends on the contour tree structure. Intuitively, if the tree is short and fat, we get significant improvements 
 in running time. For a partition of the contour tree into a set of descending paths, $P$,
-our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + N\alpha(N))$. If the contour tree is a balanced
-binary tree, our running time is $O(n + N\alpha(N))$. Moreover, we prove a lower bound of
-exactly $\Omega(\sum_{p \in P} |p|\log |p|)$ for computing contour trees, thereby showing
+our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t))$. Moreover, we prove a general lower bound of
+$\Omega(\sum_{p \in P} |p|\log |p|)$ for computing contour trees, showing
 that the tree structure must play a role in the time complexity.
 
 
@@ -266,11 +266,11 @@ In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balan
 while previous algorithms ran in $O(N+t\log t)$ (where $t$ is the size of the contour tree).
 %In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balanced, yet still 
 %matches the previous worst case $O(N+n\log n)$ bound when the tree is long and skinny.
-}
 
 In order to produce our instance optimal results we introduce a novel linear time surface partitioning scheme which is likely to have applications elsewhere.
 Moreover, in order to prove the optimality we use a non-trivial combinatorial discharging argument which we believe is of independent interest and in particular uses 
 such tools as heavy-light path decompositions.
+}
 \end{abstract}
 
 
@@ -330,7 +330,7 @@ or downwards, never both.
 \label{def:path} For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
 \end{definition}
 
-\begin{theorem} \label{thm:alg-main} Consider $f:\MM \mapsto \RR$ that is PL-Morse, where the contour tree $T$
+\begin{theorem} \label{thm:main-alg} Consider $f:\MM \mapsto \RR$ that is PL-Morse, where the contour tree $T$
 has maximum degree\footnote{The maximum degree $3$ assumption is primarily there to simplify the presentation and proof. Our algorithm
 does not need the assumption.} $3$. There is an algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implictly by the algorithm).
@@ -343,11 +343,32 @@ An obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diamet
 But if $P(T)$ is a rooted, balanced, binary tree, then $\sum_{p \in P(T)} |p|\log |p| = O(t)$.
 Our running time is now $O(t\alpha(t))$, a significant improvement from $O(t\log t)$.
 Consider the example of \Fig{sorting} extended to a larger binary tree both above and below.
-(In the example, $t = \Omega(n)$.) The running time promised by \Thm{alg-main}
+(In the example, $t = \Omega(n)$.) The running time promised by \Thm{main-alg}
 is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$.
 
+We complement \Thm{main-alg} with an almost matching lower bound. We show that the complexity
+of $\sum_{p \in P(T)} |p|\log |p|$ is required for any contour tree algorithm. The exact phrasing
+of the lower bound requires some care. Consider the $d=2$ (terrain) case. For any $f$,
+we use $\cost(f)$ to denote $\sum_{p \in P(T)} |p|\log |p|$ for the specific $P(T)$
+given in \Thm{main-alg}. Ideally, we would like to argue that any contour-tree algorithm
+must pay $\cost(f)$ for $f$. But this is obviously false, since one could consider an algorithm
+that hard codes the answer for $f$ and merely checks this answer.
 
+Instead, call a possible cost $C$ \emph{valid} if $C = \cost(f)$ for some $f$\footnote{If one is concerned
+that $C$ might be irrational, define valid if $2^C = 2^{\cost(f)}$.}. We prove
+a refined lower bound matching \Thm{main-alg}. A \emph{height decision tree} is an algorithm
+that is allowed aribtrary computation on the domain $\MM$, and is an algebraic decision
+tree over the heights. The running time is simply the number of queries made.
 
+\begin{theorem} \label{thm:main-lb} For any valid cost $C$, there exists a set $\bF$ of functions over 2-dimensions
+with the following properties.
+For all $f \in \bF$, $\cost(f) = C$. Any height decision tree that correctly computes
+the contour tree on all of $\bF$ has an average case (uniform over $\bF$) running time of $\Omega(C)$.
+\end{theorem}
+
+In other words, for any valid cost $C$, we can find a family of inputs where \Thm{main-alg}
+guarantees a running time of $C + t\alpha(t)$, and any height decision tree requires $\Omega(C)$ time.
+This shows that the cost function is inherent to the computation of contour trees.
 
 
 Let $f$ be a real valued function defined over a manifold embedded in $\RR^d$.  
