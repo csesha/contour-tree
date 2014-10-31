@@ -163,6 +163,7 @@
 \newcommand{\cut}{{\tt cut}}
 \newcommand{\cont}{\psi}
 \newcommand{\cost}{\mathop{cost}}
+\newcommand{\costs}{\mathop{costs}}
 \newcommand{\h}{att}
 \newcommand{\init}{{\tt init}}
 \newcommand{\jc}{\cJ_C}
@@ -237,7 +238,9 @@ which is a major bottleneck for large datasets. Unfortunately, lower bounds of $
 We present the first algorithm that can avoid the global sort and has a refined time complexity that
 depends on the contour tree structure. Intuitively, if the tree is short and fat, we get significant improvements 
 in running time. For a partition of the contour tree into a set of descending paths, $P$,
-our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t))$. Moreover, we prove a general lower bound of
+our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$, which is 
+always bounded by $O(t\log t + N)$ and is $O(N+t\alpha(t))$ for balanced trees. 
+Moreover, we prove a general lower bound of
 $\Omega(\sum_{p \in P} |p|\log |p|)$ for computing contour trees, showing
 that the tree structure must play a role in the time complexity.
 
@@ -277,15 +280,15 @@ such tools as heavy-light path decompositions.
 \section{Introduction}
 
 Massive geometric data is often represented as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
-by considering $f$ to be piecewise linear over some mesh (simplicial complex) $\MM$ in $\RR^d$.
+by considering $f$ to be piecewise linear over some mesh (i.e. simplicial complex) $\MM$ in $\RR^d$.
 \emph{Contour trees} are a specific topological data structure used to represent and visualize
 the function $f$.
 
 It is convenient to think of $f$ as a $(d+1)$-dimensional manifold, or alternately consider
-$\MM$ in $\RR^{d+1}$ with the last coordinate (height) given by $f$. Imagine sweeping the hyperplane $x_{d+1} = h$
+$\MM$ in $\RR^{d+1}$ with the last coordinate (i.e. height) given by $f$. Imagine sweeping the hyperplane $x_{d+1} = h$
 with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection of this plane 
-with $f$ gives a set of connected components, the \emph{contours} at height $h$. At the sweeping 
-proceeds various events occur: new contours are created or destroyed, contours merge into each other,
+with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
+proceeds various events occur: new contours are created or destroyed, contours merge into each other or
 split into new components, contours acquire or lose handles. These are the relevant events where 
 the topology of the level set changes. The contour tree is a concise representation of all these events.
 
@@ -294,11 +297,11 @@ where the topology of the contours change. The vertices of the contour tree are 
 representing the important topological events. An edge connects two critical points if one event immediately ``follows"
 the other as the sweep plane makes its pass. (We provide formal definitions later.) 
 
-\Fig{relative} and \Fig{sorting} show examples of simplicial complices with heights and their contour trees.
-Think of the edges pointing downwards, so we can talk of the ``up-degree" and ``down-degree" of vertices.
-Leaves of down-degree $1$ are maxima, because a new contour is created at such point. Leaves of up-degree
-$1$ are minimum, because a contour is destroyed there. Up-degree $2$ vertices are ``joins", where contours
-merge, and down-degree $2$ vertices are ``splits". In these examples ($d=2$), contours are closed loops.
+\Fig{relative} and \Fig{sorting} show examples of simplicial complexes, with heights and their contour trees.
+Think of the contour tree edges as pointing downwards, so we can talk of the ``up-degree" and ``down-degree" of vertices.
+Leaves of down-degree $1$ are maxima, because a new contour is created at such points. Leaves of up-degree
+$1$ are minima, because a contour is destroyed there. Up-degree $2$ vertices are ``joins", where contours
+merge, and down-degree $2$ vertices are ``splits".  When $d=2$ (as in \Fig{relative}), contours are closed loops.
 In dimensions $d \geq 3$, we may have internal
 vertices of both up and down-degree $1$. They correspond to contours (which are $2$-manifolds) gaining or losing handles.
 
@@ -315,12 +318,13 @@ So we are still left with the bottleneck of sorting a large set of numbers. Unfo
 lower bound of $\Omega(t\log t)$ from Chiang et al~\cite{cllr-sooscctmp-05}, based on a construction of Bajaj et al~\cite{BaKr+98}.
 
 But this is only a worst-case bound. All previous algorithm begin by sorting (at least) the critical points, and
-pay must $\Omega(t\log t)$ for all instances. Can we beat this sorting bound? Is there a more refined version of the complexity
+hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound? Is there a more refined version of the complexity
 of computing contour trees? Our main result gives an affirmative answer. First, we require some technical definitions.
 
 In a contour tree $T$, a \emph{leaf path} is simply a contiguous path in $T$
-containing a leaf, which is also monotonic in the height values of its vertices. A leaf path runs either upwards
-or downwards, never both.
+containing a leaf, which is also monotonic in the height values of its vertices. 
+%A leaf path runs either upwards or downwards, never both.
+%
 % Then in the following two subsections 
 %we relate path decomposition costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
 
@@ -328,44 +332,88 @@ or downwards, never both.
 \label{def:path} For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
 \end{definition}
 
-\begin{theorem} \label{thm:main-alg} Consider PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
-that all critical points have distinct values, and all the contour tree has max-degree $3$. Our algorithm
+\begin{theorem} \label{thm:main-alg} Consider a PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
+that all critical points have distinct values, and the contour tree has max-degree $3$. Our algorithm
 does not need this, but it simplifies the proof and presentation.} $f:\MM \mapsto \RR$, where the contour tree $T$
 has maximum degree $3$. There is an algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
-where $P(T)$ is a specific path decomposition (constructed implictly by the algorithm).
+where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 \end{theorem}
 
 Let us interpret the running time. 
-For any path decomposition $P(T)$ and any $p \in P(T)$, obviously $|p| \leq |T| = t$.
-So the running time is clearly $O(t\log t + N)$. But this is only the case when $T$ is tall and thin.  
-An obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $P(T)$. 
+For any path decomposition $P(T)$, obviously $\sum_{p\in P(T)}|p| = |T| = t$, and 
+so the running time is $O(t\log t + N)$. But this is tight only when $T$ is tall and thin.  
+A better but still obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $P(T)$. 
 This is clearly an improvement when the tree is short and fat.
-But if $P(T)$ is a rooted, balanced, binary tree, then $\sum_{p \in P(T)} |p|\log |p| = O(t)$.
-Our running time is now $O(t\alpha(t))$, a significant improvement from $O(t\log t)$.
+In particular, for any decomposition of a rooted balanced binary tree, this gives $O(t\log\log n + t\alpha(t) + N)$, a significant improvement from $O(t\log t+N)$.
+However, our actual bound in this case gives an even further improved $O(t\alpha(t)+N)$.
+%
 Consider the example of \Fig{sorting} extended to a larger binary tree both above and below.
 (In the example, $t = \Omega(n)$.) The running time promised by \Thm{main-alg}
 is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$.
 
-We complement \Thm{main-alg} with an almost matching lower bound. We show that the complexity
+We complement \Thm{main-alg} with an almost matching lower bound, showing that the complexity
 of $\sum_{p \in P(T)} |p|\log |p|$ is required for any contour tree algorithm. The exact phrasing
-of the lower bound requires some care. Consider the $d=2$ (terrain) case. For any $f$,
-we use $\cost(f)$ to denote $\sum_{p \in P(T)} |p|\log |p|$ for the specific $P(T)$
-given in \Thm{main-alg}. Ideally, we would like to argue that any contour-tree algorithm
-must pay $\cost(f)$ for $f$. But this is obviously false, since one could consider an algorithm
+of the lower bound requires some care. Consider the $d=2$ (terrain) case, and fix a mesh $\MM$.
+As referenced in \Thm{main-alg}, for any height function $f$ our algorithm defines a 
+specific path decomposition $P(T)$\footnote{The specific decomposition used is defined in \Sec{pathDecomp}, 
+but also depends on the raining and painting procedures described in \Sec{rain} and \Sec{paint}.  
+The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}. 
+We define $\cost(f) = \sum_{p \in P(T)} |p|\log |p|$ for this specific decomposition $P(T)$.
+Ideally, we would like to argue that any contour-tree algorithm
+must pay $\cost(f)$ for $f$. 
+But this is obviously false, since one could consider an algorithm
 that hard codes the answer for $f$ and merely checks this answer.
 
-Instead, call a possible cost $C$ \emph{valid} if $C = \cost(f)$ for some $f$\footnote{If one is concerned
+Instead, call a possible cost $C$ \emph{valid} if $C = \cost(f)$ for some $f$ 
+defined over the fixed mesh $\MM$\footnote{If one is concerned
 that $C$ might be irrational, define valid if $2^C = 2^{\cost(f)}$.}. We prove
-a refined lower bound matching \Thm{main-alg}. A \emph{height decision tree} is an algorithm
-that is allowed aribtrary computation on the domain $\MM$, and is an algebraic decision
-tree over the heights. The running time is simply the number of queries made.
+a refined lower bound matching \Thm{main-alg}. 
 
-\begin{theorem} \label{thm:main-lb} Consider the set of functions $\bF_C$ that all have the same (valid) cost $C$.
-Any height decision tree that correctly computes
-the contour tree on all of $\bF$ has an average case (uniform over $\bF$) running time of $\Omega(C)$.
+\begin{definition}\label{def:hfdt}
+A \emph{height function decision tree} is an algorithm
+that is allowed arbitrary computation on the domain $\MM$, and is an algebraic decision
+tree over the heights. The running time is simply the number of queries made.
+\end{definition}
+
+\begin{theorem} \label{thm:main-lb} Consider the set of functions $\bF_C$ that all have the same (valid) cost $C$ 
+(defined over a fixed mesh $\MM$).  Any height function decision tree that correctly computes
+the contour tree on all of $\bF_C$ has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
 \end{theorem}
 
-In other words, it is not possible to improve on \Thm{main-alg} even when restricted to the subset
+% We complement \Thm{main-alg} with an almost matching lower bound, showing that the complexity
+% of $\sum_{p \in P(T)} |p|\log |p|$ is required for any contour tree algorithm. The exact phrasing
+% of the lower bound requires some care. Consider the $d=2$ (terrain) case, and fix a mesh $\MM$.
+% Now any height function $f$ (together with $\MM$) defines a specific contour tree $T$.
+% As referenced in \Thm{main-alg}, given $f$, our algorithm then defines some specific path 
+% decomposition $\overline{P}(T)$, such that the running time of our algorithm is bounded by 
+% $O(\cost(\overline{P}(T))+t\alpha(t)+N)$, where $\cost(P(T)) = \sum_{p \in P(T)} |p|\log |p|$.
+% A priori, which path decomposition this will be is unclear\footnote{The specific decomposition, defined in \Sec{pathDecomp}, 
+% depends on arbitrary choices made during the raining and painting procedures described in \Sec{rain} and \Sec{paint}.}, 
+% however we know there is some large set of potential path decompositions it lies in
+% (the exact set is defined in \Def{path2}, but for now one can think of the set of all decompositions).
+% Let $\costs(f)$ denote the set of costs of all these potential path decompositions that $f$ defines
+% (i.e. $\cost(\overline{P}(T))\in \costs(f)$).
+% 
+% Ideally, we would like to argue that any contour-tree algorithm must pay $\cost(\overline{P}(T))$ for $f$. 
+% But this is obviously false, since one could consider an algorithm
+% that hard codes the answer for $f$ and merely checks this answer.
+% Instead, call a possible cost $C$ \emph{valid} if $C \in \costs(f)$ for some $f$ 
+% defined over the fixed mesh $\MM$\footnote{If one is concerned
+% that $C$ might be irrational, define valid if $2^C = 2^{\cost(f)}$.}. We prove
+% a refined lower bound matching \Thm{main-alg}. 
+% 
+% \begin{definition} \label{def:hfdt}
+% A \emph{height function decision tree} is an algorithm
+% that is allowed arbitrary computation on the domain $\MM$, and is an algebraic decision
+% tree over the heights. The running time is simply the number of queries made.
+% \end{definition}
+% 
+% \begin{theorem} \label{thm:main-lb} Consider the set of functions $\bF_C$ (defined over a fixed mesh $\MM$) 
+% that all have the same value $C$ as a valid cost.  Any height function decision tree that correctly computes
+% the contour tree on all of $\bF_C$ has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
+% \end{theorem}
+
+In other words, it is not possible to improve on \Thm{main-alg} even when restricted to a subset
 of inputs of fixed cost.
 
 
@@ -381,7 +429,7 @@ applications of contour trees for data visualization and is an excellent referen
 There has been a long series of improved algorithms for computing contour trees.
 van Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D 
 meshes and an $O(N^2)$ algorithm for higher dimensions. 
-Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case
+Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case.
 The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N)$.
 One cannot overstate the importance of this result, since it forms the basis 
 of subsequent practical and theoretical work in computational topology applications. 
@@ -406,7 +454,7 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 
 
 \begin{figure}[h]\centering
-    \includegraphics[width=.7\linewidth,height=.3\linewidth]{figs/balanced3}
+    \includegraphics[width=.7\linewidth,height=.3\linewidth]{figs/balanced4}
     \vspace{.1in}
 
     \includegraphics[width=.7\linewidth,height=.25\linewidth]{figs/trees}
@@ -438,7 +486,7 @@ than this value.
 
 This is convenient, as we can now assume that $f$ is defined on $\RR^d$. Any point inside a boundary facet
 has a well-defined height, and this includes the infinite facet. 
-We think of $d$ as constant, and assume that $\MM$ is represented in data structures that allow constant-time traversals
+We think of $d$ as constant, and assume that $\MM$ is represented in a data structure that allow constant-time traversals of neighboring simplices
 in $\MM$ (e.g.~\cite{BoMa12}). (This is analogous to a DCEL for higher dimensions.)
 Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simplicial complex living in $\RR^{d+1}$.
 We can think of $f(x)$ as the ``height" of a point $x \in \MM$, and encoded in the representation of $\MM$. 
@@ -507,14 +555,14 @@ to be created at $x_i$ and destroyed at $x_j$.
 
 \begin{definition} \label{def:tree} The contour tree is the graph on vertex set $\cV$, where
 edges are formed as follows. For every contour class that is created at $v_i$ and destroyed $v_j$,
-there is an edge $(v_i,v_j)$. (Conventionally, edges are directed from higher function value to lower.)
+there is an edge $(v_i,v_j)$. (Conventionally, edges are directed from higher to lower function value.)
 \end{definition}
 
 We denote the contour tree of $\MM$
 by $\reeb(\MM)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
-It is not immediately obvious that this graph is a tree, but the above definition is equivalent to that of the Reeb graph of $f:\MM \rightarrow \RR$, 
-known to be a tree for PL functions defined over PL manifolds (Chapter 6 of~\cite{HaEd10}). Alternate definitions of the contour tree
-in~\cite{csa-cctad-00} imply this is a tree. We can talk about up-degrees and down-degrees in $\reeb(\MM)$
+It is not immediately obvious that this graph is a tree, but alternate definitions of the contour tree
+in~\cite{csa-cctad-00} imply this is a tree. 
+Since this tree has height values associated with the vertices, we can talk about up-degrees and down-degrees in $\reeb(\MM)$.
 We assume there are no ``multi-saddles", so up and down-degrees are at most $2$, and the total degree is at most $3$. 
 This is again a standard assumption in topological algorithms and can be achieved by vertex unfolding (Section 6.3 in~\cite{HaEd10}).
 
@@ -526,7 +574,7 @@ that intersect $B_\eps(x)$, a potentially smaller number. This up-degree
 is exactly the up-degree of $x$ in $\reeb(\MM)$. (Analogously, for down-degree.)
 When the Morse up-degree is $2$ but the up-degree is $1$, then the level set gains a handle.
 When $d=2$, this distinction is not necessary, since any point with $>1$
-Morse degrees will have some $>1$ degree in $\reeb(\MM)$.
+Morse degree will have some $>1$ degree in $\reeb(\MM)$.
 
 As Carr points out in his thesis, the term contour tree can be used for a family of related structures.
 Every vertex in $\MM$ can be asociated with an edge in $\reeb(\MM)$, and sometimes the
@@ -618,7 +666,7 @@ We now describe a high-level approach to construct $\reeb(\MM)$.
 
 \smallskip
 \begin{asparaenum}
-	\item Let $\MM' = \cut(\phi,\MM)$.
+	\item Let $\MM' = \cut(\MM,\phi)$.
 	\item Construct $\reeb(\MM')$ and let $A, B$ be the nodes corresponding to the new boundaries created
 	in $\MM'$. (One is a minima and the other is maxima.)
 	\item Since $A, B$ are leaves, they each have unique neighbors $A'$ and $B'$, respectively. Insert
@@ -646,7 +694,7 @@ maps (as in the previous theorem), and vice versa.
 The main theorem is a direct consequence of the following lemma. 
 
 \begin{lemma} \label{lem:cut} Consider a regular contour $\phi$ contained in a contour class (of an edge of $\reeb(\MM))$
-$(u,v)$ and denote $\MM' = \cut(\phi,\MM)$. Then $\cV(\reeb(\MM')) = \{\phi^+,\phi^-\} \cup \cV(\MM)$
+$(u,v)$ and denote $\MM' = \cut(\MM,\phi)$. Then $\cV(\reeb(\MM')) = \{\phi^+,\phi^-\} \cup \cV(\MM)$
 and $\cE(\reeb(\MM')) = \{(u,\phi^+),(\phi^-,v)\} \cup (\cE(\MM) \setminus (u,v))$.
 \end{lemma}
 
@@ -668,15 +716,15 @@ completing the proof.
 A useful corollary of this lemma shows that a contour actually splits the simplicial complex into
 two disconnected complexes.
 
-\begin{theorem} \label{thm:jordan} $\cut(\phi,\MM)$ consists of two
+\begin{theorem} \label{thm:jordan} $\cut(\MM,\phi)$ consists of two
 disconnected simplicial complexes.
 \end{theorem}
 
 \begin{proof} Denote (as in \Lem{cut}) the edge containing $\phi$ to be $(u,v)$. Suppose for contradiction that there is a path between vertices $u$ and $v$
-in $\MM' = \cut(\phi,\MM)$. By \Thm{carr-path}, there is a path in $\cC(\MM')$ between $u$ and $v$. Since $\phi^+$ and $\phi^-$
+in $\MM' = \cut(\MM,\phi)$. By \Thm{carr-path}, there is a path in $\cC(\MM')$ between $u$ and $v$. Since $\phi^+$ and $\phi^-$
 are leaves in $\cC(\MM')$, this path obviously cannot use edges incident to them. By \Lem{cut},
 all the edges of this path are in $\cE(\cC(\MM)) \setminus (u,v)$. So we get a cycle in $\cC(\MM)$, a contradiction.
-To show that there are exactly two connected components in $\cut(\phi,\MM)$, it suffices
+To show that there are exactly two connected components in $\cut(\MM,\phi)$, it suffices
 to see that $\cC(\MM')$ has two connected components (by \Lem{cut}) and apply \Thm{carr-path}.
 \end{proof}
 
@@ -791,9 +839,9 @@ Any path from $x$ to $\NN'$ must intersect $\lift(\phi)$, which is dry. Hence $\
 
 
 \begin{figure}[h]\centering
-    \includegraphics[width=.18\linewidth,height=.35\linewidth]{figs/orderGray1}%
-    \hspace{.8in}
-    \includegraphics[width=.18\linewidth,height=.35\linewidth]{figs/orderGray2}
+    \includegraphics[width=.25\linewidth]{figs/tent2}%
+    \hspace{.9in}
+    \includegraphics[width=.25\linewidth]{figs/tent1}
     \caption{On left, downward paint spilling only (each shade of gray represents a different color), producing a grid.  On right, flipping the direction of paint spilling.}
     \label{fig:order}
 \end{figure}
@@ -827,7 +875,7 @@ We can now let rain flow downwards, as it usually does in our world.
 	\item Initialize $\NN_1 = \NN$.
 	\item For $i$ from $1$ to $k$: 
 	\begin{compactenum}
-		\item Construct $\cut(\phi'_i,\NN_i)$, consisting of dry complex $\LL_i$ and remainder $\NN_{i+1}$.
+		\item Construct $\cut(\NN_i,\phi'_i)$, consisting of dry complex $\LL_i$ and remainder $\NN_{i+1}$.
 		\item Let the newly created boundary of $\LL_i$ be $B_i$. Invert $\LL_i$ so that $B_i$ is a maximum. Recursively
 		call $\rain(B_i,\LL_i)$.
 	\end{compactenum}
@@ -863,7 +911,7 @@ First, by \Thm{jordan}, all the pieces on which $\rain$ is invoked are disjoint.
 Second, all recursive calls are made on dry complexes.
 
 Consider the first time that $F$ is cut, say, during the call to $\rain(x,\NN)$.
-Specifically, say this happens when $\cut(\phi'_i,\NN_i)$ is constructed. 
+Specifically, say this happens when $\cut(\NN_i,\phi'_i)$ is constructed. 
 So $F$ is cut by some hyperplane into lower and upper portions (which are then triangulated).
 Since the cut is infinitesimally above an interface, the lower portion is basically wet.
 It can never be part of $\LL_1, \LL_2, \ldots$, which go into recursive calls. This portion
@@ -1067,6 +1115,7 @@ points from $\cJ(\MM) \ominus \{m_i\}$ exactly yields the edges described in the
 \end{proof}
 
 \section{Painting to compute contour trees}
+\label{sec:paint}
 
 The main algorithmic contribution is a new algorithm for computing join trees of any triangulated simplicial
 complex $\MM$.
@@ -1564,6 +1613,7 @@ For a set of nodes $U$, $A(U) = \bigcup_{u \in U} A(u)$.
 
 
 \begin{definition}
+\label{def:leafAssign}
  A \emph{leaf assignment} $\chi$ of a tree $T$ assigns \emph{two} distinct leaves to each internal vertex $v$,
  one from the left child and one from the right child subtree of $v$ (naturally if $v$ has only one child it is assigned 
  only one color).
@@ -1624,6 +1674,7 @@ As merging and deleting takes logarithmic time in the heap size for binomial hea
 \newcommand{\pathTree}{P_{\mathcal{S}}}
 \newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
 \section{Leaf assignments and path decompositions}
+\label{sec:pathDecomp}
 
 In this section, we set up a framework to analyze the time taken to compute a critical join tree $\jc(\MM)$ (see \Def{criticalJoin}).
 We adopt all notation already defined in \Sec{runTime}.  From here forward we will often assume binary trees are full binary trees 
@@ -2094,13 +2145,12 @@ In this section we provide a lower bound for the time it takes to compute a cont
 we first consider the easier case of join trees, after which the lower bound for more general contour trees will easily follow.
 
 \subsection{Join Trees}
-In this section we show that any algorithm for computing the join tree $T$ must pay at least $f_{path}(P(T))$ (see \Def{path}) for any path decomposition $P(T)$.
 
-%We say two shrubs $S_1$ and $S_2$ (of join trees of potentially different surfaces) are equivalent if there is an isomorphism, $f$,
-%between the two shrubs such that for any node $v\in S_1$ corresponding to a path of size $|v|$, $f(v)$ also corresponds to a path of size $|v|$.
-%For the purposes of the next lemma, we say two $2$-manifolds are different, if their corresponding contour trees are the different.   
+In this section we prove \Thm{main-lb}, but for join trees instead of contour trees.  Observe that given a fixed $(f,\MM)$, 
+our algorithm for computing $\jc(\MM)$ is deterministic and so the path decomposition $P=P(\jc(\MM))$ in \Thm{runtime} is fixed, 
+allowing us to define the cost, $\cost(f)=\sum_{p\in P} |p|\log|p|$.
 
-In the following note that two distinct PL surfaces can have the same graph structure defining their meshes, but different height values associated with their vertices.
+%In the following note that two distinct terrains can have the same graph structure defining their meshes, but different height values associated with their vertices.
 
 \begin{figure}[h]\centering
     \includegraphics[width=.15\linewidth]{figs/diamond}\hspace{2cm}
@@ -2112,63 +2162,118 @@ In the following note that two distinct PL surfaces can have the same graph stru
 
 \begin{lemma}
 \label{lem:pathDecomp}
-Let $T$ be a join tree, and let $P = P(T)$ any path decomposition of $T$.  %, and $\pathTree$ the corresponding shrub.  
-Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, all of which have the same defining mesh.
+Let $\cost(f)=\sum_{p\in P} |p|\log|p|$, for some height function $f$ defined over a complex $\MM$.
+Then there is a family of functions, $F$, all defined over a common triangulation in plane, 
+such that the size of $F$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two function in $F$ define the same join tree.
 \end{lemma}
 \begin{proof}
- We describe a simple mesh, with heights specified for all vertices except for the saddles.  The main idea is that 
- this mesh will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of join trees 
+ We describe a simple triangulation, with heights specified for all vertices except for the saddles.  The main idea is that 
+ this triangulation will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of join trees 
  whose size is that described in the lemma statement.
  
- First, we describe the basic building block of this input mesh, which roughly speaking corresponds to a fixed path $p\in P$.  
- Specifically, we say a \emph{diamond} of size $m$ is the following mesh.  To start, construct a cycle 
+ First, we describe the basic building block of these terrains, which roughly speaking corresponds to a fixed path $p\in P$.  
+ Specifically, we say a \emph{diamond} of size $m$ is the following terrain.  To start, construct a cycle 
  of length $m$, where the height of the $i$th vertex in the cycle is say $i/2m$.  Next, create an apex vertex at height 
  $\infty$ (or any appropriately large finite height), and add an edge between this vertex and each vertex in the cycle.  At this point 
- we have built an upside down cone with $m$ triangular faces (see \Fig{diamond}). To make this cone a closed surface we add a triangular cap at the bottom. 
- Specifically, add a $3$ cycle of vertices at heights $0$, $1/20m$, and $1/10m$, and connect each vertex of this $3$-cycle to an arbitrary distinct 
- vertex on the $m$ cycle (with matching cyclic ordering), and triangulate all remaining faces.  For consistency, if the size $m$ is $\leq 3$, the diamond 
- will be just a tetrahedron.
+ we have built an upside down cone with $m$ triangular faces (see \Fig{diamond}). 
+ To make the terrain fully triangulated, we add a triangular outer face around the cycle. 
+ Specifically, add a triangle with vertices at heights $0$, $1/20m$, and $1/10m$, such that in the projection to the plane 
+ this triangle contains the $m$ length cycle, and there is an arbitrary triangulation of the space between this triangle 
+ and the cycle.  For consistency, the inner cycle of a diamond will always have at length at least $3$, i.e. even if $m\leq 3$.
  
- Now above each face of the cone of the diamond, we will create a triangular ``platform'', which will act as the location to glue on other (shrunken) diamonds, 
+ Now above each face of the cone of the diamond, we will create a triangular ``platform'', which will act as the location to glue on the bounding triangle of other (shrunken) diamonds, 
  and whose highest point of connection to the face below will be a saddle vertex.  Specifically the heights of the vertices of the triangle will be $h$, $h-\eps$, and $h-2\eps$, where 
- $h$ is some unspecified height value.  This near horizontal platform is then connected to its respective face with vertical edges down to the face. See \Fig{diamond}.
- %
- %The vertex at height $h$ will lie in the plane of the respective face of the cone, and the other two will lie above the face, 
- %with edges connecting down to the face, hence creating an actual ``platform''.
+ $h$ is some unspecified height value.  This near horizontal platform is then connected to its respective face with (nearly) vertical edges down to the face. See \Fig{diamond}.
  
- At this point we can construct the entire input mesh, by gluing together diamonds.  
+ At this point we can construct the entire terrain, by gluing together diamonds.  
  Specifically, for each path $p_i\in P$ we create a diamond of size $|p_i|-1$ (we subtract one because the tip of the diamond already corresponds to the leaf of the path).
  Now we glue together diamonds of different paths in the same way the paths are connected in the shrub $\pathTree$.  Specially, for two paths $p,q\in P$ where 
- $p$ is the parent of $q$ in $\pathTree$, we glue the bottom triangular cap of the diamond for $q$ onto the triangular ``platform'' of some face of the diamond for $p$.
+ $p$ is the parent of $q$ in $\pathTree$, we glue the outer triangular cap of the diamond for $q$ onto the triangular ``platform'' of some face of the diamond for $p$.
  (Naturally for this construction to work, diamonds for a given path will be scaled down relative to the size of the diamond of their parent).
  
  Observe now that the only saddle points in this construction are the highest connecting point on a face of an edge from the platform above.  Moreover, the only maxima are the apexes of the 
- diamonds, and there is exactly one minima corresponding to the bottom cap of the diamond representing the root of $\pathTree$.  Therefore, the saddles on a given 
- diamond will appear contiguously on a root to leaf path in the join tree of the mesh, where the leaf corresponds to the maxima of the diamond 
+ diamonds, and there is exactly one minima corresponding to the outer cap of the diamond representing the root of $\pathTree$.  Therefore, the saddles on a given 
+ diamond will appear contiguously on a root to leaf path in the join tree of the terrain, where the leaf corresponds to the maxima of the diamond 
  (since all these saddles have a direct line of sight to this apex).  In particular, 
- this implies that, regardless of the heights assigned to the platforms, the join tree of this mesh has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
+ this implies that, regardless of the heights assigned to the platforms, the join tree has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
  
- Now there is a valid instantiation of this described mesh for any relative ordering of the heights of the saddles on a given diamond.  In particular, 
- there are $(|p|-1)!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible instantiations of 
- the mesh overall.  Also, each one of these instantiations will result in a different join tree.  Specifically, a permutation of the heights on a given diamond 
+ Now there is a valid instance of this described construction for any relative ordering of the heights of the saddles on a given diamond.  
+ Let the set of height functions for these instances be denote $F$.
+ In particular, there are $(|p|-1)!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible 
+ functions in this set.  Also, each one of these functions will result in a different join tree.  Specifically, a permutation of the heights on a given diamond 
  corresponds to a permutation of the vertices along a path in $P$, as by construction all saddles on a given diamond will appear in sorted order in the join tree.
 \end{proof}
 
-
-
-\begin{corollary}
- \label{cor:joinLB}
- Let $A(S)$ be any comparison based algorithm to compute the join tree of any input surface $S$ (whose contour tree is a join tree).  
- Then the running time of $A(S)$ is $\Omega(f_{path}(P))=\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$ where $P$ is any path decomposition of the 
- join tree of $S$.
-\end{corollary}
+\begin{lemma}
+\label{lem:cost}
+ For any $f\in F$, $\cost(f) = \sum_{p\in P} |p|\log|p|$
+\end{lemma}
 \begin{proof}
- Given an input surface $S$, by the above lemma, any path decomposition $P$ of its join tree defines a set of $\Pi_{p_i\in P} |p_i|!$ surfaces 
- with distinct join trees, all of which have the same mesh.  Specifically, for each sorted ordering of the relative height values of the saddles 
- on each diamond in the mesh, yields a different join tree.
- Therefore, any comparison based algorithm which computes the join tree must distinguish between these possibilities, and therefore its corresponding decision tree must 
- have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, this decision tree must have depth $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
+First observe that by construction, regardless of the choice of $f\in F$, 
+there is some path decomposition $\overline{P}(T)$ (of the tree $f$ defines) such that 
+each path $p$ consists exactly of the set of critical points from a given diamond. 
+We now show that regardless of how paint spilling is done, this will be the maximum 
+path decomposition of $T$.
+
+ So consider any order of paint spilling over the surface defined by $f$.
+ Consider the set of joins around any diamond.  All these joins have an edge which connects 
+ directly to the maxima of that diamond.  In particular, all these joins have 
+ an upstar which is entirely colored by the color of this diamond's maxima.  
+ Therefore, in the leaf assignment of the join tree, determined by this painting (see \Def{leafAssign})
+ all these join get assigned a common color.  
+ In particular, all vertices in each path in $\overline{P}$ get assigned a common color.  
+
+ \Ben{I am stuck here.}
+%  One can now prove by induction (on the distance of a path from the root of the shrub), 
+%  that if all vertices in every path have a common color, then that color can only appear 
+%  in that path and the vertex to which that path connects (which then trivial implies this 
+%  is a maximum path decomposition).  
+%  First observe that this trivially holds for the path containing the root of $T$.  
+%  For the induction step, consider any path $p$, and let $p'$ be the path 
+%  which the root of $r_p$ of the path $p$ connect to.
+%  Specifically, let $v$ be the vertex of $p'$ at which $p$ connects.
+%  
+%  So consider any vertex $v$ in the path $p$ which contains the root of $T$.  
+%  Now $v$ has two children, one child $c_1$ in $p$ and some other child $c_2$ in another path $p'$.
+%  %In order to show this is a maximum path decomposition we must argue $H_{c_1}\geq H_{c_2}$.
+%  The claim is that $H_{c_2}$ cannot contain any vertex of $p$ other than $v$.
+%  Specifically, consider any vertex on $p$ between the root and $v$.  This vertex must 
+%  get assigned two color, one from each of it subtree.  It is already assigned a color from 
+%  the subtree of $c_1$ hence its second color cannot come from the subtree of $c_2$, 
+%  since both $c_1$ and $c_2$ are in the same subtree of this vertex.
+%  This proves the base case, and the induction step follows by the same argument.
+%  
+%  One can now prove by induction (on the distance of a path from the root of the shrub), 
+%  that if all vertices in every path have a common color, then that color can only appear 
+%  in that path and the vertex to which that path connects (which then trivial implies this 
+%  is a maximum path decomposition).  
+%  So consider any vertex $v$ in the path $p$ which contains the root of $T$.  
+%  Now $v$ has two children, one child $c_1$ in $p$ and some other child $c_2$ in another path $p'$.
+%  %In order to show this is a maximum path decomposition we must argue $H_{c_1}\geq H_{c_2}$.
+%  The claim is that $H_{c_2}$ cannot contain any vertex of $p$ other than $v$.
+%  Specifically, consider any vertex on $p$ between the root and $v$.  This vertex must 
+%  get assigned two color, one from each of it subtree.  It is already assigned a color from 
+%  the subtree of $c_1$ hence its second color cannot come from the subtree of $c_2$, 
+%  since both $c_1$ and $c_2$ are in the same subtree of this vertex.
+%  This proves the base case, and the induction step follows by the same argument.
 \end{proof}
+
+
+The following is the analogous statement to \Thm{main-lb}, but for join trees.
+
+\begin{theorem}\label{thm:joinLB}
+Consider the set of functions $\bF_C$ that all have the same (valid) cost $C$.  
+Any height function decision tree that correctly computes
+the join tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
+\end{theorem}
+\begin{proof}
+ If $C$ is a valid cost then there some $f$ such that $\cost(f)=\sum_{p\in P(T)} |p|\log|p|$, where $P(T)$ is the maximum path decomposition of the join tree defined by f.
+ By the above lemmas, there is then a set $\bF$ of $\Pi_{p_i\in P} |p_i|!$ functions, such that for any $g\in \bF$, $C= \cost(g)$.  
+ (Specifically, each sorted ordering of the relative height values of the saddles on each diamond yields a function in this class.)
+ Therefore, any height function decision tree for the set $\bF$ must distinguish between these possibilities, and therefore must 
+ have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, the average depth in this tree is $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
+\end{proof}
+
 
 \subsection{Contour Trees}
 We first generalize previous terms to the case of contour trees.
@@ -2200,7 +2305,7 @@ The following is analogous to \Lem{pathDecomp}, and in particular uses it as a s
 \begin{lemma}
 \label{lem:pathDecomp2}
 Let $T$ be a contour tree, and let $P = P(T)$ be any rain consistent path decomposition of $T$.  
-Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, all of which have the same defining mesh.
+Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct terrains, all of which have the same defining mesh.
 \end{lemma}
 \begin{proof}
  As $P$ is rain consistent, the paths can be partitioned into sets $P_1, \dots, P_m$, where $P_i$ is the set of all paths with 
@@ -2208,7 +2313,7 @@ Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-mani
  let $r_i$ be the root vertex of this subtree.  
  Note that the $P_i$ sets naturally define a tree where $P_i$ is the parent of $P_j$ if $r_i$ is adjacent to a vertex in $P_j$.  
  
- As the set $P_i$ is a path decomposition of a rooted binary tree $T_i$, the surface mesh construction of \Lem{pathDecomp} for $P_i$ is well defined.  
+ As the set $P_i$ is a path decomposition of a rooted binary tree $T_i$, the terrain construction of \Lem{pathDecomp} for $P_i$ is well defined.  
  Actually the only difference is that here the rooted tree is not a full binary tree, and so some of the faces of the constructed diamonds will be blank.  
  Specifically, these blank faces correspond to the adjacent children of $P_i$, and they tell us how to connect the meshes of the different $P_i$'s.
  
@@ -2218,7 +2323,7 @@ Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-mani
     \label{fig:diamond}
 \end{figure}
  
- So for each $P_i$ construct a surface mesh as described in \Def{path2}.  By construction, the diamonds corresponding to the paths in $P_i$ are connected 
+ So for each $P_i$ construct a surface mesh as described in \Lem{pathDecomp}.  By construction, the diamonds corresponding to the paths in $P_i$ are connected 
  into a tree structure (i.e. corresponding to the shrub of $P_i$).  Therefore the bottoms of all these diamonds are covered except for the one corresponding 
  to the path containing the root $r_i$.  If $r_i$ is the initial minima that the rain consistent path decomposition was defined from,  
  we add a tetrahedral cap to the uncovered bottom of this diamond (i.e. we construct the minima).  Otherwise, $P_i$ has some parent $P_j$ in which case 
@@ -2232,7 +2337,7 @@ Then there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-mani
  bound from \Lem{pathDecomp} to each $P_i$.
 \end{proof}
 
-For the same reason that \Cor{joinLB} followed from \Lem{pathDecomp}, we now have the following. 
+For the same reason that \Thm{joinLB} followed from \Lem{pathDecomp} and \Lem{cost}, we now have the following. 
 
 \begin{theorem}
  Let $A(S)$ be any comparison based algorithm to compute the contour tree of an input surface $S$.  
