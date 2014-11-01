@@ -2153,10 +2153,11 @@ allowing us to define the cost, $\cost(f)=\sum_{p\in P} |p|\log|p|$.
 %In the following note that two distinct terrains can have the same graph structure defining their meshes, but different height values associated with their vertices.
 
 \begin{figure}[h]\centering
-    \includegraphics[width=.15\linewidth]{figs/diamond}\hspace{2cm}
-    \includegraphics[width=.125\linewidth]{figs/topView}\hspace{2cm}
-    \includegraphics[width=.095\linewidth]{figs/sideView}
-    \caption{From left to right: the cone portion of a diamond; the top down view and then the side view of a cone face with a platform added.}
+    \includegraphics[width=.18\linewidth]{figs/diamond}\hspace{2cm}
+    \includegraphics[width=.3\linewidth]{figs/cones}
+%    \includegraphics[width=.125\linewidth]{figs/topView}\hspace{2cm}
+%    \includegraphics[width=.095\linewidth]{figs/sideView}
+    \caption{Left: angled view of a diamond / Right: a parent and child cone put together}
     \label{fig:diamond}
 \end{figure}
 
@@ -2172,28 +2173,37 @@ such that the size of $F$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two function in
  whose size is that described in the lemma statement.
  
  First, we describe the basic building block of these terrains, which roughly speaking corresponds to a fixed path $p\in P$.  
- Specifically, we say a \emph{diamond} of size $m$ is the following terrain.  To start, construct a cycle 
- of length $m$, where the height of the $i$th vertex in the cycle is say $i/2m$.  Next, create an apex vertex at height 
- $\infty$ (or any appropriately large finite height), and add an edge between this vertex and each vertex in the cycle.  At this point 
+ Specifically, we say a \emph{diamond} of size $m$ is the following terrain.  To start, construct a slightly tilted cycle 
+ of length $m$.  Specifically have two antipodal points, at heights $1$ and $0$, which we will call the anchor and trap of the diamond, respectively.
+ The remaining $m-2$ are evenly spread between on the cycle and heights decrease monotonically when going from the anchor to the trap.
+ Next, create an apex vertex at some appropriately large height, and add an edge between it and each vertex in the cycle.  At this point 
  we have built an upside down cone with $m$ triangular faces (see \Fig{diamond}). 
- To make the terrain fully triangulated, we add a triangular outer face around the cycle. 
- Specifically, add a triangle with vertices at heights $0$, $1/20m$, and $1/10m$, such that in the projection to the plane 
- this triangle contains the $m$ length cycle, and there is an arbitrary triangulation of the space between this triangle 
- and the cycle.  For consistency, the inner cycle of a diamond will always have at length at least $3$, i.e. even if $m\leq 3$.
+ %To make the terrain fully triangulated, we add a triangular outer face around the cycle. 
+ %Specifically, add a triangle with vertices at heights $0$, $1/20m$, and $1/10m$, such that in the projection to the plane 
+ %this triangle contains the $m$ length cycle, and there is an arbitrary triangulation of the space between this triangle 
+ %and the cycle.  For consistency, the inner cycle of a diamond will always have at length at least $3$, i.e. even if $m\leq 3$.
+ %
+ %Now above each face of the cone of the diamond, we will create a triangular ``platform'', which will act as the location to glue on the bounding triangle of other (shrunken) diamonds, 
+ %and whose highest point of connection to the face below will be a saddle vertex.  Specifically the heights of the vertices of the triangle will be $h$, $h-\eps$, and $h-2\eps$, where 
+ %$h$ is some unspecified height value.  This near horizontal platform is then connected to its respective face with (nearly) vertical edges down to the face. See \Fig{diamond}.
  
- Now above each face of the cone of the diamond, we will create a triangular ``platform'', which will act as the location to glue on the bounding triangle of other (shrunken) diamonds, 
- and whose highest point of connection to the face below will be a saddle vertex.  Specifically the heights of the vertices of the triangle will be $h$, $h-\eps$, and $h-2\eps$, where 
- $h$ is some unspecified height value.  This near horizontal platform is then connected to its respective face with (nearly) vertical edges down to the face. See \Fig{diamond}.
+ Now we describe how to attach two diamonds.  In this process, we glue the base of a scaled down ``child'' diamond on to a triangular cone face of the large  ``parent'' diamond (see \Fig{diamond}).
+ Specifically, the anchor of the child diamond is attached directly to a face of the parent diamond at some unspecified height $h$. The remained of the base of the child cone is then 
+ extended down until it hits the face of the parent.
  
- At this point we can construct the entire terrain, by gluing together diamonds.  
- Specifically, for each path $p_i\in P$ we create a diamond of size $|p_i|-1$ (we subtract one because the tip of the diamond already corresponds to the leaf of the path).
- Now we glue together diamonds of different paths in the same way the paths are connected in the shrub $\pathTree$.  Specially, for two paths $p,q\in P$ where 
- $p$ is the parent of $q$ in $\pathTree$, we glue the outer triangular cap of the diamond for $q$ onto the triangular ``platform'' of some face of the diamond for $p$.
+ At this point we can construct the entire terrain, by repeatedly gluing together diamonds.  
+ Specifically, for each path $p_i\in P$ we create a diamond of size $|p_i|+1$.
+ The two faces adjacent to the anchor are always empty, and the remaining faces are for gluing on other diamonds.
+ (Note that diamonds have size $|p_i|+1$, since path $|p_i|-1$ faces represent the joins of $p_i$, the apex represents the leaf, 
+ and we need two empty faces next to the anchor.)
+ Now we glue together diamonds of different paths in the same way the paths are connected in the shrub $\pathTree$.  
+ Specially, for two paths $p,q\in P$ where 
+ $p$ is the parent of $q$ in $\pathTree$, we glue $q$ onto a face of the diamond for $p$ as described above.
  (Naturally for this construction to work, diamonds for a given path will be scaled down relative to the size of the diamond of their parent).
  
- Observe now that the only saddle points in this construction are the highest connecting point on a face of an edge from the platform above.  Moreover, the only maxima are the apexes of the 
- diamonds, and there is exactly one minima corresponding to the outer cap of the diamond representing the root of $\pathTree$.  Therefore, the saddles on a given 
- diamond will appear contiguously on a root to leaf path in the join tree of the terrain, where the leaf corresponds to the maxima of the diamond 
+ Observe now that the only saddle points in this construction are the anchor points.  Moreover, the only maxima are the apexes of the 
+ diamonds.  We create a global boundary minimum by setting the vertices at the base of the diamond representing the root of $\pathTree$ all to the same height (and there are no other minima).  
+ Therefore, the saddles on a given diamond will appear contiguously on a root to leaf path in the join tree of the terrain, where the leaf corresponds to the maxima of the diamond 
  (since all these saddles have a direct line of sight to this apex).  In particular, 
  this implies that, regardless of the heights assigned to the platforms, the join tree has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
  
@@ -2210,18 +2220,48 @@ such that the size of $F$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two function in
 \end{lemma}
 \begin{proof}
 First observe that by construction, regardless of the choice of $f\in F$, 
-there is some path decomposition $\overline{P}(T)$ (of the tree $f$ defines) such that 
-each path $p$ consists exactly of the set of critical points from a given diamond. 
+there is some path decomposition $\overline{P}(T)$ of the join tree such that 
+each path $p$ consists exactly of the set of critical points (except for its anchor) from a given diamond (i.e. $\overline{P}(T)$ is the same for any $f\in F$). 
 We now show that regardless of how paint spilling is done, this will be the maximum 
 path decomposition of $T$.
 
  So consider any order of paint spilling over the surface defined by $f$.
- Consider the set of joins around any diamond.  All these joins have an edge which connects 
- directly to the maxima of that diamond.  In particular, all these joins have 
- an upstar which is entirely colored by the color of this diamond's maxima.  
- Therefore, in the leaf assignment of the join tree, determined by this painting (see \Def{leafAssign})
- all these join get assigned a common color.  
- In particular, all vertices in each path in $\overline{P}$ get assigned a common color.  
+ Consider any join on a diamond.  This join is the anchor point of some connecting child diamond.  
+ The claim is that the two colors of this join (according to leaf assignment, \Def{leafAssign}, used in \Lem{runTimeUpper})
+ are the colors of the apexes of the child and parent diamond.  
+ This easily follows since this join has two up-stars, each of which has exactly one edge.  
+ Specifically, one of these edges connects directly to the apex of the parent diamond and so the join must get the color of this maxima.
+ The other edge connects directly to the apex of the child diamond (this is why we left the faces adjacent to an anchor empty) and 
+ so the second color is that of the maxima of the child diamond.
+ 
+ So let $c$ be the color of some maxima, $m$.  This claim implies that in the join tree, the vertices for 
+ which $c$ appears are exactly the vertices in path in $\overline{P}(T)$ corresponding to the diamond of $m$
+ and the vertex to which the root of this path connects to.
+ This in turn implies that $\overline{P}(T)$ is a maximum path decomposition and hence $\cost(f) = \sum_{p\in \overline{P}} |p|\log|p|$
+ To see this, consider a vertex ..... (remark that ties can be broken consistently, and so the there is one maximum decomp)
+ 
+%  All these joins have an edge which connects 
+%  directly to the maxima of that diamond.  In particular, all these joins have 
+%  an upstar which is entirely colored by the color of this diamond's maxima.  
+%  Therefore, in the leaf assignment of the join tree, determined by this painting (see \Def{leafAssign})
+%  all these join get assigned a common color.  
+%  In particular, all vertices in each path in $\overline{P}$ get assigned a common color.  
+ 
+%  Now consider any vertex $v$ in $T$, and let $p$ be the path that contains it.  
+%  Consider the child of $v$ that is not in $p$, and let $S(v)$ be the set of all the colors in this subtree.
+%  The claim is that $v$ is the last occurence (i.e. closest to the root) of any color in $S(v)$.
+%  We prove this by induction on the distance of $p$ from the root of the shrub.
+%  For the base case, let $p$ be the root of the shrub, and let $v\in p$.
+%  Let $c$ be any color in $S(v)$.  Suppose there is some vertex $w$ in between $v$ and 
+%  r_p which is colored $c$.  This clearly cannot happen since $w$ must have the color of the leaf of $p$, 
+%  and its second color must come from S(w) which does not contain $c$.
+%  Now for the induction step, let $p$ be some path, and suppose the statement holds for $p'$ 
+%  closer to the root of the shrub.
+%  
+%  
+%  This vertx gets two colors,  e from the path p that it is in 
+%  and the from the set of all colors of the subtree of the child not in $p$.  Call this set of The claim is that regarless of which color 
+ 
 
  \Ben{I am stuck here.}
 %  One can now prove by induction (on the distance of a path from the root of the shrub), 
