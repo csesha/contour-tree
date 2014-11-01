@@ -217,6 +217,7 @@
 \begin{document}
 
 \maketitle
+\thispagestyle{empty}
 
 \begin{abstract}
 Consider a scalar field $f:\MM \mapsto \RR$, where $\MM$ is a simplicial mesh in $\RR^d$. 
@@ -273,6 +274,9 @@ such tools as heavy-light path decompositions.
 }
 \end{abstract}
 
+\newpage
+
+\pagenumbering{arabic}
 
 \section{Introduction}
 
@@ -340,7 +344,7 @@ For any path decomposition $P(T)$ and any $p \in P(T)$, obviously $|p| \leq |T| 
 So the running time is clearly $O(t\log t + N)$. But this is only the case when $T$ is tall and thin.  
 An obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $P(T)$. 
 This is clearly an improvement when the tree is short and fat.
-But if $P(T)$ is a rooted, balanced, binary tree, then $\sum_{p \in P(T)} |p|\log |p| = O(t)$.
+But if $P(T)$ is a rooted, balanced, binary tree, then a calculation yields $\sum_{p \in P(T)} |p|\log |p| = O(t)$.
 Our running time is now $O(t\alpha(t))$, a significant improvement from $O(t\log t)$.
 Consider the example of \Fig{sorting} extended to a larger binary tree both above and below.
 (In the example, $t = \Omega(n)$.) The running time promised by \Thm{main-alg}
@@ -368,6 +372,40 @@ the contour tree on all of $\bF$ has an average case (uniform over $\bF$) runnin
 In other words, it is not possible to improve on \Thm{main-alg} even when restricted to the subset
 of inputs of fixed cost.
 
+\paragraph{Beyond worst-case analysis:} Our result provides understanding of the complexity
+of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound explain \emph{when}
+computing contour trees is expensive, and provide insight into the hardness of particular instances. It is intriguing
+that the cost (as defined earlier) roughly captures the hardness of an instance.
+In that sense, it is related to the concept of instance optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
+Their notion of optimality is far more refined that what we prove, but it shares the flavor of understanding the spectrum
+of easy to hard instances. From a mathematical perspective, this sort of analysis forces one to look closely
+at the relationship between sorting and the contour tree problem. 
+
+
+\ignore{
+classic output sensitive convex hull algorithms of Kirkpatrick and Seidel~\cite{KiSe86} and Chan~\cite{c-ooscha-96}.
+
+\paragraph{Output Sensitive Analysis.}
+In geometric settings often the goal is to compute a (potentially complex) geometric structure determined 
+by the input, and so it is natural to also consider how the form of this output structure affects the running time.
+One example is the standard sweep line algorithm of Bentley and Ottmann \cite{bo-arcgi-79} for line segment intersection, 
+which runs $O((n+k)\log n)$ time where k is the number of intersections, which in the worst case is quadratic.
+Another example is Chan's algorithm for computing the convex hull \cite{c-ooscha-96} which runs in $O(n\log h)$ 
+where $h$ is the number of vertices on the hull, which in the worst case is $n$.  While such algorithms represent 
+significant improvements over their worst case counterparts, their running times are only measured with respect 
+to the size of the output and not any structure it may have.
+
+\paragraph{Instance Optimality.}  
+Here we are concerned with a more refined analysis than the typical output sensitive analysis.
+Specifically, we investigate an algorithm which is instance optimal as defined by Afshani \etal \cite{abc-ioga-09}.  
+In order to prove such a result, one considers a family of allowable partitions of the input, 
+each of which is defined in terms of the structure of the output.  Each such partition then has 
+an associated entropy type cost representing the number of possible instantiations of such a partition.
+Our work differs slightly from Afshani \etal \cite{abc-ioga-09} however, in that they show any algorithm 
+(for say the convex hull) requires the minimum such cost, where as in our case it is shown that 
+any algorithm requires the maximum over these costs.
+}
+
 
 \subsection{Previous Work}
 
@@ -387,6 +425,9 @@ One cannot overstate the importance of this result, since it forms the basis
 of subsequent practical and theoretical work in computational topology applications. 
 Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
 $3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an unconditional $O(N+t\log t)$ algorithm.
+The latter result crucially uses monotone paths to improve the running time, and we repeatedly
+exploit numerous properties of monotone paths. Carr's thesis shows relationships between monotone paths
+in $\MM$ and in $\cC(\MM)$.
 
 Contour trees are a special case of Reeb graphs, a general topological representation for real-valued function
 on any manifold. We refer the reader to Chapter 6 in~\cite{HaEd10} for more details. Algorithms for computing Reeb graphs
@@ -406,16 +447,13 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 
 
 \begin{figure}[h]\centering
-    \includegraphics[width=.7\linewidth,height=.3\linewidth]{figs/balanced3}
-    \vspace{.1in}
-
-    \includegraphics[width=.7\linewidth,height=.25\linewidth]{figs/trees}
+    \includegraphics[width=.35\linewidth,height=.15\linewidth]{figs/balanced3}
+    \hspace{.3in}
+    \includegraphics[width=.35\linewidth,height=.15\linewidth]{figs/trees}
     \caption{On top, a surface will a balanced contour tree, but whose join and split trees have long tails.  
     On bottom (from left to right), the contour, join and split trees.}
     \label{fig:sorting}
 \end{figure}
-
-
 
 
 \section{Contour tree basics} \label{sec:basics}
@@ -528,15 +566,15 @@ When the Morse up-degree is $2$ but the up-degree is $1$, then the level set gai
 When $d=2$, this distinction is not necessary, since any point with $>1$
 Morse degrees will have some $>1$ degree in $\reeb(\MM)$.
 
-As Carr points out in his thesis, the term contour tree can be used for a family of related structures.
-Every vertex in $\MM$ can be asociated with an edge in $\reeb(\MM)$, and sometimes the
-vertex is explictly placed in $\reeb(\MM)$ (subdividing the respective edge). This is referred
+As Carr points out in Chapter 6 of his thesis, the term contour tree can be used for a family of related structures.
+Every vertex in $\MM$ is associated with an edge in $\reeb(\MM)$, and sometimes the
+vertex is explictly placed in $\reeb(\MM)$ (by subdividing the respective edge). This is referred
 to as augmenting the contour tree, and it is common to augment $\reeb(\MM)$ will all vertices.
 Alternately, one can smooth out all vertices of up-degree and down-degree $1$ to get the
 unaugmented contour tree. (For $d=2$, there are no such vertices in $\reeb(\MM)$.) 
 The contour tree of \Def{tree} is the typical definition in all results on output-sensitive
 contour trees, and is the smallest tree that contains all the topological changes
-of level sets. Our algorithm works for any augmentation of $\reeb(\MM)$ with a predefined
+of level sets. \Thm{main-alg} is applicable for any augmentation of $\reeb(\MM)$ with a predefined
 set of vertices, though we will not delve into these aspects in this paper.
 
 \ignore{
@@ -557,6 +595,283 @@ tree have degree at most $3$, i.e. there are no multi-saddles.
 \end{remark}
 }
 
+\section{A tour of the contour tree algorithm} \label{sec:approach}
+
+Our final algorithm is quite technical and has numerous moving parts. This section
+provides a high level view of the entire result, and highlights the main ideas
+and intuition. 
+It is helpful to keep the $d=2$ case in mind, so the input is just a triangulated
+terrain. In the interest of presentation, the definitions and theorem statements in this section will
+slightly differ from those in the main body. They may also differ from the original definitions proposed
+in earlier work. 
+
+\paragraph{Do not globally sort:} Arguably, the starting point for this work is \Fig{relative}. We have two terrains
+with exactly the same contour tree, but different orderings of (heights of) the critical point.
+Turning it around, we cannot deduce the height ordering of critical points from the contour tree. Clearly,
+sorting the critical points is computationally reduntant for constructing the contour tree.
+In \Fig{sorting}, the contour tree basically consists of two balanced binary trees, one of the joins,
+another of the splits. Again, it is not necessary to know the relative ordering between the mounds
+on the left (or among the depressions in the right) to compute the contour tree. Yet some ordering
+information is necessary: in the left, the little valleys are higher than the big central valley,
+and this is reflected in the contour tree. More generally, leafs paths in the contour tree have points
+in sorted order, but incomparable points in the tree are unconstrained.
+How do we sort exactly what is required, without knowing the contour tree in advance?
+
+\subsection{Breaking $\MM$ into simpler pieces} \label{sec:break}
+
+Let us begin with the algorithm of Carr, Snoeyink, and Axen~\cite{csa-cctad-00}. The key insight is to build
+two different trees, called the join and split trees, and then merge them together into the contour tree.
+Consider sweeping down via the hyperplane $x_{d+1} = h$ and taking the \emph{superlevel} sets. These 
+are the connected components of $\MM$ with height greater than $h$. For a terrain, the superlevel
+sets are a collection of ``mounds". As we sweep downwards, these mounds keep joining each other,
+until finally, we end up with all of $\MM$. The join tree tracks exactly these events. 
+Formally, let $\MM^+_v$ denote the simplicial complex obtained by taking only those
+vertices higher than $v$.
+
+\begin{definition} 
+\label{def:int-criticalJoin}
+The critical join tree $\jc(\MM)$ is built on the set $V'$ of all critical points. 
+The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
+and $v$ is connected to this component (in $\MM$). 
+\end{definition}
+
+(Abusing notation, we just call this the join tree.)
+Refer to \Fig{sorting} for the join tree of a terrain. Note that nothing happens at splits, but these
+are still put as vertices in the join tree. They simply form a long path. The split tree
+is obtained by simply inverting this procedure, sweeping upwards and tracking sublevel sets.
+
+A major insight of~\cite{csa-cctad-00} is an ingeniously simple linear time procedure to construct
+the contour tree from the join and split tree. So the bottleneck is computing these trees. And observe
+in \Fig{sorting} that the split vertices form a long path in the join tree (and vice versa). Constructing
+these trees forces a global sort of the splits, a redundant computation. Unfortunately (unlike \Fig{sorting}),
+the heights of joins and splits may be interleaved in a complex manner. The final merging of~\cite{csa-cctad-00}
+to get the contour tree requires having the split vertices in the join tree. Without
+this, it is not clear how to get a consistent view of both joins and splits, required for the contour tree.
+
+Our aim is break $\MM$ into smaller pieces, where this redundant computation can be saved.
+
+%
+%{\bf Punchline:} We give a linear time procedure that partitions $\MM$ into smaller pieces. We guarantee
+%that the contour tree of each individual piece is basically the join (or split) tree. This saves
+%some of the redundant computation. We then show to put it all together the get the full contour tree.
+%Now for more details.
+
+\paragraph{Contour surgery:} We first need a divide-and-conquer lemma. Any contour $\phi$ can be associated
+with an edge $e$ of the contour tree. Suppose we ``cut" $\MM$ along this contour. We prove that $\MM$
+is split into two disconnected pieces, such the contour trees of these pieces is obtained
+by simply cutting $e$ in $\reeb(\MM)$. Alternatively, the contour trees of these pieces can
+be glued together to get $\reeb(\MM)$. This is not particularly surprising, and is fairly easy to prove
+with the right definitions. The idea of loop surgery has been used to reduce Reeb graphs to contour trees~\cite{TiGySi09,DoNa13}.
+Nonetheless, our theorem appears to be new and works for all dimensions.
+
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.18\linewidth,height=.2\linewidth]{figs/orderGray1}%
+    \hspace{.8in}
+    \includegraphics[width=.18\linewidth,height=.2\linewidth]{figs/orderGray2}
+    \caption{On left, downward rain only (each shade of gray represents a different iteration), producing a grid.  On right, flipping the direction of rain.}
+    \label{fig:order}
+\end{figure}
+
+\paragraph{Cutting $\MM$ into extremum dominant pieces:} We define a simplicial complex
+endowed with a height to be \emph{minimum dominant} if there only exists a single minima.
+In such a complex, there exists a non-ascending path from any point to this unique minima.
+(Our real definition is more complicated, and involves simplicial complices
+that have many minima.) Analogously, we can define maximum dominant simplicial complices,
+and both are collectively called extremum dominant.
+
+We will cut $\MM$ into disjoint extremum dominant pieces, in linear time.
+The best way to think of our procedure is a meteorology analogy. Take an arbitrary maxima $x$,
+and imagine torrential rain at the maxima. The water flows down, wetting any point that has a non-ascending
+from $x$. We end up with two portions, the wet part of $\MM$ and the dry part. This is similar
+to \emph{watershed} algorithms used for image segmentation~\cite{RoMe00}. The wet part is obviously connected,
+while there may be numerous disconnected dry parts. The interface between the dry and wet parts
+are a set of contours, given the by ``water line". The wet part is clearly maximum dominant, since all
+wet points have a non-descending path to $x$. So we can simply cut along the interface
+contours to get the wet maximum dominant piece $\MM'$. By our contour surgery theorem,
+we are left with a set of disconnected dry parts, and we could recur this procedure on them.
+
+But here's the catch. Every time we cut $\MM$ along a contour, we potentially increase
+the complexity of $\MM$. Water flows in the interior of facets, and the interface will naturally
+cut some facets. Each cut introduces new vertices, and a poor choice of repeated raining leads
+to a large increase in complexity. Consider the left of \Fig{order}. Each raining produces a single
+wet and dry piece, and each cut introduces many new vertices. If we wanted to partition this terrain into 
+maximum dominant simplicial complices, the final complexity would be forbiddingly large.
+
+A simple trick saves the day. Unlike reality, we can choose rain to flow solely downwards or solely upwards.
+Apply the procedure above to get a single wet maximum dominant $\MM'$ and a set of dry pieces.
+Observe that a single dry piece $\NN$ is boundary critical with the newly introduced boundary $\phi$ (the wet-dry interface) behaving as a minima.
+So we can rain upwards from this minima, and get a \emph{minimum dominant} portion $\NN'$.
+This ensures that the new interface (after applying the procedure on $\NN$) does not
+cut any facet previously cut by $\phi$.
+For each of the new dry pieces, the newly introduced boundary is now a maximum. So we rain downwards from there.
+More formally, we alternate between raining upwards and downwards as we go down the recursion tree.
+We can prove that an original facet of $\MM$ is cut at most once, so the final complexity can be bounded.
+In \Fig{order}, this procedure would yield two pieces, one maximum dominant, and one minimum dominant.
+
+Using the contour surgery theorem previously discussed, we can build the contour tree of $\MM$
+from the contour trees of the various pieces created. All in all, we prove the following theorem.
+
+\begin{theorem} \label{thm:int-rain} There is an $O(N)$ time procedure that cuts $\MM$ into extremum dominant simplicial complices
+$\MM_1, \MM_2, \ldots$. Furthermore, given the set of contour trees $\{\cC(\MM_i)\}$, $\cC(\MM)$ can be constructed in $O(N)$ time.
+\end{theorem}
+
+\paragraph{Extremum dominance simplifies contour trees:} We will focus on minimum dominant simplicial complices $\MM$. By \Thm{int-rain}, it suffices
+to design an algorithm for contour trees on such inputs. 
+For the $d=2$ case, it helps to visualize such an input as a terrain with no minima,
+except at a unique boundary face (think of a large boundary triangle that is the boundary).
+All the valleys in such a terrain are necessarily joins, and there can be no splits. Look
+at \Fig{sorting}. The portion on the left is minimum dominant in exactly this fashion.
+Water poured at any critical point must flow to the boundary, and the entire wet portion are connected.
+More formally, $\MM^-_v$ is connected for all $v$, so there are no splits.
+
+We can prove that the split tree is just a path, and the contour tree is exactly
+the join tree. The formal argument is a little involved, and we employ the merging procedure
+of~\cite{csa-cctad-00} to get a proof. We demonstrate that the merging procedure will
+actually just output the join tree, so we do not need to actually compute the split tree.
+(The real definition of minimum dominant is a little more complicated,
+so the contour tree is more than just the join tree. But computationally, it suffices
+to construct the join tree.)
+
+We stress the importance of this step for our approach. Given the algorithm of~\cite{csa-cctad-00},
+one may think that that it suffices to design faster algorithms for join trees. But this
+cannot give the sort of optimality we hope. Again, consider \Fig{sorting}. Any algorithm
+to construct the true join tree must construct the path of splits, which implies
+sorting all of them. It is absolutely necessary to cut $\MM$ into pieces where the cost
+of building the join trees can be related to the cost of building $\cC(\MM)$.
+
+\subsection{Join trees from painted mountaintops} \label{sec:join-paint}
+
+Arguably, everything up to this point is a preamble for the main result: a faster
+algorithm for join trees. Our algorithm does not require the input to be extremum
+dominant. This is only required to relate the join trees to the contour tree of initial input $\MM$.
+For convenience, we use $\NN$ to denote the input here. Note that as defined in \Def{int-criticalJoin},
+the join tree is defined purely combinatorially in terms of the 1-skeleton (the underlying graph) of $\NN$.
+
+The join tree $\jc(\NN)$ is a rooted tree with the dominant minimum at the root, and we direct edges downwards (towards the root). So it makes sense to talk
+of comparable vs incomparable vertices.
+We arrive at the primary challenge: how to sort only those critical points that are comparable, without
+constructing the join tree? The join tree algorithm of~\cite{csa-cctad-00} is a typical event-based
+computational geometry algorithm. We have to step away from this viewpoint to avoid the global sort.
+
+The key idea is \emph{paint spilling}. Start with each maxima having a large can of paint, with distinct
+colors for each maxima. In arbitrary order, we spill paint from each maxima, wait till it flows down,
+then spill from the next, etc. Paint is viscous, and only flows down edges. \emph{It does not
+paint the interior of facets.} Alternately, this process is restricted to the 1-skeleton of $\NN$.
+Furthermore, our paints do not mix, so each edge receives a unique color, which is decided by the first
+paint to reach it. 
+
+\begin{definition} \label{def:paint} Let the 1-skeleton of $\NN$ have edge set $E$ and maxima $X$.
+A  \emph{painting} of $\NN$ is a map $\chi:X \cup E \mapsto [|X|]$ with the following property. 
+ Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
+	consisting of edges in $E$, such that all edges along this path have the same color as $x$. 
+
+An \emph{initial} painting has the additional property that the restriction $\chi:X \mapsto [|X|]$ is a bijection.
+\end{definition}
+%
+%Paintings are not unique. It is straightforward to construct an initial painting of $\MM$ in $O(|\MM|)$ time, 
+%using a descending BFS from each maximum that does not explore previously colored edges. 
+%As the algorithm proceeds, the bijection property will not hold, though we always maintain a valid painting.
+
+Note that a painting only colors edges, not vertices. Our definition also does not require the timing aspect
+of iterating over colors, though that is one way of painting $\NN$. We begin with an initial painting, since all maxima
+colors are distinct. A few comments on paint vs water. The interface between two regions of different color
+is \emph{not} a contour, and is actually difficult to characterize. So we cannot apply the divide-and-conquer
+approach of contour surgery. On the other hand, painting does not cut $\NN$, so there is no increase in complexity.
+Clearly, an initial painting can be constructed in $O(N)$ time. This is the tradeoff between water and paint.
+Water allows for an easy divide-and-conquer, at the cost of more complexity in the input. For an extremum
+dominant input, using water to divide the input $\NN$ raise the complexity too much.
+
+Our algorithm incrementally builds $\jc(\MM)$ from the leaves (maxima) to the root (dominant minimum). 
+We say that vertex $v$ is \emph{touched} by color $c$, if there is a $c$-colored edge with lower endpoint $v$.
+Let us focus on an initial painting, where the colors have 1-1 correspondence with the maxima. Refer to \Fig{colors}.
+Consider two sibling leaves $\ell_1, \ell_2$ and their common parent $v$. The leaves are maxima,
+and $v$ is a join that ``merges" $\ell_1, \ell_2$. 
+In that case, there are ``mounds" corresponding to each $\ell_1$ and $\ell_2$ that merge
+at a valley $v$. Suppose this was the entire input, and $\ell_1$ was colored blue and $\ell_2$ was colored red. 
+(So ignore the yellow mound in \Fig{colors}.)
+Both the mounds are colored completely blue or red, while $v$ is touched by both colors.
+So this indicates that $v$ joins the blue maxima and red maxima in $\jc(\MM)$.
+
+This is precisely how we hope to exploit the information in the painting. We prove later that
+when some join $v$ has all incident edges with exactly two colors, the corresponding maxima (of those colors) are exactly
+the children of $v$ in $\jc(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
+we replace all red and blue edges by purple edges. This indicates that the red and blue maxima have been
+handled. Imagine flattening the red and blue mounds until reaching $v$, so that the former join $v$
+is now a new maxima. Suppose purple paint was poured from $v$. In terms of $\jc(\MM)$, this
+is equivalent to removing leaves $\ell_1$ and $\ell_2$, making $v$ a new leaf.
+Alternately, $\jc(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
+The merging of the colors is not explicitly as that would be too expensive; we maintain a union-find
+data structure for that.
+
+Of course, things are more complicated when there are other mounds. There may be a yellow mound,
+corresponding to $\ell_3$ that joins with the blue mound higher up (at vertex $u$). In $\jc(\MM)$, $\ell_2$ and $\ell_3$
+are sibling leaves, and $\ell_1$ is a sibling of some ancestor of these leaves. So we cannot
+merge red and blue, until yellow and blue merge. Naturally, we use priority queues to handle this issue.
+We know that $u$ must also be touched by blue. So all critical vertices touched by blue
+are put into a priority queue keyed by height, and vertices are handled in that order.
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.27\linewidth]{figs/mounds}%
+    \hspace{.35in}
+    \includegraphics[width=.27\linewidth]{figs/mounds2}%
+    \hspace{.4in}
+    \includegraphics[width=.22\linewidth]{figs/mounds3}
+    \caption{On the left, three initial colors.  In the middle, yellow and blue merge into green.  On the right, green and red merge into purple.}
+    \label{fig:colors}
+\end{figure}
+
+
+What happens when finally blue and red join at $v$? We merge the two colors, but now have
+blue and red queues of critical vertices. We also need to merge the priority queues
+to get a consistent painting. And that decides the use of \emph{binomial heaps}~\cite{Vu78} to store the
+critical points of one color. Merges can be done in logarithmic time, the same time
+required for deletes. We stress that the feasibility of the entire approach hinges on the use of binomial heaps.
+
+In this discussion, we ignored an annoying problem. Vertices
+may actually be touched by numerous colors, not just one or two as assumed above. A simple solution
+would be to insert vertices into heaps corresponding to all colors touching it. But there could
+be super-constant numbers of copies of a vertex, and handling all these copies would lead
+to extra overhead. We show that it suffices to simply put each vertex $v$ into at most two heaps, one for each
+``side" of a possible join. We are guaranteed that when $v$ needs to be processed, all edges have
+at most $2$ colors, because of all the color merges that previously occured.
+
+
+\paragraph{The running time analysis:} Relating the running time to a path decomposition is the most technical part of the paper. 
+All the non-heap operations can be easily bounded as $O(t\alpha(t) + N)$ ($t\alpha(t)$ from the union-find data structure
+for colors). It is not hard to argue that at all times, any heap always contains a subset of a leaf
+to root path. Unfortunately, this subset is \emph{not} contiguous, as \Fig{colors} shows. \Sesh{explain}
+Nonetheless, we can get a non-trivial (but non-optimal) bound. Let $d_v$ denote the distance to the root for vertex $v$ in the join tree.
+The total cost (of the heap operations) is at most $\sum_v \log d_v$. This immediately proves a bound of $O(t\log D)$, where
+$D$ is the maximum distance to the root, an improvement over previous work. But this bound is non-optimal.
+For a balanced binary tree, this bound is $O(t\log\log t)$, whereas the cost of any path decomposition is $O(t)$.
+
+The cost of heap operations depends on the sizes of the heaps, which keeps changing because
+of the repeated merging. This is a major headache for the analysis. There are situations where
+the initial heap sizes are small, but they eventually merge to create larger heaps. 
+We employ a variant
+of \emph{heavy path decompositions}, first used for Sleator and Tarjan for analyzing link/cut trees~\cite{st-dsdt-83}.
+The final analysis is basically charges expensive heap operations to long paths in the decomposition.
+
+\subsection{The lower bound} 
+
+Consider a contour tree $T$ and the path decomposition $P(T)$ used to bound the running time. 
+Denoting $\cost(P(T)) = \sum_{p \in P(T)} |p|\log |p|$, we construct a set of $\prod_{p \in P(T)} |p|!$
+functions on a fixed domain such that each function has a distinct (labeled) contour tree. By a simple
+entropy argument, any height decision tree that correctly computes the contour tree on all instances
+requires average case $\Omega(\cost(P(T)))$ time. We prove that our algorithm makes $\Theta(\cost(P(T)))$
+height comparisons on all these instances. In general, any algorithm requires $\Omega(C)$ time
+to solve the set of instances that our algorithm solves with $C$ comparisons.
+
+We have a fairly simple construction that works for terrains. In $P(T)$, consider the path
+$p$ that involves the root. The base of the construction is a conical ``tent", and there
+will be $|p|$ triangular faces that will each have a saddle. The heights of these saddles
+can be varied arbitrarily, and that will give $|p|!$ different choices. Each of these saddles
+will be connected to a recursive construction involving other paths in $P(T)$. Effectively,
+one can think of tiny tents that are sticking out of each face of the main tent. The contour
+trees of these tiny tents attach to a main branch of length $|p|$. Working out the details,
+we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree. It is possible to argue
+that our algorithm requires $\Theta(\cost(P(T)))$ on all these instances.
 
 
 \section{Divide and conquer through contour surgery} \label{sec:surgery}
@@ -790,13 +1105,6 @@ Any path from $x$ to $\NN'$ must intersect $\lift(\phi)$, which is dry. Hence $\
 \end{proof}
 
 
-\begin{figure}[h]\centering
-    \includegraphics[width=.18\linewidth,height=.35\linewidth]{figs/orderGray1}%
-    \hspace{.8in}
-    \includegraphics[width=.18\linewidth,height=.35\linewidth]{figs/orderGray2}
-    \caption{On left, downward paint spilling only (each shade of gray represents a different color), producing a grid.  On right, flipping the direction of paint spilling.}
-    \label{fig:order}
-\end{figure}
 
 We describe the main partitioning procedure that cuts a simplicial complex $\NN$ into extremum
 dominant complexes. It takes an additional input of a maximum $x$. To initialize,
@@ -1134,58 +1442,7 @@ be initially determined in $O(|\MM|)$ time, by a simple linear scan.
 
 We give an informal description of the algorithm, which might motivate the data structures.
 
-Our algorithm incrementally builds $\jc(\MM)$ from the leaves (maxima) to the root (dominant minimum). 
-Let us focus on an initial painting, where the colors have 1-1 correspondence with the maxima.
-Consider two sibling leaves $\ell_1, \ell_2$ and their common parent $v$. The leaves are maxima,
-and $v$ is a join that ``merges" $\ell_1, \ell_2$. A nice mental picture is given when $\MM$ is 2-dimensional.
-In that case, there are ``mounds" corresponding to each $\ell_1$ and $\ell_2$ that merge
-at a valley $v$. Suppose this was the entire input, and $\ell_1$ was colored blue and $\ell_2$ was colored red. 
-Both the mounds are colored completely blue or red, while $v$ is touched by both colors.
-Moreover, each up-star of $v$ (one connecting to each mound) is fully colored. So this
-indicates that $v$ joins the blue maxima and red maxima in $\jc(\MM)$.
 
-This is precisely how we hope to exploit the information in the painting. We prove later that
-when some join $v$ has both up-stars fully colored, the corresponding maxima (of those colors) are exactly
-the children of $v$ in $\jc(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
-we replace all red and blue edges by purple edges. This indicates that the red and blue maxima have been
-handled. Imagine flattening the red and blue mounds until reaching $v$, so that the former join $v$
-is now a new maxima. Suppose purple paint was poured from $v$. In terms of $\jc(\MM)$, this
-is equivalent to removing leaves $\ell_1$ and $\ell_2$, making $v$ a new leaf.
-Alternately, $\jc(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
-
-Of course, things are more complicated when there are other mounds. There may be a yellow mound,
-corresponding to $\ell_3$ that joins with the blue mound higher up (at vertex $u$). In $\jc(\MM)$, $\ell_2$ and $\ell_3$
-are sibling leaves, and $\ell_1$ is a sibling of some ancestor of these leaves. So we cannot
-merge red and blue, until yellow and blue merge. Naturally, we use priority queues to handle this issue.
-We know that $u$ must also be (fully) touched by blue. So all critical vertices touched by blue
-are put into a priority queue keyed by height, and vertices are handled in that order.
-
-\Ben{This figure will not show up in black and white printout.}
-
-\begin{figure}[h]\centering
-    \includegraphics[width=.27\linewidth]{figs/mounds}%
-    \hspace{.35in}
-    \includegraphics[width=.27\linewidth]{figs/mounds2}%
-    \hspace{.4in}
-    \includegraphics[width=.22\linewidth]{figs/mounds3}
-    \caption{On the left, three initial colors.  In the middle, yellow and blue merge into green.  On the right, green and red merge into purple.}
-    \label{fig:colors}
-\end{figure}
-
-
-What happens when finally blue and red join at $v$? We merge the two colors, but now have
-blue and red queues of critical vertices. We also need to merge the priority queues
-to get a consistent painting. And that decides the use of \emph{binomial heaps} to store the
-critical points of one color. Merges can be done in logarithmic time, the same time
-required for deletes.
-
-In this discussion, we have ignored a somewhat annoying problem. Up-stars of critical vertices
-may actually be touched by numerous colors, not just one as we assumed above. A simple solution
-would be to insert vertices into heaps corresponding to all colors touching it. But there could
-be super-constant numbers of copies of a vertex, and handling all these copies would lead
-to extra overhead. We show that it suffices to simply put each vertex $v$ into at most two heaps,
-one for each up-star. We are guaranteed that when $v$ needs to be processed, its up-stars
-automatically have one color, because of all the color merges that previously occured.
 
 With this preamble, we are ready to discuss our data structures. We discuss all the initializations
 in the next section.
@@ -3228,26 +3485,6 @@ assumptions on the distribution of the input, there is still more to the story.
 For example, in the study of parametrized complexity, one takes into account other 
 parameters determined by the input other than just its size (for example the maximum 
 degree in a graph or whether it is planar).
-
-\paragraph{Output Sensitive Analysis.}
-In geometric settings often the goal is to compute a (potentially complex) geometric structure determined 
-by the input, and so it is natural to also consider how the form of this output structure affects the running time.
-One example is the standard sweep line algorithm of Bentley and Ottmann \cite{bo-arcgi-79} for line segment intersection, 
-which runs $O((n+k)\log n)$ time where k is the number of intersections, which in the worst case is quadratic.
-Another example is Chan's algorithm for computing the convex hull \cite{c-ooscha-96} which runs in $O(n\log h)$ 
-where $h$ is the number of vertices on the hull, which in the worst case is $n$.  While such algorithms represent 
-significant improvements over their worst case counterparts, their running times are only measured with respect 
-to the size of the output and not any structure it may have.
-
-\paragraph{Instance Optimality.}  
-Here we are concerned with a more refined analysis than the typical output sensitive analysis.
-Specifically, we investigate an algorithm which is instance optimal as defined by Afshani \etal \cite{abc-ioga-09}.  
-In order to prove such a result, one considers a family of allowable partitions of the input, 
-each of which is defined in terms of the structure of the output.  Each such partition then has 
-an associated entropy type cost representing the number of possible instantiations of such a partition.
-Our work differs slightly from Afshani \etal \cite{abc-ioga-09} however, in that they show any algorithm 
-(for say the convex hull) requires the minimum such cost, where as in our case it is shown that 
-any algorithm requires the maximum over these costs.
 
 
 \subsubsection{Contour Trees}
