@@ -240,7 +240,7 @@
 \thispagestyle{empty}
 
 \begin{abstract}
-Consider a scalar field $f:\MM \mapsto \RR$, where $\MM$ is a simplicial mesh in $\RR^d$. 
+Consider a scalar field $f:\MM \mapsto \RR$, where $\MM$ is a triangulated simplicial mesh in $\RR^d$. 
 A level set, or contour, at value $v$ is a connected component of $f^{-1}(v)$. 
 As $v$ is changed, these contours change topology, merge into each other, or split.
 \emph{Contour trees} are concise representations of $f$ that track this contour
@@ -253,16 +253,22 @@ Suppose $\MM$ has $n$ vertices, $N$ facets, and $t$ critical points.
 A classic result of Carr, Snoeyink, and Axen (2000) gives an algorithm that takes $O(n\log n + N\alpha(N))$ time
 (where $\alpha(\cdot)$ is the inverse Ackermann function). A further improvement to $O(t\log t + N)$ time
 was given by Chiang et al. All these algorithms involve a global sort of the critical points,
-which is a major bottleneck for large datasets. Unfortunately, lower bounds of $\Omega(t\log t)$ also exist.
+a significant computational bottleneck. Unfortunately, lower bounds of $\Omega(t\log t)$ also exist.
 
 We present the first algorithm that can avoid the global sort and has a refined time complexity that
 depends on the contour tree structure. Intuitively, if the tree is short and fat, we get significant improvements 
 in running time. For a partition of the contour tree into a set of descending paths, $P$,
 our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$, which is 
-always bounded by $O(t\log t + N)$ and is $O(N+t\alpha(t))$ for balanced trees. 
-Moreover, we prove a general lower bound of
-$\Omega(\sum_{p \in P} |p|\log |p|)$ for computing contour trees, showing
-that the tree structure must play a role in the time complexity.
+always bounded by $O(t\log t + N)$ and is $O(t\alpha(t)+N)$ for balanced trees. 
+Moreover, we prove a strong optimality property of our algorithm, showing that $\sum_{p\in P} |p|\log|p|$ complexity
+is inherent to computing contour trees. Consider the family of instances where our algorithm
+requires $C$ comparison. Any algorithm computing contour trees on this family requires
+$\Omega(C)$ comparisons in the worst case.
+
+%
+%general lower bound of
+%$\Omega(\sum_{p \in P} |p|\log |p|)$ for computing contour trees, showing
+%that the tree structure must play a role in the time complexity.
 
 
 \ignore{
@@ -283,8 +289,7 @@ and in doing so yields instance optimal results.
 Specifically, we prove that for any partition of the contour tree into a set of descending paths, $P$, 
 any comparison based algorithm requires $\sum_{p\in P} |p|\log|p|$ time.  Moreover, we show there   
 exists some partition $P'$ such that the running time of our algorithm is 
-$O(\sum_{p\in P'} |p|\log|p| + N\alpha(N))$, where $N$ is the total complexity of the input manifold 
-(and hence this is optimal on all instances requiring $\Omega(N\alpha(N))$ time).
+$O(\sum_{p\in P'} |p|\log|p| + N\alpha(N))$, where $N$ is the total complexity of the input manifold.
 In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balanced, 
 while previous algorithms ran in $O(N+t\log t)$ (where $t$ is the size of the contour tree).
 %In particular, our algorithm runs in $O(N\alpha(N))$ time when the tree is balanced, yet still 
@@ -303,7 +308,7 @@ such tools as heavy-light path decompositions.
 \section{Introduction}
 
 Massive geometric data is often represented as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
-by considering $f$ to be piecewise linear over some mesh (i.e. simplicial complex) $\MM$ in $\RR^d$.
+by considering $f$ to be piecewise linear over some triangulated mesh (i.e. simplicial complex) $\MM$ in $\RR^d$.
 \emph{Contour trees} are a specific topological data structure used to represent and visualize
 the function $f$.
 
@@ -312,12 +317,12 @@ $\MM$ in $\RR^{d+1}$ with the last coordinate (i.e. height) given by $f$. Imagin
 with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection of this plane 
 with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
 proceeds various events occur: new contours are created or destroyed, contours merge into each other or
-split into new components, contours acquire or lose handles. These are the relevant events where 
+split into new components, contours may acquire or lose handles. These are the relevant events where 
 the topology of the level set changes. The contour tree is a concise representation of all these events.
 
-For convenience, imagine $f$ to be smooth. All points where the gradient of $f$ is zero are \emph{critical points},
-where the topology of the contours change. The vertices of the contour tree are exactly these critical points,
-representing the important topological events. An edge connects two critical points if one event immediately ``follows"
+If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
+These points are the ``events" where the contour topology changes and form the vertices of the contour tree. 
+An edge connects two critical points if one event immediately ``follows"
 the other as the sweep plane makes its pass. (We provide formal definitions later.) 
 
 \Fig{relative} and \Fig{sorting} show examples of simplicial complexes, with heights and their contour trees.
@@ -341,8 +346,8 @@ So we are still left with the bottleneck of sorting a large set of numbers. Unfo
 lower bound of $\Omega(t\log t)$ from Chiang et al~\cite{cllr-sooscctmp-05}, based on a construction of Bajaj et al~\cite{BaKr+98}.
 
 But this is only a worst-case bound. All previous algorithm begin by sorting (at least) the critical points, and
-hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound? Is there a more refined version of the complexity
-of computing contour trees? Our main result gives an affirmative answer. First, we require some technical definitions.
+hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound for some instances? Is there a more refined version of the complexity
+of computing contour trees, and can we characterize what inputs are hard? Our main result gives an affirmative answer. First, we require some technical definitions.
 
 In a contour tree $T$, a \emph{leaf path} is simply a contiguous path in $T$
 containing a leaf, which is also monotonic in the height values of its vertices. 
@@ -358,36 +363,39 @@ containing a leaf, which is also monotonic in the height values of its vertices.
 \begin{theorem} \label{thm:main-alg} Consider a PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
 that all critical points have distinct values, and the contour tree has max-degree $3$. Our algorithm
 does not need this, but it simplifies the proof and presentation.} $f:\MM \mapsto \RR$, where the contour tree $T$
-has maximum degree $3$. There is an algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
+has maximum degree $3$. There is a deterministic algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 \end{theorem}
 
 Let us interpret the running time. 
 For any path decomposition $P(T)$, obviously $\sum_{p\in P(T)}|p| = |T| = t$, and 
 so the running time is $O(t\log t + N)$. But this is tight only when $T$ is tall and thin.  
-A better but still obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $P(T)$. 
+A better but still obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $T$. 
 This is clearly an improvement when the tree is short and fat.
-In particular, for any decomposition of a rooted balanced binary tree, this gives $O(t\log\log n + t\alpha(t) + N)$, a significant improvement from $O(t\log t+N)$.
-However, our actual bound in this case gives an even further improved $O(t\alpha(t)+N)$.
+But it can be even better. A calculation yields that for any decomposition of a rooted balanced binary tree, 
+our bound is $O(t\alpha(t) + n)$. 
+%
+%
+%In particular, for any decomposition of a rooted balanced binary tree, this gives $O(t\log\log n + t\alpha(t) + N)$, a significant improvement from $O(t\log t+N)$.
+%However, our actual bound in this case gives an even further improved $O(t\alpha(t)+N)$.
 Consider the example of \Fig{sorting} extended to a larger binary tree both above and below.
 (In the example, $t = \Omega(n)$.) The running time promised by \Thm{main-alg}
 is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$.
 
 We complement \Thm{main-alg} with an almost matching lower bound, showing that the complexity
 of $\sum_{p \in P(T)} |p|\log |p|$ is required for any contour tree algorithm. The exact phrasing
-of the lower bound requires some care. Consider the $d=2$ (terrain) case, and fix a mesh $\MM$.
-As referenced in \Thm{main-alg}, for any height function $f$ our algorithm defines a 
+of the lower bound requires some care. Consider the $d=2$ (terrain) case.
+As referenced in \Thm{main-alg}, for any $f:\MM \mapsto \RR$ our deterministic algorithm defines a 
 specific path decomposition $P(T)$\footnote{The specific decomposition used is defined in \Sec{pathDecomp}, 
 but also depends on the raining and painting procedures described in \Sec{rain} and \Sec{paint}.  
 The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}. 
 We define $\cost(f) = \sum_{p \in P(T)} |p|\log |p|$ for this specific decomposition $P(T)$.
 Ideally, we would like to argue that any contour-tree algorithm
-must pay $\cost(f)$ for $f$. 
+must pay $\cost(f)$ for ant $f$. 
 But this is obviously false, since one could consider an algorithm
 that hard codes the answer for $f$ and merely checks this answer.
 
-Instead, call a possible cost $C$ \emph{valid} if $C = \cost(f)$ for some $f$ 
-defined over the fixed mesh $\MM$\footnote{If one is concerned
+Instead, call a possible cost $C$ \emph{valid} if $C = \cost(f)$ for some $f$\footnote{If one is concerned
 that $C$ might be irrational, define valid if $2^C = 2^{\cost(f)}$.}. We prove
 a refined lower bound matching \Thm{main-alg}. 
 
@@ -397,9 +405,11 @@ that is allowed arbitrary computation on the domain $\MM$, and is an algebraic d
 tree over the heights. The running time is simply the number of queries made.
 \end{definition}
 
-\begin{theorem} \label{thm:main-lb} Consider the set of functions $\bF_C$ that all have the same (valid) cost $C$ 
-(defined over a fixed mesh $\MM$).  Any height function decision tree that correctly computes
-the contour tree on all of $\bF_C$ has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
+\begin{theorem} \label{thm:main-lb} 
+%Fix a sufficiently large numbers $t$ and $C$, 
+%where $t$ is the number of critical points and $C$ is a valid cost for an instance with $t$ critical point.
+Consider the set of functions $\bF_C$ that all same number of critical points and the same (valid) cost $C$.  Any algebraic decision tree that correctly computes
+the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
 \end{theorem}
 
 % We complement \Thm{main-alg} with an almost matching lower bound, showing that the complexity
@@ -435,7 +445,7 @@ the contour tree on all of $\bF_C$ has an average case (uniform over $\bF_C$) ru
 % the contour tree on all of $\bF_C$ has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
 % \end{theorem}
 
-In other words, it is not possible to improve on \Thm{main-alg} even when restricted to a subset
+Roughly speaking, it is not possible to improve on \Thm{main-alg} even when restricted to a subset
 of inputs of fixed cost.
 
 \paragraph{Beyond worst-case analysis:} Our result provides understanding of the complexity
@@ -486,7 +496,7 @@ There has been a long series of improved algorithms for computing contour trees.
 van Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D 
 meshes and an $O(N^2)$ algorithm for higher dimensions. 
 Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case.
-The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N)$.
+The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N\alpha(N))$.
 One cannot overstate the importance of this result, since it forms the basis 
 of subsequent practical and theoretical work in computational topology applications. 
 Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
