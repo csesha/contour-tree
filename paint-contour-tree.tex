@@ -312,7 +312,7 @@ $\MM$ in $\RR^{d+1}$ with the last coordinate (i.e. height) given by $f$. Imagin
 with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection of this plane 
 with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
 proceeds various events occur: new contours are created or destroyed, contours merge into each other or
-split into new components, contours acquire or lose handles. These are the relevant events where 
+split into new components, contours acquire or lose handles. More generally, these are the events where 
 the topology of the level set changes. The contour tree is a concise representation of all these events.
 
 For convenience, imagine $f$ to be smooth. All points where the gradient of $f$ is zero are \emph{critical points},
@@ -326,7 +326,7 @@ Leaves of down-degree $1$ are maxima, because a new contour is created at such p
 $1$ are minima, because a contour is destroyed there. Up-degree $2$ vertices are ``joins", where contours
 merge, and down-degree $2$ vertices are ``splits".  When $d=2$ (as in \Fig{relative}), contours are closed loops.
 In dimensions $d \geq 3$, we may have internal
-vertices of both up and down-degree $1$. They correspond to contours (which are $2$-manifolds) gaining or losing handles.
+vertices of both up and down-degree $1$. They correspond to contours (which are $(d-1)$-manifolds) gaining or losing handles.
 
 Suppose we have $f: \MM \mapsto \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ facets in total, and $t \leq n$ critical points.
 It is standard to assume that $f$ is PL-Morse (a well-behaved assumption) and that the maximum degree in the contour tree
@@ -365,7 +365,7 @@ where $P(T)$ is a specific path decomposition (constructed implicitly by the alg
 Let us interpret the running time. 
 For any path decomposition $P(T)$, obviously $\sum_{p\in P(T)}|p| = |T| = t$, and 
 so the running time is $O(t\log t + N)$. But this is tight only when $T$ is tall and thin.  
-A better but still obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $P(T)$. 
+A better but still obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $T$. 
 This is clearly an improvement when the tree is short and fat.
 In particular, for any decomposition of a rooted balanced binary tree, this gives $O(t\log\log n + t\alpha(t) + N)$, a significant improvement from $O(t\log t+N)$.
 However, our actual bound in this case gives an even further improved $O(t\alpha(t)+N)$.
@@ -486,7 +486,7 @@ There has been a long series of improved algorithms for computing contour trees.
 van Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D 
 meshes and an $O(N^2)$ algorithm for higher dimensions. 
 Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case.
-The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N)$.
+The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N\alpha(N))$.
 One cannot overstate the importance of this result, since it forms the basis 
 of subsequent practical and theoretical work in computational topology applications. 
 Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
@@ -634,7 +634,8 @@ The $(f(x)+\delta)$-contours in $f|_{B_\eps(x)}$ given by \Def{deg} might actual
 contour in $f$. The up-degree (as opposed to \emph{Morse} up-degree) is defined as the number of $(f(x)+\delta)$-contours
 that intersect $B_\eps(x)$, a potentially smaller number. This up-degree
 is exactly the up-degree of $x$ in $\reeb(\MM)$. (Analogously, for down-degree.)
-When the Morse up-degree is $2$ but the up-degree is $1$, then the level set gains a handle.
+When the Morse up-degree is $2$ but the up-degree is $1$, the topology of the level set changes but not by the number of connected components changing.
+For example, when $d=3$ this is equivalent to the contour gaining a handle.
 When $d=2$, this distinction is not necessary, since any point with $>1$
 Morse degree will have some $>1$ degree in $\reeb(\MM)$.
 
@@ -702,8 +703,8 @@ vertices which are higher than $v$.
 
 \begin{definition} 
 \label{def:int-criticalJoin}
-The critical join tree $\jc(\MM)$ is built on the set $V'$ of all critical points. 
-The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
+The critical join tree $\jc(\MM)$ is built on the set $\cV$ of all critical points. 
+The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $\cV$ in a connected component of $\MM^+_v$
 and $v$ is connected to this component (in $\MM$). 
 \end{definition}
 
@@ -713,14 +714,14 @@ are still put as vertices in the join tree. They simply form a long path. The sp
 is obtained by simply inverting this procedure, sweeping upwards and tracking sublevel sets.
 
 A major insight of~\cite{csa-cctad-00} is an ingeniously simple linear time procedure to construct
-the contour tree from the join and split tree. So the bottleneck is computing these trees. And observe
-in \Fig{sorting} that the split vertices form a long path in the join tree (and vice versa). Constructing
-these trees forces a global sort of the splits, a redundant computation. Unfortunately (unlike \Fig{sorting}),
-the heights of joins and splits may be interleaved in a complex manner. The final merging of~\cite{csa-cctad-00}
+the contour tree from the join and split trees. So the bottleneck is computing these trees. Observe
+in \Fig{sorting} that the split vertices form a long path in the join tree (and vice versa). Therefore, constructing
+these trees forces a global sort of the splits, an unnecessary computation for the contour tree. Unfortunately, in general (i.e. unlike \Fig{sorting}) 
+the heights of joins and splits may be interleaved in a complex manner, and hence the final merging of~\cite{csa-cctad-00}
 to get the contour tree requires having the split vertices in the join tree. Without
 this, it is not clear how to get a consistent view of both joins and splits, required for the contour tree.
 
-Our aim is break $\MM$ into smaller pieces, where this redundant computation can be saved.
+Our aim is to break $\MM$ into smaller pieces, where this unnecessary computation can be avoided.
 
 %
 %{\bf Punchline:} We give a linear time procedure that partitions $\MM$ into smaller pieces. We guarantee
@@ -741,34 +742,37 @@ Nonetheless, our theorem appears to be new and works for all dimensions.
     \includegraphics[width=.18\linewidth]{figs/tent2}%
     \hspace{.9in}
     \includegraphics[width=.18\linewidth]{figs/tent1}
-    \caption{On left, downward rain spilling only (each shade of gray represents a different color), producing a grid.  On right, flipping the direction of rain spilling.}
+    \caption{On left, downward rain spilling only (each shade of gray represents a different color), producing a grid.  
+    Note we are assuming raining was done in reverse sorted order of maxima.  
+    On right, flipping the direction of rain spilling.}
     \label{fig:order}
 \end{figure}
 
 \paragraph{Cutting $\MM$ into extremum dominant pieces:} We define a simplicial complex
 endowed with a height to be \emph{minimum dominant} if there only exists a single minima.
+(Our real definition is more complicated, and involves simplicial complexes
+that allow additional ``trivial'' minima.)
 In such a complex, there exists a non-ascending path from any point to this unique minima.
-(Our real definition is more complicated, and involves simplicial complices
-that have many minima.) Analogously, we can define maximum dominant simplicial complices,
+Analogously, we can define maximum dominant simplicial complexes,
 and both are collectively called extremum dominant.
 
 We will cut $\MM$ into disjoint extremum dominant pieces, in linear time.
 The best way to think of our procedure is a meteorology analogy. Take an arbitrary maxima $x$,
-and imagine torrential rain at the maxima. The water flows down, wetting any point that has a non-ascending
+and imagine torrential rain at the maxima. The water flows down, wetting any point that has a non-ascending path 
 from $x$. We end up with two portions, the wet part of $\MM$ and the dry part. This is similar
 to \emph{watershed} algorithms used for image segmentation~\cite{RoMe00}. The wet part is obviously connected,
 while there may be numerous disconnected dry parts. The interface between the dry and wet parts
-are a set of contours, given the by ``water line". The wet part is clearly maximum dominant, since all
+is a set of contours, given by the ``water line". The wet part is clearly maximum dominant, since all
 wet points have a non-descending path to $x$. So we can simply cut along the interface
 contours to get the wet maximum dominant piece $\MM'$. By our contour surgery theorem,
-we are left with a set of disconnected dry parts, and we could recur this procedure on them.
+we are left with a set of disconnected dry parts, and we can recur this procedure on them.
 
 But here's the catch. Every time we cut $\MM$ along a contour, we potentially increase
 the complexity of $\MM$. Water flows in the interior of facets, and the interface will naturally
 cut some facets. Each cut introduces new vertices, and a poor choice of repeated raining leads
 to a large increase in complexity. Consider the left of \Fig{order}. Each raining produces a single
 wet and dry piece, and each cut introduces many new vertices. If we wanted to partition this terrain into 
-maximum dominant simplicial complices, the final complexity would be forbiddingly large.
+maximum dominant simplicial complexes, the final complexity would be forbiddingly large.
 
 A simple trick saves the day. Unlike reality, we can choose rain to flow solely downwards or solely upwards.
 Apply the procedure above to get a single wet maximum dominant $\MM'$ and a set of dry pieces.
@@ -784,17 +788,17 @@ In \Fig{order}, this procedure would yield two pieces, one maximum dominant, and
 Using the contour surgery theorem previously discussed, we can build the contour tree of $\MM$
 from the contour trees of the various pieces created. All in all, we prove the following theorem.
 
-\begin{theorem} \label{thm:int-rain} There is an $O(N)$ time procedure that cuts $\MM$ into extremum dominant simplicial complices
+\begin{theorem} \label{thm:int-rain} There is an $O(N)$ time procedure that cuts $\MM$ into extremum dominant simplicial complexes
 $\MM_1, \MM_2, \ldots$. Furthermore, given the set of contour trees $\{\cC(\MM_i)\}$, $\cC(\MM)$ can be constructed in $O(N)$ time.
 \end{theorem}
 
-\paragraph{Extremum dominance simplifies contour trees:} We will focus on minimum dominant simplicial complices $\MM$. By \Thm{int-rain}, it suffices
+\paragraph{Extremum dominance simplifies contour trees:} We will focus on minimum dominant simplicial complexes $\MM$. By \Thm{int-rain}, it suffices
 to design an algorithm for contour trees on such inputs. 
 For the $d=2$ case, it helps to visualize such an input as a terrain with no minima,
 except at a unique boundary face (think of a large boundary triangle that is the boundary).
 All the valleys in such a terrain are necessarily joins, and there can be no splits. Look
 at \Fig{sorting}. The portion on the left is minimum dominant in exactly this fashion.
-Water poured at any critical point must flow to the boundary, and the entire wet portion are connected.
+Water poured at any critical point must flow to the boundary, and the entire wet portion is connected.
 More formally, $\MM^-_v$ is connected for all $v$, so there are no splits.
 
 We can prove that the split tree is just a path, and the contour tree is exactly
