@@ -209,15 +209,28 @@
 %\usepackage{thm-restate}
 %\declaretheorem[name=Theorem,numberwithin=section]{thm}
 
-
+\newcommand{\atgen}{\symbol{'100}}
+\newcommand{\si}[1]{#1}
+\newcommand{\BenThanks}[1]{\thanks{%
+      Department of Computer Science; %
+      University of Illinois; %
+      201 N. Goodwin Avenue; %
+      Urbana, IL, 61801, USA; %
+      {\tt \si{raichel}2\atgen{}\si{uiuc}.\si{edu}}; %
+      {\tt \url{\si{http://illinois.edu/\string~\si{raichel2}}}}%
+      . %
+      #1}}
+      
 
 \author{
-  Benjamin Raichel
+  Benjamin Raichel\BenThanks{}
   \and
   C. Seshadhri
 }
 
-\title{A Mountaintop View Requires Minimal Sorting: \break A Faster Contour Tree Algorithm}
+\title{A Mountaintop View Requires Minimal Sorting: \break A Faster Contour Tree Algorithm%
+\footnote{The full updated version of this paper is available online \url{\si{http://web.engr.illinois.edu/\string~\si{raichel2}/\si{paint.pdf}}}}%
+}
 \date{}
 
 
@@ -508,6 +521,12 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
     \label{fig:sorting}
 \end{figure}
 
+\paragraph{Organization.}  
+\Sec{basics} contains basic definition for contour trees.  In \Sec{approach} we give a high level overview and intuition for our approach 
+for computing contour trees.  \Sec{surgery} and \Sec{rain} describe how we break the intial input into nicely behaved (extemum dominant) pieces. 
+\Sec{extreme} shows that computing the contour tree for these nicely behaved pieces is roughly equivalent to computing the join tree. 
+\Sec{paint} contains our algorithm for computing join trees, which along with previous sections gives our algorithm for contour trees.  
+Finally, in \Sec{pathDecomp} and \Sec{lb} we relate the running time of our algorithm (providing upper and lower bounds) to a particular decomposition of the contour tree.
 
 \section{Contour tree basics} \label{sec:basics}
 
@@ -2426,6 +2445,7 @@ That completes the whole proof.
 
 
 \section{Lower Bound by Path Decomposition}
+\label{sec:lb}
 In this section we provide a lower bound for the time it takes to compute a contour tree in terms the cost of path decompositions.  Specially, 
 we first consider the easier case of join trees, after which the lower bound for more general contour trees will easily follow.
 \Ben{Hopefully the following sentence clear up confusion between $\MM$ and $(f,\MM)$}
