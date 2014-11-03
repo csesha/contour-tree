@@ -247,7 +247,7 @@ As $v$ is changed, these contours change topology, merge into each other, or spl
 behavior. The vertices of these trees are the critical points of $f$, where the gradient is zero.
 The edges represent changes in the topology of contours.
 It is a fundamental data structure in data analysis and visualization,
-and there is much past work (theoretical and practical) on algorithms for construct contour trees.
+and there is significant previous work (both theoretical and practical) on algorithms for constructing contour trees.
 
 Suppose $\MM$ has $n$ vertices, $N$ facets, and $t$ critical points.
 A classic result of Carr, Snoeyink, and Axen (2000) gives an algorithm that takes $O(n\log n + N\alpha(N))$ time
@@ -331,7 +331,7 @@ vertices of both up and down-degree $1$. They correspond to contours (which are 
 Suppose we have $f: \MM \mapsto \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ facets in total, and $t \leq n$ critical points.
 It is standard to assume that $f$ is PL-Morse (a well-behaved assumption) and that the maximum degree in the contour tree
 is $3$. A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
-which runs in $O(n\log n + N\alpha(N)$ time~\cite{csa-cctad-00}. (Henceforth, $\alpha(\cdot)$ denotes the inverse
+which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-00}. (Henceforth, $\alpha(\cdot)$ denotes the inverse
 Ackermann function.) It is natural to think of $N$ as $\Theta(n)$
 in practical applications (certainly true for $d=2$). The most expensive operation is an initial sort of all the vertex
 heights. Chiang et al build on this approach to get a faster algorithm that only sorts the critical vertices,
@@ -493,9 +493,9 @@ Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time 
 $3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an unconditional $O(N+t\log t)$ algorithm.
 The latter result crucially uses monotone paths to improve the running time, and we repeatedly
 exploit numerous properties of monotone paths. Carr's thesis shows relationships between monotone paths
-in $\MM$ and in $\cC(\MM)$.
+in $\MM$ and in its contour tree $\cC(\MM)$.
 
-Contour trees are a special case of Reeb graphs, a general topological representation for real-valued function
+Contour trees are a special case of Reeb graphs, a general topological representation for real-valued functions
 on any manifold. We refer the reader to Chapter 6 in~\cite{HaEd10} for more details. Algorithms for computing Reeb graphs
 is an active topic of research~\cite{sk-crgacs-91,cehnp-lrbm-03,PaScBr07,DoNa09,HaWaWe10,Pa12}, where
 two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
@@ -631,7 +631,7 @@ This is again a standard assumption in topological algorithms and can be achieve
 \subsection{Some technical remarks}
 
 The $(f(x)+\delta)$-contours in $f|_{B_\eps(x)}$ given by \Def{deg} might actually be the same
-contour in $f$. The up-degree is defined as the number of $(f(x)+\delta)$-contours
+contour in $f$. The up-degree (as opposed to \emph{Morse} up-degree) is defined as the number of $(f(x)+\delta)$-contours
 that intersect $B_\eps(x)$, a potentially smaller number. This up-degree
 is exactly the up-degree of $x$ in $\reeb(\MM)$. (Analogously, for down-degree.)
 When the Morse up-degree is $2$ but the up-degree is $1$, then the level set gains a handle.
@@ -642,7 +642,7 @@ As Carr points out in Chapter 6 of his thesis, the term contour tree can be used
 Every vertex in $\MM$ is associated with an edge in $\reeb(\MM)$, and sometimes the
 vertex is explictly placed in $\reeb(\MM)$ (by subdividing the respective edge). This is referred
 to as augmenting the contour tree, and it is common to augment $\reeb(\MM)$ will all vertices.
-Alternately, one can smooth out all vertices of up-degree and down-degree $1$ to get the
+Alternatively, one can smooth out all vertices of up-degree and down-degree $1$ to get the
 unaugmented contour tree. (For $d=2$, there are no such vertices in $\reeb(\MM)$.) 
 The contour tree of \Def{tree} is the typical definition in all results on output-sensitive
 contour trees, and is the smallest tree that contains all the topological changes
@@ -678,13 +678,13 @@ slightly differ from those in the main body. They may also differ from the origi
 in earlier work. 
 
 \paragraph{Do not globally sort:} Arguably, the starting point for this work is \Fig{relative}. We have two terrains
-with exactly the same contour tree, but different orderings of (heights of) the critical point.
-Turning it around, we cannot deduce the height ordering of critical points from the contour tree. Clearly,
-sorting the critical points is computationally reduntant for constructing the contour tree.
+with exactly the same contour tree, but different orderings of (heights of) the critical points.
+Turning it around, we cannot deduce the full height ordering of critical points from the contour tree. Therefore, clearly
+sorting all critical points is computationally unnecessary for constructing the contour tree.
 In \Fig{sorting}, the contour tree basically consists of two balanced binary trees, one of the joins,
 another of the splits. Again, it is not necessary to know the relative ordering between the mounds
-on the left (or among the depressions in the right) to compute the contour tree. Yet some ordering
-information is necessary: in the left, the little valleys are higher than the big central valley,
+on the left (or among the depressions on the right) to compute the contour tree. Yet some ordering
+information is necessary: on the left, the little valleys are higher than the big central valley,
 and this is reflected in the contour tree. More generally, leafs paths in the contour tree have points
 in sorted order, but incomparable points in the tree are unconstrained.
 How do we sort exactly what is required, without knowing the contour tree in advance?
@@ -694,11 +694,11 @@ How do we sort exactly what is required, without knowing the contour tree in adv
 Let us begin with the algorithm of Carr, Snoeyink, and Axen~\cite{csa-cctad-00}. The key insight is to build
 two different trees, called the join and split trees, and then merge them together into the contour tree.
 Consider sweeping down via the hyperplane $x_{d+1} = h$ and taking the \emph{superlevel} sets. These 
-are the connected components of $\MM$ with height greater than $h$. For a terrain, the superlevel
+are the connected components of the portion of $\MM$ above height $h$. For a terrain, the superlevel
 sets are a collection of ``mounds". As we sweep downwards, these mounds keep joining each other,
 until finally, we end up with all of $\MM$. The join tree tracks exactly these events. 
-Formally, let $\MM^+_v$ denote the simplicial complex obtained by taking only those
-vertices higher than $v$.
+Formally, let $\MM^+_v$ denote the simplicial complex induced on the subset of 
+vertices which are higher than $v$.
 
 \begin{definition} 
 \label{def:int-criticalJoin}
