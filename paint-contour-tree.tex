@@ -214,8 +214,8 @@
 \newcommand{\BenThanks}[1]{\thanks{%
       Department of Computer Science; %
       University of Illinois; %
-      201 N. Goodwin Avenue; %
-      Urbana, IL, 61801, USA; %
+%      201 N. Goodwin Avenue; %
+      Urbana, IL, USA; %
       {\tt \si{raichel}2\atgen{}\si{uiuc}.\si{edu}}; %
       {\tt \url{\si{http://illinois.edu/\string~\si{raichel2}}}}%
       . %
@@ -225,7 +225,7 @@
 \author{
   Benjamin Raichel\BenThanks{}
   \and
-  C. Seshadhri
+  C. Seshadhri\thanks{Sandia National Laboratories; Livermore, CA, USA; {\tt scomand@sandia.gov}}
 }
 
 \title{A Mountaintop View Requires Minimal Sorting: \break A Faster Contour Tree Algorithm%
@@ -330,8 +330,8 @@ Think of the contour tree edges as pointing downwards, so we can talk of the ``u
 Leaves of down-degree $1$ are maxima, because a new contour is created at such points. Leaves of up-degree
 $1$ are minima, because a contour is destroyed there. Up-degree $2$ vertices are ``joins", where contours
 merge, and down-degree $2$ vertices are ``splits".  When $d=2$ (as in \Fig{relative}), contours are closed loops.
-In dimensions $d \geq 3$, we may have internal
-vertices of both up and down-degree $1$. They correspond to contours (which are $(d-1)$-manifolds) gaining or losing handles.
+In dimensions $d \geq 3$, we may have internal vertices of both up and down-degree $1$. 
+For example, these could be events where contours gain or lose handles.
 
 Suppose we have $f: \MM \mapsto \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ facets in total, and $t \leq n$ critical points.
 It is standard to assume that $f$ is PL-Morse (a well-behaved assumption) and that the maximum degree in the contour tree
@@ -397,18 +397,21 @@ that hard codes the answer for $f$ and merely checks this answer.
 
 Instead, call a possible cost $C$ \emph{valid} if $C = \cost(f)$ for some $f$\footnote{If one is concerned
 that $C$ might be irrational, define valid if $2^C = 2^{\cost(f)}$.}. We prove
-a refined lower bound matching \Thm{main-alg}. 
+a refined lower bound matching the performance of \Thm{main-alg}. 
+Roughly speaking, it is not possible to improve on \Thm{main-alg} even when restricted to a subset
+of inputs of fixed cost.
 
-\begin{definition}\label{def:hfdt}
-A \emph{height function decision tree} is an algorithm
-that is allowed arbitrary computation on the domain $\MM$, and is an algebraic decision
-tree over the heights. The running time is simply the number of queries made.
-\end{definition}
 
+%\begin{definition}\label{def:hfdt}
+%A \emph{height function decision tree} is an algorithm
+%that is allowed arbitrary computation on the domain $\MM$, and is an algebraic decision
+%tree over the heights. The running time is simply the number of queries made.
+%\end{definition}
+%
 \begin{theorem} \label{thm:main-lb} 
 %Fix a sufficiently large numbers $t$ and $C$, 
 %where $t$ is the number of critical points and $C$ is a valid cost for an instance with $t$ critical point.
-Consider the set of functions $\bF_C$ that all same number of critical points and the same (valid) cost $C$.  Any algebraic decision tree that correctly computes
+Consider the set of functions $\bF_C$ that have the same number of critical points and the same (valid) cost $C$.  Any algebraic decision tree that correctly computes
 the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
 \end{theorem}
 
@@ -445,14 +448,13 @@ the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
 % the contour tree on all of $\bF_C$ has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
 % \end{theorem}
 
-Roughly speaking, it is not possible to improve on \Thm{main-alg} even when restricted to a subset
-of inputs of fixed cost.
 
 \paragraph{Beyond worst-case analysis:} Our result provides understanding of the complexity
 of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound explain \emph{when}
 computing contour trees is expensive, and provide insight into the hardness of particular instances. It is intriguing
 that the cost (as defined earlier) roughly captures the hardness of an instance.
-In that sense, it is related to the concept of instance optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
+Trees that are short and fast are easy to compute, whereas trees with long paths are hard.
+Our result is related to the concept of instance optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
 Their notion of optimality is far more refined that what we prove, but it shares the flavor of understanding the spectrum
 of easy to hard instances. From a mathematical perspective, this sort of analysis forces one to look closely
 at the relationship between sorting and the contour tree problem. 
@@ -962,6 +964,15 @@ trees of these tiny tents attach to a main branch of length $|p|$. Working out t
 we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree. It is possible to argue
 that our algorithm requires $\Theta(\cost(P(T)))$ on all these instances.
 
+\section{Acknowledgements}
+
+We thank Jeff Erickson and Yusu Wang for numerous useful discussions. This work is
+supported by the Laboratory Directed Research and Development
+(LDRD) program of Sandia National Laboratories. Sandia National
+Laboratories is a multi-program laboratory managed and operated
+by Sandia Corporation, a wholly owned subsidiary of Lockheed
+Martin Corporation, for the U.S. Department of Energy’s National
+Nuclear Security Administration under contract DE-AC04-94AL85000.
 
 \section{Divide and conquer through contour surgery} \label{sec:surgery}
 
@@ -1485,7 +1496,7 @@ do not mix, so every edge of $\MM$ gets a unique color. This process (and indeed
 works purely on the 1-skeleton of $\MM$, which is just a graph.
 %
 
-\Ben{This is already defined in section 3, should we use the same numbering?}
+%\Ben{This is already defined in section 3, should we use the same numbering?}
 \begin{definition} Let the 1-skeleton of $\MM$ have edge set $E$ and maxima $X$.
 A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \mapsto [|X|]$ with the following property. 
  Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
@@ -2460,9 +2471,9 @@ That completes the whole proof.
 
 \section{Lower Bound by Path Decomposition}
 \label{sec:lb}
-In this section we provide a lower bound for the time it takes to compute a contour tree in terms the cost of path decompositions.  Specially, 
-we first consider the easier case of join trees, after which the lower bound for more general contour trees will easily follow.
-\Ben{Hopefully the following sentence clear up confusion between $\MM$ and $(f,\MM)$}
+In this section we provide a lower bound for the time it takes to compute a contour tree in terms the cost of path decompositions.  
+We first prove a lower bound for join trees, and then generalize to contour trees.
+%\Ben{Hopefully the following sentence clear up confusion between $\MM$ and $(f,\MM)$}
 Note earlier we usually used $\MM$ to denote the lift of a simplicial complex according to some height function $f$, 
 however in this section we make a distinction between the complex $\MM$ and the height function $f$.  
 In particular all previous definitions or subroutines which took $\MM$ as input now take $(f,\MM)$ as input.
