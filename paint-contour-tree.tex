@@ -358,7 +358,7 @@ containing a leaf, which is also monotonic in the height values of its vertices.
 \begin{theorem} \label{thm:main-alg} Consider a PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
 that all critical points have distinct values, and the contour tree has max-degree $3$. Our algorithm
 does not need this, but it simplifies the proof and presentation.} $f:\MM \mapsto \RR$, where the contour tree $T$
-has maximum degree $3$. There is an algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
+has maximum degree $3$. There is an algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 \end{theorem}
 
@@ -810,11 +810,11 @@ so the contour tree is more than just the join tree. But computationally, it suf
 to construct the join tree.)
 
 We stress the importance of this step for our approach. Given the algorithm of~\cite{csa-cctad-00},
-one may think that that it suffices to design faster algorithms for join trees. But this
-cannot give the sort of optimality we hope. Again, consider \Fig{sorting}. Any algorithm
+one may think that it suffices to design faster algorithms for join trees. But this
+cannot give the sort of optimality we hope for. Again, consider \Fig{sorting}. Any algorithm
 to construct the true join tree must construct the path of splits, which implies
 sorting all of them. It is absolutely necessary to cut $\MM$ into pieces where the cost
-of building the join trees can be related to the cost of building $\cC(\MM)$.
+of building the join tree can be related to the cost of building $\cC(\MM)$.
 
 \subsection{Join trees from painted mountaintops} \label{sec:join-paint}
 
@@ -833,7 +833,7 @@ computational geometry algorithm. We have to step away from this viewpoint to av
 The key idea is \emph{paint spilling}. Start with each maxima having a large can of paint, with distinct
 colors for each maxima. In arbitrary order, we spill paint from each maxima, wait till it flows down,
 then spill from the next, etc. Paint is viscous, and only flows down edges. \emph{It does not
-paint the interior of facets.} Alternately, this process is restricted to the 1-skeleton of $\NN$.
+paint the interior of facets.} That is, this process is restricted to the 1-skeleton of $\NN$.
 Furthermore, our paints do not mix, so each edge receives a unique color, which is decided by the first
 paint to reach it. 
 
@@ -856,16 +856,15 @@ is \emph{not} a contour, and is actually difficult to characterize. So we cannot
 approach of contour surgery. On the other hand, painting does not cut $\NN$, so there is no increase in complexity.
 Clearly, an initial painting can be constructed in $O(N)$ time. This is the tradeoff between water and paint.
 Water allows for an easy divide-and-conquer, at the cost of more complexity in the input. For an extremum
-dominant input, using water to divide the input $\NN$ raise the complexity too much.
+dominant input, using water to divide the input $\NN$ raises the complexity too much.
 
 Our algorithm incrementally builds $\jc(\MM)$ from the leaves (maxima) to the root (dominant minimum). 
 We say that vertex $v$ is \emph{touched} by color $c$, if there is a $c$-colored edge with lower endpoint $v$.
-Let us focus on an initial painting, where the colors have 1-1 correspondence with the maxima. Refer to \Fig{colors}.
+Let us focus on an initial painting, where the colors have 1-1 correspondence with the maxima. Refer to the left part of \Fig{colors}.
 Consider two sibling leaves $\ell_1, \ell_2$ and their common parent $v$. The leaves are maxima,
 and $v$ is a join that ``merges" $\ell_1, \ell_2$. 
-In that case, there are ``mounds" corresponding to each $\ell_1$ and $\ell_2$ that merge
+In that case, there are ``mounds" corresponding to $\ell_1$ and $\ell_2$ that merge
 at a valley $v$. Suppose this was the entire input, and $\ell_1$ was colored blue and $\ell_2$ was colored red. 
-(So ignore the yellow mound in \Fig{colors}.)
 Both the mounds are colored completely blue or red, while $v$ is touched by both colors.
 So this indicates that $v$ joins the blue maxima and red maxima in $\jc(\MM)$.
 
@@ -877,26 +876,27 @@ handled. Imagine flattening the red and blue mounds until reaching $v$, so that 
 is now a new maxima. Suppose purple paint was poured from $v$. In terms of $\jc(\MM)$, this
 is equivalent to removing leaves $\ell_1$ and $\ell_2$, making $v$ a new leaf.
 Alternately, $\jc(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
-The merging of the colors is not explicitly as that would be too expensive; we maintain a union-find
+The merging of the colors is not explicitly performed as that would be too expensive; we maintain a union-find
 data structure for that.
 
 Of course, things are more complicated when there are other mounds. There may be a yellow mound,
-corresponding to $\ell_3$ that joins with the blue mound higher up (at vertex $u$). In $\jc(\MM)$, $\ell_2$ and $\ell_3$
-are sibling leaves, and $\ell_1$ is a sibling of some ancestor of these leaves. So we cannot
+corresponding to $\ell_3$ that joins with the blue mound higher up at some vertex $u$ (see the right part of \Fig{colors}). In $\jc(\MM)$, $\ell_1$ and $\ell_3$
+are sibling leaves, and $\ell_2$ is a sibling of some ancestor of these leaves. So we cannot
 merge red and blue, until yellow and blue merge. Naturally, we use priority queues to handle this issue.
 We know that $u$ must also be touched by blue. So all critical vertices touched by blue
 are put into a priority queue keyed by height, and vertices are handled in that order.
 
 \begin{figure}[h]\centering
-    \includegraphics[width=.28\linewidth]{figs/mound}%
-    \hspace{.1in}
-    \includegraphics[width=.28\linewidth]{figs/mound2}%
-    \hspace{.1in}
-    \includegraphics[width=.28\linewidth]{figs/mound3}%
-    \hspace{.1in}
+    \includegraphics[width=.25\linewidth]{figs/redBlue}%
+    \hspace{.07in}
+    \includegraphics[width=.25\linewidth]{figs/redBlue2}%
+    \hspace{.07in}
+    \includegraphics[width=.03\linewidth]{figs/redBlueTree}
+    \hspace{.09in}
+    \includegraphics[width=.3\linewidth]{figs/mound}%
+    \hspace{.07in}
     \includegraphics[width=.065\linewidth]{figs/moundTree}
-    \caption{On the left, three initial colors.  In the middle, yellow and blue merge into green.  On the right, green and red merge into purple.
-    On the far right, the contour tree.}
+    \caption{On the left, red and blue merge to make purple, followed by the contour tree with initial colors.  On the right, additional maxima and the resulting contour tree.}
     \label{fig:colors}
 \end{figure}
 
@@ -929,8 +929,8 @@ The cost of heap operations depends on the sizes of the heaps, which keeps chang
 of the repeated merging. This is a major headache for the analysis. There are situations where
 the initial heap sizes are small, but they eventually merge to create larger heaps. 
 We employ a variant
-of \emph{heavy path decompositions}, first used for Sleator and Tarjan for analyzing link/cut trees~\cite{st-dsdt-83}.
-The final analysis is basically charges expensive heap operations to long paths in the decomposition.
+of \emph{heavy path decompositions}, first used by Sleator and Tarjan for analyzing link/cut trees~\cite{st-dsdt-83}.
+The final analysis basically charges expensive heap operations to long paths in the decomposition.
 
 \subsection{The lower bound} 
 
@@ -950,7 +950,7 @@ will be connected to a recursive construction involving other paths in $P(T)$. E
 one can think of tiny tents that are sticking out of each face of the main tent. The contour
 trees of these tiny tents attach to a main branch of length $|p|$. Working out the details,
 we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree. It is possible to argue
-that our algorithm requires $\Theta(\cost(P(T)))$ on all these instances.
+that our algorithm requires $\Theta(\cost(P(T)))$ comparisons on all these instances.
 
 
 \section{Divide and conquer through contour surgery} \label{sec:surgery}
@@ -1475,7 +1475,8 @@ do not mix, so every edge of $\MM$ gets a unique color. This process (and indeed
 works purely on the 1-skeleton of $\MM$, which is just a graph.
 %
 
-\Ben{This is already defined in section 3, should we use the same numbering?}
+We now restate \Def{paint}.
+
 \begin{definition} Let the 1-skeleton of $\MM$ have edge set $E$ and maxima $X$.
 A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \mapsto [|X|]$ with the following property. 
  Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
@@ -1835,6 +1836,7 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
 \end{proof}
 
 \begin{theorem}
+\label{thm:correct}
  Given an input complex $\MM$, $\build(\MM)$ terminates and outputs $\jc(\MM)$.
 \end{theorem}
 \begin{proof}
@@ -1990,16 +1992,8 @@ Our main goal in this section is to prove the following theorem.  We use $|p|$ t
 \begin{theorem} \label{thm:runtime} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in \pmax(T)} |p| \log |p|)$.
 \end{theorem}
 
-Specifically, proving the above theorem will imply our main result, \Thm{main-alg}, which we now restate and prove.
+We conclude this section in \Sec{implications} by showing that proving this theorem implies our main result \Thm{main-alg}.
 
-\begin{theorem}
-Consider a PL-Morse $f:\MM \mapsto \RR$, where the contour tree $T$
-has maximum degree $3$. There is an algorithm whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
-where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
-\end{theorem}
-\begin{proof}
-\Ben{Prove the theorem, and change the numbering on the theorem.}
-\end{proof}
 
 
 \subsection{Shrubs, tall paths, and short paths}
@@ -2440,6 +2434,60 @@ Combining this with \Clm{loss} gives, $|\redH_{p'}| \geq 19W_{p'}/20$. By \Lem{g
 Noting that $W_p \geq |\redH_p|$, we deduce that $W_p \geq (4/3)W_{p'}$.
 Hence, $p, p'$ is not a counterexample, and more generally, there is no counterexample.
 That completes the whole proof.
+\end{proof}
+
+\subsection{Our Main Result}
+\label{sec:implications}
+
+We now show that \Thm{runtime} allows us to upper bound the running time for our join tree and contour 
+tree algorithms in terms of path decompositions.
+
+\begin{theorem}
+Consider a PL-Morse $f:\MM \mapsto \RR$, where the join tree $\jc(\MM)$ has maximum degree $3$. 
+There is an algorithm to compute the join tree whose running time is $O(\sum_{p \in \pmax(\jc)} |p|\log |p| + t\alpha(t) + N)$.
+\end{theorem}
+\begin{proof}
+By \Thm{correct} we know that $\build(\MM)$ correctly outputs $\jc(\MM)$, and by \Lem{runTimeUpper}
+we know this takes $O(\sum_{v \in \jc(\MM)} \log |H_v| + t\alpha(t) + N)$ time, where the $H_v$ values are determined as in \Def{initialColoring}.
+Therefore by \Thm{runtime}, $\build(\MM)$ takes $O(\sum_{p \in \pmax(\jc)} |p|\log |p| + t\alpha(t) + N)$ 
+time to correctly compute $\jc(\MM)$.
+\end{proof}
+
+This result for join trees easily implies our main result, \Thm{main-alg}, which we now restate and prove.
+
+\begin{theorem}
+Consider a PL-Morse $f:\MM \mapsto \RR$, where the contour tree $\cC=\cC(\MM)$
+has maximum degree $3$. There is an algorithm to compute $\cC$ whose running time is $O(\sum_{p \in P(\cC)} |p|\log |p| + t\alpha(t) + N)$,
+where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
+\end{theorem}
+\begin{proof}
+First, lets review the various pieces of our algorithm. 
+On a given input simplicial complex, we first we break it into extremum dominant pieces using $\rain(\MM)$ (and in $O(|\MM|)$ time by \Thm{rain-time}).  
+Specifically, \Lem{rain-1} proves that the output of $\rain(\MM)$ is a set of extremum dominant pieces, 
+$\MM_1, \dots, \MM_k$, and \Clm{rain-reeb} shows that given the contour trees, $\cC(\MM_1), \dots, \cC(\MM_k)$ , 
+the full contour tree, $\cC(\MM)$, can be constructed (in $O(|\MM|)$ time).
+
+Now one of the key observations was that for extremum dominant manifolds, computing the contour tree is roughly the same as 
+computing the join tree.  Specifically, \Thm{contour-tree} implies that given $\jc(\MM_i)$ , 
+we can obtain $\cC(\MM_i)$ by simply sticking on the non-dominant minima at their respective splits (which can easily be done in linear time).
+However, by the above theorem we know $\jc(\MM_i)$ can be computed in $O(\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p| + t_i\alpha(t_i) + N_i)$
+(where $t_i$ and $N_i$ are the number of critical points and facets when restricted to $\MM_i$).
+
+At this point we can now see what the path decomposition referenced in theorem statement should be.  It is just the union of all the maximum 
+path decomposition across the extremum dominant pieces, $\pmax(\cC(\MM)) = \cup_{i=1}^k \pmax(\jc(\MM_i))$.
+Since all procedures besides computing the join trees take linear time in the size of the input complex, we can therefore 
+compute the contour tree in time
+\[
+O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i} = O\pth{\pth{\sum_{p \in \pmax(\cC(\MM))} |p|\log |p|} + t\alpha(t) + N}
+\]
+
+%\Thm{rain-time} proves that $\rain$ takes $O(|\MM|)$ time
+
+%\Lem{rain-1} proves that output of $\rain$ are extemum dominant.
+
+%\Clm{rain-reeb} shows that given the contour trees of the output manifolds of $\rain$, the full contour tree can be constructed in $O(|\MM|)$ time:
+
+%\Thm{contour-tree} implies that given an $\jc(\MM)$ for an etremum dominant $\MM$, we can obtain $\cC(\MM)$ in by simply sticking on the non-dominant minima at their respective splits (which can easily be done in linear time). 
 \end{proof}
 
 
