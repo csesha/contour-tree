@@ -1,3 +1,22 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%
+%%%%%%%%%%Comment out the switch below for full version 
+%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def \STOC {}
+
+
+\ifx\STOC\undefined
+  \newcommand{\FullVer}[1]{#1}
+  \newcommand{\SubmitVer}[1]{}
+\else
+  \newcommand{\FullVer}[1]{}
+  \newcommand{\SubmitVer}[1]{#1}
+\fi
+
+
+
+
 \documentclass[11pt]{article}
 \usepackage[margin=2.54cm]{geometry}
 \usepackage[dvipsnames,usenames]{color}
@@ -262,7 +281,7 @@ our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$, which is
 always bounded by $O(t\log t + N)$ and is $O(t\alpha(t)+N)$ for balanced trees. 
 Moreover, we prove a strong optimality property of our algorithm, showing that $\sum_{p\in P} |p|\log|p|$ complexity
 is inherent to computing contour trees. Consider the family of instances where our algorithm
-requires $C$ comparison. Any algorithm computing contour trees on this family requires
+requires $C$ comparisons. Any algorithm computing contour trees on this family requires
 $\Omega(C)$ comparisons in the worst case.
 
 %
@@ -325,7 +344,8 @@ These points are the ``events" where the contour topology changes and form the v
 An edge connects two critical points if one event immediately ``follows"
 the other as the sweep plane makes its pass. (We provide formal definitions later.) 
 
-\Fig{relative} and \Fig{sorting} show examples of simplicial complexes, with heights and their contour trees.
+\Fig{relative} and \Fig{sorting} 
+show examples of simplicial complexes, with heights and their contour trees.
 Think of the contour tree edges as pointing downwards, so we can talk of the ``up-degree" and ``down-degree" of vertices.
 Leaves of down-degree $1$ are maxima, because a new contour is created at such points. Leaves of up-degree
 $1$ are minima, because a contour is destroyed there. Up-degree $2$ vertices are ``joins", where contours
@@ -357,10 +377,13 @@ containing a leaf, which is also monotonic in the height values of its vertices.
 %we relate path decomposition costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
 
 \begin{definition}
-\label{def:path} For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
+\label{def:path} 
+For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
 \end{definition}
 
-\begin{theorem} \label{thm:main-alg} Consider a PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
+\begin{theorem} 
+\label{thm:main-alg} 
+Consider a PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
 that all critical points have distinct values, and the contour tree has max-degree $3$. Our algorithm
 does not need this, but it simplifies the proof and presentation.} $f:\MM \mapsto \RR$, where the contour tree $T$
 has maximum degree $3$. There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
@@ -386,9 +409,14 @@ We complement \Thm{main-alg} with an almost matching lower bound, showing that t
 of $\sum_{p \in P(T)} |p|\log |p|$ is required for any contour tree algorithm. The exact phrasing
 of the lower bound requires some care. Consider the $d=2$ (terrain) case.
 As referenced in \Thm{main-alg}, for any $f:\MM \mapsto \RR$ our deterministic algorithm defines a 
-specific path decomposition $P(T)$\footnote{The specific decomposition used is defined in \Sec{pathDecomp}, 
+specific path decomposition $P(T)$%
+\FullVer{
+\footnote{The specific decomposition used is defined in \Sec{pathDecomp}, 
 but also depends on the raining and painting procedures described in \Sec{rain} and \Sec{paint}.  
-The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}. 
+The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}.}
+\SubmitVer{
+\footnote{The specific decomposition used is defined in the full version of the paper.  
+The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}.}
 We define $\cost(f) = \sum_{p \in P(T)} |p|\log |p|$ for this specific decomposition $P(T)$.
 Ideally, we would like to argue that any contour-tree algorithm
 must pay $\cost(f)$ for ant $f$. 
@@ -408,7 +436,8 @@ of inputs of fixed cost.
 %tree over the heights. The running time is simply the number of queries made.
 %\end{definition}
 %
-\begin{theorem} \label{thm:main-lb} 
+\begin{theorem} 
+\label{thm:main-lb}
 %Fix a sufficiently large numbers $t$ and $C$, 
 %where $t$ is the number of critical points and $C$ is a valid cost for an instance with $t$ critical point.
 Consider the set of functions $\bF_C$ that have the same number of critical points and the same (valid) cost $C$.  Any algebraic decision tree that correctly computes
@@ -533,12 +562,12 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
     \label{fig:sorting}
 \end{figure}
 
-\paragraph{Organization.}  
-\Sec{basics} contains basic definition for contour trees.  In \Sec{approach} we give a high level overview and intuition for our approach 
-for computing contour trees.  \Sec{surgery} and \Sec{rain} describe how we break the intial input into nicely behaved (extemum dominant) pieces. 
-\Sec{extreme} shows that computing the contour tree for these nicely behaved pieces is roughly equivalent to computing the join tree. 
-\Sec{paint} contains our algorithm for computing join trees, which along with previous sections gives our algorithm for contour trees.  
-Finally, in \Sec{pathDecomp} and \Sec{lb} we relate the running time of our algorithm (providing upper and lower bounds) to a particular decomposition of the contour tree.
+% \paragraph{Organization.}  
+% \Sec{basics} contains basic definition for contour trees.  In \Sec{approach} we give a high level overview and intuition for our approach 
+% for computing contour trees.  \Sec{surgery} and \Sec{rain} describe how we break the intial input into nicely behaved (extemum dominant) pieces. 
+% \Sec{extreme} shows that computing the contour tree for these nicely behaved pieces is roughly equivalent to computing the join tree. 
+% \Sec{paint} contains our algorithm for computing join trees, which along with previous sections gives our algorithm for contour trees.  
+% Finally, in \Sec{pathDecomp} and \Sec{lb} we relate the running time of our algorithm (providing upper and lower bounds) to a particular decomposition of the contour tree.
 
 \section{Contour tree basics} \label{sec:basics}
 
@@ -649,7 +678,7 @@ is exactly the up-degree of $x$ in $\reeb(\MM)$. (Analogously, for down-degree.)
 When the Morse up-degree is $2$ but the up-degree is $1$, the topology of the level set changes but not by the number of connected components changing.
 For example, when $d=3$ this is equivalent to the contour gaining a handle.
 When $d=2$, this distinction is not necessary, since any point with $>1$
-Morse degree will have some $>1$ degree in $\reeb(\MM)$.
+Morse degree will have $>1$ degree in $\reeb(\MM)$.
 
 As Carr points out in Chapter 6 of his thesis, the term contour tree can be used for a family of related structures.
 Every vertex in $\MM$ is associated with an edge in $\reeb(\MM)$, and sometimes the
@@ -685,6 +714,7 @@ tree have degree at most $3$, i.e. there are no multi-saddles.
 Our final algorithm is quite technical and has numerous moving parts. This section
 provides a high level view of the entire result, and highlights the main ideas
 and intuition. 
+\SubmitVer{The full version with all the details can be found in the appendix.}
 It is helpful to keep the $d=2$ case in mind, so the input is just a triangulated
 terrain. In the interest of presentation, the definitions and theorem statements in this section will
 slightly differ from those in the main body. They may also differ from the original definitions proposed
@@ -754,7 +784,7 @@ Nonetheless, our theorem appears to be new and works for all dimensions.
     \includegraphics[width=.18\linewidth]{figs/tent2}%
     \hspace{.9in}
     \includegraphics[width=.18\linewidth]{figs/tent1}
-    \caption{On left, downward rain spilling only (each shade of gray represents a different color), producing a grid.  
+    \caption{On left, downward rain spilling only (each shade of gray represents a piece created by each different spilling), producing a grid.  
     Note we are assuming raining was done in reverse sorted order of maxima.  
     On right, flipping the direction of rain spilling.}
     \label{fig:order}
@@ -810,7 +840,7 @@ For the $d=2$ case, it helps to visualize such an input as a terrain with no min
 except at a unique boundary face (think of a large boundary triangle that is the boundary).
 All the valleys in such a terrain are necessarily joins, and there can be no splits. Look
 at \Fig{sorting}. The portion on the left is minimum dominant in exactly this fashion.
-Water poured at any critical point must flow to the boundary, and the entire wet portion is connected.
+%Water poured at any critical point must flow to the boundary, and the entire wet portion is connected.
 More formally, $\MM^-_v$ is connected for all $v$, so there are no splits.
 
 We can prove that the split tree is just a path, and the contour tree is exactly
@@ -826,7 +856,7 @@ one may think that it suffices to design faster algorithms for join trees. But t
 cannot give the sort of optimality we hope for. Again, consider \Fig{sorting}. Any algorithm
 to construct the true join tree must construct the path of splits, which implies
 sorting all of them. It is absolutely necessary to cut $\MM$ into pieces where the cost
-of building the join tree can be related to the cost of building $\cC(\MM)$.
+of building the join tree can be related to that of building $\cC(\MM)$.
 
 \subsection{Join trees from painted mountaintops} \label{sec:join-paint}
 
@@ -929,9 +959,14 @@ at most $2$ colors, because of all the color merges that previously occured.
 
 
 \paragraph{The running time analysis:} Relating the running time to a path decomposition is the most technical part of the paper. 
-All the non-heap operations can be easily bounded as $O(t\alpha(t) + N)$ ($t\alpha(t)$ from the union-find data structure
+All the non-heap operations can be easily bounded by $O(t\alpha(t) + N)$ (the $t\alpha(t)$ is from the union-find data structure
 for colors). It is not hard to argue that at all times, any heap always contains a subset of a leaf
-to root path. Unfortunately, this subset is \emph{not} contiguous, as \Fig{colors} shows. \Sesh{explain}
+to root path. Unfortunately, this subset is \emph{not} contiguous, as the right part of \Fig{colors} shows. 
+Specifically, in this figure the far left saddle (labeled $i$) is hit by blue paint.  However, there is another 
+saddle on the far right (labeled $j$) which is not hit by blue paint.  Since this far right saddle is slightly 
+higher than the far left one, it will merge into the component containing the blue mound (and also the yellow and red mounds)
+before the far left one.  Hence, the vertices initially touched by blue are not contiguous in the contour tree.
+
 Nonetheless, we can get a non-trivial (but non-optimal) bound. Let $d_v$ denote the distance to the root for vertex $v$ in the join tree.
 The total cost (of the heap operations) is at most $\sum_v \log d_v$. This immediately proves a bound of $O(t\log D)$, where
 $D$ is the maximum distance to the root, an improvement over previous work. But this bound is non-optimal.
@@ -949,9 +984,9 @@ The final analysis basically charges expensive heap operations to long paths in 
 Consider a contour tree $T$ and the path decomposition $P(T)$ used to bound the running time. 
 Denoting $\cost(P(T)) = \sum_{p \in P(T)} |p|\log |p|$, we construct a set of $\prod_{p \in P(T)} |p|!$
 functions on a fixed domain such that each function has a distinct (labeled) contour tree. By a simple
-entropy argument, any height decision tree that correctly computes the contour tree on all instances
-requires average case $\Omega(\cost(P(T)))$ time. We prove that our algorithm makes $\Theta(\cost(P(T)))$
-height comparisons on all these instances. In general, any algorithm requires $\Omega(C)$ time
+entropy argument, any algebraic decision tree that correctly computes the contour tree on all instances
+requires worst case $\Omega(\cost(P(T)))$ time. We prove that our algorithm makes $\Theta(\cost(P(T)))$ 
+comparisons on all these instances. In general, any algorithm requires $\Omega(C)$ time
 to solve the set of instances that our algorithm solves with $C$ comparisons.
 
 We have a fairly simple construction that works for terrains. In $P(T)$, consider the path
@@ -964,16 +999,9 @@ trees of these tiny tents attach to a main branch of length $|p|$. Working out t
 we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree. It is possible to argue
 that our algorithm requires $\Theta(\cost(P(T)))$ comparisons on all these instances.
 
-\section{Acknowledgements}
 
-We thank Jeff Erickson and Yusu Wang for numerous useful discussions. This work is
-supported by the Laboratory Directed Research and Development
-(LDRD) program of Sandia National Laboratories. Sandia National
-Laboratories is a multi-program laboratory managed and operated
-by Sandia Corporation, a wholly owned subsidiary of Lockheed
-Martin Corporation, for the U.S. Department of Energy’s National
-Nuclear Security Administration under contract DE-AC04-94AL85000.
 
+\FullVer{
 \section{Divide and conquer through contour surgery} \label{sec:surgery}
 
 {\bf The cutting operation:} We define a ``cut" operation on $f:\MM \rightarrow \RR$ that cuts along a regular contour to create
@@ -2806,7 +2834,17 @@ the contour tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) r
 % $l$ is adjacent to a max path and $u$ is adjacent to a min path:\newline
 % Connect a face of the cylinder for the $u$ path (using a split) to a face of the cylinder for the $l$ path (using a join).
 % \end{enumerate}
+}
 
+
+\paragraph{Acknowledgements.}
+We thank Hsien-Chih Chang, Jeff Erickson, and Yusu Wang for numerous useful discussions. This work is
+supported by the Laboratory Directed Research and Development
+(LDRD) program of Sandia National Laboratories. Sandia National
+Laboratories is a multi-program laboratory managed and operated
+by Sandia Corporation, a wholly owned subsidiary of Lockheed
+Martin Corporation, for the U.S. Department of Energy’s National
+Nuclear Security Administration under contract DE-AC04-94AL85000.
 
 
 \bibliographystyle{alpha}
@@ -2825,7 +2863,6 @@ the contour tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) r
 %
 %
 %end of writup
-%stuff below should be deleted
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2840,1111 +2877,8 @@ the contour tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) r
 
 
 
-\remove{
 
 \appendix
-
-\section{Old stuff}
-
-\subsubsection{Paying it down the line}
-
-% \begin{claim}
-% \label{clm:sizes}
-%  Let $p$ be a path in a maximum path decomposition, such that $|H_p|>c|p|$ for some constant $c> 6$.
-%  Let $H_f$ denote the heap at the leaf of $p$.  We then have the following
-%  \begin{compactenum}
-%   \item $|H_f|\leq (1+1/c)|H_p|$
-%   \item $|H_f|\geq |H_p|/3$
-%   \item For any path $q$ adjacent to $p$ in the shrub, $|H_q|<\frac{2}{3}|H_p|$
-%  \end{compactenum} 
-% \end{claim}
-% \begin{proof}
-%   For any vertex $v\in p$ \Obs{decrease} implies that $|H_v|\leq |H_p| + |p| < (1+1/c) |H_p|$.
-%   First observe that by setting $v=f$ this immediately implies the first part of the claim.
-%  % By a similar argument, $|H_f|\geq |H_p| - |p| > (1-1/c)|H_p|$.
-%   
-%   To prove the last part of the claim, suppose otherwise that $|H_q|\geq \frac{2}{3}|H_p|$ for some 
-%   adjacent path $q$.  As this is a maximum path decomposition, this implies that there is some 
-%   $v\in p$ such that $|H_v|\geq \frac{4}{3}|H_p|-1$.
-%   By \Obs{decrease} we then have, 
-%    $|H_p| \geq |H_v| - |p|\geq \frac{4}{3}|H_p| - 1 - |H_p|/c \geq (4/3-1/c)|H_p|-1$.
-%   When rearranged this gives $1\geq (1/3-1/c)|H_p|$.  As $c>6$ we have $1\geq |H_p|/6$, 
-%   which is a contradiction as $|H_p|>c|p|>6$.
-% \end{proof}
-
-\Ben{I had originally thought the following claim would be useful in proving the lemma below.}
-\begin{claim}
-\label{clm:sizes}
- Let $p$ be a path in a maximum path decomposition, such that $|H_p|>c|p|$ for some constant $c> 6$.
- We then have the following
-% \begin{compactenum}
-%  \item 
-  For any path $q$ adjacent to $p$ in the shrub, $|H_q|<\frac{2}{3}|H_p|$
-%  \item If there does not exist and adjacent path $q$ such $H_q\geq H_p/3$, then $|H_f|\geq |H_p|/3$
-% \end{compactenum} 
-\end{claim}
-\begin{proof}
-  To prove the claim, suppose otherwise that $|H_q|\geq \frac{2}{3}|H_p|$ for some 
-  adjacent path $q$.  As this is a maximum path decomposition, this implies that there is some 
-  $v\in p$ such that $|H_v|\geq \frac{4}{3}|H_p|-1$.
-  By \Obs{decrease} we then have, 
-   $|H_p| \geq |H_v| - |p|\geq \frac{4}{3}|H_p| - 1 - |H_p|/c \geq (4/3-1/c)|H_p|-1$.
-  When rearranged this gives $1\geq (1/3-1/c)|H_p|$.  As $c>6$ we have $1\geq |H_p|/6$, 
-  which is a contradiction as $|H_p|>c|p|>6$.  
-\end{proof}
-
-\begin{lemma}
-\label{lem:excess}
- Let $p$ be a tall path, and let $S_1, \dots S_k$ and $R_1, \dots, R_l$ be the sizes of the heaps at the roots of the short and tall children of $p$, respectively, in the shrub.  
- Let $H_f$ be the heap at the leaf of the path $p$.
- Then,  $|H_p| \log |H_p|   \geq  \sum_{v\in p} \log|H_v| + \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i  -  c|p|\log |p|$, for some sufficiently large constant $c$
- \end{lemma}
-\begin{proof}
- First observe that the lemma holds for $|H_p|$ less than any fixed constant, since otherwise \Lem{adjacent} implies we can choose $c$ 
- large enough such that $c|p|\log|p|$ will dominate all other terms.
- Next, observe that $\sum_{v\in p} \log|H_v| \leq \sum_{v\in p} \log(|H_v|+|p|) = |p|\log(|H_v|+|p|) = O(|p|\log|p|)$, as $p$ is a tall path.  
- Therefore, in the remainder of the proof  we can safely ignore the $\sum_{v\in p} \log|H_v|$ term as we can choose $c$ large enough to cover it.  
- That is we now instead prove the inequality,
- \[
-  |H_p| \log |H_p|   \geq \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i  -  c|p|\log |p|
- \]
- To do so we  break the analysis into two case based on the relative size of $|p|$ and $|H_p|$. 
- In the following, $\alpha>10$ is some yet to be determined constant.  
-
-\paragraph{Case 1, $|p|\geq |H_p|/\alpha$:\\}
-First observe that by \Lem{adjacent}, $|H_p|+|p| \geq \sum_{i=1}^k S_i+ \sum_{i=1}^l R_i$.
-By choosing $c$ large enough we therefore have,
-\begin{align*}
- c|p|\log|p| &\geq 2(1+\alpha)^2 |p|\log |p| \geq 2(1+\alpha)|p| \log((1+\alpha)|p|)\\
-             &\geq 2(|H_p|+|p|)\log(|H_p|+|p|) \geq 2\log(|H_p|+|p|) \pth{\sum_{i=1}^k S_i + \sum_{i=1}^l R_i}\\
-             &\geq \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i 
-\end{align*}
-
-
-
-In this case $\log(|H_p|+|p|)\leq \log(2|p|) \leq 1+\log(|p|)$ (where $\log$ is base $2$).
-Therefore, assuming $|p|>1$, we have 
-\[
-(|H_p|+|p|)\log(|H_p|+|p|)\leq (1+c)|p|\log((1+c)|p|) %(|H_p|+|p|)(1+\log |p|) \leq 2(1+c)|p|\log |p|
-\]
-which when combined with the inequality from \Lem{adjacent} gives, 
-\[
- 4(1+c)|p|\log |p| \geq 2(|H_p|+|p|)\log(|H_p|+|p|)\geq \pth{|H_f| + \frac{4}{3}\sum_{i=1}^k S_i + \sum_{i=1}^l R_i}\log(|H_p|+|p|).
-\]
-This easily implies the desired inequality as $\log(H_p+p)$ is larger than any other $\log$ term in the inequality.
-
-\paragraph{Case 2, $|p|< |H_p|/\alpha$:\\}
-
-\Ben{Was not able to handle this case.}
-
-%  First, lets assume we can show $\sum_{i=1}^k S_i + \sum_{i=1}^l R_i \leq \frac{3}{4}|H_p|$.  
-%  In this case, using the last part of \Clm{sizes}, we can prove the desired inequality as follows.
-%  
-%  \begin{align*}
-%   \frac{4}{3}\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i  &\leq  \frac{4}{3} \pth{\sum_{i=1}^k S_i \log S_i + \sum_{i=1}^l R_i \log R_i} \\
-%   &\leq  \frac{4}{3} \log |H_p| \pth{\sum_{i=1}^k S_i + \sum_{i=1}^l R_i}  \leq  |H_p| \log |H_p|
-%  \end{align*}
-%  
-%  Finally, to complete the proof we must prove our assumption that $\sum_{i=1}^k S_i + \sum_{i=1}^l R_i \leq \frac{3}{4}|H_p|$.
-%  By \Lem{adjacent} and \Clm{sizes} we have, 
-%  \[
-%  \sum_{i=1}^k S_i + \sum_{i=1}^l R_i 
-%  \leq |H_p|+|p|-|H_f| 
-%  \leq (1+1/\alpha-1/3)|H_p| = (2/3+1/\alpha)|H_p|
-%  \]
-%  
-%  Therefore $\sum_{i=1}^k S_i + \sum_{i=1}^l R_i \leq \frac{3}{4}|H_p|$ if $(2/3 + 1/\alpha)\leq 3/4$, which rearranged gives $\alpha \geq 12$
-\end{proof}
-
-
-
-
-
-\remove{
-% \subsubsection{Paying it down the line}
-% 
-% \begin{lemma}
-% \label{lem:excess}
-%  Let $p$ be a tall path, and let $S_1, \dots S_k$ and $R_1, \dots, R_l$ be the sizes of the heaps at the roots of the short and tall children of $p$, respectively, in the shrub.  
-%  Let $H_f$ be the size of the heap at the leaf of the path $p$, and let $X = \sum_{i=0}^k H_i \log H_i$.  
-%  Then,  $|H_p| \log |H_p|   \geq  H_f\log H_f + \sum_{i=0}^k S_i \log S_i + \sum_{i=0}^l R_i \log R_i  -  c|p|\log |p|$, for some sufficiently large constant $c$
-%  \end{lemma}
-% \begin{proof}
-% By \Lem{adjacent} we know that $|H_p|+|p| \geq  H_f + \sum_{i=0}^k S_i + \sum_{i=0}^l R_i$.  
-% %Now as $p$ is a tall path we have $|p|\geq \sqrt{|H_p|}/100$, and so, $(|H_p|+|p|)\log(|H_p|+|p|)$
-% 
-% We  break the analysis into two case based on the relative size of $|p|$ and $|H_p|$.  In the following $c$ is some yet to be determined constant greater than $1$.
-% 
-% \paragraph{Case 1, $|p|\geq |H_p|/c$:}  
-% In this case $\log(|H_p|+|p|)\leq \log(2|p|) \leq 1+\log(|p|)$ (where $\log$ is base $2$).
-% Therefore, assuming $|p|>1$, we have 
-% \[
-% (|H_p|+|p|)\log(H_p+p)\leq (|H_p|+|p|)(1+\log |p|) \leq (2|p|)(2\log |p|)\leq 4|p|\log |p|
-% \]
-% which when combined with the inequality from \Lem{adjacent} gives, 
-% \[
-%  4|p|\log |p| \geq (|H_p|+|p|)\log(|H_p|+|p|)\geq \pth{H_f + \sum_{i=0}^k S_i + \sum_{i=0}^l R_i}\log(|H_p|+|p|).
-% \]
-% This easily implies the claim as $\log(H_p+p)$ is larger than any other $\log$ term in the inequality.
-% 
-% \paragraph{Case 2, $|p|< |H_p|/c$:}
-% \end{proof}
-}
-
-
-Define the crust of the shrub to be the first (i.e. closest to the root) layer of short paths in the shrub.  Apply \Lem{shortCost} to each of the short paths in the crust and then 
-say by \Lem{excess} and since the root heap goes to zero we are done.
-
-
-
-\ignore{
-Naturally, this geometric series behavior can be extended to more than two adjacent short paths, thus motivating 
-the following definition.
-
-\begin{definition}
- Let $p$ be a path in a path decomposition $P(T)$, with corresponding shrub $\pathTree$.
- Call a short path $q\in P(T)$ short reachable from $p$ if the path from $p$ to $q$ in $\pathTree$ 
- contains only vertices which correspond to short paths.  Call the subtree of $\pathTree$ consisting 
- of all short reachable paths from $p$ the \emph{short shrub} of $p$, and denote it $\mathcal{L}(p)$.
-\end{definition}
-
-In the following subsection we show how to exploit this geometric series behavior of short shrubs.
-
-We say two paths in $P(T)$ are adjacent if their corresponding vertices are adjacent in the shrub.  Similarly, for 
-two adjacent paths in $P(T)$ we can define a parent/child relationship based on this relationship in the shrub. 
-}
-
-\remove{
-\Ben{Maybe move the remainder of this subsection to 5.3 since tall and short paths and not used until then}
-
-\begin{definition}
- Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.  
- For $p\in P(T)$, we say that $p$ is \emph{short} if $|p| < \sqrt{|H_{r_p}|}/100$, and we say it is \emph{tall} otherwise.
-\end{definition}
-
-\begin{observation}
-\label{obs:decrease}
- Let $v$ be a vertex in $T$ and let $w$ be its parent.  Then $|H_w| \geq |H_v| -1$, as $L(T_v) \subseteq L(T_w)$ and the path from 
- $w$ to the root has one less vertex than the path from $v$ to the root.
- 
- In particular, we have the following more general property.
- Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $u$ is lower than $v$.  
- Then $|H_v| \leq |H_u| + d(u,v)$. 
-\end{observation}
-
-
-\begin{lemma}
-\label{lem:pathBounds}
- Let T be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
- Then, 
- \begin{compactenum}
-  \item for any tall path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
-  \item for any short path $p\in P(T)$, $\sum_{v\in p} \log |H_v| = O(|p| \log |H_{r_p}|)$.
- \end{compactenum}
-\end{lemma}
-\begin{proof}
- By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{r_p}| + |p|$ (as $r_p$ lies below $v$ on $p$).
- As such, 
- \[
- \sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{r_p}| + |p|)  = |p| \log (|H_{r_p}| + |p|).
- \]
- If $p$ is a tall path then $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |p|)$, and if $p$ is short then 
- $|p| \log (|H_{r_p}| + |p|) = O(|p| \log |H_{r_p}| )$.
-\end{proof}
-
-The following lemma can be thought of as a generalization of $\Obs{decrease}$.
-
-\begin{lemma}
-\label{lem:adjacent}
- Let $T$ be a binary tree and let $\chi(T)$ and $P(T)$ be a valid coloring and path decomposition of $T$, respectively.
- Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all adjacent child paths of $p$.
- For $1\leq i\leq k$ let $r_i = r_{q_i}$ and let $H_i = H_{r_i}$.
- Also, let $H_0$ denote the heap at the leaf of $p$.
- 
- Then $\sum_{i=0}^k |H_i| \leq |H_p|+|p|$, where $H_p = H_{r_p}$.
-\end{lemma}
-\begin{proof} 
- First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
- Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
-  
- Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e. $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
- In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
- as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
- Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
- Putting these together gives
- \[
-  \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
- \]
-\end{proof}
-
-% \Ben{There is a fundamental flaw in the following lemma and corollary.  
-% As such, the remainder of this subsection will likely be deleted.}
-% 
-% Using the notation defined in the above lemma, we have the following crucial lemma, which we will use to 
-% argue we can charge that cost of all paths in $P(T)$ to the cost of the tall paths.
-% 
-% \begin{lemma}
-% Let $p$ be a tall path in $P(T)$ and let $\{q_1, \dots q_k\}$ be any set of short paths in $P(T)$ such that 
-% $\sum_{i=1}^k |H_i| = O(H_p)$.  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$
-% \end{lemma}
-% \begin{proof}
-% By \Lem{pathBounds}, for all $1\leq i\leq k$, 
-%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a short path.
-%  By assumption $\sum_{i=1}^k |H_i| = O(|H_p|)$, 
-%  As $x\log x$ is a convex function, Jensen's inequality then implies 
-%  $\sum_{i=1}^{k} |H_i|\log |H_i| = O(|H_p| \log |H_p|) = O(|p|\log |p|)$, since $p$ is a tall path.
-% \end{proof}
-% 
-% 
-% \begin{corollary}
-% \label{cor:tallLight}
-%  Let $p$ be a tall path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the set of all short paths adjacent to $p$.
-%  Then $\sum_{i=1}^k \sum_{v\in q_i} \log |H_v| = O(|p|\log |p|)$.
-% \end{corollary}
-% \begin{proof}
-%  Let $H_i$ be as defined in \Lem{adjacent}.  By \Lem{pathBounds}, for all $1\leq i\leq k$, 
-%  $\sum_{v\in q_i} \log |H_v| = O(|q_i|\log |H_i|) = O(|H_i|\log |H_i|)$, as $q_i$ is a short path.
-%  Now by \Lem{adjacent}, $\sum_{i=1}^k |H_i| \leq |H_p|+|p| = O(|p|)$, as $p$ is a tall path. 
-%  Therefore, as $x\log x$ is a convex function, Jensen's inequality implies the claim.
-%  
-% \end{proof}
-
-}
-
-
-
-\subsection{The shrub of unsupported paths} \label{sec:short}
-
-
-
-It suffices to focus on unsupported short paths. \Lem{short} can be reduced to the following.
-
-\begin{lemma} \label{lem:support} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
-\end{lemma}
-
-We now construct the shrub of unsupported short paths. Consider $p \in \cL \setminus \cL'$,
-and traverse the chain of ancestors from $p$. Eventually, we must reach another short path $q$.
-(If not, we have reached the root $r$ of $\pmax(T)$. Hence, $p$ is supported.)
-Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
-to the shrub forest of $\cL \setminus \cL'$, where every unsupported short path is an internal node, and all
-roots are supported short paths. 
-
-We list out some important claims about this shrub forest.
-We focus on $\cU$, a connected component (shrub) in the shrub forest and denote the 
-the root by $r(\cU)$.
-
-\begin{claim} \label{clm:loss2} Consider $p \in \cL \setminus \cL'$ that is in $\cU$. Let $Q$
-be the set of tall ancestors of $p$ that are descendants of $r(\cU)$. Then $\sum_{q \in Q} |q \cap H_p| \leq |H_p|/50$.
-\end{claim}
-
-\begin{proof} Suppose not, for contradictions sake. As we traverse the tall ancestors of $p$,
-we encounter various vertices of $H_p$ in the ancestors $q$. Consider the first $|H_p|/100$
-such vertices of $p$ encountered. At each such $v$, there are at least $|H_p|/100$
-vertices \emph{not yet} encountered, so $|H_v| > |H_p|/100$. Each of these vertices $v$
-is supported, implying that $p$ is a supported short path.
-\end{proof}
-
-\Lem{support} is a direct consequence of the following,
-which is the really the main lemma.
-
-%\begin{lemma} \label{lem:cu} Let $\cU$ denote a connected component (shrub) in the shrub forest of $\cL \setminus \cL'$ and let $r$
-%be the root of $\cU$. Then $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O(|H_r| \log |H_r|)$.
-%\end{lemma}
-%
-%We proceed with the setup to prove \Lem{cu}.
-%We focus our attention on some shrub $\cU$.
-%We prove a technical lemma about $\cU$, from which \Lem{cu} follows directly.
-
-\section{Ben's old stuff}
-
-
-
-\begin{proof} (part (ii) of \Lem{cu-root}) Let level $\ell$ of $\cU$ denote all nodes at distance $\ell$ from the root $r$.
-These set of these nodes is designated as $\cU_\ell$. We set $\sigma_\ell = \sum_{p \in \cU_\ell} |p|$
-and $\sigma_{\leq \ell} = \sum_{k \leq \ell} \sigma_k$.
-By \Lem{geometric}, for any $p \in \cU_\ell$, $|H_p| \leq (2/3)^\ell |H_r|$.
-
-Since all nodes in $\cU$ represent short paths, $\forall p \in \cU$, $|p| < \sqrt{|H_p|}/100$.
-So $\sigma_\ell < \sum_{p \in \cU_\ell} \sqrt{|H_p|}/100$. 
-
-\end{proof}
-
-
-To prove this, we need to understand how $H_p$ is constructed. The path $p$ has some children
-$q_1, q_2, \ldots, q_k$ in $\pmax(T)$. Furthermore, as a leaf path in $p$, some leaf
-$\ell$ of $T$ in one of the ends of $p$. The heap $H_p$ is essentially the
-union of $H_\ell$ and $H_{q_1}, H_{q_2}, \ldots, H_{q_k}$, with the vertices in $p$
-removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
-for a child $q'$ in $\cU$.
-
-
-Let $\mathcal{L} = \mathcal{L}(r)$ be a short shrub of some short path $r$ in a maximum path decomposition $\mathcal{P}(T)$.
-The intuitive idea is that due to the geometric decreasing behavior of short shrubs described in the previous subsection, 
-one can show that for the entire short shrub our algorithm pays roughly the cost due to the root path $r$.  This argument 
-is hard to make directly, so instead we define an alternative quantity for which we can make the argument.
-Specifically, we now define a weight function $w(v)$ for all $v\in \mathcal{L}$, and show that $w(v)=\Theta(|H_v|)$.  
-
-For a path $v\in \mathcal{L}$, let $H_v$ denote the heap at the root of $v$, and let $H_{v_f}$ denote the heap 
-at the leaf of $v$.  Let $S_l(v)$ (resp. $S_h(v)$) be the subset of short (resp. tall) paths adjacent to $v$ in $\pathTreeA(T)$.
-
-We want to understand how the heap size changes as we move around the paths in $\mathcal{L}$.  Specifically, there are 
-three places the vertices in the heap along a short path can come from; adjacent short paths, adjacent tall paths, and the initial heap at the leaf of the path.  
-Given this observation we now define a weight function which upper bounds the size of the heap at the root of any path in $\mathcal{L}$.
-
-First, for all $v\in \mathcal{L}$ we define the local cost function $c(v) = H_{v_f}+\sum_{i\in S_h(v)} H_i$, this is the addition to the heap at $v$ which 
-was not already charged to descendant short paths.  We now define a weighted version of $\mathcal{L}$ based on these costs.  
-To do so, we first augment $\mathcal{L}$ by attaching one 
-leaf to each vertex in $\mathcal{L}$.  Now for each newly created leaf (which are the only leaves now) assign the cost 
-$c(v)$ defined above, where $v$ is that leaf's corresponding parent.  
-Now we can define a weight function $w(u)$ over any node $u$ in the tree, which is defined to be the total cost of all leaves in its subtree.   
-To simplify notation, we now use $\mathcal{L}$ to refer to this new weighted tree (rather than its unweighted counterpart).
-
-As the weight $w(p)$ includes the sizes of the heaps of all contributing tall paths and leaves in the subtree rooted at $p$, we have the following.
-
-\begin{claim}
-For any $p\in \mathcal{L}$, $w(p)\geq |H_p|$.  Moreover, for any $v\in p$, $w(p)\geq |H_v|$.
-\end{claim}
-
-%Let $W= \sum_{v\in \mathcal{L}} w(v) \geq \sum_{v\in \mathcal{L}} |H_v|$.  
-%Suppose we could show that conversely $W=O(H_r)$.  Then we would have 
-%$\sum_{v\in \mathcal{L}} H_v = O(H_r)$, which was our original goal.  
-%So proving $W=O(H_r)$ is now our new goal.
-
-We now would like to show conversely that $w(v)= O(|H_v|)$.  
-To do so we first introduce some notation.  
-Let $C\subseteq \mathcal{P}$ be the subset of paths that are leaves in $\mathcal{L}$.
-For any path $v$, let $\mathcal{L}_v$ (resp. $C_v$) be the subset of paths in $\mathcal{L}$ (resp $C$) 
-that are in the subtree of $\mathcal{L}$ which is rooted at $v$.
-
-First, observe that $|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} |u|$.  
-This holds by the same argument as in \Lem{adjacent}, namely, $w(v)$ by definition 
-counts all the contributing tall path heaps and initial leaf heaps that contribute 
-to the heap at $v$ and $\sum_{u\in \mathcal{L}_v} |u|$ is an upper bound on the number 
-of vertices that could have been removed from one of these heaps before reaching the 
-root of $v$ (since a vertex in a heap can only get removed if it appears on one of 
-the paths).  
-
-As all paths in $\mathcal{L}$ are short, we thus have the following.
-
-\begin{claim}
-$|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{|H_u|}/100 \geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100$
-\end{claim}
-
-By the above claim, if we can prove $\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100 \leq w(v)/c$ for some constant $c>1$, 
-then we will have proven that $|H_v| = \Theta(w(v))$.  
-
-Recall that \Lem{geometric} told us that that $|H_{u}|\leq (3/5) |H_{u'}|$, if $u'$ is the parent $u$ in $\mathcal{L}$. 
-The following lemma shows that if we had a similar statement in terms of the weights rather than the heap sizes, 
-then we get the desired bound on the sum.
-
-\begin{lemma}
-\label{lem:distribution}
-Let $v$ be a path in $\mathcal{L}$.  Suppose that for any two paths $x,y\in \mathcal{L}_v$ 
-such that $y$ is the parent of $x$, $w(x)\leq (4/5) w(y)$.
-Then $\sum_{u\in \mathcal{P}_v} \sqrt{w(u)}/100 \leq \sum_{c\in C_v} \sqrt{w(c)}/10$
-\end{lemma}
-
-\begin{proof}
-The idea is to recursively redistribute the contribution to the sum of each internal vertex to its children, 
-until all the weight sits on the leaves.  Specifically, let $v$ be some path in $\mathcal{L}$.  Its 
-contribution to the sum is $\sqrt{w(v)}/100$, which we will call the value at $v$.  We redistribute this 
-value to its children, in proportion by the weight of each child.  For example, if $v$ has a child $x$ then 
-the fraction it gets assigned is $w(x)/w(v)$ (recall that by definition $w(v)$ is the sum of the weights of 
-its children and so the total value will get reassigned to the children).
-
-Suppose we keep redistributing the value of $v$ until it reaches the leaves of its subtree in $\mathcal{L}$.  
-Let's see how much gets assigned to a given leaf.  Specifically, let $u_0, u_1, \ldots, u_k$ 
-be a path in $\mathcal{L}$ (of paths from the set $\mathcal{P}_v$), such that $v=u_0$, $u_{i+1}$ 
-is child of $u_i$ for all $i$, and $u_k$ is a leaf of $\mathcal{L}$.  
-
-Then the total value from $u_0$ that ends up at $u_k$ is 
-\[
-\frac{\sqrt{w(u_0)}}{100} \pth{ \frac{w(u_1)}{w(u_0)} \frac{w(u_2)}{w(u_1)} \cdots \frac{w(u_k)}{w(u_{k-1})} }
-= \frac{\sqrt{w(u_0)}}{100} \pth{ \frac{w(u_k)}{w(u_0)} } = \frac{w(u_k)}{100\sqrt{w(u_0)}}
-\]
-
-For a given leaf in $\mathcal{L}$, we can calculate the total value reassigned to it from it its ancestors.
-Specifically, let $u_0, u_1, u_2, \dots, u_m$ be a root to leaf path in $\mathcal{L}$ 
-(i.e. $u_0$ is the root $r$ of $\mathcal{L}$).
-
-By assumption from the lemma statement we have $w(u_{i+1})\leq (4/5) w(u_i)$.  Therefore by the above calculation, 
-the total reassigned to $u_m$ is 
-
-\[
- \sum_{i=0}^m \frac{w(u_m)}{100\sqrt{w(u_i)}} \leq \frac{w(u_m)}{100} \sum_{i=0}^m 1 \Big/ \sqrt{\pth{\frac{5}{4}}^iw(u_m)} 
- \leq \frac{\sqrt{w(u_m)}}{100} \sum_{i=0}^{\infty} \pth{\frac{4}{5}}^{i/2} \leq \frac{\sqrt{w(u_m)}}{10}
-\]
-
-The claim then follows by summing this quantity over the children of $\mathcal{L}$.
-\end{proof}
-
-By combining the above lemma and claim we have the following.
-
-\begin{claim}
-For any path $v\in \mathcal{L}$ if it holds that 
-$w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$, then 
-
-\[
-|H_v|\geq w(v)-\sum_{u\in \mathcal{L}_v} \sqrt{w(u)}/100 \geq w(v)- \sum_{c\in C_v} \sqrt{w(c)}/10 \geq \frac{4}{5} w(v)
-\]
-\end{claim}
-
-
-
-\begin{lemma}
-Let $\mathcal{L}$ be the short shrub of some path $r$.  
-Then for any $v\in \mathcal{L}$, we have $|H_v|\geq \frac{4}{5} w(v)$.
-\end{lemma}
-% \begin{proof}
-% We will actually prove the stronger statement that for any $v\in \mathcal{L}$, 
-% we have $|H_v|\geq \frac{4}{5} w(v)$ and $w(v)\leq (4/5) w(p)$ where $p$ is the parent 
-% of $v$ in $\mathcal{L}$.
-% 
-% Suppose otherwise, and let $v$ be the lowest path in $\mathcal{L}$ such that this fails 
-% (i.e. the statement holds for all descendants of $v$ in $\mathcal{L}$).  Then for any 
-% two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$, 
-% we have that $w(x)\leq (4/5) w(y)$ and so by \Lem{distribution}, $|H_v|\geq \frac{4}{5} w(v)$.
-% Combining this fact with \Lem{geometric} gives,
-% \[
-% w(v) \leq \frac{5}{4}|H_v| \leq \frac{5}{4} \frac{3}{5} |H_p| \leq \frac{3}{4} w(p).
-% \]
-% 
-% \end{proof}
-%
-\begin{proof}
-By the above claim, we know that $|H_v|\geq \frac{4}{5} w(v)$ if it holds that 
-$w(x)\leq (4/5) w(y)$ for any two paths $x,y\in \mathcal{L}_v$ such that $y$ is the parent of $x$.
-So let $v$ be the lowest path in $\mathcal{L}$ such that this fractional decrease fails to hold, i.e. $w(c)> (4/5) w(v)$ 
-where $c$ is a child of $v$ in $\mathcal{L}$, and conversely all vertices in $\mathcal{L}_c$ 
-the fractional decrease holds.  As the fractional decrease holds for a paths in $\mathcal{L}_c$, 
-we have $|H_c|\geq \frac{4}{5} w(c)$.  Therefore,
-\[
-w(c) \leq \frac{5}{4}|H_c| \leq \frac{5}{4} \frac{3}{5} |H_v| \leq \frac{3}{4} w(v).
-\]
-However, this is a contradiction with the assumption $w(c)> (4/5) w(v)$ , and hence the 
-fractional decrease always holds implying the claim always holds.
-\end{proof}
-
-\begin{corollary}
-\label{cor:equivalent}
- Let $\mathcal{L}$ be a short shrub of a short path $r$.  Then for any $v\in \mathcal{L}$, $|H_v| \leq w(v) \leq \frac{5}{4} |H_v|$.
-\end{corollary}
-
-Now we are finally ready to make use of the properties we have proven about the weight function we introduced.
-
-\Ben{The constant in the lemmas below, but it is no more than twice that.}
-
-\begin{lemma}
-\label{lem:shortCost}
- Let $\mathcal{L}$ be a short shrub of a short path $r$.  Let $V$ be the set of tall paths from the full shrub which are adjacent to paths in $\mathcal{L}$.  
-  Then $\sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q| \leq \frac{4}{3} |H_r|\log |H_r|$
-\end{lemma}
-\begin{proof}
-\Ben{
-The following is a proof for $\frac{3}{2}+\eps$, rather than $\frac{4}{3}$.  The discrepancy is due to a corrected calculation error.  
-4/3 can be achieved by tightening constants above, and is left in the lemma statement as it is used later.
-}
-
-Recall that in a proper coloring of a binary tree $T$, the color of any vertex must be the color of one of its descendants.  
-Therefore, any vertex in the short path shrub must appear in the heap of either the root of an adjacent 
-path from the full shrub or from the heap of a leaf of a path in $\mathcal{L}$.  
-Also note $|H_r|$ precisely counts sum of the number of vertices from these heaps that do not appear in $\mathcal{L}$.
-As there are no adjacent short paths to a short shrub, the total number of vertices over all paths in $\mathcal{L}$ is at most 
-$m = \sum_{p\in \mathcal{L}} |H_{p_f}| +\sum_{q\in V} |H_q| - |H_r| = w(r)-|H_r|$, where $H_{p_f}$ is the heap at the leaf of $p$. 
-
-Using this observation and \Cor{equivalent} we then have, 
-\begin{align*}
- \sum_{p\in \mathcal{L}}\sum_{v\in p} \log |H_v| + \sum_{q\in V} |H_q|\log |H_q|
- &\leq \sum_{p\in \mathcal{L}}\sum_{v\in p} \log(w(r)) + \sum_{q\in V} |H_q|\log(w(r))\\
- &\leq \log(w(r))\pth{ w(r)-|H_r| } + \log(w(r))w(r)\\ 
- &= (2w(r)-|H_r|)\log(w(r)) \leq \pth{\frac{5}{2}|H_r|-|H_r|}\log\pth{\frac{5}{4}|H_r|}\\
- &= \frac{3}{2}|H_r|\log\pth{\frac{5}{4}|H_r|}
-\end{align*}
-\end{proof}
-
-
-\section{Preliminaries}
-Consider a piecewise-linear (PL) $2$-manifold $\MM$ with boundaries.
-This is represented by a triangulation (given as a DCEL) where edges
-can be oriented and the boundary of a face is always counterclockwise. Some faces will \emph{not}
-be triangular, and each of these corresponds to a \emph{boundary face}.
-Let $G(\MM) = (V,E)$ denote this triangulation. We assume this triangulation
-has bounded degree.
-We will assume that $\MM$ is embedding in $\RR^d$.
-The manifold within each face is just linear.
-We define a \emph{height function} on $\MM$, $f:\MM \mapsto \RR$. For each point in $x \in \MM$, let $f(x)$ simply be the value of $x_1$.
-We distinguish between vertices and points in $\MM$. A point simply denotes any $x \in \MM$. A vertex is a point
-corresponding to some vertex of the triangulation $G(\MM)$.
-
-We define the size of the manifold $\MM$, denoted $|\MM|$, to be the number of faces, edges, and vertices.  
-Let $n$ denote the number of vertices.  
-Since we are working with $2$-manifolds, the size of the manifold is $\Theta(n)$.
-
-For smooth manifolds the ``status" of an internal point is decided by the gradient at that point. 
-Points of zero gradient are deemed \emph{critical};
-all other points are regular.
-For PL manifolds, we need a discrete version of this definition.
-First, all non-vertex points are considered regular.
-For vertex $v$, we use $\nbd(v)$ to denote the neighborhood of $v$ in $G(\MM)$. Let $\outnbd(v) := \{ w | f(v) > f(w), w \in \Gamma(v)\}$
-and $\innbd(v) := \{w | f(v) < f(w), w \in \Gamma(v)\}$. 
-%It is convenient to define $D(\MM)$, a directed variant of $G(\MM)$,
-%where edges are directed from higher to lower $f$-value. So $\outnbd(v)$ and $\innbd(v)$ are exactly the out- and in-neighborhoods
-%of $v$. A vertex in $v \in V$ can be classified in four types.
-\smallskip
-\begin{asparaenum}
-	\item Regular: Both $\outnbd(v)$ and $\innbd(v)$ are non-empty and are contiguous in $\nbd(v)$.
-	\item Maxima: $\nbd(v) = \outnbd(v)$.
-	\item Minima: $\nbd(v) = \innbd(v)$.
-	\item Saddle: Both $\outnbd(v)$ and $\innbd(v)$ are not contiguous in $\nbd(v)$.
-\end{asparaenum}
-\smallskip
-%Because $\MM$ is PL, the gradient at all non-vertex points of $\MM$ is zero.
-%So all non-vertex points are regular. 
-
-We will assume that $f$ is Morse, so the function value on all critical points is distinct. 
-We will also assume the stronger condition that all internal vertices have distinct function values.
-Note that assuming $f$ is Morse implies that $\MM$ has no multi-saddles 
-(i.e. $\outnbd(v)$ and $\innbd(v)$ can each have at most two non-contiguous components).
-A value $t$ is \emph{non-critical} if there exists no critical point $x$ such that $f(x) = t$.
-
-Furthermore, the boundary vertices have special properties, encapsulated in the following definition.
-
-\begin{definition} \label{def:bound} A manifold is \emph{boundary critical} if the following holds.
-Consider a boundary face $F$. All vertices in $F$ have the same function value. Furthermore, all
-internal neighbors of $F$ either have function values strictly greater (or strictly less)
-than this value.
-\end{definition}
-
-In other words, the vertices in a boundary face collectively behave like a maximum or minimum. 
-Abusing notation, the term ``critical point", ``maxima", and ``minima" will also refer to boundaries.
-Critical values include these boundary values.
-
-\begin{definition} \label{def:desc} A \emph{descending path} in $\MM$ is a continuous function $\lambda:[0,1] \mapsto \MM$
-such that for all $a < b$, $f(\lambda(a)) \geq f(\lambda(b))$. A \emph{PL descending path} from $x$ to $y$ is a sequence
-of points $x = s_0, s_1, s_2, \ldots, s_k = y$ with the following properties: for all $s_i$ but the first and last,
-$s_i$ lies on an edge of $\MM$. $s_i$ and $s_{i+1}$ lie in the same face of $\MM$. 
-For $i < j$, $f(s_i) \geq f(s_j)$.
-\end{definition}
-
-Since $\MM$ is PL, if there is a descending path from $x$ to $y$ then it has PL representation. So we will always refer to
-PL descending paths.
-
-\begin{definition} \label{def:cont} A \emph{contour} in $\MM$ is the image of a continuous and injective function $\phi:\SSS^1 \mapsto \MM$ such that $\forall a, b \in \SSS^1$, $f(\phi(a)) = f(\phi(b))$. This is called a \emph{$t$-contour} if $f(\phi(a)) = t$.
-%A contour is \emph{simple} if $\forall a, b \in \SSS^1$, $\lambda(a) \neq \lambda(b)$. 
-\end{definition}
-
-Note that just as in the case of paths, contours are also PL and have a corresponding discrete representation.
-
-\begin{remark}
-For contours which pass through critical points, our definition of a contour differs from the ``standard" definition (i.e. contours which are the result of a horizontal cutting).  
-
-In particular, the injective requirement does not allow contours through maxima or minima.  We can add these single point contours at the maxima and minima to our set of contours (though this is not really necessary).
-\end{remark}
-
-\begin{lemma} \label{lem:cont} If two distinct contours intersect, then their intersection is a saddle point.
-\end{lemma} 
-
-\begin{proof}
-Consider any (closed) triangular face $f$, interior to the $2$-manifold.  The set of points on this face at a given height $h$ forms a closed line segment, call it $l_f$.  Let $\phi$ be any contour that intersects some point in the interior of this face at height $h$.  Then $\phi$ must contain all of $l_f$, since otherwise continuity or simplicity would be violated.  
-
-So consider two distinct intersecting contours $\phi_1$ and $\phi_2$.  Since they are distinct, there must be a point on the boundary of their intersection, i.e. any (arbitrarily small) ball centered at this point contains contour points both inside and outside the intersection of the contours.  Call this point $p$.
-
-If $p$ lies in the interior of a face $f$ then both $\phi_1$ and $\phi_2$ must contain the entire above mentioned closed lines segment $l_f$, and hence $p$ was not on the intersection boundary. 
-Similarly suppose that $p$ is in the interior of an edge (clearly such an edge would need to be interior to the manifold for $\phi_1$ and $\phi_2$ to be contours).  Since this is a $2$-manifold each edge is adjacent to exactly two faces.  Let $l_a$ and $l_b$ be the above described closed line segments on each face.  Then again $\phi_1$ and $\phi_2$ contain all of $l_a$ and $l_b$, and $p$ was not on the intersection boundary.
-
-So $p$ must be a vertex $v$ of the manifold.  Let $\phi$ be any contour through $v$.  There must be two distinct faces $f_a$ and $f_b$ adjacent to $v$ which $\phi$ intersects.  Any face adjacent to $v$ has exactly two bounding edges adjacent to $v$.  Since faces are linear interpolates of the vertices, and since $\phi$ intersects $f_a$ and $f_b$, for either face one of these two edges must be increasing from $v$ and the other decreasing from $v$.  Call such a face a middle face.
-
-Now if $v$ is on the boundary of the intersection of $\phi_1$ and $\phi_2$ then we need at least 3 middle faces adjacent to $v$ (since otherwise it again is like the case we $p$ was interior to an edge).  However, the only vertices the have at least 3 such faces are by definition saddle points.  As no two vertices are at the same height, this saddle point can be the only point of intersection.
-\end{proof}
-
-%\begin{proof} Consider the intersection point $x$. It cannot be internal to a face, otherwise $\MM$ self-intersects.
-%By the distinctness of the contours, there must be $4$ faces incident to $x$, where each face
-%has vertex with a larger function value.
-%It cannot be internal to an edge, otherwise this edge would participate in $4$ faces. So it must be a vertex. 
-%These $4$ faces lead to at least $2$ neighbors of $x$ with higher function value. One can also show the existence of $2$
-%interleaved neighbors with lower function value. So $x$ is critical.
-%\end{proof}
-
-\begin{corollary}
-There is a unique contour containing a regular point.
-\end{corollary}
-
-\begin{definition} \label{def:p-cont}
-For a regular point $x$, $\cont(x)$ denotes the unique contour containing $x$.
-\end{definition}
-
-%By the Morse property of distinct critical values, we get the following important lemma.
-
-\begin{corollary} \label{cor:cont} Let $t$ be a non-critical value. The set of $t$-contours is a set
-of disjoint PL contours.
-\end{corollary}
-
-We can use contours to classify saddle points. For a saddle point, we call two increasing (or decreasing) neighbors \emph{opposite}
-if they lie in disjoint parts of $\Gamma^+(w)$ (or $\Gamma^-(w)$).
-
-In the following definition and, unless otherwise stated, throughout the rest of this writeup $\eps$ is some infinitesimally small amount
-(in particular smaller than the minimum height difference between vertices in the manifold).
-
-\begin{definition} \label{def:merge} Consider two increasing (resp. decreasing) opposite edges incident to a saddle point $x$,
-and let $y$ and $z$ be points on these edges such that $f(y) = f(z) = f(x) + \eps$ (resp. $=f(x) - \eps$).
-If $\cont(y)$ and $\cont(z)$ are disjoint, then $x$ is called a \emph{merge} (resp. \emph{split}) vertex.
-\end{definition}
-
-As $f$ is a Morse function over a $2$-manifold, we have the following.
-
-\begin{claim} \label{clm:saddle} 
-  \begin{compactenum}[(1)]
-    \item Every saddle is either a merge or a split, but not both.
-    \item Every saddle has exactly two distinct contours which contain it.
-  \end{compactenum}
-\end{claim}
-
-
-\subsection{The L-homotopy} \label{sec:l-hom}
-We need a specific notion of homotopy between contours. The L below stands for ``level".
-
-\begin{definition} \label{def:cont-hom} Two contours $\phi_0, \phi_1$ are \emph{L-homotopic}
-if: there exists a continuous function $H:\SSS^1 \times [0,1] \mapsto \MM$
-such that $H(\SSS^1,0) = \phi_0$, $H(\SSS^1,1) = \phi_1$, and $\forall a \in [0,1]$,
-$H(\SSS^1,a)$ is a contour.
-\end{definition}
-
-\begin{claim} \label{clm:non-hom} Consider a saddle point $x$. Take an increasing edge incident to $x$
-and let $y$ be a point on this edge within an $\eps$-ball of $x$. Similarly, take a decreasing edge
-and a point $z$ on this edge. $\psi(y)$ and $\psi(z)$ are not L-homotopic.
-\end{claim}
-
-\begin{proof}
-Without loss of generality assume that $x$ is a merge vertex.  By \Clm{saddle} there are exactly two distinct contours, 
-$\phi_1$ and $\phi_2$ through $x$.  Let $E_1$ and $E_2$ be the sets of manifold edges that are not adjacent to $x$ and that $\phi_1$ and $\phi_2$ intersect, respectively.
-Observe that as contours are by definition non-trivial, both $E_1$ and $E_2$ must non-empty.  Moreover since $\phi_1$ and $\phi_2$ only intersect at $x$, $E_1\cap E_2 = \emptyset$
-
-As $x$ is a merge vertex, $\psi(y)$ cannot intersect all edges in $E_1 \cup E_2$.
-On the other hand since $x$ cannot be both a merge and a split by \Clm{saddle}, $\psi(z)$ must intersect all of $E_1 \cup E_2$.  As $x$ is the only vertex in between $z$ and $y$ 
-and no edge in $E_1\cup E_2$ is adjacent to $x$, it is not hard to see that by the continuity requirement $\psi(z)$ cannot be L-homotopic to $\psi(y)$.
-%
-%
-% Without loss of generality assume that $x$ is a merge vertex.  By \ref{clm:saddle} there are exactly two distinct contours, 
-% $\phi_1$ and $\phi_2$ through $x$.  Observe that by continuity of L-homotopy, if $\psi(z)$ is $L$-homotopic to $\psi(y)$, 
-% then $\psi(z)$ must L-homotopic to either $\phi_1$ or $\phi_2$, as these are the only two possible contours at the height of $x$ 
-% (in the connected component of the manifold in between $y$ and $z$ and containing $x$).
-% We now show that $\psi(z)$ is not L-homotopic to either $\phi_1$ or $\phi_2$.
-% 
-% First observe that since contours are non-trivial (except at extrema), by continuity $\psi(z)$ cannot be 
-% simultaneously L-homotopic to both contours through $x$.  So suppose $\psi(z)$ is L-homotopic to one of the contours, say $\phi_1$.
-% 
-% As $\eps$ is smaller than the minimum height difference of two vertices in the manifold, 
-% and $z$ is $\eps$ lower than $x$, there are no vertices in between $z$ and $x$.  In particular, whatever edges $\phi_1$ and $\phi_2$ intersect (in their interier), 
-% $\psi(z)$ must also intersect.
-\end{proof}
-
-\begin{definition} \label{def:hom-mono} Two contours $\phi_0, \phi_1$ are \emph{monotonically L-homotopic}
-if the $L$-homotopy $H$ has the following property. Consider function $\alpha:[0,1] \mapsto \RR$
-where $\alpha(a) = f^{-1}(H(\SSS^1,a))$. The function $\alpha$ is strictly increasing or strictly decreasing.
-\end{definition}
-
-\begin{claim} \label{clm:mono} If two contours are L-homotopic, then they are monotonically L-homotopic.
-\end{claim}
-
-\begin{proof} Consider some L-homotopy $H$. We can assume wlog that for all $a \neq b$, $H(\SSS^1,a) \neq H(\SSS^1,b)$.
-(Otherwise, one could simplify $H$ and ``shortcut" between $a$ and $b$.)
-By continuity of $H$, the function $\alpha$ is continuous. Hence, if it is not strictly
-increasing or decreasing, $\alpha$ attains a local maximum at some $a \in (0,1)$. So there exist $a_1 = a - \eps_1$
-and $a_2 = a + \eps_2$ such that $\alpha(a_1) = \alpha(a_2)$.
-
-By continuity, $\eps_1$ and $\eps_2$ can be chosen small enough such that there are no vertices 
-in between $f^{-1}(H(\SSS^1,a_1))$ and the local maximum. 
-Now the local maximum at $a$ may contain a vertex, but by \Clm{non-hom} this vertex cannot be a saddle.
-Therefore $H(\SSS^1,a_1)$ and $H(\SSS^1,a_2)$ must intersect the same set of edges and therefore cannot be distinct.
-\end{proof}
-
-\begin{claim} \label{clm:reg} Consider a contour $\phi$ containing only regular points. 
-Take the edge cut by $\phi$ whose upper endpoint $x$ has minimum value, and let $e$
-denote the portion above $\phi$. Then $\phi$ is L-homotopic to the contour
-through any point in the interior of $e$. If $x$ is regular, then $\phi$ is L-homotopic
-to the contour through $x$.
-\end{claim}
-
-\begin{proof} 
-Let $a$ be the height of $\phi$ and $b$ the height of $x$. Consider the (potentially disconnected) 
-manifold obtained by removing all manifold points above $b$ and below $a$.  
-Specifically consider connected component that contains $\phi$.  
-By continuity of L-homotopy the claim holds iff it holds on this manifold. 
-However, this manifold contains no vectices except at the ends, and therefore
-an L-homotopy can be constructed using the natural piecewise linear map.
-\end{proof}
-
-\subsection{Reeb graphs} \label{sec:reeb}
-
-Now we get to the real definitions. Call a contour regular if it only contains regular points.
-
-\begin{definition} \label{def:rel} Define a relation $\sim$ between regular contours, so $\phi \sim \phi'$ if $\phi$
-is L-homotopic to $\phi$'.
-\end{definition}
-
-It is easy to check that $\sim$ is an equivalence relation, so the set of regular contours
-is partitioned into equivalence classes. All contours in a class are L-homotopic to each other.
-
-\begin{claim} \label{clm:equiv} Consider such an equivalence class $\Phi$. Then $f(\Phi)$
-is an open interval $(a,b)$, where $a$ and $b$ are critical values.
-\end{claim}
-
-\begin{proof} \Clm{mono} and continuity of L-homotopy immediately imply that for $\phi, \phi' \in \Phi$,
-for any $t \in [f(\phi),f(\phi')]$, there exists $\phi'' \in \Phi$ such that $f(\phi'') = t$.
-So $f(\Phi)$ is an interval. As equivalence classes are defined over only regular contours, \Clm{reg} 
-tells us that this interval must be open with critical value endpoints.
-\end{proof}
-
-We can now define the Reeb Graph $\reeb(\MM)$. We use the fact that critical points 
-have distinct values. (Technically, the Reeb Graph depends on the function $f$.
-Because it is implicit by the embedding of $\MM$, we will remove it from the notation.)
-
-\begin{definition} \label{def:reeb} The \emph{Reeb Graph} $\reeb(\MM)$ has as a vertex set
-the set of critical points. The edge $(x,y)$ is present if there exists equivalence class
-$\Phi$ such that $f(\Phi) = (f(x),f(y))$.
-\end{definition}
-
-
-
-
-
-\section{Old proof stuff}
-
-\begin{claim}
-Suppose ripe vertex $v$ is connected to a component of $\MM^+_v$. For every edge $e$ incident to a vertex of $\MM^+_v$,
-$\rep(\chi(e))$ is identical. Furthermore, all vertices in $\MM^+_v$ have been processed.
-\end{claim}
-
-\begin{proof} Consider the painting of the lower simplicial complex $\cut(\MM,\Psi)$ (call it $\NN$). 
-By the invariant, $\rep(\cdot)$ provides a valid coloring. Note that $v$ is not processed (it is ripe),
-so if we take $(f(v)+\delta)$-contours intersecting $B_\eps(v)$, these contours could not have been
-processed. Therefore, there must exist a non-trivial component of $\NN^+_v$ that $v$
-is connected to. By \Lem{full}, either all edges in this component have the same color
-or 
-
-
-Suppose ripe vertex $v$
-is connected to some component in $\NN^+_v$. 
-Consider edge $e$ incident to $v$ intersecting $\phi$ of color $c$. 
-By \Lem{full}, there exists critical vertex $w \in \MM^+_v$ such that $w \in \fcol(c)$. 
-Regardless of whether $v \in \fcol(c)$ or not, the vertex $w$ must have been processed. 
-
-\end{proof}
-
-\subsection{Updating the stack} \label{sec:stack}
-
-We have an imporant procedure that updates the stack $\st$.
-
-
-
-
-The painting evolves over time, and is primarily updated through \emph{color merges}. The best way
-of thinking about this is to imagine that two colors are suddenly replaced by one new common color.
-Of course, it is not possible to explicitly redo the painting, but this is implictly done
-through the union-find data structure on colors. So, when we process some vertex $v$,
-which has (say) $\col(v) = \{c_1, c_2, \ldots\}$, it may be the case that all these colors
-have merged.
-
-
-
-\begin{claim} \label{clm:cont} Consider an increasing path from $h$ to some maxima $x$.
-For any $y$ in this path, $\cont(y)$ only contains points of color $c(x)$.
-Furthermore, for all vertices on $\cont(y)$, their increasing edges are colored $c(x)$.
-\end{claim}
-
-\begin{proof} Consider this increasing path, and think of moving $y$ continuously downwards from $x$
-to $h$. Initially (when $y = x$), the lemma is trivially true. Consider the first $y$
-when the condition fails. We have $\cont(y)$ only containing points of color $c(x)$,
-but there is a vertex $z \in \cont(y)$ that has increasing edges of a different color $c'$.
-All the increasing edges of $z$ that are colored $c(x)$ are contiguous (since we can construct
-a contour intersecting all of them). Thus, there are two disjoint increasing neighborhoods for $z$,
-and $z$ is a saddle point. But that contradicts the fact that $h$ is the highest saddle point
-of color $c(x)$.
-
-So, as $y$ decreases, for all vertices on $\cont(y)$, their increasing edges are colored $c(x)$.
-This also means that $\cont(y)$ only contains points of color $c(x)$.
-\end{proof}
-
-We have important lemmas characterizing $|\col(h)|$.
-
-\begin{lemma} \label{lem:mono} If $h$ is a merge vertex, then $|\col(h)| > 1$.
-\end{lemma}
-
-\begin{proof} Suppose not. Consider the edges incident to $h$ in circular order. There exist (at least) $2$
-disjoint contiguous stretches of edges that are increasing. 
-All these edges have the same color $c$, associated with some maximum $x$. Consider two neighbors $y,z$
-that lie in different stretches. By the definition of a painting, there exist descending paths (along
-edges) from $x$ to $y$ and $x$ to $z$. We can construct a Jordan curve $C$ from $x \rightarrow y
-\rightarrow h \rightarrow z \rightarrow x$. All points in this curve except $h$ have 
-heights larger than $f(h)$. By the Jordan Curve Theorem, this partitions $\MM$ into
-an ``inside" and an ``outside". 
-
-One of the lower neighbors of $h$ (say $p$) is inside, and another (say $q$) is outside.
-Because $h$ is a merge, neither of these can a minimum other than the dominant minimum $u$.
-Hence, both $p$ and $q$ have descending paths to $u$. So there is a path from $p$
-to $q$ where all heights are strictly less than $f(h)$. But this path must intersect $C$.
-Contradiction.
-\end{proof}
-
-\begin{lemma} \label{lem:col} If $h$ is a merge vertex, $|\col(h)| = 2$.
-If $h$ is a split vertex, $|\col(h)| = 1$.
-\end{lemma}
-
-\begin{proof} Consider one contiguous sequence of increasing edges from $h$.
-There exists a contour intersecting all of these edges. By \Clm{cont}, they all
-must have the same color. There are two such contiguous sequences.
-
-If $h$ is a merge vertex, then $|\col(h)| = 2$ by \Lem{mono}. If $h$ is a split vertex,
-there is a single contour passing through all increasing edges. By \Clm{cont}, they
-all have the same color.
-\end{proof}
-
-\subsection{Constructing $\reeb(\MM)$} \label{sec:const}
-
-The main construction procedure is $\onestep(\MM)$. It pieces together $\reeb(\MM)$
-incrementally. 
-
-
-\medskip
-\begin{theorem} \label{thm:piece} Consider the very first call to $\onestep(\MM)$. Let $y$ be a point
-infinitesimally below $h$ on a decreasing edge. Consider $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$ (the upper and lower manifolds). Then $\onestep(\MM)$
-outputs $\reeb(\MM_u)$ and implicitly gives a valid painting of $\MM_\ell$.
-\end{theorem}
-
-We have an important lemma that helps to bound the running time.
-
-\begin{lemma} \label{lem:tree} For every color $c$, all points in $T(c)$ lie along a monotone path in 
-$\reeb(\MM)$.
-\end{lemma}
-
-\begin{proof} Prove by induction of the number of edges in $\reeb(\MM)$. Consider the head $h$ of $\st$ in the first call to $\onestep(\MM)$,
-and the contour $\cont(y)$ as defined in \Thm{piece}. Take $\cut(\MM,\cont(y)) = \{\MM_u,\MM_\ell\}$. Apply induction
-hypothesis on $\MM_\ell$, and use that to argue about $T(c_1)$ and $T(c_2)$ in the original manifold.
-\end{proof}
-
-
-
-\pagebreak
-}
-
-\appendix
-
-\section{Old stuff}
-
-Their algorithm works in 3 simple stages.  
-The first stage consist of a top down sweep to compute what is known as the join (or merge) tree, 
-which tracks the evolution of super-level sets (whereas the contour tree tracks level sets).  
-Similarly, the second stage does a bottom up sweep to compute the split tree, which tracks sub-level sets.  
-Their main contribution is the third and final step where they present an $O(n)$ time algorithm to merge 
-together the join and split trees to get the contour tree.  
-
-There have also been some output sensitive results for computing the contour tree.  Let $t$ be the number 
-of critical points in the input mesh, which could potentially be much smaller than $n$.  
-Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for the case of 
-$3$-dimensional structured meshes (note $N$ does not show up in the running time as the mesh is structured).
-Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an $O(N+t'\log t')$ algorithm 
-which works for structured or unstructured meshes in any dimension, where $t'$ is the number of component 
-critical vertices.  This is provably optimal with respect to the output size but not the output structure, 
-as discussed below.
-
-
-
-
-\subsubsection{Worst Case Alternatives}
-In worst case analysis an algorithm's running time is judged in terms of its worst 
-case behavior over all inputs of a given size.  While there are benefits to this viewpoint, 
-such as robustness,  it fails to capture the whole story.  As such, many alternatives 
-have been considered.  For example, one can make assumptions on the distribution of 
-inputs, which has led to a number interesting results on average case and probabilistic 
-analysis, and also smoothed analysis \cite{st-saa-04}.  However, even without making 
-assumptions on the distribution of the input, there is still more to the story.
-For example, in the study of parametrized complexity, one takes into account other 
-parameters determined by the input other than just its size (for example the maximum 
-degree in a graph or whether it is planar).
-
-
-\subsubsection{Contour Trees}
-
-\Ben{Maybe discuss contour tree applications and why they are useful here? Or maybe earlier?}
-
-\paragraph{A History of Contour Trees.}
-
-%As the the authors point out in \cite{cllr-sooscctmp-05}, by reduction from sorting, 
-%one can show that any algorithm to compute the contour tree in the worst case takes 
-%$\Omega(N+t\log t)$ time.  However, this lower bound only holds when the contour tree 
-%is very unbalanced (i.e. long and skinny) and therefore contains a sorted path with a 
-%large fraction of the vertices.  Therefore the bound of $\Omega(N+t\log t)$ is only 
-%worst case optimal.  In this paper we will consider an output sensitive approach which 
-%takes into account the shape of the contour tree.
-
-
-
-In other words, for any valid cost $C$, we can find a family of inputs where \Thm{main-alg}
-guarantees a running time of $C + t\alpha(t)$, and any height decision tree requires $\Omega(C)$ time.
-This shows that the cost function is inherent to the computation of contour trees.
-
-
-Let $f$ be a real valued function defined over a manifold embedded in $\RR^d$.  
-For any real value $\alpha$, the level set $f^{-1}(\alpha)$ can be decomposed into its connected components, or ``contours''.
-The Reeb graph is a fundamental topological structure which represents the evolution of these contours as one sweeps the surface 
-from $-\infty$ to $\infty$ according to $f$.  Often this graph is acyclic, in which case it is 
-called a \emph{contour tree}.  This is the case if, for example, the input is a surface mesh of a mountain range 
-(and the contour tree would encode when mountain peeks form and how they merge together).
-
-There is a long list of practical applications of the study of contour trees (see for example \cite{c-tmi-04} and references therein).
-Often these applications involve massive data sets, and so consequently there has also been a long series 
-of results on efficient algorithms for their computation \cite{kobps-ctsssit-97,tv-cct-98,csa-cctad-00,pc-ectls-02,cllr-sooscctmp-05}.
-Let $N$ be the total size of the input manifold, $n$ the number of vertices, and $t$ the number of critical points. (Note that in many applications $N=O(n)$.)
-As an initial step these algorithms require that all $t$ contour tree vertices be sorted.  
-In particular, \cite{cllr-sooscctmp-05} provide an $O(N+t\log t)$ time algorithm, and since in the worst case computing the contour tree 
-requires $\Omega(N+t\log t)$ time, this algorithm is optimal with respect to the size of the output.  
-Here we present the first contour tree algorithm which is optimal (for instances requiring $\Omega(N\alpha(N))$ 
-time\footnote{Where $\alpha(\cdot)$ is the inverse Ackermann function, which is $< 5$ for computation in this universe.}) 
-with respect not just to the size of the output, but also its structure.  This is accomplished by introducing a simple linear time 
-surface partitioning scheme to avoid sorting, which is likely to have applications elsewhere.  
-For all instances the bound for our algorithm either matches the best previous bound, or is faster.
-For, example when the contour tree is a balanced, our algorithm runs in $O(N\alpha(N))$ time, whereas all 
-previous algorithms had a running time of $\Omega(N+t\log t)$
-
-%In particular, the algorithm in \cite{cllr-sooscctmp-05} is worst case optimal with respect to the size of the output.  
-%Here we present the first contour tree algorithm which is (near\footnote{Our algorithm is optimal on all instance requiring $\Omega(n\alpha(n))$ time.}) 
-%optimal with respect not just to the size of the output, but also its structure.  
-%Specifically, the bound for our algorithm either matches \cite{cllr-sooscctmp-05}, or is faster.
-%For, example when the contour tree is a balanced, our algorithm runs in $O(n\alpha(n))$ time, whereas all 
-%previous algorithms had a running time of $\Omega(n\log n)$.
-
-This work can be seen as a continuation of the study of instance-optimal geometric algorithms introduced by Afshani \etal \cite{abc-ioga-09}.
-In order to prove instance optimality we use a non-trivial combinatorial discharging argument, which we believe is of independent interest.
-Of particular note is the use of heavy-light path decompositions, first introduced by Sleator and Tarjan \cite{st-dsdt-83} in their analysis of link-cut trees.
-
-
-
-% Explain why useful:  Lets you know the ``shape of your date''.  Map of the critical points where contours change.  
-%Fast extraction of seed sets in a small sized structure, which can let you do threshold queries.
-% 
-% \medskip\noindent
-% Paragraph on specific applications.  Scientific visualization, in particular combustion research.  GIS.
-
-
-\paragraph{The Issue of Sorting.}
-As discussed above, the algorithm of Carr \etal \cite{csa-cctad-00} computes the contour 
-tree by first constructing the join and split trees.  As vertices appear in sorted order 
-in any root to leaf path in the join and split trees, and in any maxima to minima path 
-in the contour tree, sorting the input vertices is a natural first step.  However, not 
-all vertices from the input need to be sorted.  In particular, Chiang \etal 
-\cite{cllr-sooscctmp-05} improved the running time by observing that as the join and 
-split trees only consist of critical points, it suffices to only sort critical points.  
-If a large fraction of the vertices appear in a single path in the join or split tree, 
-then paying to sort all the critical points is unavoidable, and therefore in the worst 
-case \cite{cllr-sooscctmp-05} is optimal.  However, if the trees are more balanced then 
-sorting all critical points together can be very costly.  Specifically, the contour tree 
-does not care about the relative ordering of vertices which do not have an 
-ancestor-descendant relationship, and so this information does not need to be computed.
-See \Fig{relative} for an example.
-
-% \begin{figure}[h]\centering
-%     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/shaded}%
-%     \hspace{.5in}
-%     \includegraphics[width=.3\linewidth,height=.42\linewidth]{figs/trees2}
-%     \caption{On the left, a surface will a balanced contour tree, but whose join and split trees have long tails.  
-%     On the right (in clockwise order from the top) the contour, split and join trees.}
-%     \label{fig:sorting}
-% \end{figure}
-
-\paragraph{Suboptimal Join and Split Trees.}
-There is also a more fundamental problem with the now standard approach of first computing 
-the join and split trees in order to compute the contour tree.  In particular, this approach 
-can never lead to an algorithm that is optimal with respect to the shape of the contour tree.  
-This is because it is possible to have join and split trees which are long and skinny (i.e. 
-costly to compute) whereas the contour tree is balanced.  For example consider the case shown 
-in \Fig{sorting}, where the mesh looks like two (thickened) balanced binary trees, one upside 
-down, and joined at their roots.  In this case the contour tree is potentially cheap to 
-compute as there is no long sorted path.  However, the join and split trees will have long 
-sorted tails (consisting of the vertices in the bottom and top balanced trees, respectively), 
-and therefore require $\Omega(n\log n)$ time to compute.
-
-\subsection{Overview and Contribution}
-
-\paragraph{Algorithm Overview.}
-At a high level, the technique is rather simple.  Break the input manifold into nicely 
-behaved pieces, compute the contour tree on each piece, and then stitch together the computed 
-contour trees according to the cuts we made to break up the manifold.  Below we informally 
-describe how this is accomplished.
-\begin{compactitem}
- \item {\bf Raining to partition.}  To start with, pick an arbitrary maxima.  Now imagine 
- ``raining'' water down on the manifold from this maxima, i.e. mark all points which are reachable 
- by non-ascending paths from the maxima.  Let the boundary between wet and dry portions of the 
- manifold be called the interface (which may have different connected components).  
- Remove the wet submanifold, and invert the remaining pieces
- of the original manifold.  Now recursively rain in each one of these pieces, but rather than 
- picking an arbitrary maxima, start from the portion of the interface that cut that piece off.
- 
- The benefit of this partitioning is that each resulting piece 
- is maxima dominant, i.e. there is a single maxima that has a non-ascending path to each point.  
- This implies the contour tree of this submanifold is the same as its split tree, or in other words 
- its contour tree is a rooted binary tree. 
- 
- %
- \item {\bf Painting trees.}  For each maxima dominant piece we want to compute the split 
- tree without sorting all the vertices.  For conceptual ease lets first flip the submanifold 
- (i.e., it is now minima dominant and we compute the join tree).  Now arbitrarily pick a maxima 
- and spill paint from it, specifically color all edges and vertices of the mesh that are reachable 
- from the maxima by descending paths.  Now go to each other maxima and spill a different color, 
- but be aware that paints do not mix, i.e. if we reach a vertex that was previosly explored 
- by another color then we do not explore it.
- 
- This procedure partitions the set of critical points into color classes.  Clearly each color 
- class is connected in the manifold.  Suppose each class was also connected in the join tree.  
- In this case we partitioned the join tree into a set of descending paths, each of which 
- can be constructed by sorting the critical points in a class.  Roughly speaking, 
- these paths can then be joined together by what amounts to doing a post-order traversal of the tree.
- However, we may not be so lucky and the color classes may not be connected in the 
- tree.  This turns out not to be a problem, but it requires proper data-structure use. 
-%  
-%  Now suppose we were lucky and the spilling of paint in the manifold corresponded with a paint 
-%  spilling in the join tree, i.e. the color classes of the critical points partition the join 
-%  tree into disjoint descending paths, each containing one leaf.   In this case 
-%  we have partitioned the tree into branches, and so the tree can be formed by gluing these 
-%  branches together.  Intuitively (i.e. not exactly true), if two branches glue together then 
-%  it means there is a join vertex which got colored by the respective colors of each branch 
-%  (only one of these colors actually explored the vertex in the mesh and this is the ``main'' 
-%  branch you are gluing into).  Therefore, the tree can be constructed by starting at the leaf 
-%  of the trunk (i.e. the branch with the global minima) and recursively building the subtrees 
-%  while walking towards the root.  In other words we are building the tree by doing a post-order traversal.
-%  Unfortunately, we may not be so lucky and the color classes may not appear contiguously in 
-%  the tree.  In this case we can still build the tree in this leaf first fashion, but doing so 
-%  efficiently requires the use of data-structures.
-\end{compactitem}
-
-\paragraph{Lower Bound Overview.}
-In order to show that our algorithm for computing the join tree is optimal we consider paritioing the tree into disjoint 
-descending paths, each containing a leaf.  It turns out that each such partition into paths, $P$, 
-defines a lower bound of $\sum_{p\in P} |p|\log|p|$ for computing the contour tree, as you need to know the 
-sorted order of the vertices along each path in order to determine the tree.
-Specifically, we show that there is a set of at least $\Pi_{p_i\in P} (|p_i|-1)!$ distinct PL $2$-manifolds, 
-all of which have the same defining mesh, and for which each sorted order of each group of saddles determines a different join tree.
-
-The instance optimality of our algorithm then follows, as we also show that there is a particular path decomposition 
-whose cost upper bounds our.  Specifically, we assign a weight to each node in the tree which is determined by 
-the painting procedure described above (which represents the time it takes to process this node).  
-The path decomposition then turns out to be the heavy-light path decomposition 
-described by Sleator and Tarjan \cite{st-dsdt-83}, according to this weight function.
-However, this decomposition is just the first step in the analysis, which 
-requires further case analysis depending on the relative size of the length of each path 
-and the weights of its vertices.
-
-\paragraph{Our Contribution.}
-Our contribution can be broken into three main aspects.  The first two are algorithmic.  Namely, 
-first we describe a new linear time manifold partitioning scheme which breaks the manifold into 
-``extremum'' dominant submanifolds.  
-Second, we describe how to compute join trees optimally with respect to shape of the tree.
-As the contour tree of each submanifold is (roughly) equal to its join tree, this leads to an 
-optimal algorithm for the contour tree of the input manifold.  
-Therefore, our third and final contribution is proving the optimality of this result, which 
-requires a non-trivial amount of work, and uses techniques we believe to be of independent interest.
-
-\paragraph{Organization.}
-\Ben{To be Written}
 
 
 \end{document}
