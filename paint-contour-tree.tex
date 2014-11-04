@@ -277,14 +277,14 @@ a significant computational bottleneck. Unfortunately, lower bounds of $\Omega(t
 We present the first algorithm that can avoid the global sort and has a refined time complexity that
 depends on the contour tree structure. Intuitively, if the tree is short and fat, we get significant improvements 
 in running time. For a partition of the contour tree into a set of descending paths, $P$,
-our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$.
+our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$ time.
 This is at most $O(t\log D + N)$, where $D$ is the diameter of the contour tree.
 Moreover, it is $O(t\alpha(t)+N)$ for balanced trees, a significant improvement over the previous complexity.
 
 Our algorithm requires numerous ideas: partitioning the contour tree into join and split trees, 
 a local growing procedure to iteratively build contour trees, and the use of heavy path 
 decompositions for the time complexity analysis. There is a crucial use of a family of binomial heaps to 
-maintain priorities, ensuring that any comparison made is between comparable nodes of the contour tree.
+maintain priorities, ensuring that any comparison made is between nodes in the same path in the contour tree.
 We also prove lower bounds showing that the $\sum_{p\in P} |p|\log|p|$ complexity
 is inherent to computing contour trees. 
 %Consider the family of instances where our algorithm
@@ -2531,9 +2531,9 @@ where $P(T)$ is a specific path decomposition (constructed implicitly by the alg
 \end{theorem}
 \begin{proof}
 First, lets review the various pieces of our algorithm. 
-On a given input simplicial complex, we first we break it into extremum dominant pieces using $\rain(\MM)$ (and in $O(|\MM|)$ time by \Thm{rain-time}).  
+On a given input simplicial complex, we first break it into extremum dominant pieces using $\rain(\MM)$ (and in $O(|\MM|)$ time by \Thm{rain-time}).  
 Specifically, \Lem{rain-1} proves that the output of $\rain(\MM)$ is a set of extremum dominant pieces, 
-$\MM_1, \dots, \MM_k$, and \Clm{rain-reeb} shows that given the contour trees, $\cC(\MM_1), \dots, \cC(\MM_k)$ , 
+$\MM_1, \dots, \MM_k$, and \Clm{rain-reeb} shows that given the contour trees, $\cC(\MM_1), \dots, \cC(\MM_k)$, 
 the full contour tree, $\cC(\MM)$, can be constructed (in $O(|\MM|)$ time).
 
 Now one of the key observations was that for extremum dominant manifolds, computing the contour tree is roughly the same as 
@@ -2581,8 +2581,7 @@ We first prove a lower bound for join trees, and then generalize to contour tree
 %allowing us to define the cost, $\cost(f)=\sum_{p\in P} |p|\log|p|$.
 %  
 We focus on terrains, so $d=2$.
-Consider any valid path decomposition $P$ of a valid join tree (actually, for any rooted binary tree,
-there exist a terrain for this is the contour tree).
+Consider any path decomposition $P$ of a valid join tree (i.e. any rooted binary tree).
 When we say ``compute the join tree", we require the join tree to
 be labeled with the corresponding vertices of the terrain.
 
@@ -2603,7 +2602,7 @@ be labeled with the corresponding vertices of the terrain.
 
 \begin{lemma}
 \label{lem:pathDecomp}
-Fix a valid path decomposition $P$. There is a family of terrains, $\bF_P$, all with the same triangulation, 
+Fix a path decomposition $P$. There is a family of terrains, $\bF_P$, all with the same triangulation, 
 such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ define the same join tree.
 \end{lemma}
 
@@ -2619,7 +2618,7 @@ such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ 
  Construct a slightly tilted cycle 
  of length $m$ with the two antipodal points at heights $1$ and $0$. These are called the anchor and trap of the diamond, respectively.
  The remaining $m-2$ vertices are evenly spread around the cycle and heights decrease monotonically when going from the anchor to the trap.
- Next, create an apex vertex at some appropriately large height, and add an edge each vertex in the cycle. 
+ Next, create an apex vertex at some appropriately large height, and add an edge to each vertex in the cycle. 
 
 
  Now we describe how to attach two different diamonds.  In this process, we glue the base of a scaled down ``child'' diamond on to a triangular cone face of the larger  ``parent'' diamond (see \Fig{diamond}).
@@ -2643,7 +2642,7 @@ such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ 
  this implies that, regardless of the heights assigned to the anchors, the join tree has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
  
  There is a valid instance of this described construction for any relative ordering of the heights of the saddles on a given diamond.  
- In particular, there are $(|p|-1)!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible 
+ In particular, there are $(|p_i|-1)!$ possible orderings of the heights of the saddles on the diamond for $p_i$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible 
  terrains we can build.  Each one of these functions will result in a different (labeled) join tree. All saddles on a given diamond will appear in sorted order in the join tree.
  So, any permutation of the heights on a given diamond corresponds to a permutation of the vertices along a path in $P$.
 \end{proof}
@@ -2657,7 +2656,7 @@ if: there is a 1-1 correspondence between the sizes of the constituent paths, an
 
 \begin{lemma}
 \label{lem:cost}
-For all $\MM \in \bF_P$, the total number of heap operations performed by $\build(\MM)$ is $\Theta(\sum_{p\in P} |p|\log|p|)$.
+For all $\MM \in \bF_P$, the total number of heap operations performed by $\build(\MM)$ is $O(\sum_{p\in P} |p|\log|p|)$.
 \end{lemma}
 \begin{proof}
 %For any choice of $\MM \in \bF$, there is a path decomposition $\overline{P}(T)$ of the join tree equivalent to $\mathcal{P}$.
@@ -2665,11 +2664,11 @@ For all $\MM \in \bF_P$, the total number of heap operations performed by $\buil
 The primary ``non-determinism" of the algorithm is the initial painting constructed by $\init(\MM)$. 
 We show that regardless of how paint spilling is done, the number of heap operations is bounded as above.
 
- Consider an arbitrary order of the initial paint spilling over the surface defined by $f$.
+ Consider an arbitrary order of the initial paint spilling over the surface.
  Consider any join on a face of some diamond, which is the anchor point of some connecting child diamond.  
  The join has two up-stars, each of which has exactly one edge. Each edge connects to a maxima
  and must be colored by that maxima.
- Hence, two colors touching this join (according to \Def{initialColoring})
+ Hence, the two colors touching this join (according to \Def{initialColoring})
  are the colors of the apexes of the child and parent diamond.  
 % 
 % Specifically, one of these edges connects directly to the apex of the parent diamond and so the join must get the color of this maxima.
@@ -2706,10 +2705,10 @@ the previous lemmas.
 %Call a cost $C$ join tree valid if $C = cost_{\jc}(f)$ for some $f$ defined over a given complex $\MM$.
 
 \begin{theorem}\label{thm:joinLB}
-Consider a rooted tree $T$ and an arbitrary path decomposition $P$ of $t$.
+Consider a rooted tree $T$ and an arbitrary path decomposition $P$ of $T$.
 There is a family $\bF_P$ of terrains such that any algebraic decision
 tree computing the contour tree (on $\bF_P$) requires $\Omega(\sum_{p \in P} |p|\log |p|)$ time.
-Furthermore, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ on all these instances.
+Furthermore, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons on all these instances.
 %
 %Consider the set of functions $\bF_C$ that all have the same join tree valid cost $C$.  
 %Any height function decision tree that correctly computes
@@ -2718,7 +2717,7 @@ Furthermore, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ on all these in
 
 \begin{proof}
 The proof is a basic entropy argument. Any algebraic decision tree that is correct on all of $\bF_P$
-must distinguish all inputs in this family. By Stirling's approximation, the average depth in this tree is $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
+must distinguish all inputs in this family. By Stirling's approximation, the depth of this tree is $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
 \Lem{cost} completes the proof.
 %
 %
@@ -2772,8 +2771,8 @@ The following is analogous to \Lem{pathDecomp}, and in particular uses it as a s
 \begin{lemma}
 \label{lem:pathDecomp2}
 Let $P$ be a rain consistent maximum path decomposition of some contour tree. 
-There is a family of terrains, $\bF$, all with the same triangulation, 
-such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two functions in $\bF$ define the same contour tree.
+There is a family of terrains, $\bF_P$, all with the same triangulation, 
+such that the size of $\bF_P$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ define the same contour tree.
 \end{lemma}
 \begin{proof}
  As $P$ is rain consistent, the paths can be partitioned into sets $P_1, \dots, P_k$, where $P_i$ is the set of all paths with 
@@ -2792,7 +2791,7 @@ such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two functions
 % \end{figure}
  
  So for each $P_i$ construct a terrain as described in \Lem{pathDecomp}.  Now each $T_i$ is (roughly speaking) a join or a split tree, depending on 
- whether the BFS which produced it was an upward or downward BFS, respectively.  As the construction in \Lem{pathDecomp} was for join trees, for each terrain 
+ whether the BFS which produced it was an upward or downward BFS, respectively.  As the construction in \Lem{pathDecomp} was for join trees, each terrain 
  we constructed for a $P_i$ which came from a split tree, must be flipped upside down.
  Now we must described how to glue the terrains together.
   
@@ -2810,7 +2809,7 @@ such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two functions
  vertex in $T$ which $r_i$ is adjacent to. This gluing is done in the same manner as in \Lem{pathDecomp}, attaching the anchor for the root of $P_i$ directly the corresponding face of $P_j$, except that now $P_i$ and $P_j$ have opposite orientations.  See \Fig{diamond2}.
  
  Just as in \Lem{pathDecomp} we now have one fixed terrain structure, such that each different relative ordering of the heights of the join and split vertices 
- on each diamond produces a surface with a distinct join tree.  The specific bound on the size of $\bF$, defining these distinct join trees, follows by applying the 
+ on each diamond produces a surface with a distinct contour tree.  The specific bound on the size of $\bF_P$, defining these distinct contour trees, follows by applying the 
  bound from \Lem{pathDecomp} to each $P_i$.
 \end{proof}
 
@@ -2826,7 +2825,7 @@ For all $\MM \in \bF_P$, the number of heap operations is $\Theta(\sum_{p\in P} 
  Apply \Lem{cost} to each of the $P_i$ separately and take the sum.
 \end{proof}
 
-\Thm{main-lb} follows immediately from an entropy argument, analogous to \Thm{joinLB}.
+\Thm{main-lb} now follows immediately from an entropy argument, analogous to \Thm{joinLB}.
 %
 %
 %Call a cost $C$ valid if $C = cost(f)$ for some $f$ defined over a given complex $\MM$.
