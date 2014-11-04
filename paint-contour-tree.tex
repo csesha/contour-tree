@@ -277,12 +277,19 @@ a significant computational bottleneck. Unfortunately, lower bounds of $\Omega(t
 We present the first algorithm that can avoid the global sort and has a refined time complexity that
 depends on the contour tree structure. Intuitively, if the tree is short and fat, we get significant improvements 
 in running time. For a partition of the contour tree into a set of descending paths, $P$,
-our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$, which is 
-always bounded by $O(t\log t + N)$ and is $O(t\alpha(t)+N)$ for balanced trees. 
-Moreover, we prove a strong optimality property of our algorithm, showing that $\sum_{p\in P} |p|\log|p|$ complexity
-is inherent to computing contour trees. Consider the family of instances where our algorithm
-requires $C$ comparisons. Any algorithm computing contour trees on this family requires
-$\Omega(C)$ comparisons in the worst case.
+our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$.
+This is at most $O(t\log D + N)$, where $D$ is the diameter of the contour tree.
+Moreover, it is $O(t\alpha(t)+N)$ for balanced trees, a significant improvement over the previous complexity.
+
+Our algorithm requires numerous ideas: partitioning the contour tree into join and split trees, 
+a local growing procedure to iteratively build contour trees, and the use of heavy path 
+decompositions for the time complexity analysis. There is a crucial use of a family of binomial heaps to 
+maintain priorities, ensuring that any comparison made is between comparable nodes of the contour tree.
+We also prove lower bounds showing that the $\sum_{p\in P} |p|\log|p|$ complexity
+is inherent to computing contour trees. 
+%Consider the family of instances where our algorithm
+%requires $C$ comparisons. Any algorithm computing contour trees on this family requires
+%$\Omega(C)$ comparisons in the worst case.
 
 %
 %general lower bound of
@@ -388,6 +395,8 @@ that all critical points have distinct values, and the contour tree has max-degr
 does not need this, but it simplifies the proof and presentation.} $f:\MM \mapsto \RR$, where the contour tree $T$
 has maximum degree $3$. There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
+
+The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
 \end{theorem}
 
 Let us interpret the running time. 
@@ -405,12 +414,14 @@ Consider the example of \Fig{sorting} extended to a larger binary tree both abov
 (In the example, $t = \Omega(n)$.) The running time promised by \Thm{main-alg}
 is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$.
 
-We complement \Thm{main-alg} with an almost matching lower bound, showing that the complexity
-of $\sum_{p \in P(T)} |p|\log |p|$ is required for any contour tree algorithm. The exact phrasing
+We complement \Thm{main-alg} with a lower bound, suggesting that the comparison complexity
+of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
 of the lower bound requires some care. Consider the $d=2$ (terrain) case.
-As referenced in \Thm{main-alg}, for any $f:\MM \mapsto \RR$ our deterministic algorithm defines a 
-specific path decomposition $P(T)$%
-\FullVer{
+Let a path decomposition $P$ be called \emph{valid} if it is actually output by the algorithm
+on some input.
+%As referenced in \Thm{main-alg}, for any $f:\MM \mapsto \RR$ our deterministic algorithm defines a 
+%specific path decomposition $P(T)$%
+\ignore{\FullVer{
 \footnote{The specific decomposition used is defined in \Sec{pathDecomp}, 
 but also depends on the raining and painting procedures described in \Sec{rain} and \Sec{paint}.  
 The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}.}
@@ -436,13 +447,21 @@ of inputs of fixed cost.
 %tree over the heights. The running time is simply the number of queries made.
 %\end{definition}
 %
+}
 \begin{theorem} 
 \label{thm:main-lb}
 %Fix a sufficiently large numbers $t$ and $C$, 
 %where $t$ is the number of critical points and $C$ is a valid cost for an instance with $t$ critical point.
-Consider the set of functions $\bF_C$ that have the same number of critical points and the same (valid) cost $C$.  Any algebraic decision tree that correctly computes
-the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
+Consider a valid path decomposition $P$. There exists a family $\bF_P$ of terrains ($d=2$) with the following properties.
+Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
+Furthermore, for any terrain in $\bF_P$, the algorithm of \Thm{main-alg} makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
+%
+%the set of functions $\bF_C$ that have the same number of critical points and the same (valid) cost $C$.  Any algebraic decision tree that correctly computes
+%the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
 \end{theorem}
+
+In other words, for any choice of $\sum_{p \in P} |p|\log |p|$, we can design a hard family where any algorithm
+requires this cost in the worst case, and our algorithm matches this bound. 
 
 % We complement \Thm{main-alg} with an almost matching lower bound, showing that the complexity
 % of $\sum_{p \in P(T)} |p|\log |p|$ is required for any contour tree algorithm. The exact phrasing
@@ -480,10 +499,11 @@ the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
 
 \paragraph{Beyond worst-case analysis:} Our result provides understanding of the complexity
 of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound explain \emph{when}
-computing contour trees is expensive, and provide insight into the hardness of particular instances. It is intriguing
-that the cost (as defined earlier) roughly captures the hardness of an instance.
+computing contour trees is expensive, and provide insight into the hardness of particular instances. 
+%It is intriguing
+%that the cost (as defined earlier) roughly captures the hardness of an instance.
 Trees that are short and fast are easy to compute, whereas trees with long paths are hard.
-Our result is related to the concept of instance optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
+This is tangentially related to the concept of instance optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
 Their notion of optimality is far more refined that what we prove, but it shares the flavor of understanding the spectrum
 of easy to hard instances. From a mathematical perspective, this sort of analysis forces one to look closely
 at the relationship between sorting and the contour tree problem. 
@@ -2547,24 +2567,30 @@ O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alp
 
 \section{Lower Bound by Path Decomposition}
 \label{sec:lb}
-In this section we provide a lower bound for the time it takes to compute a contour tree in terms the cost of path decompositions.  
 We first prove a lower bound for join trees, and then generalize to contour trees.
 %\Ben{Hopefully the following sentence clear up confusion between $\MM$ and $(f,\MM)$}
-Note earlier we usually used $\MM$ to denote the lift of a simplicial complex according to some height function $f$, 
-however in this section we make a distinction between the complex $\MM$ and the height function $f$.  
-In particular all previous definitions or subroutines which took $\MM$ as input now take $(f,\MM)$ as input.
+%Note earlier we usually used $\MM$ to denote the lift of a simplicial complex according to some height function $f$, 
+%however in this section we make a distinction between the complex $\MM$ and the height function $f$.  
+%In particular all previous definitions or subroutines which took $\MM$ as input now take $(f,\MM)$ as input.
 
 \subsection{Join Trees}
 
-In this section we prove \Thm{main-lb}, but for join trees instead of contour trees.  
+%In this section we prove \Thm{main-lb}, but for join trees instead of contour trees.  
 %Observe that given a fixed $(f,\MM)$, 
 %our algorithm for computing $\jc$ is deterministic and so the maximum path decomposition $P=P(\jc)$ defined by the initial coloring (\Def{initialColoring}) is fixed, 
 %allowing us to define the cost, $\cost(f)=\sum_{p\in P} |p|\log|p|$.
 %  
-Let $\MM$ be fixed.  For a given height function $f$, we can now define $\cost_{\jc}(f)$.  Specifically, consider running the $\build(f,\MM)$ procedure 
-of section \Sec{paint}, which computes the join tree $\jc(f,\MM)$.  This procedure calls $\init$, which will (uniquely) define some 
-initial coloring of $\jc$ (\Def{initialColoring}).  Let $P(f)=P(\jc(f,\MM))$ be the maximum path decomposition of the join tree according to this coloring. 
-Then $\cost_{\jc}(f) = \sum_{p\in P(f)} |p|\log|p|$
+We focus on terrains, so $d=2$.
+Consider any valid path decomposition $P$ of a valid join tree (actually, for any rooted binary tree,
+there exist a terrain for this is the contour tree).
+When we say ``compute the join tree", we require the join tree to
+be labeled with the corresponding vertices of the terrain.
+
+
+%
+%For given $\MM$, consider running the algorithm of \Sec{also} to compute $\jc(\MM)$.
+%Let $P(\jc(\MM))$ be the maximum path decomposition of the join tree according to the initial coloring
+%of $\init(\MM)$. Define $\cost_{\jc}(f) = \sum_{p\in P(\jc(\MM))} |p|\log|p|$
 
 \begin{figure}[h]\centering
     \includegraphics[width=.18\linewidth]{figs/diamond}\hspace{2cm}
@@ -2577,28 +2603,30 @@ Then $\cost_{\jc}(f) = \sum_{p\in P(f)} |p|\log|p|$
 
 \begin{lemma}
 \label{lem:pathDecomp}
-Let $\mathcal{P} = P(f)$ be the maximum path decomposition of some height function $f$ defined over a complex $\MM$. 
-Then there is a family of functions, $\bF$, all defined over a common triangulation in plane, 
-such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two function in $\bF$ define the same join tree.
+Fix a valid path decomposition $P$. There is a family of terrains, $\bF_P$, all with the same triangulation, 
+such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ define the same join tree.
 \end{lemma}
-\begin{proof}
- We describe a simple triangulation, with heights specified for all vertices except for the saddles.  The main idea is that 
- this triangulation will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of join trees 
- whose size is that described in the lemma statement.
- 
- First, we describe the basic building block of these terrains, which roughly speaking corresponds to a fixed path $p\in P$.  
- Specifically, we say a \emph{diamond} of size $m$ is the following terrain.  To start, construct a slightly tilted cycle 
- of length $m$.  Specifically have two antipodal points, at heights $1$ and $0$, which we will call the anchor and trap of the diamond, respectively.
- The remaining $m-2$ vertices are evenly spread around the cycle and heights decrease monotonically when going from the anchor to the trap.
- Next, create an apex vertex at some appropriately large height, and add an edge between it and each vertex in the cycle.  At this point 
- we have built an upside down cone with $m$ triangular faces (see \Fig{diamond}). 
 
- Now we describe how to attach two diamonds.  In this process, we glue the base of a scaled down ``child'' diamond on to a triangular cone face of the larger  ``parent'' diamond (see \Fig{diamond}).
- Specifically, the anchor of the child diamond is attached directly to a face of the parent diamond at some unspecified height $h$. The remained of the base of the child cone is then 
+
+\begin{proof}
+% We describe a simple triangulation, with heights specified for all vertices except for the saddles.  
+ 
+%The main idea is that 
+% this triangulation will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of join trees 
+% whose size is that described in the lemma statement. 
+ We describe the basic building block of these terrains, which corresponds to a fixed path $p\in P$.  
+ Informally, a \emph{diamond} is an upside down cone with $m$ triangular faces (see \Fig{diamond}). 
+ Construct a slightly tilted cycle 
+ of length $m$ with the two antipodal points at heights $1$ and $0$. These are called the anchor and trap of the diamond, respectively.
+ The remaining $m-2$ vertices are evenly spread around the cycle and heights decrease monotonically when going from the anchor to the trap.
+ Next, create an apex vertex at some appropriately large height, and add an edge each vertex in the cycle. 
+
+
+ Now we describe how to attach two different diamonds.  In this process, we glue the base of a scaled down ``child'' diamond on to a triangular cone face of the larger  ``parent'' diamond (see \Fig{diamond}).
+ Specifically, the anchor of the child diamond is attached directly to a face of the parent diamond at some height $h$. The remaineder of the base of the child cone is then 
  extended down (at a slight angle) until it hits the face of the parent.
  
- At this point we can construct the entire terrain, by repeatedly gluing together diamonds.  
- Specifically, for each path $p_i\in P$ we create a diamond of size $|p_i|+1$.
+ The full terrain is obtained by repeatedly gluing diamonds. For each path $p_i\in P$, we create a diamond of size $|p_i|+1$.
  The two faces adjacent to the anchor are always empty, and the remaining faces are for gluing on other diamonds.
  (Note that diamonds have size $|p_i|+1$ since $|p_i|-1$ faces represent the joins of $p_i$, the apex represents the leaf, 
  and we need two empty faces next to the anchor.)
@@ -2606,6 +2634,7 @@ such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two function 
  Specially, for two paths $p,q\in P$ where 
  $p$ is the parent of $q$ in $\pathTree$, we glue $q$ onto a face of the diamond for $p$ as described above.
  (Naturally for this construction to work, diamonds for a given path will be scaled down relative to the size of the diamond of their parent).
+ By varying the heights of the gluing, we get the family of terrains.
  
  Observe now that the only saddle points in this construction are the anchor points.  Moreover, the only maxima are the apexes of the 
  diamonds.  We create a global boundary minimum by setting the vertices at the base of the diamond representing the root of $\pathTree$ all to the same height (and there are no other minima).  
@@ -2613,78 +2642,104 @@ such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two function 
  (since all these saddles have a direct line of sight to this apex).  In particular, 
  this implies that, regardless of the heights assigned to the anchors, the join tree has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
  
- Now there is a valid instance of this described construction for any relative ordering of the heights of the saddles on a given diamond.  
- Let the set of height functions for these instances be denote $\bF$.
+ There is a valid instance of this described construction for any relative ordering of the heights of the saddles on a given diamond.  
  In particular, there are $(|p|-1)!$ possible orderings of the heights of the saddles on the diamond for $p$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible 
- functions in this set.  Also, each one of these functions will result in a different join tree.  Specifically, a permutation of the heights on a given diamond 
- corresponds to a permutation of the vertices along a path in $P$, as by construction all saddles on a given diamond will appear in sorted order in the join tree.
+ terrains we can build.  Each one of these functions will result in a different (labeled) join tree. All saddles on a given diamond will appear in sorted order in the join tree.
+ So, any permutation of the heights on a given diamond corresponds to a permutation of the vertices along a path in $P$.
 \end{proof}
 
-In the following we say to path decompositions $P_1$ and $P_2$ (of potentially different complexes and/or height functions) are equivalent 
-if there is an graph isomorphism, $f$, between their respective shrubs, $S_1$ and $S_2$, which has the property that for any node $v\in S_1$ corresponding to a path of 
-size $|v|$, $f(v)$ also corresponds to a path of size $|v|$. Note that for equivalent decompositions, $\sum_{p\in P_1} |p|\log|p| = \sum_{p\in P_2} |p|\log|p|$.
+Two path decompositions $P_1$ and $P_2$ (of potentially different complexes and/or height functions) are equivalent 
+if: there is a 1-1 correspondence between the sizes of the constituent paths, and the shrubs are isomorphic.
+%
+%
+%if their respective shrubs, $S_1$ and $S_2$, which has the property that for any node $v\in S_1$ corresponding to a path of 
+%size $|v|$, $f(v)$ also corresponds to a path of size $|v|$. Note that for equivalent decompositions, $\sum_{p\in P_1} |p|\log|p| = \sum_{p\in P_2} |p|\log|p|$.
 
 \begin{lemma}
 \label{lem:cost}
-Let $\mathcal{P}$ and $\bF$ be as defined above.  Then for all $f\in \bF$, $\cost_{\jc}(f) = \sum_{p\in P(f)} |p|\log|p| = \sum_{p\in \mathcal{P}} |p|\log |p|$
+For all $\MM \in \bF_P$, the total number of heap operations performed by $\build(\MM)$ is $\Theta(\sum_{p\in P} |p|\log|p|)$.
 \end{lemma}
 \begin{proof}
-First observe that by construction, regardless of the choice of $f\in \bF$, there is a path decomposition $\overline{P}(T)$ of the join tree which is equivalent to $\mathcal{P}$.
-Specifically, this is the decomposition where each path $p\in \overline{P}(T)$ consists exactly of the set of critical points (except for its anchor) from a given diamond. 
-We now show that regardless of how paint spilling is done, this will be the maximum path decomposition of $T$ (implying the lemma statement).
+%For any choice of $\MM \in \bF$, there is a path decomposition $\overline{P}(T)$ of the join tree equivalent to $\mathcal{P}$.
+%Specifically, this is the decomposition where each path $p\in \overline{P}(T)$ consists exactly of the set of critical points (except for its anchor) from a given diamond. 
+The primary ``non-determinism" of the algorithm is the initial painting constructed by $\init(\MM)$. 
+We show that regardless of how paint spilling is done, the number of heap operations is bounded as above.
 
- So consider any order of paint spilling over the surface defined by $f$.
- Consider any join on a face of some diamond.  This join is the anchor point of some connecting child diamond.  
- The claim is that the two colors of this join (according to \Def{initialColoring})
+ Consider an arbitrary order of the initial paint spilling over the surface defined by $f$.
+ Consider any join on a face of some diamond, which is the anchor point of some connecting child diamond.  
+ The join has two up-stars, each of which has exactly one edge. Each edge connects to a maxima
+ and must be colored by that maxima.
+ Hence, two colors touching this join (according to \Def{initialColoring})
  are the colors of the apexes of the child and parent diamond.  
- This easily follows since this join has two up-stars, each of which has exactly one edge.  
- Specifically, one of these edges connects directly to the apex of the parent diamond and so the join must get the color of this maxima.
- The other edge connects directly to the apex of the child diamond (this is why we left the faces adjacent to an anchor empty) and 
- so the second color is that of the maxima of the child diamond.
+% 
+% Specifically, one of these edges connects directly to the apex of the parent diamond and so the join must get the color of this maxima.
+% The other edge connects directly to the apex of the child diamond (this is why we left the faces adjacent to an anchor empty) and 
+% so the second color is that of the maxima of the child diamond.
  
- So let $c$ be the color of some maxima, $m$.  The above proven property of the coloring implies that in the join tree, the vertices for 
- which $c$ appears are exactly the vertices of the path in  $\overline{P}(T)$ corresponding $m$, as well as 
- the vertex to which the root of this path connects to (i.e. the anchor of the diamond of $m$).
- Now we show this implies $\overline{P}(T)$ is a maximum path decomposition.
- To see this, consider a vertex $v\in T$, and let $p$ be the path in $\overline{P}(T)$ which contain $v$. 
- Now $v$ has two children (if it is a join).  Let $c_1$ be the child which is in $p$, and $c_2$ the child which is the root of some adjacent path $p'$.  
- In order for $\overline{P}(T)$ to be the maximum path decomposition, we must show $|H_{c_1}|\geq |H_{c_2}|$.
- %(Note, to ensure a unique maximum path decomposition, one can break ties consistently by assigning some arbitrary but fixed ordering to the vertices.)
- %Now $v$ gets assigned two colors, one 
- %of which we know is the color assigned to all vertices in $p$ and the other is the one assigned to all the vertices of $p'$. 
- Observe that none of the colors in the subtree of $c_2$ appear below $v$.  Hence the heap at $c_2$ consists only of $v$.  
- On the other hand the heap of $c_1$ contains $v$, any other vertex of $p$ below $v$, and the vertex to which the root of $p$ is adjacent to, 
- and hence $|H_{c_1}|\geq |H_{c_2}|$.
+ Take any join $v$, with two children $w_1$ and $w_2$. Suppose $w_1$ and $v$ belong to the same path
+ in the decomposition. The key is that any color from a maxima in the subtree at $w_2$ cannot touch
+ any ancestor of $v$. This subtree is exactly the contour tree of the child diamond attached at $v$.
+ The base of this diamond is completely contained in a face of the parent diamond. So all colors
+ from the child ``drain off" to the base of the parent, and do not touch any joins on the parent diamond.
+ 
+ Hence, $|H_v|$ is at most the size of the path in $P$ containing $v$. By \Lem{runTimeUpper}, the total number of heap operations
+ is at most $\sum_v \log |H_v|$, completing the proof.
+ 
+% 
+% So let $c$ be the color of some maxima, $m$.  The above proven property of the coloring implies that in the join tree, the vertices for 
+% which $c$ appears are exactly the vertices of the path in  $\overline{P}(T)$ corresponding $m$, as well as 
+% the vertex to which the root of this path connects to (i.e. the anchor of the diamond of $m$).
+% Now we show this implies $\overline{P}(T)$ is a maximum path decomposition.
+% To see this, consider a vertex $v\in T$, and let $p$ be the path in $\overline{P}(T)$ which contain $v$. 
+% Now $v$ has two children (if it is a join).  Let $c_1$ be the child which is in $p$, and $c_2$ the child which is the root of some adjacent path $p'$.  
+% In order for $\overline{P}(T)$ to be the maximum path decomposition, we must show $|H_{c_1}|\geq |H_{c_2}|$.
+% %(Note, to ensure a unique maximum path decomposition, one can break ties consistently by assigning some arbitrary but fixed ordering to the vertices.)
+% %Now $v$ gets assigned two colors, one 
+% %of which we know is the color assigned to all vertices in $p$ and the other is the one assigned to all the vertices of $p'$. 
+% Observe that none of the colors in the subtree of $c_2$ appear below $v$.  Hence the heap at $c_2$ consists only of $v$.  
+% On the other hand the heap of $c_1$ contains $v$, any other vertex of $p$ below $v$, and the vertex to which the root of $p$ is adjacent to, 
+% and hence $|H_{c_1}|\geq |H_{c_2}|$.
 \end{proof}
 
-The following is the analogous statement to \Thm{main-lb}, but for join trees.
-Call a cost $C$ join tree valid if $C = cost_{\jc}(f)$ for some $f$ defined over a given complex $\MM$.
+The following is the equivalent of \Thm{main-lb} for join trees, and immediately follows from
+the previous lemmas.
+%Call a cost $C$ join tree valid if $C = cost_{\jc}(f)$ for some $f$ defined over a given complex $\MM$.
 
 \begin{theorem}\label{thm:joinLB}
-Consider the set of functions $\bF_C$ that all have the same join tree valid cost $C$.  
-Any height function decision tree that correctly computes
-the join tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
+Consider a rooted tree $T$ and an arbitrary path decomposition $P$ of $t$.
+There is a family $\bF_P$ of terrains such that any algebraic decision
+tree computing the contour tree (on $\bF_P$) requires $\Omega(\sum_{p \in P} |p|\log |p|)$ time.
+Furthermore, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ on all these instances.
+%
+%Consider the set of functions $\bF_C$ that all have the same join tree valid cost $C$.  
+%Any height function decision tree that correctly computes
+%the join tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
 \end{theorem}
-\begin{proof}
- If $C$ is a join tree valid cost then there some $f$ such that $\cost_{\jc}(f)=\sum_{p\in P(f)} |p|\log|p|$.
- By the above lemmas, there is then a set $\bF$ of $\Pi_{p_i\in P} |p_i|!$ functions, such that for any $g\in \bF$, $C= \cost(g)$.  
- (Specifically, each sorted ordering of the relative height values of the saddles on each diamond yields a function in this class.)
- Hence $\bF\subseteq \bF_C$, and so any height function decision tree for the set $\bF_C$ must distinguish between these possibilities, and therefore must 
- have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, the average depth in this tree is $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
-\end{proof}
 
+\begin{proof}
+The proof is a basic entropy argument. Any algebraic decision tree that is correct on all of $\bF_P$
+must distinguish all inputs in this family. By Stirling's approximation, the average depth in this tree is $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
+\Lem{cost} completes the proof.
+%
+%
+% If $C$ is a join tree valid cost then there some $f$ such that $\cost_{\jc}(f)=\sum_{p\in P(f)} |p|\log|p|$.
+% By the above lemmas, there is then a set $\bF$ of $\Pi_{p_i\in P} |p_i|!$ functions, such that for any $g\in \bF$, $C= \cost(g)$.  
+% (Specifically, each sorted ordering of the relative height values of the saddles on each diamond yields a function in this class.)
+% Hence $\bF\subseteq \bF_C$, and so any height function decision tree for the set $\bF_C$ must distinguish between these possibilities, and therefore must 
+% have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, the average depth in this tree is $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
+\end{proof}
 
 \subsection{Contour Trees}
 We first generalize previous terms to the case of contour trees.
-In this section $T$ will denote an arbitrary contour tree.  Specifically, every internal vertex in $T$ has degree $3$ 
-and the height function defined over the vertex set is such that every internal vertex in either a split or join 
-(i.e. at most $2$ neighbors lie above or below it).
+In this section $T$ will denote an arbitrary contour tree with every internal vertex of degree $3$.
+%and the height function defined over the vertex set is such that every internal vertex in either a split or join 
+%(i.e. at most $2$ neighbors lie above or below it).
 
-We need to generalize the definition of path decompositions, which previously were only defined for rooted trees.
-Again we define a path decomposition as a partition of the vertices into 
-disjoint leaf paths (i.e. each path is monotonic in height and contains a leaf). 
-However, for simplicity we now restrict our attention to path decompositions which 
-roughly speaking are consistent with the raining procedure described in \Sec{rain} 
+%We need to generalize the definition of path decompositions, which previously were only defined for rooted trees.
+%Again we define a path decomposition as a partition of the vertices into 
+%disjoint leaf paths (i.e. each path is monotonic in height and contains a leaf). 
+For simplicity we now restrict our attention to path decompositions 
+consistent with the raining procedure described in \Sec{rain} 
 (more general decompositions can work, but it is not needed for our purposes).
 
 \begin{definition}
@@ -2699,29 +2754,29 @@ of the initial vertex is rooted at is a maxima.  For simplicity we require that 
 also contains a minima.}
 \end{definition}
 
-
-Consider our algorithm on a fixed $(f,\MM)$.  First we run $\rain(x,\MM)$ to partition the input 
-into extreme dominant complexes.  To make this partition uniquely defined lets say that the initial vertex $x$
-that rain is called from is the global maximum in the input (note that given a specific $x$ the partition is uniquely defined).
-Let $\MM_1, \dots, \MM_k$ be the set of produced subcomplexes, and let $f_i$ be the restriction of $f$ to $\MM_i$.
-Now on each of the $(f_i,\MM_i)$ we run the $\paint$ procedure to compute the join tree of $(f_i, \MM_i)$.
-As described in the previous section, this painting procedure defines a maximum path decomposition with 
-and associated cost, $\cost_{\jc}(f_i) = \sum_{p\in P_i} |p|\log |p|$.  
-It is not hard to see that the union of these paths decomposition $P= \cup_{i=1}^k P_i$ defines 
-a rain consistent path decomposition of the contour tree for $(f,\MM)$.  
-In particular for a fixed $\MM$, $f$ defines a specific path decomposition $P=P(f)$, which we call the \emph{rain consistent maximum path decomposition}, 
-and we write $\cost(f) = \sum_{p\in P} |p|\log |p|$.
+%
+%Consider our algorithm on a fixed $(f,\MM)$.  First we run $\rain(x,\MM)$ to partition the input 
+%into extreme dominant complexes.  To make this partition uniquely defined lets say that the initial vertex $x$
+%that rain is called from is the global maximum in the input (note that given a specific $x$ the partition is uniquely defined).
+%Let $\MM_1, \dots, \MM_k$ be the set of produced subcomplexes, and let $f_i$ be the restriction of $f$ to $\MM_i$.
+%Now on each of the $(f_i,\MM_i)$ we run the $\paint$ procedure to compute the join tree of $(f_i, \MM_i)$.
+%As described in the previous section, this painting procedure defines a maximum path decomposition with 
+%and associated cost, $\cost_{\jc}(f_i) = \sum_{p\in P_i} |p|\log |p|$.  
+%It is not hard to see that the union of these paths decomposition $P= \cup_{i=1}^k P_i$ defines 
+%a rain consistent path decomposition of the contour tree for $(f,\MM)$.  
+%In particular for a fixed $\MM$, $f$ defines a specific path decomposition $P=P(f)$, which we call the \emph{rain consistent maximum path decomposition}, 
+%and we write $\cost(f) = \sum_{p\in P} |p|\log |p|$.
 
 The following is analogous to \Lem{pathDecomp}, and in particular uses it as a subroutine.
 
 \begin{lemma}
 \label{lem:pathDecomp2}
-Let $\mathcal{P} = P(f)$ be the rain consistent maximum path decomposition of some height function $f$ defined over a complex $\MM$. 
-Then there is a family of functions, $\bF$, all defined over a common triangulation in plane, 
-such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two function in $\bF$ define the same contour tree.
+Let $P$ be a rain consistent maximum path decomposition of some contour tree. 
+There is a family of terrains, $\bF$, all with the same triangulation, 
+such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two functions in $\bF$ define the same contour tree.
 \end{lemma}
 \begin{proof}
- As $\mathcal{P}$ is rain consistent, the paths can be partitioned into sets $P_1, \dots, P_k$, where $P_i$ is the set of all paths with 
+ As $P$ is rain consistent, the paths can be partitioned into sets $P_1, \dots, P_k$, where $P_i$ is the set of all paths with 
  vertices from a given BFS, as described in \Def{path2}.  Specifically, let $T_i$ be the subtree of $T$ corresponding to $P_i$ and 
  let $r_i$ be the root vertex of this subtree.  
  Note that the $P_i$ sets naturally define a tree where $P_i$ is the parent of $P_j$ if $r_i$ (i.e. the root of $T_i$) is adjacent to a vertex in $P_j$.  
@@ -2763,21 +2818,25 @@ such that the size of $\bF$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two function 
 
 
 \begin{lemma}
-Let $\mathcal{P}$ and $\bF$ be as defined above.  Then for all $f\in \bF$, $\cost(f) = \sum_{p\in P(f)} |p|\log|p| = \sum_{p\in \mathcal{P}} |p|\log |p|$
+For all $\MM \in \bF_P$, the number of heap operations is $\Theta(\sum_{p\in P} |p|\log |p|)$
 \end{lemma}
 \begin{proof}
- This lemma follows immediately from \Lem{cost}.  Specifically, the sum $\cost(P)$, for any rain consistent maximum path decomposition $P$, can be broken 
- into the sums $\cost_{\jc}(P_i)$ of some maximum path decompositions $P_1, \dots P_k$.  Now apply \Lem{cost} to each of the $P_i$ separately and take the sum.
+ This lemma follows immediately from \Lem{cost}.  The heap operations can be partitioned into the
+ operations performed in each $P_i$.
+ Apply \Lem{cost} to each of the $P_i$ separately and take the sum.
 \end{proof}
 
-Call a cost $C$ valid if $C = cost(f)$ for some $f$ defined over a given complex $\MM$.
-For the same reason that \Thm{joinLB} followed from \Lem{pathDecomp} and \Lem{cost}, we now have the following. 
-
-\begin{theorem}
-Consider the set of functions $\bF_C$ that all have the same valid cost $C$.  
-Any height function decision tree that correctly computes
-the contour tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
-\end{theorem}
+\Thm{main-lb} follows immediately from an entropy argument, analogous to \Thm{joinLB}.
+%
+%
+%Call a cost $C$ valid if $C = cost(f)$ for some $f$ defined over a given complex $\MM$.
+%For the same reason that \Thm{joinLB} followed from \Lem{pathDecomp} and \Lem{cost}, we now have the following. 
+%
+%\begin{theorem}
+%Consider the set of functions $\bF_C$ that all have the same valid cost $C$.  
+%Any height function decision tree that correctly computes
+%the contour tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
+%\end{theorem}
 
 \begin{remark}
  Note that for the terrains described in this section, the number of critical points is within a constant factor of 
