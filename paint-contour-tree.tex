@@ -399,6 +399,9 @@ where $P(T)$ is a specific path decomposition (constructed implicitly by the alg
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
 \end{theorem}
 
+In particular, any comparisons made are only between ancestors and descendants in the contour tree, where as previous algorithm compared everything, 
+and that is where we gain.
+
 Let us interpret the running time. 
 For any path decomposition $P(T)$, obviously $\sum_{p\in P(T)}|p| = |T| = t$, and 
 so the running time is $O(t\log t + N)$. But this is tight only when $T$ is tall and thin.  
@@ -418,13 +421,13 @@ We complement \Thm{main-alg} with a lower bound, suggesting that the comparison 
 of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
 of the lower bound requires some care. Consider the $d=2$ (terrain) case.
 %
+We define a class of valid path decompositions which characterizes decompositions produced by our algorithm.
 %
-We define a class of valid path decompositions.  This include any decomposition of rooted trees,
-and more generally is a large superset of all decomposition produced by our 
-algorithm.
+%We define a class of valid path decompositions.  This include any decomposition of rooted trees,
+%and more generally is a large superset of all decomposition produced by our 
+%algorithm.
 %\footnote{Our construction likely works for any decomposition, however, 
 %to keep the presentation simple we restrict to a subset relevant for our algorithm.}
-%
 %
 %Let a path decomposition $P$ be called \emph{valid} if it is actually output by the algorithm
 %on some input.
