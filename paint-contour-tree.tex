@@ -3,7 +3,7 @@
 %%%%%%%%%%Comment out the switch below for full version 
 %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\def \STOC {}
+\def \STOC {}
 
 
 \ifx\STOC\undefined
@@ -284,7 +284,7 @@ Moreover, it is $O(t\alpha(t)+N)$ for balanced trees, a significant improvement 
 Our algorithm requires numerous ideas: partitioning the contour tree into join and split trees, 
 a local growing procedure to iteratively build contour trees, and the use of heavy path 
 decompositions for the time complexity analysis. There is a crucial use of a family of binomial heaps to 
-maintain priorities, ensuring that any comparison made is between nodes in the same path in the contour tree.
+maintain priorities, ensuring that any comparison made is between nodes in the same descending path in the contour tree.
 We also prove lower bounds showing that the $\sum_{p\in P} |p|\log|p|$ complexity
 is inherent to computing contour trees. 
 %Consider the family of instances where our algorithm
@@ -417,8 +417,19 @@ is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$.
 We complement \Thm{main-alg} with a lower bound, suggesting that the comparison complexity
 of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
 of the lower bound requires some care. Consider the $d=2$ (terrain) case.
-Let a path decomposition $P$ be called \emph{valid} if it is actually output by the algorithm
-on some input.
+%
+%
+We define a class of valid path decompositions.  This include any decomposition of rooted trees,
+and more generally is a large superset of all decomposition produced by our 
+algorithm.
+%\footnote{Our construction likely works for any decomposition, however, 
+%to keep the presentation simple we restrict to a subset relevant for our algorithm.}
+%
+%
+%Let a path decomposition $P$ be called \emph{valid} if it is actually output by the algorithm
+%on some input.
+%
+%
 %As referenced in \Thm{main-alg}, for any $f:\MM \mapsto \RR$ our deterministic algorithm defines a 
 %specific path decomposition $P(T)$%
 \ignore{\FullVer{
