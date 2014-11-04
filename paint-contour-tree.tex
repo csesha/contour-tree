@@ -1,3 +1,22 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%
+%%%%%%%%%%Comment out the switch below for full version 
+%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def \STOC {}
+
+
+\ifx\STOC\undefined
+  \newcommand{\FullVer}[1]{#1}
+  \newcommand{\SubmitVer}[1]{}
+\else
+  \newcommand{\FullVer}[1]{}
+  \newcommand{\SubmitVer}[1]{#1}
+\fi
+
+
+
+
 \documentclass[11pt]{article}
 \usepackage[margin=2.54cm]{geometry}
 \usepackage[dvipsnames,usenames]{color}
@@ -325,7 +344,8 @@ These points are the ``events" where the contour topology changes and form the v
 An edge connects two critical points if one event immediately ``follows"
 the other as the sweep plane makes its pass. (We provide formal definitions later.) 
 
-\Fig{relative} and \Fig{sorting} show examples of simplicial complexes, with heights and their contour trees.
+\Fig{relative} and \Fig{sorting} 
+show examples of simplicial complexes, with heights and their contour trees.
 Think of the contour tree edges as pointing downwards, so we can talk of the ``up-degree" and ``down-degree" of vertices.
 Leaves of down-degree $1$ are maxima, because a new contour is created at such points. Leaves of up-degree
 $1$ are minima, because a contour is destroyed there. Up-degree $2$ vertices are ``joins", where contours
@@ -357,10 +377,13 @@ containing a leaf, which is also monotonic in the height values of its vertices.
 %we relate path decomposition costs (defined below) to the running time of our algorithm using $\Lem{algCost}$.
 
 \begin{definition}
-\label{def:path} For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
+\label{def:path} 
+For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
 \end{definition}
 
-\begin{theorem} \label{thm:main-alg} Consider a PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
+\begin{theorem} 
+\label{thm:main-alg} 
+Consider a PL-Morse\footnote{This is a standard ``well-behaved" assumption that implies
 that all critical points have distinct values, and the contour tree has max-degree $3$. Our algorithm
 does not need this, but it simplifies the proof and presentation.} $f:\MM \mapsto \RR$, where the contour tree $T$
 has maximum degree $3$. There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
@@ -386,9 +409,14 @@ We complement \Thm{main-alg} with an almost matching lower bound, showing that t
 of $\sum_{p \in P(T)} |p|\log |p|$ is required for any contour tree algorithm. The exact phrasing
 of the lower bound requires some care. Consider the $d=2$ (terrain) case.
 As referenced in \Thm{main-alg}, for any $f:\MM \mapsto \RR$ our deterministic algorithm defines a 
-specific path decomposition $P(T)$\footnote{The specific decomposition used is defined in \Sec{pathDecomp}, 
+specific path decomposition $P(T)$%
+\FullVer{
+\footnote{The specific decomposition used is defined in \Sec{pathDecomp}, 
 but also depends on the raining and painting procedures described in \Sec{rain} and \Sec{paint}.  
-The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}. 
+The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}.}
+\SubmitVer{
+\footnote{The specific decomposition used is defined in the full version of the paper.  
+The important thing is that our algorithm is deterministic, and so for a fixed $\MM$ and $f$ it is well defined.}.}
 We define $\cost(f) = \sum_{p \in P(T)} |p|\log |p|$ for this specific decomposition $P(T)$.
 Ideally, we would like to argue that any contour-tree algorithm
 must pay $\cost(f)$ for ant $f$. 
@@ -408,7 +436,8 @@ of inputs of fixed cost.
 %tree over the heights. The running time is simply the number of queries made.
 %\end{definition}
 %
-\begin{theorem} \label{thm:main-lb} 
+\begin{theorem} 
+\label{thm:main-lb}
 %Fix a sufficiently large numbers $t$ and $C$, 
 %where $t$ is the number of critical points and $C$ is a valid cost for an instance with $t$ critical point.
 Consider the set of functions $\bF_C$ that have the same number of critical points and the same (valid) cost $C$.  Any algebraic decision tree that correctly computes
@@ -685,6 +714,7 @@ tree have degree at most $3$, i.e. there are no multi-saddles.
 Our final algorithm is quite technical and has numerous moving parts. This section
 provides a high level view of the entire result, and highlights the main ideas
 and intuition. 
+\SubmitVer{The full version with all the details can be found in the appendix.}
 It is helpful to keep the $d=2$ case in mind, so the input is just a triangulated
 terrain. In the interest of presentation, the definitions and theorem statements in this section will
 slightly differ from those in the main body. They may also differ from the original definitions proposed
@@ -810,7 +840,7 @@ For the $d=2$ case, it helps to visualize such an input as a terrain with no min
 except at a unique boundary face (think of a large boundary triangle that is the boundary).
 All the valleys in such a terrain are necessarily joins, and there can be no splits. Look
 at \Fig{sorting}. The portion on the left is minimum dominant in exactly this fashion.
-Water poured at any critical point must flow to the boundary, and the entire wet portion is connected.
+%Water poured at any critical point must flow to the boundary, and the entire wet portion is connected.
 More formally, $\MM^-_v$ is connected for all $v$, so there are no splits.
 
 We can prove that the split tree is just a path, and the contour tree is exactly
@@ -969,16 +999,9 @@ trees of these tiny tents attach to a main branch of length $|p|$. Working out t
 we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree. It is possible to argue
 that our algorithm requires $\Theta(\cost(P(T)))$ comparisons on all these instances.
 
-%\section{Acknowledgements}
-\paragraph{Acknowledgements.}
-We thank Hsien-Chih Chang, Jeff Erickson, and Yusu Wang for numerous useful discussions. This work is
-supported by the Laboratory Directed Research and Development
-(LDRD) program of Sandia National Laboratories. Sandia National
-Laboratories is a multi-program laboratory managed and operated
-by Sandia Corporation, a wholly owned subsidiary of Lockheed
-Martin Corporation, for the U.S. Department of Energy’s National
-Nuclear Security Administration under contract DE-AC04-94AL85000.
 
+
+\FullVer{
 \section{Divide and conquer through contour surgery} \label{sec:surgery}
 
 {\bf The cutting operation:} We define a ``cut" operation on $f:\MM \rightarrow \RR$ that cuts along a regular contour to create
@@ -2787,7 +2810,17 @@ the contour tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) r
 % $l$ is adjacent to a max path and $u$ is adjacent to a min path:\newline
 % Connect a face of the cylinder for the $u$ path (using a split) to a face of the cylinder for the $l$ path (using a join).
 % \end{enumerate}
+}
 
+
+\paragraph{Acknowledgements.}
+We thank Hsien-Chih Chang, Jeff Erickson, and Yusu Wang for numerous useful discussions. This work is
+supported by the Laboratory Directed Research and Development
+(LDRD) program of Sandia National Laboratories. Sandia National
+Laboratories is a multi-program laboratory managed and operated
+by Sandia Corporation, a wholly owned subsidiary of Lockheed
+Martin Corporation, for the U.S. Department of Energy’s National
+Nuclear Security Administration under contract DE-AC04-94AL85000.
 
 
 \bibliographystyle{alpha}
