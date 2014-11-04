@@ -399,7 +399,7 @@ where $P(T)$ is a specific path decomposition (constructed implicitly by the alg
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
 \end{theorem}
 
-In particular, any comparisons made are only between ancestors and descendants in the contour tree, where as previous algorithm compared everything, 
+In particular, any comparisons made are only between ancestors and descendants in the contour tree, where as previous algorithms compared everything, 
 and that is where we gain.
 
 Let us interpret the running time. 
@@ -2614,7 +2614,7 @@ be labeled with the corresponding vertices of the terrain.
 
 \begin{lemma}
 \label{lem:pathDecomp}
-Fix a path decomposition $P$. There is a family of terrains, $\bF_P$, all with the same triangulation, 
+Fix any path decomposition $P$. There is a family of terrains, $\bF_P$, all with the same triangulation, 
 such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ define the same join tree.
 \end{lemma}
 
@@ -2782,7 +2782,7 @@ The following is analogous to \Lem{pathDecomp}, and in particular uses it as a s
 
 \begin{lemma}
 \label{lem:pathDecomp2}
-Let $P$ be a rain consistent maximum path decomposition of some contour tree. 
+Let $P$ be any rain consistent path decomposition of some contour tree. 
 There is a family of terrains, $\bF_P$, all with the same triangulation, 
 such that the size of $\bF_P$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ define the same contour tree.
 \end{lemma}
@@ -2837,7 +2837,14 @@ For all $\MM \in \bF_P$, the number of heap operations is $\Theta(\sum_{p\in P} 
  Apply \Lem{cost} to each of the $P_i$ separately and take the sum.
 \end{proof}
 
-\Thm{main-lb} now follows immediately from an entropy argument, analogous to \Thm{joinLB}.
+We now restate \Thm{main-lb}, which follows immediately from an entropy argument, analogous to \Thm{joinLB}.
+
+\begin{theorem} 
+Consider any rain consistent path decomposition $P$. There exists a family $\bF_P$ of terrains ($d=2$) with the following properties.
+Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
+Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
+\end{theorem}
+
 %
 %
 %Call a cost $C$ valid if $C = cost(f)$ for some $f$ defined over a given complex $\MM$.
