@@ -271,7 +271,7 @@ the evolution of level sets of $f$ and
 % of levels sets, and this contour
 % behavior. The vertices of these trees are the critical points of $f$, where the gradient is zero.
 % The edges represent changes in the topology of contours.
-has numerous applications in data analysis and visualization,
+has numerous applications in data analysis and visualization.
 
 Roughly speaking, all existing algorithms require $\Omega(n\log n)$ time for all instances, since
 the first step is a global sort of the values of $f$ (technically, only the critical points must be sorted,
@@ -281,7 +281,7 @@ We present the first input-sensitive algorithm whose time complexity depends
 on the contour tree struture, and avoids the global sort for non-pathological inputs.
 Our results match all existing upper bounds, but also
 characterize the amount of sorting required to compute the contour tree.
-This leads to a linear time algorithm for contour tree computation for many
+This leads to an almost linear (inverse Ackermann overhead) time algorithm for contour tree computation for many
 classes of natural instances. 
 %There is a crucial use of a family of binomial heaps to maintain priorities, 
 Specifically, our approach ensures that any comparison made is between nodes in the same descending path in the contour tree, 
@@ -371,8 +371,14 @@ So we are still left with the bottleneck of sorting a large set of numbers. Unfo
 lower bound of $\Omega(t\log t)$ by Chiang \etal \cite{cllr-sooscctmp-05}, based on a construction of Bajaj \etal \cite{BaKr+98}.
 
 But this is only a worst-case bound. All previous algorithms begin by sorting (at least) the critical points, and
-hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound for certain instances,
-and can we characterize which inputs are hard? Our main result gives an affirmative answer. First, we require a technical definition.
+% <<<<<<< HEAD
+% hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound for certain instances,
+% and can we characterize which inputs are hard? Our main result gives an affirmative answer. First, we require a technical definition.
+% =======
+hence must pay $\Omega(t\log t)$ for all instances. Can one beat this sorting bound for some instances
+and characterize what inputs are hard? Our main result gives an affirmative answer. 
+% First, we require some technical definitions.
+%>>>>>>> bbe1b0b1cd16827b201e5bfef1d03efbc4caa55f
 
 % In a contour tree $T$, a \emph{leaf path} is simply a path in $T$
 % containing a leaf, which is also monotonic in the height values of its vertices. 
