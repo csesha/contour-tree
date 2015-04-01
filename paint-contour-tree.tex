@@ -247,7 +247,9 @@
   C. Seshadhri\thanks{University of California, Santa Cruz; {\tt scomandu@ucsc.edu}}
 }
 
-\title{A Mountaintop View Requires Minimal Sorting: \break A Faster Contour Tree Algorithm%
+\title{%A Mountaintop View Requires Minimal Sorting:
+Avoiding the Global Sort: 
+\break A Faster Contour Tree Algorithm%
 \footnote{The full updated version of this paper is available online \url{\si{http://web.engr.illinois.edu/\string~\si{raichel2}/\si{paint.pdf}}}}%
 }
 \date{}
@@ -280,13 +282,16 @@ on the contour tree struture, and avoids the global sort for non-pathological in
 Our results match all existing upper bounds, but also
 characterize the amount of sorting required to compute the contour tree.
 This leads to a linear time algorithm for contour tree computation for many
-classes of natural instances. We complement with matching lower bounds for contour tree computation.
+classes of natural instances. 
+%There is a crucial use of a family of binomial heaps to maintain priorities, 
+Specifically, our approach ensures that any comparison made is between nodes in the same descending path in the contour tree, 
+allowing us to complement our algorithmic results with matching lower bounds for contour tree computation.
 
 Our algorithm requires several novel ideas: partitioning $\MM$ in well-behaved portions, 
 a local growing procedure to iteratively build contour trees, and the use of heavy path 
 decompositions for the time complexity analysis. 
-There is a crucial use of a family of binomial heaps to 
-maintain priorities, ensuring that any comparison made is between nodes in the same descending path in the contour tree.
+%There is a crucial use of a family of binomial heaps to 
+%maintain priorities, ensuring that any comparison made is between nodes in the same descending path in the contour tree.
 
 % Our results demonstrate that this sort can be avoided for many instances, and
 % also characterizes these hard instances.
@@ -322,10 +327,12 @@ maintain priorities, ensuring that any comparison made is between nodes in the s
 
 \section{Introduction}
 
-Massive geometric data is often represented as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
+Geometric data (potentially massive is size) is often represented as a function $f: \RR^d \mapsto \RR$. Typically, a finite representation is given
 by considering $f$ to be piecewise linear over some triangulated mesh (i.e. simplicial complex) $\MM$ in $\RR^d$.
 \emph{Contour trees} are a specific topological data structure used to represent and visualize
-the function $f$.
+the function $f$. 
+For example, consider a rocket engine during a burn.  The 3D mesh represents the locations of points in space around the engine, 
+and $f$ represents the temperature at each point.  The boundary of the flame is then represented by an isotherm, i.e. a contour. 
 
 It is convenient to think of $f$ as a $(d+1)$-dimensional manifold
 %  or alternately consider
@@ -357,14 +364,14 @@ is $3$. A fundamental result in this area is the algorithm of Carr, Snoeyink, an
 which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-00} (where $\alpha(\cdot)$ denotes the inverse
 Ackermann function). In practical applications, $N$ is typically $\Theta(n)$
 (certainly true for $d=2$). The most expensive operation is an initial sort of all the vertex
-heights. Chiang et al build on this approach to get a faster algorithm that only sorts the critical vertices,
+heights. Chiang \etal build on this approach to get a faster algorithm that only sorts the critical vertices,
 yielding a running time of $O(t\log t + N)$~\cite{cllr-sooscctmp-05}.
-Common applications for contour trees involve turbulent combustion or noisy data, where the number of critical points is likely $\Omega(n)$.
+Common applications for contour trees involve turbulent combustion or noisy data, where the number of critical points is likely to be $\Omega(n)$.
 So we are still left with the bottleneck of sorting a large set of numbers. Unfortunately, there is a worst-case
-lower bound of $\Omega(t\log t)$ from Chiang et al~\cite{cllr-sooscctmp-05}, based on a construction of Bajaj et al~\cite{BaKr+98}.
+lower bound of $\Omega(t\log t)$ by Chiang \etal \cite{cllr-sooscctmp-05}, based on a construction of Bajaj \etal \cite{BaKr+98}.
 
 But this is only a worst-case bound. All previous algorithms begin by sorting (at least) the critical points, and
-hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound for some instances
+hence must pay $\Omega(t\log t)$ for all instances. Can one beat this sorting bound for some instances
 and characterize what inputs are hard? Our main result gives an affirmative answer. First, we require some technical definitions.
 
 In a contour tree $T$, a \emph{leaf path} is simply a contiguous path in $T$
@@ -442,7 +449,7 @@ at the relationship between sorting and the contour tree problem.
 \subsection{Previous Work}
 
 Contour trees were first used to study terrain maps by Boyell and Ruston, and Freeman and Morse~\cite{BoRu63,FrMo67}.
-They were used for isoline extraction in geometric data by van Krevald et al~\cite{kobps-ctsssit-97}, who provided
+They were used for isoline extraction in geometric data by van Krevald \etal \cite{kobps-ctsssit-97}, who provided
 the first formal algorithm. 
 Contour trees and related topological data structures have been applied in analysis of fluid mixing, combustion simulations,
 and studying chemical systems~\cite{LaBe+06,BrWe+10,BeWe+11,BrWe+11,MaGr+11}. Carr's thesis~\cite{c-tmi-04} gives various
