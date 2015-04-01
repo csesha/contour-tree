@@ -371,15 +371,17 @@ So we are still left with the bottleneck of sorting a large set of numbers. Unfo
 lower bound of $\Omega(t\log t)$ by Chiang \etal \cite{cllr-sooscctmp-05}, based on a construction of Bajaj \etal \cite{BaKr+98}.
 
 But this is only a worst-case bound. All previous algorithms begin by sorting (at least) the critical points, and
-hence must pay $\Omega(t\log t)$ for all instances. Can one beat this sorting bound for some instances
-and characterize what inputs are hard? Our main result gives an affirmative answer. First, we require some technical definitions.
+hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound for certain instances,
+and can we characterize which inputs are hard? Our main result gives an affirmative answer. First, we require a technical definition.
 
-In a contour tree $T$, a \emph{leaf path} is simply a contiguous path in $T$
-containing a leaf, which is also monotonic in the height values of its vertices. 
+% In a contour tree $T$, a \emph{leaf path} is simply a path in $T$
+% containing a leaf, which is also monotonic in the height values of its vertices. 
 
 \begin{definition}
 \label{def:path} 
-For a contour tree $T$, a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
+For a contour tree $T$, a \emph{leaf path} is any path in $T$ containing a leaf, 
+which is also monotonic in the height values of its vertices. 
+Then a \emph{path decomposition}, $P(T)$, is a partition of $T$ into a set of vertex disjoint leaf paths.  
 \end{definition}
 
 \begin{theorem} 
@@ -399,16 +401,16 @@ Let us interpret the running time.
 For any path decomposition $P(T)$, obviously $\sum_{p\in P(T)}|p| = |T| = t$, and 
 so the running time is $O(t\log t + N)$. But this is tight only when $T$ is tall and thin.  
 A better upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $T$. 
-This is clearly an improvement when the tree is short and fat.
-But it can be even better. A calculation yields that for any decomposition of a rooted balanced binary tree, 
+This is clearly an improvement when the tree is short and fat, but it can be even better. 
+A calculation yields that for any decomposition of a rooted balanced binary tree, 
 our bound is $O(t\alpha(t) + n)$. 
 %
 %
 %In particular, for any decomposition of a rooted balanced binary tree, this gives $O(t\log\log n + t\alpha(t) + N)$, a significant improvement from $O(t\log t+N)$.
 %However, our actual bound in this case gives an even further improved $O(t\alpha(t)+N)$.
 Consider the example of \Fig{sorting} extended to a larger binary tree both above and below.
-(In the example, $t = \Omega(n)$.) The running time promised by \Thm{main-alg}
-is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$.
+(In the example, $t = \Omega(n)$.) The running time of the algorithm of \Thm{main-alg}
+is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$ time.
 
 We complement \Thm{main-alg} with a lower bound, suggesting that the comparison complexity
 of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
@@ -432,14 +434,14 @@ In other words, for any choice of $\sum_{p \in P} |p|\log |p|$, we can design a 
 requires this cost in the worst case, and our algorithm matches this bound. 
 
 
-\paragraph{Beyond worst-case analysis:} Our result provides understanding of the complexity
+\paragraph{Beyond worst-case analysis.} Our result provides understanding of the complexity
 of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound 
 characterize hard instances.
 % explain \emph{when}
 % computing contour trees is expensive, and provide insight into the hardness of particular instances. 
 %It is intriguing
 %that the cost (as defined earlier) roughly captures the hardness of an instance.
-Trees that are short and fast are easy to compute, whereas trees with long paths are hard.
+Trees that are short and fat are easy to compute, whereas trees with long paths are hard.
 This is tangentially related to the concept of instance optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
 Their notion of optimality is far more refined that what we prove, but it shares the flavor of understanding the spectrum
 of easy to hard instances. From a mathematical perspective, this sort of analysis forces one to look closely
@@ -462,7 +464,7 @@ Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ fo
 The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N\alpha(N))$.
 This result forms the basis 
 of subsequent practical and theoretical work in computational topology applications. 
-Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
+Pascucci and Cole-McLaughlin \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
 $3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} provide an unconditional $O(N+t\log t)$ algorithm.
 The latter result crucially uses monotone paths to improve the running time, and we repeatedly
 exploit numerous properties of monotone paths. Carr's thesis shows relationships between monotone paths
