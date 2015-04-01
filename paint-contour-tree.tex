@@ -327,8 +327,10 @@ by considering $f$ to be piecewise linear over some triangulated mesh (i.e. simp
 \emph{Contour trees} are a specific topological data structure used to represent and visualize
 the function $f$.
 
-It is convenient to think of $f$ as a $(d+1)$-dimensional manifold, or alternately consider
-$\MM$ in $\RR^{d+1}$ with the last coordinate (i.e. height) given by $f$. Imagine sweeping the hyperplane $x_{d+1} = h$
+It is convenient to think of $f$ as a $(d+1)$-dimensional manifold
+%  or alternately consider
+% $\MM$ in $\RR^{d+1}$
+with the last coordinate (i.e. height) given by $f$. Imagine sweeping the hyperplane $x_{d+1} = h$
 with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection of this plane 
 with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
 proceeds various events occur: new contours are created or destroyed, contours merge into each other or
@@ -352,18 +354,18 @@ For example, these could be events where contours gain or lose handles.
 Suppose we have $f: \MM \mapsto \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ facets in total, and $t \leq n$ critical points.
 It is standard to assume that $f$ is PL-Morse (a well-behaved assumption) and that the maximum degree in the contour tree
 is $3$. A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
-which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-00}. (Henceforth, $\alpha(\cdot)$ denotes the inverse
-Ackermann function.) It is natural to think of $N$ as $\Theta(n)$
-in practical applications (certainly true for $d=2$). The most expensive operation is an initial sort of all the vertex
+which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-00} (where $\alpha(\cdot)$ denotes the inverse
+Ackermann function). In practical applications, $N$ is typically $\Theta(n)$
+(certainly true for $d=2$). The most expensive operation is an initial sort of all the vertex
 heights. Chiang et al build on this approach to get a faster algorithm that only sorts the critical vertices,
 yielding a running time of $O(t\log t + N)$~\cite{cllr-sooscctmp-05}.
 Common applications for contour trees involve turbulent combustion or noisy data, where the number of critical points is likely $\Omega(n)$.
 So we are still left with the bottleneck of sorting a large set of numbers. Unfortunately, there is a worst-case
 lower bound of $\Omega(t\log t)$ from Chiang et al~\cite{cllr-sooscctmp-05}, based on a construction of Bajaj et al~\cite{BaKr+98}.
 
-But this is only a worst-case bound. All previous algorithm begin by sorting (at least) the critical points, and
-hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound for some instances? Is there a more refined version of the complexity
-of computing contour trees, and can we characterize what inputs are hard? Our main result gives an affirmative answer. First, we require some technical definitions.
+But this is only a worst-case bound. All previous algorithms begin by sorting (at least) the critical points, and
+hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound for some instances
+and characterize what inputs are hard? Our main result gives an affirmative answer. First, we require some technical definitions.
 
 In a contour tree $T$, a \emph{leaf path} is simply a contiguous path in $T$
 containing a leaf, which is also monotonic in the height values of its vertices. 
@@ -384,13 +386,12 @@ where $P(T)$ is a specific path decomposition (constructed implicitly by the alg
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
 \end{theorem}
 
-In particular, any comparisons made are only between ancestors and descendants in the contour tree, where as previous algorithms compared everything, 
-and that is where we gain.
+In particular, any comparisons made are only between ancestors and descendants in the contour tree, while previous algorithms compared everything. 
 
 Let us interpret the running time. 
 For any path decomposition $P(T)$, obviously $\sum_{p\in P(T)}|p| = |T| = t$, and 
 so the running time is $O(t\log t + N)$. But this is tight only when $T$ is tall and thin.  
-A better but still obvious upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $T$. 
+A better upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $T$. 
 This is clearly an improvement when the tree is short and fat.
 But it can be even better. A calculation yields that for any decomposition of a rooted balanced binary tree, 
 our bound is $O(t\alpha(t) + n)$. 
@@ -425,8 +426,10 @@ requires this cost in the worst case, and our algorithm matches this bound.
 
 
 \paragraph{Beyond worst-case analysis:} Our result provides understanding of the complexity
-of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound explain \emph{when}
-computing contour trees is expensive, and provide insight into the hardness of particular instances. 
+of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound 
+characterize hard instances.
+% explain \emph{when}
+% computing contour trees is expensive, and provide insight into the hardness of particular instances. 
 %It is intriguing
 %that the cost (as defined earlier) roughly captures the hardness of an instance.
 Trees that are short and fast are easy to compute, whereas trees with long paths are hard.
@@ -438,22 +441,22 @@ at the relationship between sorting and the contour tree problem.
 
 \subsection{Previous Work}
 
-Contour trees were (unsurprisingly) used to study terrain maps by Boyell and Ruston, and Freeman and Morse~\cite{BoRu63,FrMo67}.
+Contour trees were first used to study terrain maps by Boyell and Ruston, and Freeman and Morse~\cite{BoRu63,FrMo67}.
 They were used for isoline extraction in geometric data by van Krevald et al~\cite{kobps-ctsssit-97}, who provided
 the first formal algorithm. 
 Contour trees and related topological data structures have been applied in analysis of fluid mixing, combustion simulations,
 and studying chemical systems~\cite{LaBe+06,BrWe+10,BeWe+11,BrWe+11,MaGr+11}. Carr's thesis~\cite{c-tmi-04} gives various
 applications of contour trees for data visualization and is an excellent reference for contour trees definitions and algorithms.
 
-There has been a long series of improved algorithms for computing contour trees.
+There are numerous algorithms for computing contour trees.
 van Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D 
 meshes and an $O(N^2)$ algorithm for higher dimensions. 
 Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case.
 The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N\alpha(N))$.
-One cannot overstate the importance of this result, since it forms the basis 
+This result forms the basis 
 of subsequent practical and theoretical work in computational topology applications. 
 Cole-McLaughlin and Pascucci \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
-$3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} improve upon this result, and provide an unconditional $O(N+t\log t)$ algorithm.
+$3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} provide an unconditional $O(N+t\log t)$ algorithm.
 The latter result crucially uses monotone paths to improve the running time, and we repeatedly
 exploit numerous properties of monotone paths. Carr's thesis shows relationships between monotone paths
 in $\MM$ and in its contour tree $\cC(\MM)$.
@@ -493,8 +496,8 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 
 \section{Contour tree basics} \label{sec:basics}
 
-We detail the basic definitions about contour trees. We follow the terminology of Chapter 6 of Carr's thesis \cite{c-tmi-04},
-which provides one of the first rigorous, Morse-theoretic defintions of contour trees. All our assumptions and definitions
+We detail the basic definitions about contour trees. We follow the terminology of Chapter 6 of Carr's thesis \cite{c-tmi-04}.
+All our assumptions and definitions
 are standard for results in this area, though there is some variability in notation.
 The input is a continuous piecewise-linear (PL) function $f:\MM \mapsto \RR$, where $\MM$ is a fully triangulated simplicial complex in $\RR^d$,
 except for specially designated \emph{boundary facets}. So $f$ is defined only on the vertices of $\MM$,
