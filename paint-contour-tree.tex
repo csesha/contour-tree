@@ -403,14 +403,15 @@ For any path decomposition $P(T)$, obviously $\sum_{p\in P(T)}|p| = |T| = t$, an
 so the running time is $O(t\log t + N)$. But this is tight only when $T$ is tall and thin.  
 A better upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $T$. 
 This is clearly an improvement when the tree is short and fat, but it can be even better. 
-A calculation yields that for any decomposition of a rooted balanced binary tree, 
+Consider a contour tree that is constant balanced, meaning that the ratio of sizes of sibling subtrees
+is $\Theta(1)$. 
+A calculation yields that for any decomposition of such a contour tree, 
 our bound is $O(t\alpha(t) + n)$. 
-%
 %
 %In particular, for any decomposition of a rooted balanced binary tree, this gives $O(t\log\log n + t\alpha(t) + N)$, a significant improvement from $O(t\log t+N)$.
 %However, our actual bound in this case gives an even further improved $O(t\alpha(t)+N)$.
-Consider the example of \Fig{sorting} extended to a larger binary tree both above and below.
-(In the example, $t = \Omega(n)$.) The running time of the algorithm of \Thm{main-alg}
+Consider the example of \Fig{sorting} extended to a larger binary tree both above and below,
+so $t = \Omega(n)$. The running time of the algorithm of \Thm{main-alg}
 is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$ time.
 
 We complement \Thm{main-alg} with a lower bound, suggesting that the comparison complexity
