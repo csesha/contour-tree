@@ -250,7 +250,7 @@
 \title{%A Mountaintop View Requires Minimal Sorting:
 Avoiding the Global Sort: 
 \break A Faster Contour Tree Algorithm%
-\footnote{The full updated version of this paper is available online \url{\si{http://web.engr.illinois.edu/\string~\si{raichel2}/\si{paint.pdf}}}}%
+\footnote{The full updated version of this paper is available on the arXiv \cite{rs-mvrms-14}}%
 }
 \date{}
 
@@ -261,16 +261,10 @@ Avoiding the Global Sort:
 \thispagestyle{empty}
 
 \begin{abstract}
-We revisit the classic problem of computing the \emph{contour tree}
+We revisit the classical problem of computing the \emph{contour tree}
 of a scalar field $f:\MM \mapsto \RR$, where $\MM$ is a triangulated simplicial mesh in $\RR^d$. 
-% A level set, or contour, at value $v$ is a connected component of $f^{-1}(v)$. 
-% As $v$ is changed, these contours change topology, merge into each other, or split.
 The contour tree is a fundamental topological data structure that tracks
 the evolution of level sets of $f$ and 
-% concise representations of $f$ that track the evolution
-% of levels sets, and this contour
-% behavior. The vertices of these trees are the critical points of $f$, where the gradient is zero.
-% The edges represent changes in the topology of contours.
 has numerous applications in data analysis and visualization.
 
 Roughly speaking, all existing algorithms require $\Omega(n\log n)$ time for all instances, since
@@ -278,47 +272,17 @@ the first step is a global sort of the values of $f$ (technically, only the crit
 but these can be $\Omega(n)$). 
 Existing lower bounds show that there are pathological instances where this sort is required.
 We present the first input-sensitive algorithm whose time complexity depends
-on the contour tree struture, and avoids the global sort for non-pathological inputs.
+on the contour tree structure, and avoids the global sort for non-pathological inputs.
 Our results match all existing upper bounds, but also
 characterize the amount of sorting required to compute the contour tree.
 This leads to an almost linear (inverse Ackermann overhead) time algorithm for contour tree computation for many
 classes of natural instances. 
-%There is a crucial use of a family of binomial heaps to maintain priorities, 
 Specifically, our approach ensures that any comparison made is between nodes in the same descending path in the contour tree, 
 allowing us to complement our algorithmic results with matching lower bounds for contour tree computation.
 
 Our algorithm requires several novel ideas: partitioning $\MM$ in well-behaved portions, 
 a local growing procedure to iteratively build contour trees, and the use of heavy path 
 decompositions for the time complexity analysis. 
-%There is a crucial use of a family of binomial heaps to 
-%maintain priorities, ensuring that any comparison made is between nodes in the same descending path in the contour tree.
-
-% Our results demonstrate that this sort can be avoided for many instances, and
-% also characterizes these hard instances.
-% At a high level, if the tree is short and fat, we get significant improvements in running time.
-% 
-% 
-% 
-% 
-% and there is significant previous work (both theoretical and practical) on algorithms for constructing contour trees.
-% Suppose $\MM$ has $n$ vertices, $N$ facets, and $t$ critical points.
-% The best known algorithm for constructing the contour tree requires $O(t\log t + N)$ time, and all algorithms to date
-% involve a global sort of the critical points. Unfortunately, worst case lower bounds of $\Omega(t\log t)$ also exist.
-% A classic result of Carr, Snoeyink, and Axen (2000) gives an algorithm that takes $O(n\log n + N\alpha(N))$ time
-% (where $\alpha(\cdot)$ is the inverse Ackermann function). A further improvement to $O(t\log t + N)$ time
-% was given by Chiang et al. All these algorithms involve a global sort of the critical points,
-% a significant computational bottleneck. Unfortunately, lower bounds of $\Omega(t\log t)$ also exist.
-
-% We present the first algorithm that can avoid the global sort and has a refined time complexity that
-% depends on the contour tree structure. Intuitively, if the tree is short and fat, we get significant improvements 
-% in running time. For a partition of the contour tree into a set of descending paths, $P$,
-% our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$ time.
-% This subsumes all existing upper bounds, and is a significant improvement 
-% This is at most $O(t\log D + N)$, where $D$ is the diameter of the contour tree.
-% Moreover, it is $O(t\alpha(t)+N)$ for balanced trees, a significant improvement over the previous complexity.
-
-% We also prove lower bounds showing that the $\sum_{p\in P} |p|\log|p|$ complexity
-% is inherent to computing contour trees. 
 \end{abstract}
 
 \newpage
@@ -414,7 +378,7 @@ Consider the example of \Fig{sorting} extended to a larger binary tree both abov
 so $t = \Omega(n)$. The running time of the algorithm of \Thm{main-alg}
 is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$ time.
 
-We complement \Thm{main-alg} with a lower bound, suggesting that the comparison complexity
+We complement \Thm{main-alg} with a lower bound, suggesting that the comparison model complexity
 of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
 of the lower bound requires some care. Consider the $d=2$ (terrain) case.
 Let a path decomposition $P$ be called \emph{valid} if it is actually output by the algorithm
@@ -424,7 +388,7 @@ on some input.
 \label{thm:main-lb}
 %Fix a sufficiently large numbers $t$ and $C$, 
 %where $t$ is the number of critical points and $C$ is a valid cost for an instance with $t$ critical point.
-Consider a valid path decomposition $P$. There exists a family $\bF_P$ of terrains ($d=2$) with the following properties.
+Consider a valid path decomposition $P$. There exists a family $\bF_P$ of terrains (i.e., $d=2$) with the following properties.
 Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
 Furthermore, for any terrain in $\bF_P$, the algorithm of \Thm{main-alg} makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
 %
@@ -433,7 +397,7 @@ Furthermore, for any terrain in $\bF_P$, the algorithm of \Thm{main-alg} makes $
 \end{theorem}
 
 In other words, for any choice of $\sum_{p \in P} |p|\log |p|$, we can design a hard family where any algorithm
-requires this cost in the worst case, and our algorithm matches this bound. 
+requires this time in the worst case, and our algorithm matches this bound. 
 
 
 \paragraph{Beyond worst-case analysis.} Our result provides understanding of the complexity
@@ -446,7 +410,7 @@ characterize hard instances.
 Trees that are short and fat are easy to compute, whereas trees with long paths are hard.
 This is tangentially related to the concept of instance optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
 Their notion of optimality is far more refined that what we prove, but it shares the flavor of understanding the spectrum
-of easy to hard instances. From a mathematical perspective, this sort of analysis forces one to look closely
+of easy to hard instances. In general, our analysis forces one to look closely
 at the relationship between sorting and the contour tree problem. 
 
 
@@ -457,7 +421,7 @@ They were used for isoline extraction in geometric data by van Krevald \etal \ci
 the first formal algorithm. 
 Contour trees and related topological data structures have been applied in analysis of fluid mixing, combustion simulations,
 and studying chemical systems~\cite{LaBe+06,BrWe+10,BeWe+11,BrWe+11,MaGr+11}. Carr's thesis~\cite{c-tmi-04} gives various
-applications of contour trees for data visualization and is an excellent reference for contour trees definitions and algorithms.
+applications of contour trees for data visualization and is an excellent reference for contour tree definitions and algorithms.
 
 There are numerous algorithms for computing contour trees.
 van Kreveld \etal \cite{kobps-ctsssit-97} presented an $O(N\log N)$ time algorithm for functions over 2D 
@@ -468,8 +432,8 @@ This result forms the basis
 of subsequent practical and theoretical work in computational topology applications. 
 Pascucci and Cole-McLaughlin \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
 $3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} provide an unconditional $O(N+t\log t)$ algorithm.
-The latter result crucially uses monotone paths to improve the running time, and we repeatedly
-exploit numerous properties of monotone paths. Carr's thesis shows relationships between monotone paths
+The latter result crucially uses monotone paths to improve the running time, and our algorithm repeatedly
+exploits numerous properties of monotone paths. Carr's thesis shows relationships between monotone paths
 in $\MM$ and in its contour tree $\cC(\MM)$.
 
 Contour trees are a special case of Reeb graphs, a general topological representation for real-valued functions
@@ -515,27 +479,28 @@ except for specially designated \emph{boundary facets}. So $f$ is defined only o
 and all other valued are obtained by interpolation. 
 
 We assume that $f$ has distinct values on all vertices, except for boundaries,
-as expressed in the following constraint.
+as expressed in the following constraint, which intuitively requires that 
+all boundaries look like (local) horizontal cuts. 
 
-\begin{definition} \label{def:bound} $f$ is \emph{boundary critical} if the following holds.
+\begin{definition} \label{def:bound} The function $f$ is \emph{boundary critical} if the following holds.
 Consider a boundary facet $F$. All vertices of $F$ have the same function value. Furthermore, all
-neighbors of $F$ not in $F$ either have all function values strictly greater or strictly less
-than this value.
+neighbors of vertices in $F$, which are not also in $F$ itself, 
+either have all function values strictly greater than or all function values strictly less than the function value at $F$.
 \end{definition}
 
 This is convenient, as we can now assume that $f$ is defined on $\RR^d$. Any point inside a boundary facet
 has a well-defined height, and this includes the infinite facet. 
-We think of $d$ as constant, and assume that $\MM$ is represented in a data structure that allow constant-time traversals of neighboring simplices
+We think of the dimension, $d$, as constant, and assume that $\MM$ is represented in a data structure that allows constant-time traversals of neighboring simplices
 in $\MM$ (e.g.~\cite{BoMa12}). (This is analogous to a DCEL for higher dimensions.)
 Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simplicial complex living in $\RR^{d+1}$.
 We can think of $f(x)$ as the ``height" of a point $x \in \MM$, and encoded in the representation of $\MM$. 
 
-\begin{definition} \label{def:level} The level set at value $h$ is the set $\{x| f(x) = h\}$.
-A contour is a maximal connected component of a level set. An $h$-contour is a contour where $f$-values are $h$.
+\begin{definition} \label{def:level} The \emph{level set} at value $h$ is the set $\{x| f(x) = h\}$.
+A \emph{contour} is a maximal connected component of a level set. An \emph{$h$-contour} is a contour where $f$-values are $h$.
 \end{definition}
 
 Note that a contour that does not contain a boundary is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
-We let $\delta, \eps$ denote infinitesimals. Let $B_\eps(x)$ denote a ball of radius $\eps$ around $x$, and let 
+We let $\delta$ and $\eps$ denote infinitesimals. Let $B_\eps(x)$ denote a ball of radius $\eps$ around $x$, and let 
 $f|B_\eps(x)$ be the restriction of $f$ to $B_\eps(x)$.
 
 
@@ -559,25 +524,25 @@ Maxima and minima are \emph{extrema}.
 \end{definition}
 
 
-We use $\cV(f)$ to denote the set of critical points.
+The set of critical points is denoted by $\cV(f)$.
 Because $f$ is piecewise-linear, all critical points are vertices in $\MM$. 
-A value $h$ is called critical, if $f(v) = h$, for some $v \in \cV(f)$. 
+A value $h$ is called \emph{critical}, if $f(v) = h$, for some $v \in \cV(f)$. 
 The critical points are exactly where the topology of level sets change.
 By assuming that our manifold is boundary critical, the vertices on a given boundary are either collectively all maxima or all minima.  
 We abuse notation and refer to this entire set of vertices as a maxima or minima.
 
 
 \begin{definition} \label{def:equiv} Two contours $\psi$ and $\psi'$ are equivalent 
-if the following holds. There exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$,
+if there exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$,
 such that no $x \in p$ belongs to a critical contour.
 \end{definition}
 
-These give the \emph{contour classes}. By continuity, a regular point is present on a single contour,
+This equivalence relation gives a set \emph{contour classes}. By continuity, a regular point is present on a single contour,
 and we can partition the regular contours into these classes. Every such class maps to intervals
 of the form $(f(x_i),f(x_j))$, where $x_i, x_j$ are critical points. Such a class is said
 to be created at $x_i$ and destroyed at $x_j$. 
 
-\begin{definition} \label{def:tree} The contour tree is the graph on vertex set $\cV$, where
+\begin{definition} \label{def:tree} The contour tree is the graph on vertex set $\cV= \cV(f)$, where
 edges are formed as follows. For every contour class that is created at $v_i$ and destroyed $v_j$,
 there is an edge $(v_i,v_j)$. (Conventionally, edges are directed from higher to lower function value.)
 \end{definition}
@@ -591,9 +556,9 @@ We assume there are no ``multi-saddles", so up and down-degrees are at most $2$,
 This is again a standard assumption in topological algorithms and can be achieved by vertex unfolding (Section 6.3 in~\cite{HaEd10}).
 
 \subsection{Some technical remarks}
-
-The $(f(x)+\delta)$-contours in $f|_{B_\eps(x)}$ given by \Def{deg} might actually be the same
-contour in $f$. The up-degree (as opposed to \emph{Morse} up-degree) is defined as the number of $(f(x)+\delta)$-contours
+Note that if one intersects $\MM$ with a given ball $B$, then a single contour in $\MM$ might be split into more than one contour in the intersection. 
+In particular, two $(f(x)+\delta)$-contours in $f|_{B_\eps(x)}$, given by \Def{deg}, might actually be the same contour in $\MM$. 
+Alternatively, one can define the up-degree (as opposed to \emph{Morse} up-degree) as the number of $(f(x)+\delta)$-contours (in the full $\MM$)
 that intersect $B_\eps(x)$, a potentially smaller number. This up-degree
 is exactly the up-degree of $x$ in $\reeb(\MM)$. (Analogously, for down-degree.)
 When the Morse up-degree is $2$ but the up-degree is $1$, the topology of the level set changes but not by the number of connected components changing.
@@ -604,7 +569,7 @@ Morse degree will have $>1$ degree in $\reeb(\MM)$.
 As Carr points out in Chapter 6 of his thesis, the term contour tree can be used for a family of related structures.
 Every vertex in $\MM$ is associated with an edge in $\reeb(\MM)$, and sometimes the
 vertex is explictly placed in $\reeb(\MM)$ (by subdividing the respective edge). This is referred
-to as augmenting the contour tree, and it is common to augment $\reeb(\MM)$ will all vertices.
+to as augmenting the contour tree, and it is common to augment $\reeb(\MM)$ with all vertices.
 Alternatively, one can smooth out all vertices of up-degree and down-degree $1$ to get the
 unaugmented contour tree. (For $d=2$, there are no such vertices in $\reeb(\MM)$.) 
 The contour tree of \Def{tree} is the typical definition in all results on output-sensitive
@@ -613,7 +578,7 @@ of level sets. \Thm{main-alg} is applicable for any augmentation of $\reeb(\MM)$
 set of vertices, though we will not delve into these aspects in this paper.
 
 
-\section{A tour of the contour tree algorithm} \label{sec:approach}
+\section{A tour of the new contour tree algorithm} \label{sec:approach}
 
 Our final algorithm is quite technical and has numerous moving parts. This section
 provides a high level view of the entire result, and highlights the main ideas
