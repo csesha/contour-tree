@@ -3,7 +3,7 @@
 %%%%%%%%%%Comment out the switch below for full version 
 %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\def \STOC {}
+\def \STOC {}
 
 
 \ifx\STOC\undefined
@@ -261,16 +261,10 @@ Avoiding the Global Sort:
 \thispagestyle{empty}
 
 \begin{abstract}
-We revisit the classic problem of computing the \emph{contour tree}
+We revisit the classical problem of computing the \emph{contour tree}
 of a scalar field $f:\MM \mapsto \RR$, where $\MM$ is a triangulated simplicial mesh in $\RR^d$. 
-% A level set, or contour, at value $v$ is a connected component of $f^{-1}(v)$. 
-% As $v$ is changed, these contours change topology, merge into each other, or split.
 The contour tree is a fundamental topological data structure that tracks
 the evolution of level sets of $f$ and 
-% concise representations of $f$ that track the evolution
-% of levels sets, and this contour
-% behavior. The vertices of these trees are the critical points of $f$, where the gradient is zero.
-% The edges represent changes in the topology of contours.
 has numerous applications in data analysis and visualization.
 
 Roughly speaking, all existing algorithms require $\Omega(n\log n)$ time for all instances, since
@@ -278,47 +272,17 @@ the first step is a global sort of the values of $f$ (technically, only the crit
 but these can be $\Omega(n)$). 
 Existing lower bounds show that there are pathological instances where this sort is required.
 We present the first input-sensitive algorithm whose time complexity depends
-on the contour tree struture, and avoids the global sort for non-pathological inputs.
+on the contour tree structure, and avoids the global sort for non-pathological inputs.
 Our results match all existing upper bounds, but also
 characterize the amount of sorting required to compute the contour tree.
 This leads to an almost linear (inverse Ackermann overhead) time algorithm for contour tree computation for many
 classes of natural instances. 
-%There is a crucial use of a family of binomial heaps to maintain priorities, 
 Specifically, our approach ensures that any comparison made is between nodes in the same descending path in the contour tree, 
 allowing us to complement our algorithmic results with matching lower bounds for contour tree computation.
 
 Our algorithm requires several novel ideas: partitioning $\MM$ in well-behaved portions, 
 a local growing procedure to iteratively build contour trees, and the use of heavy path 
 decompositions for the time complexity analysis. 
-%There is a crucial use of a family of binomial heaps to 
-%maintain priorities, ensuring that any comparison made is between nodes in the same descending path in the contour tree.
-
-% Our results demonstrate that this sort can be avoided for many instances, and
-% also characterizes these hard instances.
-% At a high level, if the tree is short and fat, we get significant improvements in running time.
-% 
-% 
-% 
-% 
-% and there is significant previous work (both theoretical and practical) on algorithms for constructing contour trees.
-% Suppose $\MM$ has $n$ vertices, $N$ facets, and $t$ critical points.
-% The best known algorithm for constructing the contour tree requires $O(t\log t + N)$ time, and all algorithms to date
-% involve a global sort of the critical points. Unfortunately, worst case lower bounds of $\Omega(t\log t)$ also exist.
-% A classic result of Carr, Snoeyink, and Axen (2000) gives an algorithm that takes $O(n\log n + N\alpha(N))$ time
-% (where $\alpha(\cdot)$ is the inverse Ackermann function). A further improvement to $O(t\log t + N)$ time
-% was given by Chiang et al. All these algorithms involve a global sort of the critical points,
-% a significant computational bottleneck. Unfortunately, lower bounds of $\Omega(t\log t)$ also exist.
-
-% We present the first algorithm that can avoid the global sort and has a refined time complexity that
-% depends on the contour tree structure. Intuitively, if the tree is short and fat, we get significant improvements 
-% in running time. For a partition of the contour tree into a set of descending paths, $P$,
-% our algorithm runs in $O(\sum_{p\in P} |p|\log|p| + t\alpha(t)+N)$ time.
-% This subsumes all existing upper bounds, and is a significant improvement 
-% This is at most $O(t\log D + N)$, where $D$ is the diameter of the contour tree.
-% Moreover, it is $O(t\alpha(t)+N)$ for balanced trees, a significant improvement over the previous complexity.
-
-% We also prove lower bounds showing that the $\sum_{p\in P} |p|\log|p|$ complexity
-% is inherent to computing contour trees. 
 \end{abstract}
 
 \newpage
