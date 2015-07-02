@@ -607,13 +607,13 @@ in earlier work.
 
 \paragraph{Do not globally sort:} Arguably, the starting point for this work is \Fig{relative}. We have two terrains
 with exactly the same contour tree, but different orderings of (heights of) the critical points.
-Turning it around, we cannot deduce the full height ordering of critical points from the contour tree. Therefore, clearly
-sorting all critical points is computationally unnecessary for constructing the contour tree.
-In \Fig{sorting}, the contour tree basically consists of two balanced binary trees, one of the joins,
+Turning it around, we cannot deduce the full height ordering of critical points from the contour tree.
+Sorting all critical points is computationally unnecessary for constructing the contour tree.
+In \Fig{sorting}, the contour tree consists of two balanced binary trees, one of the joins,
 another of the splits. Again, it is not necessary to know the relative ordering between the mounds
 on the left (or among the depressions on the right) to compute the contour tree. Yet some ordering
 information is necessary: on the left, the little valleys are higher than the big central valley,
-and this is reflected in the contour tree. More generally, leaf paths in the contour tree have points
+and this is reflected in the contour tree. Leaf paths in the contour tree have points
 in sorted order, but incomparable points in the tree are unconstrained.
 How do we sort exactly what is required, without knowing the contour tree in advance?
 
