@@ -3,7 +3,7 @@
 %%%%%%%%%%Comment out the switch below for full version 
 %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\def \STOC {}
+\def \STOC {}
 
 
 \ifx\STOC\undefined
@@ -684,7 +684,8 @@ and imagine torrential rain at the maximum. The water flows down, wetting any po
 from $x$. We end up with two portions, the wet part of $\MM$ and the dry part. This is similar
 to \emph{watershed} algorithms used for image segmentation~\cite{RoMe00}. The wet part is obviously connected,
 while there may be numerous disconnected dry parts. The interface between the dry and wet parts
-is a set of contours, given by the ``water line". The wet part is clearly maximum dominant, since all
+is a set of contours\footnote{Technically, they are not contours, but rather the limits of sequences of contours.}, 
+given by the ``water line". The wet part is clearly maximum dominant, since all
 wet points have a non-descending path to $x$. So we can simply cut along the interface
 contours to get the wet maximum dominant piece $\MM'$. By our contour surgery theorem,
 we are left with a set of disconnected dry parts, and we can recur this procedure on them.
@@ -995,8 +996,7 @@ has non-trivial intersection with $\wet(x,\MM)$.
 
 The following claim gives a description of the interface. While its meaning is quite intuitive, the proof is tedious.
 
-\begin{claim} \label{clm:inter} For any $x$, the interface of $\wet(x,\MM)$ is a set of contours,
-each containing a join vertex.
+\begin{claim} \label{clm:inter} For any $x$, each connected component of the interface of $\wet(x,\MM)$ contains a join vertex.
 \end{claim}
 
 \begin{proof} If $p \in \wet(x,\MM)$, all the points in any contour containing $p$ are also in $\wet(x,\MM)$.
@@ -1016,25 +1016,25 @@ intersecting $B_\eps(z)$. Now, walk from $z$ to $y$ along $\Gamma_y$. If all poi
 have up-degree $1$, then $\psi$ is the unique $(f(y)+\delta)$-contour
 intersecting $B_\eps(w)$. This would imply that $\phi = \psi$, contradicting the fact that $\psi$ is wet
 and $\phi$ is dry.
-
-Therefore, there must exist a join vertex $w$ in $\Gamma_y$, such that $B_\eps(w)$ intersects
-both $\phi$ and $\psi$. As $\delta, \eps \rightarrow 0^+$, the limit of $\phi$ (which is dry)
-lies in $\Gamma_y$ (which is wet). 
-Hence this limit gives a contour of the interface containing the join $w$.
+%
+% Therefore, there must exist a join vertex $w$ in $\Gamma_y$, such that $B_\eps(w)$ intersects
+% both $\phi$ and $\psi$. As $\delta, \eps \rightarrow 0^+$, the limit of $\phi$ (which is dry)
+% lies in $\Gamma_y$ (which is wet). 
+% Hence this limit gives a contour of the interface containing the join $w$.
 \end{proof}
 
 Note that $\wet(x,\MM)$ (and its interface) can be computed in time linear in the size of the wet simplicial complex.
 We perform a non-ascending search from $x$. Any face $F$ of $\MM$ encountered is partially (if not entirely) in $\wet(x,\MM)$.
-The wet portion is determined by cutting $F$ along the interface. Since the interface is a contour, this is equivalent
-to cutting $F$ by a hyperplane. All these operations can be performed to output $\wet(x,\MM)$ in time linear in $|\wet(x,\MM)|$.
+The wet portion is determined by cutting $F$ along the interface. Since each component of the interface connected subset of a contour, this is equivalent
+to locally cutting $F$ by a hyperplane. All these operations can be performed to output $\wet(x,\MM)$ in time linear in $|\wet(x,\MM)|$.
 
 
-We define a simple \lift{} operation on the interface contours. Consider such a contour $\phi$ containing
+We define a simple \lift{} operation on the interface components. Consider such a component $\phi$ containing
 a join vertex $y$. Take any dry increasing edge incident to $y$, and pick the point $z$ on this edge at height
 $f(y) + \delta$ (where $\delta$ is an infinitesimal, but larger than the value $\eps$ used in the definition of $\cut$). 
 Let $\lift(\phi)$ be the unique contour through the regular point $z$. Note that $\lift(\phi)$ is dry.
 
-\begin{claim} \label{clm:cut-int} Let $\phi$ be an interface contour. Then $\cut(\MM,\lift(\phi))$
+\begin{claim} \label{clm:cut-int} Let $\phi$ be a connected component of the interface. Then $\cut(\MM,\lift(\phi))$
 results in two disjoint simplicial complexes, one consisting entirely of dry points.
 \end{claim}
 
@@ -1075,7 +1075,7 @@ We can now let rain flow downwards, as it usually does in our world.
 \smallskip
 \begin{compactenum}
 	\item Determine interface of $\wet(x,\NN)$. 
-	\item If the interface is empty, simply output $\NN$. Otherwise, denote the contours by $\phi_1, \phi_2, \ldots, \phi_k$ and set $\phi'_i = \lift(\phi_i)$.
+	\item If the interface is empty, simply output $\NN$. Otherwise, denote the connected components by $\phi_1, \phi_2, \ldots, \phi_k$ and set $\phi'_i = \lift(\phi_i)$.
 	\item Initialize $\NN_1 = \NN$.
 	\item For $i$ from $1$ to $k$: 
 	\begin{compactenum}
