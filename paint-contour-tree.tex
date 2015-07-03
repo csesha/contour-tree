@@ -434,7 +434,7 @@ Pascucci and Cole-McLaughlin \cite{pc-ectls-02} provided an $O(n+t\log n)$ time 
 $3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} provide an unconditional $O(N+t\log t)$ algorithm.
 The latter result crucially uses monotone paths to improve the running time, and our algorithm repeatedly
 exploits numerous properties of monotone paths. Carr's thesis shows relationships between monotone paths
-in $\MM$ and in its contour tree $\cC(\MM)$.
+in $\MM$ and its contour tree $\cC(\MM)$.
 
 Contour trees are a special case of Reeb graphs, a general topological representation for real-valued functions
 on any manifold. We refer the reader to Chapter 6 in~\cite{HaEd10} for more details. Algorithms for computing Reeb graphs
@@ -443,11 +443,11 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 
 
 \begin{figure}[h]\centering
-    \includegraphics[width=.27\linewidth]{figs/spikey1}%
+    \includegraphics[width=.26\linewidth]{figs/spikey1}%
     \hspace{.35in}
-    \includegraphics[width=.27\linewidth]{figs/spikey2}%
+    \includegraphics[width=.26\linewidth]{figs/spikey2}%
     \hspace{.4in}
-    \includegraphics[width=.22\linewidth]{figs/spikeyTree}
+    \includegraphics[width=.215\linewidth]{figs/spikeyTree}
     \caption{Two surfaces with different orderings of the maxima, but the same contour tree.}
     \label{fig:relative}
 \end{figure}
@@ -537,7 +537,7 @@ By assuming that our manifold is boundary critical, the vertices on a given boun
 We abuse notation and refer to this entire set of vertices as a maximum or minimum.
 
 
-\begin{definition} \label{def:equiv} Two contours $\psi$ and $\psi'$ are \emph{equivalent} 
+\begin{definition} \label{def:equiv} Two regular contours $\psi$ and $\psi'$ are \emph{equivalent} 
 if there exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$,
 such that no $x \in p$ belongs to a critical contour.
 \end{definition}
@@ -630,12 +630,14 @@ vertices which are higher than $v$.
 
 \begin{definition} 
 \label{def:int-criticalJoin}
-The \emph{critical join tree} $\jc(\MM)$ is built on the set $\cV$ of all critical points. 
-The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $\cV$ in a connected component of $\MM^+_v$
+The \emph{critical join tree} $\jc(\MM)$ is built on the set $\cV$ of all critical points.\footnote{%
+\FullVer{Later, in Definition~\ref{def:criticalJoin}, we define the critical join tree on a certain subset of $\cV$.}
+\SubmitVer{In the full version we define the critical join tree on a certain subset of $\cV$.}
+} The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $\cV$ in a connected component of $\MM^+_v$
 and $v$ is connected to this component (in $\MM$). 
 \end{definition}
 
-Abusing notation, for now we will just call this the join tree. (In Section~\ref{sec:extreme} we carefully handle the distinction 
+Abusing notation, for now we will just call this the join tree. (In \SubmitVer{the full version}\FullVer{Section~\ref{sec:extreme}} we carefully handle the distinction 
 between the join tree and the critical join tree.)
 Refer to \Fig{sorting} for the join tree of a terrain. Note that nothing happens at splits, but these
 are still put as vertices in the join tree. They simply form a long path. The split tree
@@ -662,9 +664,9 @@ Nonetheless, our theorem appears to be new and works for all dimensions.
 
 
 \begin{figure}[h]\centering
-    \includegraphics[width=.18\linewidth]{figs/tent2}%
-    \hspace{.9in}
-    \includegraphics[width=.18\linewidth]{figs/tent1}
+    \includegraphics[width=.172\linewidth]{figs/tent2}%
+    \hspace{1.2in}
+    \includegraphics[width=.172\linewidth]{figs/tent1}
     \caption{On left, downward rain spilling only (each shade of gray represents a piece created by each different spilling), producing a grid.  
     Note we are assuming raining was done in reverse sorted order of maxima.  
     On right, flipping the direction of rain spilling.}
@@ -676,7 +678,7 @@ endowed with a height to be \emph{minimum dominant} if there exists only a singl
 (Our real definition is more complicated, and involves simplicial complexes
 that allow additional ``trivial'' minima.)
 In such a complex, there exists a non-ascending path from any point to this unique minimum.
-Analogously, we can define maximum dominant simplicial complexes,
+Analogously, we can define maximum dominant complexes,
 and both are collectively called extremum dominant.
 
 We will cut $\MM$ into disjoint extremum dominant pieces, in linear time.
@@ -750,7 +752,7 @@ the join tree is defined purely combinatorially in terms of the 1-skeleton (the 
 
 The join tree $\jc(\NN)$ is a rooted tree with the dominant minimum at the root, and we direct edges downwards (towards the root). So it makes sense to talk
 of comparable vs incomparable vertices.
-We arrive at the primary challenge: how to sort only those critical points that are comparable, without
+We arrive at the main challenge: how to sort only the comparable critical points, without
 constructing the join tree? The join tree algorithm of~\cite{csa-cctad-00} is a typical event-based
 computational geometry algorithm. We have to step away from this viewpoint to avoid the global sort.
 
@@ -879,7 +881,7 @@ Our algorithm requires $\Theta(\cost(P(T)))$ comparisons on all these instances.
 
 
 
-%\FullVer{
+\FullVer{
 \section{Divide and conquer through contour surgery} \label{sec:surgery}
 
 {\bf The cutting operation:} We define a ``cut" operation on $f:\MM \rightarrow \RR$ that cuts along a regular contour to create
@@ -2525,7 +2527,7 @@ Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |
  Note that for the terrains described in this section, the number of critical points is within a constant factor of 
  the total number of vertices.  In particular, for this family of terrains, all previous algorithms required $\Omega(n\log n)$ time.
 \end{remark}
-
+}
 
 
 
