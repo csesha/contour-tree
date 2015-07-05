@@ -3,7 +3,7 @@
 %%%%%%%%%%Comment out the switch below for full version 
 %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\def \STOC {}
+%\def \STOC {}
 
 
 \ifx\STOC\undefined
@@ -492,7 +492,7 @@ This is convenient, as we can now assume that $f$ is defined on $\RR^d$. Any poi
 has a well-defined height, including the infinite facet, which is required to be a boundary facet.  However, 
 we allow for other boundary facets, to capture the resulting surface pieces after our algorithm make a horizontal cut. 
 
-We think of the dimension, $d$, as constant, and assume that $\MM$ is represented in a data structure that allows constant-time traversals of neighboring simplices
+We think of the dimension, $d$, as constant, and assume that $\MM$ is represented in a data structure that allows constant-time access to neighboring simplices
 in $\MM$ (e.g.~\cite{BoMa12}). (This is analogous to a doubly connected edge list, but for higher dimensions.)
 Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simplicial complex living in $\RR^{d+1}$, 
 where $f(x)$ is the ``height" of a point $x \in \MM$, which is encoded in the representation of $\MM$. 
@@ -542,8 +542,10 @@ if there exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$
 such that no $x \in p$ belongs to a critical contour.
 \end{definition}
 
-This equivalence relation gives a set \emph{contour classes}. By continuity, a regular point is present on a single contour,
-and we can partition the regular contours into these classes. Every such class maps to intervals
+This equivalence relation gives a set \emph{contour classes}. 
+%By continuity, a regular point is present on a single contour,
+%and we can partition the regular contours into these classes. 
+Every such class maps to intervals
 of the form $(f(x_i),f(x_j))$, where $x_i, x_j$ are critical points. Such a class is said
 to be created at $x_i$ and destroyed at $x_j$. 
 
@@ -682,7 +684,7 @@ Analogously, we can define maximum dominant complexes,
 and both are collectively called extremum dominant.
 
 We will cut $\MM$ into disjoint extremum dominant pieces, in linear time.
-The best way to think of our procedure is a meteorology analogy. Take an arbitrary maximum $x$,
+One way to think of our procedure is a meteorological analogy. Take an arbitrary maximum $x$,
 and imagine torrential rain at the maximum. The water flows down, wetting any point that has a non-ascending path 
 from $x$. We end up with two portions, the wet part of $\MM$ and the dry part. This is similar
 to \emph{watershed} algorithms used for image segmentation~\cite{RoMe00}. The wet part is obviously connected,
@@ -852,12 +854,12 @@ The total cost (of the heap operations) is at most $\sum_v \log d_v$. This immed
 $D$ is the maximum distance to the root, an improvement over previous work. But this bound is non-optimal.
 For a balanced binary tree, this bound is $O(t\log\log t)$, whereas the cost of any path decomposition is $O(t)$.
 
-The cost of heap operations depends on the sizes of the heaps, which keeps changing because
+The cost of heap operations depends on heap sizes, which keep changing because
 of the repeated merging. This causes the analysis to be technically challenging. There are situations where
 the initial heap sizes are small, but they eventually merge to create larger heaps. 
 We employ a variant
 of \emph{heavy path decompositions}, first used by Sleator and Tarjan for analyzing link/cut trees~\cite{st-dsdt-83}.
-The final analysis basically charges expensive heap operations to long paths in the decomposition.
+The final analysis charges expensive heap operations to long paths in the decomposition.
 
 \subsection{The lower bound} 
 
@@ -866,8 +868,9 @@ Denoting $\cost(P(T)) = \sum_{p \in P(T)} |p|\log |p|$, we construct a set of $\
 functions on a fixed domain such that each function has a distinct (labeled) contour tree. By a simple
 entropy argument, any algebraic decision tree that correctly computes the contour tree on all instances
 requires worst case $\Omega(\cost(P(T)))$ time. We prove that our algorithm makes $\Theta(\cost(P(T)))$ 
-comparisons on all these instances. In general, any algorithm requires $\Omega(C)$ time
-to solve the set of instances that our algorithm solves with $C$ comparisons.
+comparisons on all these instances. 
+%In general, any algorithm requires $\Omega(C)$ time
+%to solve the set of instances that our algorithm solves with $C$ comparisons.
 
 We have a fairly simple construction that works for terrains. In $P(T)$, consider the path
 $p$ that involves the root. The base of the construction is a conical ``tent", and there
@@ -877,7 +880,7 @@ will be connected to a recursive construction involving other paths in $P(T)$. E
 one can think of tiny tents that are sticking out of each face of the main tent. The contour
 trees of these tiny tents attach to a main branch of length $|p|$. Working out the details,
 we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree. 
-Our algorithm requires $\Theta(\cost(P(T)))$ comparisons on all these instances.
+%Our algorithm requires $\Theta(\cost(P(T)))$ comparisons on all these instances.
 
 
 
@@ -1514,7 +1517,7 @@ to $\h(c)$ in $\cC(\MM)$, which by \Thm{carr-mono} is the same as those in $\cC(
 
 Our main workhorse is the following technical lemma. 
 
-\Ben{Current color is never defined, but it means the the current rep(c).}
+%\Ben{Current color is never defined, but it means the the current rep(c).}
 
 \begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component $\PP$ of $\MM^+_v$
 by an edge $e$ which is currently colored $c$. Either all edges in $\PP$ are currently colored $c$, or there
