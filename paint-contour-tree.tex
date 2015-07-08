@@ -595,7 +595,7 @@ which we view as essential for understanding our approach. The technical details
 which we view as essential for understanding our approach. }
 
 In the interest of presentation, the definitions and theorem statements in this section will
-slightly differ from those in the main body. They may also differ from the original definitions proposed
+slightly differ from those in the main body\SubmitVer{ of the full version}. They may also differ from the original definitions proposed
 in earlier work. 
 
 % Our final algorithm is quite technical and has numerous moving parts. This section
@@ -1515,7 +1515,8 @@ to $\h(c)$ in $\cC(\MM)$, which by \Thm{carr-mono} is the same as those in $\cC(
 \end{proof}
 }
 
-Our main workhorse is the following technical lemma. 
+Our main workhorse is the following technical lemma. In the following, the current color of an edge, $e$, is the value of $\rep(\chi(e))$, 
+where $\chi(e)$ is the color of $e$ from the initial painting.
 
 %\Ben{Current color is never defined, but it means the the current rep(c).}
 
@@ -1530,7 +1531,7 @@ vertex $w$ in $\PP$ that is touched by $c$ and some other color. If no such vert
 this means all edges incident to a vertex touched by $c$ are colored $c$. By walking through
 $\PP$, we deduce that all edges are colored $c$. 
 
-So assume $w$ exists. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(v)$
+So assume $w$ exists. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(w)$
 and intersects some $c$-colored edge incident to $w$. Note that all edges intersecting $\phi$ are also colored $c$,
 since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
 edges from the maximum to $w$. For any point on this path, the contour passing through this point must
