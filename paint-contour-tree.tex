@@ -3,23 +3,70 @@
 %%%%%%%%%%Comment out the switch below for full version 
 %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\def \STOC {}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+\def\SoCGVer{TRUE}%
+%%%
+%\def\HideComments{TRUE}%
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%\def\ProofInAppendix{TRUE}
 
-\ifx\STOC\undefined
-  \newcommand{\FullVer}[1]{#1}
-  \newcommand{\SubmitVer}[1]{}
+\ifx\SoCGVer\undefined
+   \newcommand{\InSoCGVer}[1]{}%
+   \newcommand{\InNotSoCGVer}[1]{#1}%
 \else
-  \newcommand{\FullVer}[1]{}
-  \newcommand{\SubmitVer}[1]{#1}
+%   \def\ProofInAppendix{TRUE}
+   \newcommand{\InSoCGVer}[1]{#1}%
+   \newcommand{\InNotSoCGVer}[1]{}%
 \fi
 
+\newcommand{\CiteFullVer}{\cite{rs-mvrms-14}}%
+
+% \InNotSoCGVer{%
+%    \newcommand{\SeeFullVer}{}%
+%    \newcommand{\LemmaProofInFullVer}[1]%
+%    {%
+%       \begin{lemma}
+%           #1
+%       \end{lemma}%
+%    }
+% }
+% 
+% \InSoCGVer{%
+%    \newcommand{\SeeFullVer}{{{\CiteFullVer}}}%
+%    \newcommand{\LemmaProofInFullVer}[1]%
+%    {%
+%       \begin{lemma}[For proof see  \CiteFullVer{}]
+%           #1
+%       \end{lemma}
+%    }   
+% }
+
+\InSoCGVer{%
+   \documentclass[a4paper,UKenglish]{lipics}
+%   \documentclass[11pt]{article}%
+
+%  \usepackage{proofapnd}
+}
+\InNotSoCGVer{%
+  \documentclass[11pt]{article}
+  \usepackage[margin=2.54cm]{geometry}
+}
+
+\InNotSoCGVer{
+   \newcommand{\myparagraph}[1]{\paragraph{#1}}
+}
+\InSoCGVer{
+   \newcommand{\myparagraph}[1]{\smallskip\noindent{\textbf{#1}}}
+}
 
 
 
-\documentclass[11pt]{article}
-\usepackage[margin=2.54cm]{geometry}
-\usepackage[dvipsnames,usenames]{color}
+
+
 \usepackage{amsfonts,amsmath,amssymb,amsthm,mathtools}
 \usepackage{paralist}
 \usepackage{algorithmic,algorithm}
@@ -28,12 +75,23 @@
 \usepackage{centernot}
 \usepackage{fancybox}
 \usepackage{framed}
-
-%\usepackage{mathabx}
-\usepackage[pagebackref,letterpaper=true,colorlinks=true,pdfpagemode=none,urlcolor=blue,linkcolor=blue,citecolor=BrickRed,pdfstartview=FitH]{hyperref}
-\usepackage{xspace,prettyref}
+\usepackage{xspace}
+\usepackage{prettyref}
+%\usepackage[dvipsnames,usenames]{color}
 \usepackage{color}
 \usepackage{graphics}
+%\usepackage[pagebackref,colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=BrickRed,pdfstartview=FitH]{hyperref}
+\usepackage{hyperref}%
+\hypersetup{%
+   breaklinks,%
+   colorlinks=true,%
+   urlcolor=[rgb]{0.2,0.0,0.0},
+   linkcolor=[rgb]{0.5,0.0,0.0},%
+   citecolor=[rgb]{0,0,0.445},
+   filecolor=[rgb]{0,0,0.4},
+   anchorcolor=[rgb]{0.0,0.1,0.2}
+}
+
 %\usepackage{MnSymbol}
 %% For hyperlinks. Should always be the last package.
 %\usepackage[colorlinks,urlcolor=blue,citecolor=blue,linkcolor=blue]{hyperref}
@@ -42,21 +100,26 @@
 \newcommand{\comment}[1]{ {\color{BrickRed} \footnotesize[#1]}\marginpar{\footnotesize\textbf{\color{red} To Do!}}}
 \newcommand{\ignore}[1]{}
 
-
-\newtheorem{theorem}{Theorem}[section]
+\InNotSoCGVer{
+ \newtheorem{theorem}{Theorem}[section]
+}
 \newtheorem{lemmata}[theorem]{Lemmata}
-\newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{claim}[theorem]{Claim}
 \newtheorem{subclaim}[theorem]{Subclaim}
 \newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}
+\InNotSoCGVer{
+ \newtheorem{lemma}[theorem]{Lemma}
+ \newtheorem{corollary}[theorem]{Corollary}
+ \newtheorem{example}[theorem]{Example}
+ \newtheorem{definition}[theorem]{Definition}
+}
 \newtheorem{fact}[theorem]{Fact}
 \newtheorem{conjecture}[theorem]{Conjecture}
 \newtheorem{question}[theorem]{Question}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{definition}[theorem]{Definition}
 \theoremstyle{definition}
-\newtheorem{remark}[theorem]{Remark}
+\InNotSoCGVer{ 
+ \newtheorem{remark}[theorem]{Remark} 
+}
 \newtheorem{observation}[theorem]{Observation}
 
 
@@ -170,7 +233,7 @@
 \newcommand{\BCS}{\ensuremath{\mathsf{BCS}}\xspace}
 \newcommand{\sub}{\mathsf{sub}}
 \newcommand{\Merge}{\mathsf{Merge}}
-\newcommand{\stack}{\mathsf{S}}
+%\newcommand{\stack}{\mathsf{S}}
 \newcommand{\AQ}{\mathsf{AQ}}
 
 \newcommand{\etal}{\textit{et~al.}\xspace}
@@ -197,7 +260,7 @@
 \newcommand{\reeb}{\cC}
 \newcommand{\redH}{\widetilde{H}}
 \newcommand{\rep}{rep}
-\newcommand{\st}{K}
+\newcommand{\stack}{K}
 \newcommand{\surgery}{{\tt surgery}}
 \newcommand{\touch}{T}
 \newcommand{\update}{{\tt update}}
@@ -205,6 +268,9 @@
 
 \newcommand{\MTAlg}{\Algorithm{MTAlg}\xspace}
 \newcommand{\Init}{\Algorithm{Init}\xspace}
+
+\newcommand{\pathTree}{P_{\mathcal{S}}}
+\newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
 
 \newcommand{\CodeComment}[1]{\textcolor{blue}{\texttt{#1}}}
 
@@ -218,6 +284,11 @@
             end}$\rule[0.1cm]{0.3in}{0.1cm}$}
       }
    }
+\ifx\HideComments\undefined%
+\else%
+\renewcommand{\XSays}[2]{}%
+\fi%   
+   
 \newcommand{\Ben}[1]{{\XSays{Ben}{#1}}}
 \newcommand{\remove}[1]{}
 \newcommand{\pth}[2][\!]{#1\left({#2}\right)}
@@ -241,10 +312,13 @@
       #1}}
       
 
+\begin{document}
+
+\InNotSoCGVer{
 \author{
-  Benjamin Raichel\BenThanks{}
+  Benjamin Raichel%\BenThanks{}
   \and
-  C. Seshadhri\thanks{University of California, Santa Cruz; {\tt scomandu@ucsc.edu}}
+  C. Seshadhri%\thanks{University of California, Santa Cruz; {\tt scomandu@ucsc.edu}}
 }
 
 \title{%A Mountaintop View Requires Minimal Sorting:
@@ -253,12 +327,58 @@ Avoiding the Global Sort:
 \footnote{The full updated version of this paper is available on the arXiv \cite{rs-mvrms-14}}%
 }
 \date{}
+}
 
+\InSoCGVer{
+% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{%A Mountaintop View Requires Minimal Sorting:
+Avoiding the Global Sort: 
+\break A Faster Contour Tree Algorithm%
+\footnote{The full updated version of this paper is available on the arXiv \cite{rs-mvrms-14}}%
+}
+\titlerunning{Avoiding the Global Sort: A Faster Contour Tree Algorithm} %optional, in case that the title is too long; the running title should fit into the top page column
 
-\begin{document}
+\author[1]{Benjamin Raichel}
+\author[2]{C. Seshadhri}
+  \affil[1]{%
+      Department of Computer Science, %
+      University of Texas at Dallas\\ %
+      Richardson, TX, 75080, USA\\ %
+      \texttt{\si{benjamin.raichel}@\si{utdallas}.\si{edu}} %
+   }%
+   \affil[2]{%
+      Department of Computer Science, %
+      University of California, Santa Cruz\\ %
+      Santa Cruz, CA, 95064, USA\\ %
+      \texttt{\si{scomandu}@\si{ucsc}.\si{edu}} %
+   }%
+
+\authorrunning{B. Raichel and C. Seshadhri} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
+
+\Copyright{Benjamin Raichel and Seshadhri Comandur}%mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{F.2.2, I.1.2, I.3.5}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
+\keywords{contour trees, computational topology, computational geometry}% mandatory: Please provide 1-5 keywords
+% Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \serieslogo{}%please provide filename (without suffix)
+% \volumeinfo%(easychair interface)
+%   {Billy Editor and Bill Editors}% editors
+%   {2}% number of editors: 1, 2, ....
+%   {Conference title on which this volume is based on}% event
+%   {1}% volume
+%   {1}% issue
+%   {1}% starting page number
+% \EventShortName{}
+% \DOI{10.4230/LIPIcs.xxx.yyy.p}% to be completed by the volume editor
+% % Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+}
 
 \maketitle
+\InNotSoCGVer{
 \thispagestyle{empty}
+}
 
 \begin{abstract}
 We revisit the classical problem of computing the \emph{contour tree}
@@ -285,9 +405,10 @@ a local growing procedure to iteratively build contour trees, and the use of hea
 decompositions for the time complexity analysis. 
 \end{abstract}
 
+\InNotSoCGVer{
 \newpage
-
 \pagenumbering{arabic}
+}
 
 \section{Introduction}
 
@@ -306,7 +427,12 @@ with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection 
 with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
 proceeds various events occur: new contours are created or destroyed, contours merge into each other or
 split into new components, contours acquire or lose handles. More generally, these are the events where 
-the topology of the level set changes. The contour tree is a concise representation of all these events.
+the topology of the level set changes. The contour tree is a concise representation of all these events.\footnote{%
+Throughout we follow the definition of contour trees from \cite{kobps-ctsssit-97} which includes all changes in topology.  
+For $d>2$, some subsequent works, such as \cite{csa-cctad-00}, only include changes in the number of components.
+}
+\Ben{See added footnote}
+
 
 If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
 These points are the ``events" where the contour topology changes and which form the vertices of the contour tree. 
@@ -322,9 +448,10 @@ merge, and down-degree $2$ vertices are ``splits".  When $d=2$ (as in \Fig{relat
 In dimensions $d \geq 3$, we may have internal vertices of both up and down-degree $1$. 
 For example, these could be events where contours gain or lose handles.
 
-Suppose we have $f: \MM \to \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points.
-It is standard to assume that $f$ is PL-Morse (a well-behaved input assumption) and that the maximum degree in the contour tree
-is $3$. A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
+Suppose we have $f: \MM \to \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points. 
+\Ben{It is standard to assume that $f$ has distinct values on the vertices of $\MM$ and the value at interior points is linearly interpolated.}
+%It is standard to assume that $f$ is PL-Morse (a well-behaved input assumption) and that the maximum degree in the contour tree is $3$. 
+A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
 which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-00} (where $\alpha(\cdot)$ denotes the inverse
 Ackermann function). In practical applications, $N$ is typically $\Theta(n)$
 (certainly true for $d=2$). The most expensive operation is an initial sort of all the vertex
@@ -351,10 +478,11 @@ Then a \emph{path decomposition}, $P(T)$, is a partition of the vertices of $T$ 
 
 \begin{theorem} 
 \label{thm:main-alg} 
-Consider a PL-Morse\footnote{This is a standard ``well-behaved" input assumption that implies
-that all critical points have distinct values, and the contour tree has max-degree $3$. Our algorithm
-does not need this, but it simplifies the proof and presentation.} $f:\MM \to \RR$, where the contour tree $T$
-has maximum degree $3$. There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
+%Consider a PL-Morse\footnote{This is a standard ``well-behaved" input assumption that implies that all critical points have distinct values. 
+%Our algorithm does not need this, but it simplifies the proof and presentation.} 
+\Ben{Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the contour tree $T$
+has maximum degree $3$}.\footnote{The degree $\leq 3$ assumption helps simplify the proof and presentation, and is often made, as in \cite{kobps-ctsssit-97}.}\Ben{See footnote} 
+There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
@@ -400,7 +528,7 @@ In other words, for any path decomposition, $P$, we can design a hard family whe
 requires $\sum_{p \in P} |p|\log |p|$ time in the worst case, and our algorithm matches this bound. 
 
 
-\paragraph{Beyond worst-case analysis.} Our result provides understanding of the complexity
+\myparagraph{Beyond worst-case analysis.} Our result provides understanding of the complexity
 of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound 
 characterize hard instances.
 % explain \emph{when}
@@ -474,7 +602,7 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 We detail the basic definitions about contour trees. We follow the terminology of Chapter 6 of Carr's thesis \cite{c-tmi-04}.
 All our assumptions and definitions
 are standard for results in this area, though there is some variability in notation.
-The input is a continuous piecewise-linear (PL) function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex in $\RR^d$,
+The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex in $\RR^d$,
 except for specially designated \emph{boundary facets}. So $f$ is defined only on the vertices of $\MM$,
 and all other values are obtained by linear interpolation. 
 
@@ -490,7 +618,7 @@ either have all function values strictly greater than or all function values str
 
 This is convenient, as we can now assume that $f$ is defined on $\RR^d$. Any point inside a boundary facet
 has a well-defined height, including the infinite facet, which is required to be a boundary facet.  However, 
-we allow for other boundary facets, to capture the resulting surface pieces after our algorithm make a horizontal cut. 
+we allow for other boundary facets, to capture the resulting surface pieces after our algorithm makes a horizontal cut. 
 
 We think of the dimension, $d$, as constant, and assume that $\MM$ is represented in a data structure that allows constant-time access to neighboring simplices
 in $\MM$ (e.g.~\cite{BoMa12}). (This is analogous to a doubly connected edge list, but for higher dimensions.)
@@ -499,7 +627,7 @@ where $f(x)$ is the ``height" of a point $x \in \MM$, which is encoded in the re
 Specifically, rather than writing our input as $(\MM,f)$, we abuse notation and typically just write $\MM$ to denote the lifted complex.
 
 \begin{definition} \label{def:level} The \emph{level set} at value $h$ is the set $\{x| f(x) = h\}$.
-A \emph{contour} is a maximal connected component of a level set. An \emph{$h$-contour} is a contour where $f$-values are $h$.
+A \emph{contour} is a connected component of a level set. An \emph{$h$-contour} is a contour where $f$-values are $h$.
 \end{definition}
 
 Note that a contour that does not contain a boundary is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
@@ -559,10 +687,22 @@ by $\reeb(\MM)$. The corresponding node and edge sets are denoted as $\cV(\cdot)
 It is not immediately obvious that this graph is a tree, but alternate definitions of the contour tree
 in~\cite{csa-cctad-00} imply this is a tree. 
 Since this tree has height values associated with the vertices, we can talk about up-degrees and down-degrees in $\reeb(\MM)$.
-We assume there are no ``multi-saddles", so up and down-degrees are at most $2$, and the total degree is at most $3$. 
-This is again a standard assumption in topological algorithms and can be achieved by vertex unfolding (Section 6.3 in~\cite{HaEd10}).
+%
+\Ben{Similar to \cite{kobps-ctsssit-97} (among others), multi-saddles are treated as a set of ordinary saddles, which can be realized 
+via vertex unfolding (which can increase surface complexity if multi-saddle degrees are allowed to be super-constant).
+Therefore, to simplify the presentation, for the remainder of the paper up and down-degrees are at most $2$, and the total degree is at most $3$.}
+%
+%We assume there are no ``multi-saddles", so up and down-degrees are at most $2$, and the total degree is at most $3$. 
+%This is again a standard assumption in topological algorithms and can be achieved by vertex unfolding (Section 6.3 in~\cite{HaEd10}).
 
-\subsection{Some technical remarks}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\InSoCGVer{See Appendix~\ref{sec:techmarks} for further technical remarks on the above definitions.}
+\newcommand{\technicalRemarks}{
+%\subsection{Some technical remarks}
 Note that if one intersects $\MM$ with a given ball $B$, then a single contour in $\MM$ might be split into more than one contour in the intersection. 
 In particular, two $(f(x)+\delta)$-contours of $f|_{B_\eps(x)}$, given by \Def{deg}, might actually be the same contour in $\MM$. 
 Alternatively, one can define the up-degree (as opposed to \emph{Morse} up-degree) as the number of $(f(x)+\delta)$-contours (in the full $\MM$)
@@ -582,32 +722,40 @@ The contour tree of \Def{tree} is the typical definition in all results on outpu
 contour trees, and is the smallest tree that contains all the topological changes
 of level sets. \Thm{main-alg} is applicable for any augmentation of $\reeb(\MM)$ with a predefined
 set of vertices, though we will not delve into these aspects in this paper.
+}
+\InNotSoCGVer{
+\subsection{Some technical remarks}
+\technicalRemarks
+}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\intuitionSection}{
 \section{A tour of the new contour tree algorithm} \label{sec:approach}
+\InNotSoCGVer{
 Our final algorithm is quite technical and has numerous moving parts. However, for the $d=2$ case, 
 where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
-can be explained clearly.  
-\SubmitVer{Therefore, in the remaining few allotted pages, 
-rather than providing an incomplete subset of the technical content, we provide a high level view of the entire result, 
-which we view as essential for understanding our approach. The technical details can be found in the full version of the paper \cite{rs-mvrms-14}.}
-\FullVer{Therefore, here we first provide a high level view of the entire result, 
-which we view as essential for understanding our approach. }
+can be explained clearly.  Therefore, here we first provide a high level view of the entire result.
+}
+\InSoCGVer{
+For the $d=2$ case, where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
+can be explained clearly.  Therefore, here we provide a high level view of the entire result.
+}
 
 In the interest of presentation, the definitions and theorem statements in this section will
-slightly differ from those in the main body\SubmitVer{ of the full version}. They may also differ from the original definitions proposed
+slightly differ from those in the main body. They may also differ from the original definitions proposed
 in earlier work. 
 
-% Our final algorithm is quite technical and has numerous moving parts. This section
-% provides a high level view of the entire result, and highlights the main ideas
-% and intuition. 
-% \SubmitVer{The full version with all the details can be found in the appendix.}
-% It is helpful to keep the $d=2$ case in mind, so the input is just a triangulated
-% terrain. In the interest of presentation, the definitions and theorem statements in this section will
-% slightly differ from those in the main body. They may also differ from the original definitions proposed
-% in earlier work. 
 
-\paragraph{Do not globally sort:} Arguably, the starting point for this work is \Fig{relative}. We have two terrains
+\myparagraph{Do not globally sort:} The starting point for this work is \Fig{relative}. We have two terrains
 with exactly the same contour tree, but different orderings of (heights of) the critical points.
 Turning it around, we cannot deduce the full height ordering of critical points from the contour tree.
 Sorting all critical points is computationally unnecessary for constructing the contour tree.
@@ -620,7 +768,6 @@ in sorted order, but incomparable points in the tree are unconstrained.
 How do we sort exactly what is required, without knowing the contour tree in advance?
 
 \subsection{Breaking $\MM$ into simpler pieces} \label{sec:break}
-
 Let us begin with the algorithm of Carr, Snoeyink, and Axen~\cite{csa-cctad-00}. The key insight is to build
 two different trees, called the join and split trees, and then merge them together into the contour tree.
 Consider sweeping down via the hyperplane $x_{d+1} = h$ and taking the \emph{superlevel} sets. These 
@@ -633,13 +780,12 @@ vertices which are higher than $v$.
 \begin{definition} 
 \label{def:int-criticalJoin}
 The \emph{critical join tree} $\jc(\MM)$ is built on the set $\cV$ of all critical points.\footnote{%
-\FullVer{Later, in Definition~\ref{def:criticalJoin}, we define the critical join tree on a certain subset of $\cV$.}
-\SubmitVer{In the full version we define the critical join tree on a certain subset of $\cV$.}
-} The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $\cV$ in a connected component of $\MM^+_v$
-and $v$ is connected to this component (in $\MM$). 
+In Definition~\ref{def:criticalJoin}, we define the critical join tree on a certain subset of $\cV$.}
+The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $\cV$ in a connected component of $\MM^+_v$
+and $v$ is adjacent to a vertex in this component (in $\MM$). 
 \end{definition}
 
-Abusing notation, for now we will just call this the join tree. (In \SubmitVer{the full version}\FullVer{Section~\ref{sec:extreme}} we carefully handle the distinction 
+Abusing notation, for now we will just call this the join tree. (In \Sec{extreme} we carefully handle the distinction 
 between the join tree and the critical join tree.)
 Refer to \Fig{sorting} for the join tree of a terrain. Note that nothing happens at splits, but these
 are still put as vertices in the join tree. They simply form a long path. The split tree
@@ -656,7 +802,7 @@ this, it is not clear how to get a consistent view of both joins and splits, req
 Our aim is to break $\MM$ into smaller pieces, where this unnecessary computation can be avoided.
 
 
-\paragraph{Contour surgery:} We first need a divide-and-conquer lemma. Any contour $\phi$ can be associated
+\myparagraph{Contour surgery:} We first need a divide-and-conquer lemma. Any contour $\phi$ can be associated
 with an edge $e$ of the contour tree. Suppose we ``cut" $\MM$ along this contour. We prove that $\MM$
 is split into two disconnected pieces, such the contour trees of these pieces is obtained
 by simply cutting $e$ in $\reeb(\MM)$. Alternatively, the contour trees of these pieces can
@@ -670,12 +816,12 @@ Nonetheless, our theorem appears to be new and works for all dimensions.
     \hspace{1.2in}
     \includegraphics[width=.172\linewidth]{figs/tent1}
     \caption{On left, downward rain spilling only (each shade of gray represents a piece created by each different spilling), producing a grid.  
-    Note we are assuming raining was done in reverse sorted order of maxima.  
+    Note we are assuming raining was done in sorted order of the maxima (i.e.\ lowest to highest).  
     On right, flipping the direction of rain spilling.}
     \label{fig:order}
 \end{figure}
 
-\paragraph{Cutting $\MM$ into extremum dominant pieces:} We define a simplicial complex
+\myparagraph{Cutting $\MM$ into extremum dominant pieces:} We define a simplicial complex
 endowed with a height to be \emph{minimum dominant} if there exists only a single minimum.
 (Our real definition is more complicated, and involves simplicial complexes
 that allow additional ``trivial'' minima.)
@@ -711,7 +857,8 @@ cut any face previously cut by $\phi$.
 For each of the new dry pieces, the newly introduced boundary is now a maximum. So we rain downwards from there.
 More formally, we alternate between raining upwards and downwards as we go down the recursion tree.
 We can prove that an original face of $\MM$ is cut at most once, so the final complexity can be bounded.
-In \Fig{order}, this procedure would yield two pieces, one maximum dominant, and one minimum dominant.
+In \Fig{order}, regardless of the choice of the starting maximum,  this procedure would yield (at most) two pieces, 
+one maximum dominant, and one minimum dominant.
 
 Using the contour surgery theorem previously discussed, we can build the contour tree of $\MM$
 from the contour trees of the various pieces created. All in all, we prove the following theorem.
@@ -720,12 +867,12 @@ from the contour trees of the various pieces created. All in all, we prove the f
 $\MM_1, \MM_2, \ldots$. Furthermore, given the set of contour trees $\{\cC(\MM_i)\}$, $\cC(\MM)$ can be constructed in $O(N)$ time.
 \end{theorem}
 
-\paragraph{Extremum dominance simplifies contour trees:} We will focus on minimum dominant simplicial complexes $\MM$. By \Thm{int-rain}, it suffices
+\myparagraph{Extremum dominance simplifies contour trees:} We will focus on minimum dominant simplicial complexes $\MM$. By \Thm{int-rain}, it suffices
 to design an algorithm for contour trees on such inputs. 
 For the $d=2$ case, it helps to visualize such an input as a terrain with no minima,
 except at a unique boundary face (think of a large boundary triangle that is the boundary).
-All the valleys in such a terrain are necessarily joins, and there can be no splits. Look
-at \Fig{sorting}. The portion on the left is minimum dominant in exactly this fashion.
+All the saddles in such a terrain are necessarily joins, and there can be no splits.
+In \Fig{sorting}, the portion on the left is minimum dominant in exactly this fashion, albeit in one dimension lower.
 %Water poured at any critical point must flow to the boundary, and the entire wet portion is connected.
 More formally, $\MM^-_v$ is connected for all $v$, so there are no splits.
 
@@ -747,9 +894,9 @@ of building the join tree can be related to that of building $\cC(\MM)$.
 \subsection{Join trees from painted mountaintops} \label{sec:join-paint}
 
 Arguably, everything up to this point is a preamble for the main result: a faster
-algorithm for join trees. Our algorithm does not require the input to be extremum
-dominant. This is only required to relate the join trees to the contour tree of the initial input $\MM$.
-For convenience, we use $\NN$ to denote the input here. Note that in \Def{int-criticalJoin},
+algorithm for join trees. Our algorithm does not require the initial input to be extremum
+dominant. This is only required to relate the join trees, of the resulting subcomplexes of Theorem~\ref{thm:int-rain}, to the contour tree of the initial input $\MM$.
+For clarity, we use $\NN$ to denote the input here. Note that in \Def{int-criticalJoin},
 the join tree is defined purely combinatorially in terms of the 1-skeleton (the underlying graph) of $\NN$.
 
 The join tree $\jc(\NN)$ is a rooted tree with the dominant minimum at the root, and we direct edges downwards (towards the root). So it makes sense to talk
@@ -765,7 +912,7 @@ paint the interior of higher dimensional faces.} That is, this process is restri
 Furthermore, our paints do not mix, so each edge receives a unique color, decided by the first
 paint to reach it.  In the following, $[n]$ denotes the set $\{1, \ldots, n\}$, for any natural number $n$.
 
-\begin{definition} \label{def:paint} Let the 1-skeleton of $\NN$ have edge set $E$ and maxima $X$.
+\begin{definition} \label{def:paint1} \InSoCGVer{(Restatement of \Def{paint2}.)} Let the 1-skeleton of $\NN$ have edge set $E$ and maxima $X$.
 A  \emph{painting} of $\NN$ is a map $\chi:X \cup E \to [|X|]$ with the following property. 
  Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
 	consisting of edges in $E$, such that all edges along this path have the same color as $x$. 
@@ -840,7 +987,7 @@ to extra overhead. We show that it suffices to simply put each vertex $v$ into a
 at most $2$ colors, because of all the color merges that previously occurred.
 
 
-\paragraph{The running time analysis:} Relating the running time to a path decomposition is the most technical part of the paper. 
+\myparagraph{The running time analysis:} Relating the running time to a path decomposition is the most technical part of the paper. 
 All the non-heap operations can be easily bounded by $O(t\alpha(t) + N)$ (the $t\alpha(t)$ is from the union-find data structure
 for colors). It is not hard to argue that at all times, any heap always contains a subset of a leaf
 to root path. Unfortunately, this subset is \emph{not} contiguous, as the right part of \Fig{colors} shows. 
@@ -881,10 +1028,47 @@ one can think of tiny tents that are sticking out of each face of the main tent.
 trees of these tiny tents attach to a main branch of length $|p|$. Working out the details,
 we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree. 
 %Our algorithm requires $\Theta(\cost(P(T)))$ comparisons on all these instances.
+}
+
+\InSoCGVer{
+\subsection{How to Read this paper}
+\Ben{New section:}
+The final algorithm is quite technical and has numerous moving parts. However, for the $d=2$ case, 
+where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
+can be explained clearly. Therefore, in Appendix~\ref{sec:approach} we provide a high level view of the entire result.
+We strongly encourage the reader to overview this section, as then the remainder of the paper can be understood 
+as a simple matter of implementing these ideas.
+
+Alternatively, the reader can view the full version of the paper \CiteFullVer{} which contains this high level overview and all other appendices 
+in the main body of the text.
+
+
+\myparagraph{Outline of the algorithm and the following sections.} 
+The high level idea is to partition $\MM$ into nicely behaved pieces, on which we know how to compute the contour tree optimally. 
+\Sec{surgery} describes our cutting procedure, and \Sec{rain} describes how to use this cutting procedure.
+Roughly speaking the resulting pieces are ``nice'' because the contour tree of each piece 
+looks like a rooted tree, i.e.\ the join tree of \cite{csa-cctad-00}, and the precise relation to join trees is the subject of \Sec{extreme}.
+\Sec{paint} then describes how to optimally compute the join tree (and hence the contour tree) 
+on each piece (see Appendix~\ref{sec:approach} for discussion on why the join tree should not be computed directly on the input complex). 
+\Ben{Mention lower bound an analysis sections which are going to be moved to appendix.}
+
+}
+
+\InNotSoCGVer{
+\intuitionSection
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
-\FullVer{
 \section{Divide and conquer through contour surgery} \label{sec:surgery}
 
 {\bf The cutting operation:} We define a ``cut" operation on $f:\MM \rightarrow \RR$ that cuts along a regular contour to create
@@ -899,7 +1083,8 @@ as height.) Given some point $x$ on an $h$-contour $\phi$, we can walk along $\M
 We can ``cut" along $\phi$ to get a new (possibly) disconnected simplicial complex $\MM'$. This is achieved
 by splitting every face $F$ that $\phi$ intersects into an ``upper" face and ``lower" face. Algorithmically,
 we cut $F$ with $\phi^+$ and take everything above $\phi^+$ in $F$ to make the upper face. Analogously, we cut with $\phi^-$ to get the lower face.
-The faces are then triangulated to ensure that they are all simplices.
+The faces are then triangulated to ensure that they are all simplices. 
+\Ben{Reviewer wanted clarification on how triangulation is done. Maybe can use bottom-vertex triangulation of Clarkson 88, discussed in Matousek book?}
 This creates the two new boundaries $\phi^+$ and $\phi^-$, and we maintain the property of constant $f$-value at a boundary.
 
 Note that by assumption $\phi$ cannot cut a boundary face, and moreover all non-boundary faces
@@ -907,6 +1092,9 @@ have constant size. Therefore, this process takes time linear in $|\phi|$, the n
 This new simplicial complex is denoted by $\cut(\phi,\MM)$.
 %
 We now describe a high-level approach to construct $\reeb(\MM)$ using this cutting procedure.
+
+\Ben{Surgery should be rewritten to take instead take as input the output of cut, i.e. two complexes and a contour.  
+This is how it is eventually used in Claim\ref{clm:rain-reeb}. Currently it does nothing really.}
 
 \medskip
 \fbox{
@@ -924,26 +1112,38 @@ We now describe a high-level approach to construct $\reeb(\MM)$ using this cutti
 \end{minipage}}
 
 \medskip
+
+\InSoCGVer{The following theorems are intuitively obvious, and are proven in Appendix~\ref{sec:proofOfSurgery}.}
+
 \begin{theorem} \label{thm:surgery} For any regular contour $\phi$, the output of $\surgery(\MM,\phi)$ is $\reeb(\MM)$.
 \end{theorem}
 
-To prove the above theorem, we require some theorems from \cite{c-tmi-04} (Theorems 6.6 and 6.7) that map paths in $\cC(\MM)$ to $\MM$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\surgeryBody}{
+%To prove the above theorem, we require some theorems from \cite{c-tmi-04} (Theorems 6.6 and 6.7) that map paths in $\cC(\MM)$ to $\MM$.
+To prove Theorem~\ref{thm:surgery}, we require a theorem from \cite{c-tmi-04} (Theorems 6.6) that map paths in $\cC(\MM)$ to $\MM$.
 
 \begin{theorem} \label{thm:carr-path} For every path $P$ in $\MM$, there exists a path $Q$ in the contour tree corresponding
 to the contours passing through points in $P$.
 For every path $Q$ in the contour tree, there exists at least one path $P$ in $\MM$ through points present
 in contours involving $Q$.
+
+In particular, for every monotone path $P$ in $\MM$, there exists a monotone path $Q$ in the contour tree to which $P$
+maps, and vice versa.
 \end{theorem}
 
-\begin{theorem} \label{thm:carr-mono} For every monotone path $P$ in $\MM$, there exists a monotone path $Q$ in the contour tree to which $P$
-maps (as in the previous theorem), and vice versa.
-\end{theorem}
+% \begin{theorem} \label{thm:carr-mono} For every monotone path $P$ in $\MM$, there exists a monotone path $Q$ in the contour tree to which $P$
+% maps (as in the previous theorem), and vice versa.
+% \end{theorem}
 
 
 Theorem~\ref{thm:surgery} is a direct consequence of the following lemma. 
 
 \begin{lemma} \label{lem:cut} Consider a regular contour $\phi$ contained in a contour class (of an edge of $\reeb(\MM))$
-$(u,v)$ and denote $\MM' = \cut(\MM,\phi)$. Then $\cV(\reeb(\MM')) = \{\phi^+,\phi^-\} \cup \cV(\MM)$
+$(u,v)$ and let $\MM' = \cut(\MM,\phi)$. Then $\cV(\reeb(\MM')) = \{\phi^+,\phi^-\} \cup \cV(\MM)$
 and $\cE(\reeb(\MM')) = \{(u,\phi^+),(\phi^-,v)\} \cup (\cE(\MM) \setminus (u,v))$.
 \end{lemma}
 
@@ -968,11 +1168,19 @@ completing the proof.
 
 A useful corollary of this lemma shows that a contour actually splits the simplicial complex into
 two disconnected complexes.
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\InNotSoCGVer{
+\surgeryBody
+}
 
 \begin{theorem} \label{thm:jordan} $\cut(\MM,\phi)$ consists of two
 disconnected simplicial complexes.
 \end{theorem}
 
+\newcommand{\proofofDisconnected}{
 \begin{proof} Denote (as in \Lem{cut}) the edge containing $\phi$ to be $(u,v)$. Suppose for contradiction that there is a path between vertices $u$ and $v$
 in $\MM' = \cut(\MM,\phi)$. By \Thm{carr-path}, there is a path in $\cC(\MM')$ between $u$ and $v$. Since $\phi^+$ and $\phi^-$
 are leaves in $\cC(\MM')$, this path cannot use their incident edges. Therefore by \Lem{cut},
@@ -980,6 +1188,20 @@ all the edges of this path are in $\cE(\cC(\MM)) \setminus (u,v)$. So we get a c
 To show that there are exactly two connected components in $\cut(\MM,\phi)$, it suffices
 to see that $\cC(\MM')$ has two connected components (by \Lem{cut}) and then applying \Thm{carr-path}.
 \end{proof}
+}
+\InNotSoCGVer{\proofofDisconnected}
+
+% 
+% \begin{lemma} \label{lem:blahblah}
+%  Testing 123 \RefProofInAppendix{blahblah}
+% \end{lemma}
+% 
+% \begin{proof:in:appendix:e}{\ref{lem:blahblah}}{blahblah}
+%  blah balh
+% \end{proof:in:appendix:e}
+
+
+
 
 \section{Raining to partition $\MM$} \label{sec:rain}
 
@@ -991,18 +1213,18 @@ a minimum $x$ such that every non-minimal \emph{vertex} in the manifold has a no
 Analogously define \emph{maximum dominant}. 
 \end{definition}
 
-The first aspect of the partitioning is ``raining". Start at some point $x \in \MM$ and imagine rain at $x$.
-The water will flow downwards along non-ascending paths and ``wet" all the points encountered. Note that this procedure considers all points
+The first aspect of the partitioning is ``raining''. Start at some point $x \in \MM$ and imagine rain at $x$.
+The water will flow downwards along non-ascending paths and ``wet'' all the points encountered. Note that this procedure considers all points
 of the manifold, not just vertices.
 
 \begin{definition} \label{def:wet} Fix $x \in \MM$. The set of points $y \in \MM$ such that there is a non-ascending path from $x$ to $y$
 is denoted by $\wet(x,\MM)$ (which in turn is represented as a simplicial complex). A point $z$ is at the \emph{interface} of $\wet(x,\MM)$ if every neighborhood of $z$
-has non-trivial intersection with $\wet(x,\MM)$.
+has non-trivial intersection with $\wet(x,\MM)$ \Ben{(i.e.\ the intersection is neither empty nor the entire neighborhood)}.
 \end{definition}
 
 The following claim gives a description of the interface. While its meaning is quite intuitive, the proof is tedious.
 
-\begin{claim} \label{clm:inter} For any $x$, each connected component of the interface of $\wet(x,\MM)$ contains a join vertex.
+\begin{claim} \label{clm:inter} For any $x$, each component of the interface of $\wet(x,\MM)$ contains a join vertex.
 \end{claim}
 
 \begin{proof} If $p \in \wet(x,\MM)$, all the points in any contour containing $p$ are also in $\wet(x,\MM)$.
@@ -1031,7 +1253,7 @@ and $\phi$ is dry.
 
 Note that $\wet(x,\MM)$ (and its interface) can be computed in time linear in the size of the wet simplicial complex.
 We perform a non-ascending search from $x$. Any face $F$ of $\MM$ encountered is partially (if not entirely) in $\wet(x,\MM)$.
-The wet portion is determined by cutting $F$ along the interface. Since each component of the interface connected subset of a contour, this is equivalent
+The wet portion is determined by cutting $F$ along the interface. Since each component of the interface is a contour, this is equivalent
 to locally cutting $F$ by a hyperplane. All these operations can be performed to output $\wet(x,\MM)$ in time linear in $|\wet(x,\MM)|$.
 
 
@@ -1060,7 +1282,7 @@ We describe the main partitioning procedure that cuts a simplicial complex $\NN$
 dominant complexes. It takes an additional input of a maximum $x$. To initialize,
 we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum. One of the critical aspects
 of the procedure is that the rain alternately flows downwards and upwards, 
-since otherwise faces may be cut a super constant number of times (see \Fig{order}).
+since otherwise faces may be cut a super constant number of times (see \Fig{order}\InSoCGVer{ in Appendix~\ref{sec:approach}}).
 In other words, when
 we start, rain flows downwards. In each recursive call, the direction of rain is switched to the 
 opposite direction. While one can implement $\rain$ this way, it is conceptually easier
@@ -1116,7 +1338,7 @@ The key to the running time of $\rain(x,\MM)$ is bounding the number of newly cr
 \begin{lemma}\label{lem:new-verts}
 A face $F \in \MM$ is cut\footnote{Technically what we are calling a single cut is done with two hyperplanes.} at most once during $\rain(x,\MM)$.
 \end{lemma}
-\begin{proof} All notation here follows that in the pseudocode of $\rain$.
+\begin{proof} Notation here follows the pseudocode of $\rain$.
 First, by \Thm{jordan}, all the pieces on which $\rain$ is invoked are disjoint.
 Second, all recursive calls are made on dry complexes.
 
@@ -1124,7 +1346,7 @@ Consider the first time that $F$ is cut, say, during the call to $\rain(x,\NN)$.
 Specifically, say this happens when $\cut(\NN_i,\phi'_i)$ is constructed. 
 $\cut(\NN_i,\phi'_i)$ will cut $F$ with two horizontal cutting planes, one $\eps$ above $\phi'_i$
 and one $\eps$ below $\phi'_i$.  This breaks $F$ into lower and upper portions which are then triangulated
-(there is also a discarded middle portion).  The lower portion, which is adjacent $\phi_i$, gets included 
+(there is also a discarded middle portion).  The lower portion, which is adjacent to $\phi_i$, gets included 
 in $\NN_{k+1}$, the complex containing the wet points, and hence does not participate in any later recursive calls.  
 The upper portion (call it $U$) is in $\LL_i$. Note that the lower
 boundary of $U$ is in the boundary $B_i$. Since a recursive call is made to $\rain(B_i,\LL_i)$
@@ -1166,15 +1388,32 @@ For vertex $v$, we use $\MM^+_v$ to denote the simplicial complex obtained by on
 keeping vertices $u$ such that $f(u) > f(v)$. Analogously, define $\MM^-_v$. Note that $\MM^+_v$ may contain
 numerous connected components. 
 
-The main theorem of this section asserts that the contours trees of minimum dominant manifolds have a simple description.
+\Ben{Read remainder of this section carefully, it has been cut up, and parts rewritten to fit.}
+
+
+\InNotSoCGVer{
+The main theorem of this section asserts that contour trees of minimum dominant manifolds have a simple description.
 The exact statement will require some definitions and notation.
 We require the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-00}.
 Conventionally, all edges are directed from higher to lower function value. 
+}
+\InSoCGVer{
+The main theorem of this section asserts that contour trees of minimum dominant manifolds have a simple description. 
+Intuitively, the cutting procedure of \Sec{rain} introduced ``stumps'' where we made cuts, which 
+is why we allowed for non-dominant minima and maxima in the definition of extremum dominant manifolds.  
+The punchline is that, ignoring these stumps, the contour tree of an extremum dominant manifold is equivalent to its \emph{join} (or \emph{split}) tree, defined in~\cite{csa-cctad-00}.
+Hence the critical join tree below is just the join tree without these stumps.  
+Precise definitions and proofs are given Appendix~\ref{sec:jstedm}.
+}
 
-\begin{definition} \label{join} The \emph{join tree} $\cJ(\MM)$ of $\MM$ is built on vertex set $V(\MM)$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\joinTreeSplitTreeMerge}{
+\begin{definition} \label{join} The \emph{join tree} $\cJ(\MM)$ of $\MM$ is built on vertex set $\cV(\MM)$.
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in a connected component of $\MM^+_v$
-\emph{and} $v$ is connected to this component (in $\MM$). The \emph{split tree} $\cS(\MM)$ is obtained
-by looking at $\MM^-_v$ (or alternately, by taking the join tree of the inversion of $\MM$). 
+\emph{and} $v$ is adjacent to a vertex in this component (in $\MM$). The \emph{split tree} $\cS(\MM)$ is obtained
+by looking at $\MM^-_v$ (or alternatively, by taking the join tree of the inversion of $\MM$). 
 \end{definition}
 
 
@@ -1190,7 +1429,6 @@ Specifically, for two adjacent vertices $u$ and $v$, $u$ is the parent of $v$ if
 
 
 The key observation is that $\cS(\MM)$ is trivial for a minimum dominant $\MM$.
-
 
 
 \begin{lemma} \label{lem:split} $\cS(\MM)$ consists of:
@@ -1228,7 +1466,7 @@ and the corresponding splits (as given by the lemma above) as $s_1, s_2, \ldots,
 Using the above lemma we can now prove that computing the contour tree for a minimum dominant manifold 
 amounts to computing its join tree.  Specifically, to prove our main theorem, we rely on the correctness of the
 merging procedure from~\cite{csa-cctad-00} that constructs the contour tree from the join and split trees. 
-It actually constructs the \emph{augmented contour tree} $\cA(\MM)$, which
+It actually constructs the \emph{augmented contour tree} $\cA(\MM)$, which is 
 obtained by replacing each edge in the contour tree with a path of all regular vertices 
 (sorted by height) whose corresponding contour belongs to the equivalence class of that edge.
 
@@ -1259,21 +1497,28 @@ delete $v$ and connect its neighbors by an edge (i.e.\ smooth $v$ out). This tre
 \end{minipage}}
 
 \medskip
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\InNotSoCGVer{\joinTreeSplitTreeMerge}
+
 
 \begin{definition} 
 \label{def:criticalJoin}
 The \emph{critical join tree} $\jc(\MM)$ is built on the set $V'$ of all
 critical points other than the non-dominant minima. 
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
-and $v$ is connected to this component (in $\MM$). 
+and $v$ \Ben{is adjacent to a vertex} in this component (in $\MM$). 
 \end{definition}
 
+\InSoCGVer{Each non-dominant minimum, $m_i$, connects to the contour tree at a corresponding split $s_i$. We have the following (see Appendix~\ref{sec:jstedm} for more details).}
 
 \begin{theorem} \label{thm:contour-tree} Let $\MM$ have a dominant minimum. 
 The contour tree $\cC(\MM)$ consists of all edges $\{(s_i, m_i)\}$ and $\jc(\MM)$.
 \end{theorem}
 
-
+\newcommand{\proofofContourJoinEquiv}{
 \begin{proof} We first show that $\cA(\MM)$ is $\cJ(\MM) \ominus \{m_i\}$ with edges $\{(s_i,m_i)\}$.
 We have flexibility in choosing the order of processing in $\merge$. We first put the non-dominant
 maxima $m_1, \ldots, m_k$ into the queue. As these are processed, the edges $\{(s_i,m_i)\}$ are inserted 
@@ -1284,6 +1529,16 @@ edges of $\cJ$ are inserted into $\cA(\MM)$.
 Note that $\cC(\MM)$ is obtained by smoothing out all regular points from $\cA(\MM)$. Similarly, smoothing out regular
 points from $\cJ(\MM) \ominus \{m_i\}$ yields the edges of $\jc(\MM)$.
 \end{proof}
+}
+
+\InNotSoCGVer{\proofofContourJoinEquiv}
+
+
+
+
+
+
+
 
 \section{Painting to compute contour trees}
 \label{sec:paint}
@@ -1295,15 +1550,15 @@ complex $\MM$.
 {\bf Painting:} The central tool is a notion 
 of \emph{painting} $\MM$. Initially associate a color with each maximum. Imagine there being a large
 can of paint of a distinct color at each maximum $x$. We will spill different paint from each maximum and watch it flow down.
-This is analogous to the raining in the previous section, but paint is a much more viscous liquid.
+This is analogous to the raining of \Sec{rain}, but paint is a much more viscous liquid.
 \emph{So paint only flows down edges, and it does not color the interior of higher dimensional faces.} Furthermore, paints
 do not mix, so every edge of $\MM$ gets a unique color. This process (and indeed the entire algorithm)
 works purely on the 1-skeleton of $\MM$, which is just a graph.
 %
 
-We now restate \Def{paint}.
+\InNotSoCGVer{We now restate \Def{paint1}.}
 
-\begin{definition} Let the 1-skeleton of $\MM$ have edge set $E$ and maxima $X$.
+\begin{definition} \label{def:paint2} Let the 1-skeleton of $\MM$ have edge set $E$ and maxima $X$.
 A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \to [|X|]$ with the following property. 
  Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
 	consisting of edges in $E$, such that all edges along this path have the same color as $x$. 
@@ -1311,21 +1566,21 @@ A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \to [|X|]$ with the followin
 An \emph{initial} painting has the additional property that the restriction $\chi:X \to [|X|]$ is a bijection.
 \end{definition}
 
-A painting only colors edges, not vertices. We associate certain
+A painting colors edges, not vertices. We associate certain
 sets of colors with vertices.
 
 \begin{definition} \label{def:color-set} Fix a painting $\chi$ and vertex $v$.
 \begin{asparaitem}
 	 \item An \emph{up-star} of $v$ is the set of edges that all connected to a fixed component of $\MM^+_v$.
-	 \item A vertex $v$ is \emph{touched by color $c$} if $x$ is incident to a $c$-colored
+	 \item A vertex $v$ is \emph{touched by color $c$} if $v$ is incident to a $c$-colored
 	 edge with $v$ at the lower endpoint. For $v$, $\col(v)$ is the set of colors that touch $v$.
-	 \item A color $c \in \col(v)$ \emph{fully touches} $v$ if all edges in an up-star are colored $v$.
+	 \item A color $c \in \col(v)$ \emph{fully touches} $v$ if all edges in an up-star are colored $c$.
 	 \item For any maximum $x\in X$, we say that $x$ is both touched and fully touched by $\chi(x)$.
 \end{asparaitem}
 \end{definition}
 
-Each non-maximum $v$ participates in at least $1$ and at most $2$ up-stars (the latter iff
-$v$ is a join).
+Non-maximum $v$ participate in at least $1$ and at most $2$ up-stars (the latter iff
+$v$ a join).
 
 
 \subsection{The data structures} \label{sec:struct}
@@ -1347,17 +1602,17 @@ For any color $c$, $\rep(c)$ denotes the representative of its class.
 
 \medskip
 \noindent
-{\bf The stack $\st$:} This consists of non-extremal critical points, with monotonically increasing
+{\bf The stack $\stack$:} This consists of non-extremal critical points, with monotonically increasing
 heights as we go from the base to the head.
 \ignore{
-Each point $x \in \st$ has an associated subset of $\col(x)$, denoted $\mcol(x)$.
+Each point $x \in \stack$ has an associated subset of $\col(x)$, denoted $\mcol(x)$.
 Both $\mcol(x)$ and its complement are stored as hash table. So lookups, inserts, and deletes
 are in these sets are all constant time operations. The stack is guaranteed to satisfy 
 the following invariants.
 \begin{asparaitem}
-	\item For every $x \in \st$: For every $c \in \mcol(x)$, $x$ is the highest element
+	\item For every $x \in \stack$: For every $c \in \mcol(x)$, $x$ is the highest element
 	in $T(c)$. Furthermore, $c = \rep(c)$.
-	\item Consider $x, y \in \st$ such that $y$ was pushed on $x$. There exists $c \in \col(x) \setminus
+	\item Consider $x, y \in \stack$ such that $y$ was pushed on $x$. There exists $c \in \col(x) \setminus
 	\mcol(x)$ such that $x$ is not highest in $T(c)$ but $y$ is highest in $T(c)$.
 \end{asparaitem}
 }
@@ -1408,7 +1663,7 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 	\item Run $\init(\MM)$.
 	\item While there are unprocessed critical points:
 	\begin{compactenum}
-		\item Run $\update(\st)$. Pop $\st$ to get $h$.
+		\item Run $\update(\stack)$. Pop $\stack$ to get $h$.
 		\item Let $\cur(h) = \{\rep(c) | c \in \col(h)\}$.
 		\item For all $c' \in \cur(h)$:
 		\begin{compactenum}
@@ -1425,16 +1680,16 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 \medskip
 \fbox{
 \begin{minipage}{0.9\textwidth}
-{\bf $\update(\st)$}
+{\bf $\update(\stack)$}
 
 \smallskip
 \begin{compactenum}
 	\item If $K$ is empty, push arbitrary unprocessed critical point $v$.
-	\item Let $h$ be head of $\st$.
+	\item Let $h$ be head of $\stack$.
 	\item While $h$ is not ripe:
 	\begin{compactenum}
 		\item Find $c \in \col(h)$ such that $h$ is not the highest in $T(\rep(c))$.
-		\item Push the highest of $T(\rep(c))$ onto $\st$, and update head $h$.
+		\item Push the highest of $T(\rep(c))$ onto $\stack$, and update head $h$.
 	\end{compactenum}
 \end{compactenum}
 \end{minipage}}
@@ -1446,7 +1701,7 @@ A few simple facts:
 	\item At all times, the colors form a valid painting.
 	\item Each vertex is present in at most $2$ heaps. After processing, it is removed from all heaps.
 	\item After $v$ is processed, all edges incident to $v$ have the same color (more technically, the same representative). 
-%	\item When $\update(\st)$ terminates, the head $h$ is ripe. 
+%	\item When $\update(\stack)$ terminates, the head $h$ is ripe. 
 	\item Vertices on the stack are in increasing height order. 
 \end{compactitem}
 
@@ -1629,7 +1884,7 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
 
 % The following crucial claim demonstrates the utility of the stack.
 % 
-% \begin{claim} \label{clm:stack} Vertices are always pushed onto $\st$ in increasing order of height.
+% \begin{claim} \label{clm:stack} Vertices are always pushed onto $\stack$ in increasing order of height.
 % \end{claim}
 % 
 % \begin{proof} Consider a single push onto the stack and the current painting. We have $c \in \col(h)$, as given in pseudocode of $\update$.
@@ -1663,6 +1918,7 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
 
 \subsection{Running Time}
 \label{sec:runTime}
+\Ben{This section needs to be reduced dramatically in size.}
 
 We now bound the running time of the above algorithm.  In the subsequent sections we will then provide a 
 matching lower bound for the running time.  Therefore, it will be useful to set up some terminology that can 
@@ -1750,10 +2006,21 @@ are merged together.  By the above arguments the sizes of the queues for each of
 As merging and deleting takes logarithmic time in the heap size for binomial heaps, the claim now follows.
 \end{proof}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\pathTree}{P_{\mathcal{S}}}
-\newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
+\newcommand{\leafAssignPathDecomp}{
 \section{Leaf assignments and path decompositions}
 \label{sec:pathDecomp}
 
@@ -2214,7 +2481,8 @@ We now show that \Thm{runtime} allows us to upper bound the running time for our
 tree algorithms in terms of path decompositions.
 
 \begin{theorem}
-Consider a PL-Morse $f:\MM \to \RR$, where the join tree $\jc(\MM)$ has maximum degree $3$. 
+%Consider a PL-Morse $f:\MM \to \RR$, where the join tree $\jc(\MM)$ has maximum degree $3$.
+Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the join tree $\jc(\MM)$ has maximum degree $3$.
 There is an algorithm to compute the join tree whose running time is $O(\sum_{p \in \pmax(\jc)} |p|\log |p| + t\alpha(t) + N)$.
 \end{theorem}
 \begin{proof}
@@ -2227,8 +2495,9 @@ time to correctly compute $\jc(\MM)$.
 This result for join trees easily implies our main result, \Thm{main-alg}, which we now restate and prove.
 
 \begin{theorem}
-Consider a PL-Morse $f:\MM \to \RR$, where the contour tree $\cC=\cC(\MM)$
-has maximum degree $3$. There is an algorithm to compute $\cC$ whose running time is $O(\sum_{p \in P(\cC)} |p|\log |p| + t\alpha(t) + N)$,
+%Consider a PL-Morse $f:\MM \to \RR$, where the contour tree $\cC=\cC(\MM)$ has maximum degree $3$. 
+Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the contour tree $\cC=\cC(\MM)$ has maximum degree $3$. 
+There is an algorithm to compute $\cC$ whose running time is $O(\sum_{p \in P(\cC)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 \end{theorem}
 \begin{proof}
@@ -2260,13 +2529,46 @@ O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alp
 
 %\Thm{contour-tree} implies that given an $\jc(\MM)$ for an etremum dominant $\MM$, we can obtain $\cC(\MM)$ in by simply sticking on the non-dominant minima at their respective splits (which can easily be done in linear time). 
 \end{proof}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\InSoCGVer{
+\Ben{Summarize Appendix~\ref{sec:pathDecomp} on path decomposition upped bound here.}
+}
+
+\InNotSoCGVer{
+\leafAssignPathDecomp
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
-
-
-
-
+\newcommand{\lowerBoundbyPathDecomp}{
 \section{Lower Bound by Path Decomposition}
 \label{sec:lb}
 We first prove a lower bound for join trees, and then generalize to contour trees.
@@ -2311,7 +2613,7 @@ such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ 
 
 
  Now we describe how to attach two different diamonds.  In this process, we glue the base of a scaled down ``child'' diamond on to a triangular cone face of the larger  ``parent'' diamond (see \Fig{diamond}).
- Specifically, the anchor of the child diamond is attached directly to a face of the parent diamond at some height $h$. The remaineder of the base of the child cone is then 
+ Specifically, the anchor of the child diamond is attached directly to a face of the parent diamond at some height $h$. The remainder of the base of the child cone is then 
  extended down (at a slight angle) until it hits the face of the parent.
  
  The full terrain is obtained by repeatedly gluing diamonds. For each path $p_i\in P$, we create a diamond of size $|p_i|+1$.
@@ -2442,19 +2744,6 @@ of the initial vertex is rooted at a maximum.  For simplicity we require that th
 also contains a minimum.}
 \end{definition}
 
-%
-%Consider our algorithm on a fixed $(f,\MM)$.  First we run $\rain(x,\MM)$ to partition the input 
-%into extreme dominant complexes.  To make this partition uniquely defined lets say that the initial vertex $x$
-%that rain is called from is the global maximum in the input (note that given a specific $x$ the partition is uniquely defined).
-%Let $\MM_1, \dots, \MM_k$ be the set of produced subcomplexes, and let $f_i$ be the restriction of $f$ to $\MM_i$.
-%Now on each of the $(f_i,\MM_i)$ we run the $\paint$ procedure to compute the join tree of $(f_i, \MM_i)$.
-%As described in the previous section, this painting procedure defines a maximum path decomposition with 
-%and associated cost, $\cost_{\jc}(f_i) = \sum_{p\in P_i} |p|\log |p|$.  
-%It is not hard to see that the union of these paths decomposition $P= \cup_{i=1}^k P_i$ defines 
-%a rain consistent path decomposition of the contour tree for $(f,\MM)$.  
-%In particular for a fixed $\MM$, $f$ defines a specific path decomposition $P=P(f)$, which we call the \emph{rain consistent maximum path decomposition}, 
-%and we write $\cost(f) = \sum_{p\in P} |p|\log |p|$.
-
 The following is analogous to \Lem{pathDecomp}, and in particular uses it as a subroutine.
 
 \begin{lemma}
@@ -2516,17 +2805,6 @@ Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparison
 Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
 \end{theorem}
 
-%
-%
-%Call a cost $C$ valid if $C = cost(f)$ for some $f$ defined over a given complex $\MM$.
-%For the same reason that \Thm{joinLB} followed from \Lem{pathDecomp} and \Lem{cost}, we now have the following. 
-%
-%\begin{theorem}
-%Consider the set of functions $\bF_C$ that all have the same valid cost $C$.  
-%Any height function decision tree that correctly computes
-%the contour tree on all of $\bF_C$, has an average case (uniform over $\bF_C$) running time of $\Omega(C)$.
-%\end{theorem}
-
 \begin{remark}
  Note that for the terrains described in this section, the number of critical points is within a constant factor of 
  the total number of vertices.  In particular, for this family of terrains, all previous algorithms required $\Omega(n\log n)$ time.
@@ -2534,45 +2812,109 @@ Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |
 }
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \section{Temp}
-% Given a contour tree we allow any path decomp, as long as each path contains a maxima or minima (or both).
-% We call a path $p$ in the decomp a min (resp. max) path if it contains a minima (resp. maxima) (note a path can be both).
-% For every path we create a cylinder with $m$ faces for $p$, where $m$ is the number of non-leaf vertices in $p$ (either $|p|-1$ or $|p|-2$).  
-% If $p$ has a maxima we put a top cone cap on the cylinder, and if it contains a manima then put a bottom cone cap (i.e.\ the cap represents the maxima or minima).
-% 
-% Every edge $e$ in $T$, but not in a path decomp. tells us how to glue together cylinders.  Let $u$ be the upper endpoint of $e$ and $l$ the lower endpoint.
-% 
-% First we ``remove'' all edges $e$ such that $u$ is adjacent to a max path and $l$ adjacent to a min path by joining the free ends of the respective cylinder together.
-% Hence we can assume no such edges exist.  Now we have three cases:
-% 
-% \begin{enumerate}[{Case} 1]
-%  \item 
-% $l$ is adjacent to a min path:\newline
-% Note in this case the path containing $u$ must be a min path.
-% In this case connect the bottom of the cylinder for the path containing $l$ into a face of the cylinder for the path containing $u$.
-% \item
-% $l$ is adjacent to a max path and $u$ is adjacent to a max path:\newline
-% In this case connect the bottom of the cylinder for the path containing $u$ into a face of the cylinder for the path containing $l$.
-% \item
-% $l$ is adjacent to a max path and $u$ is adjacent to a min path:\newline
-% Connect a face of the cylinder for the $u$ path (using a split) to a face of the cylinder for the $l$ path (using a join).
-% \end{enumerate}
-%}
+\InSoCGVer{
+\Ben{summarize Appendix \ref{sec:lb}, the lower bound section, result here.}
+}
+\InNotSoCGVer{
+\lowerBoundbyPathDecomp
+}
 
 
-\paragraph{Acknowledgements.}
+
+\myparagraph{Acknowledgements.}
 We thank Hsien-Chih Chang, Jeff Erickson, and Yusu Wang for numerous useful discussions. This work is
 supported by the Laboratory Directed Research and Development
 (LDRD) program of Sandia National Laboratories. Sandia National
 Laboratories is a multi-program laboratory managed and operated
 by Sandia Corporation, a wholly owned subsidiary of Lockheed
-Martin Corporation, for the U.S. Department of Energy’s National
+Martin Corporation, for the U.S. Department of Energy's National
 Nuclear Security Administration under contract DE-AC04-94AL85000.
 
-
+\InNotSoCGVer{
 \bibliographystyle{alpha}
+%\bibliographystyle{plain}
+}
+
+\InSoCGVer{
+\bibliographystyle{plain}
+}
+
 \bibliography{contour}
+
+
+
+
+
+
+
+
+
+
+
+
+\InSoCGVer{
+\appendix
+
+\intuitionSection
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Some technical remarks}
+\label{sec:techmarks}
+The following is a continuation from the end of \Sec{basics}.
+
+\technicalRemarks
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Proof of Surgery}
+\label{sec:proofOfSurgery}
+\surgeryBody
+That is, Theorem~\ref{thm:jordan}, which is proven below.
+\proofofDisconnected
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Join and Split Trees of Extremum Dominant Manifolds}
+\label{sec:jstedm}
+In this section we prove Theorem~\ref{thm:contour-tree} (of \Sec{extreme}), which states the equivalence 
+of the contour tree on extremum dominant manifolds and the critical join tree of Definition~\ref{def:criticalJoin}.
+This proof requires some definitions and notation, specially
+the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-00}.
+Conventionally, all edges are directed from higher to lower function value. 
+
+\joinTreeSplitTreeMerge
+
+% We now prove Theorem~\ref{thm:contour-tree} (of Section~\ref{sec:extreme}), which states the equivalence 
+% of the contour tree on extremum dominant manifolds and the critical join tree of Definition~\ref{def:criticalJoin}.
+We are now ready to prove Theorem~\ref{thm:contour-tree}.
+\proofofContourJoinEquiv
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\leafAssignPathDecomp
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lowerBoundbyPathDecomp
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\InsertAppendixOfProofs
+}
+
+
+
+
+
+
 
 
 
