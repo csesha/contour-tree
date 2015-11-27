@@ -483,7 +483,8 @@ Then a \emph{path decomposition}, $P(T)$, is a partition of the vertices of $T$ 
 \Ben{Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the contour tree $T$
 has maximum degree $3$}.\footnote{The degree $\leq 3$ assumption helps simplify the proof and presentation, and is often made, as in \cite{kobps-ctsssit-97}.}\Ben{See footnote} 
 There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
-where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
+where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm)\Ben{More than one reviewer has complained about the running 
+time being stated as a function of our algorithm.  So Rephrase, and maybe discussion about connection to sorting.}.
 
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
 \end{theorem}
@@ -700,7 +701,7 @@ Therefore, to simplify the presentation, for the remainder of the paper up and d
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\InSoCGVer{See Appendix~\ref{sec:techmarks} for further technical remarks on the above definitions.}
+\InSoCGVer{See \Sec{techmarks} for further technical remarks on the above definitions.}
 \newcommand{\technicalRemarks}{
 %\subsection{Some technical remarks}
 Note that if one intersects $\MM$ with a given ball $B$, then a single contour in $\MM$ might be split into more than one contour in the intersection. 
@@ -782,7 +783,7 @@ vertices which are higher than $v$.
 The \emph{critical join tree} $\jc(\MM)$ is built on the set $\cV$ of all critical points.\footnote{%
 In Definition~\ref{def:criticalJoin}, we define the critical join tree on a certain subset of $\cV$.}
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $\cV$ in a connected component of $\MM^+_v$
-and $v$ is adjacent to a vertex in this component (in $\MM$). 
+and $v$ is adjacent (in $\MM$) to a vertex in this component. 
 \end{definition}
 
 Abusing notation, for now we will just call this the join tree. (In \Sec{extreme} we carefully handle the distinction 
@@ -1035,7 +1036,7 @@ we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree.
 \Ben{New section:}
 The final algorithm is quite technical and has numerous moving parts. However, for the $d=2$ case, 
 where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
-can be explained clearly. Therefore, in Appendix~\ref{sec:approach} we provide a high level view of the entire result.
+can be explained clearly. Therefore, in \Sec{approach} we provide a high level view of the entire result.
 We strongly encourage the reader to overview this section, as then the remainder of the paper can be understood 
 as a simple matter of implementing these ideas.
 
@@ -1113,7 +1114,7 @@ This is how it is eventually used in Claim\ref{clm:rain-reeb}. Currently it does
 
 \medskip
 
-\InSoCGVer{The following theorems are intuitively obvious, and are proven in Appendix~\ref{sec:proofOfSurgery}.}
+\InSoCGVer{The following theorems are intuitively obvious, and are proven in \Sec{proofOfSurgery}.}
 
 \begin{theorem} \label{thm:surgery} For any regular contour $\phi$, the output of $\surgery(\MM,\phi)$ is $\reeb(\MM)$.
 \end{theorem}
@@ -1282,7 +1283,7 @@ We describe the main partitioning procedure that cuts a simplicial complex $\NN$
 dominant complexes. It takes an additional input of a maximum $x$. To initialize,
 we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum. One of the critical aspects
 of the procedure is that the rain alternately flows downwards and upwards, 
-since otherwise faces may be cut a super constant number of times (see \Fig{order}\InSoCGVer{ in Appendix~\ref{sec:approach}}).
+since otherwise faces may be cut a super constant number of times (see \Fig{order}\InSoCGVer{ in \Sec{approach}}).
 In other words, when
 we start, rain flows downwards. In each recursive call, the direction of rain is switched to the 
 opposite direction. While one can implement $\rain$ this way, it is conceptually easier
@@ -1403,7 +1404,7 @@ Intuitively, the cutting procedure of \Sec{rain} introduced ``stumps'' where we 
 is why we allowed for non-dominant minima and maxima in the definition of extremum dominant manifolds.  
 The punchline is that, ignoring these stumps, the contour tree of an extremum dominant manifold is equivalent to its \emph{join} (or \emph{split}) tree, defined in~\cite{csa-cctad-00}.
 Hence the critical join tree below is just the join tree without these stumps.  
-Precise definitions and proofs are given Appendix~\ref{sec:jstedm}.
+Precise definitions and proofs are given \Sec{jstedm}.
 }
 
 
@@ -1509,10 +1510,10 @@ delete $v$ and connect its neighbors by an edge (i.e.\ smooth $v$ out). This tre
 The \emph{critical join tree} $\jc(\MM)$ is built on the set $V'$ of all
 critical points other than the non-dominant minima. 
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
-and $v$ \Ben{is adjacent to a vertex} in this component (in $\MM$). 
+and $v$ \Ben{is adjacent (in $\MM$) to a vertex} in this component. 
 \end{definition}
 
-\InSoCGVer{Each non-dominant minimum, $m_i$, connects to the contour tree at a corresponding split $s_i$. We have the following (see Appendix~\ref{sec:jstedm} for more details).}
+\InSoCGVer{Each non-dominant minimum, $m_i$, connects to the contour tree at a corresponding split $s_i$. We have the following (see \Sec{jstedm} for more details).}
 
 \begin{theorem} \label{thm:contour-tree} Let $\MM$ have a dominant minimum. 
 The contour tree $\cC(\MM)$ consists of all edges $\{(s_i, m_i)\}$ and $\jc(\MM)$.
@@ -1646,7 +1647,7 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 	\item Determine all critical points in $\MM$. For each $v$, look at $(f(v) \pm \delta)$-contours in $f|_{B_\eps(v)}$ 
 	to determine the up and down degrees. 
 	\item Mark each critical $v$ as unprocessed.
-	\item For each critical $v$ and each up-star, pick arbitrary color $c$ touching $v$. Insert $v$ into $T(c)$.
+	\item For each critical $v$ and each up-star, pick an arbitrary color $c$ touching $v$. Insert $v$ into $T(c)$.
 	\item Initialize $\rep(c) = c$ and set $\h(c)$ to be the unique maximum colored $c$.
 	\item Initialize $K$ to be an empty stack.
 \end{compactenum}
@@ -1685,7 +1686,7 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 \smallskip
 \begin{compactenum}
 	\item If $K$ is empty, push arbitrary unprocessed critical point $v$.
-	\item Let $h$ be head of $\stack$.
+	\item Let $h$ be the head of $\stack$.
 	\item While $h$ is not ripe:
 	\begin{compactenum}
 		\item Find $c \in \col(h)$ such that $h$ is not the highest in $T(\rep(c))$.
@@ -1700,7 +1701,7 @@ A few simple facts:
 \begin{compactitem}
 	\item At all times, the colors form a valid painting.
 	\item Each vertex is present in at most $2$ heaps. After processing, it is removed from all heaps.
-	\item After $v$ is processed, all edges incident to $v$ have the same color (more technically, the same representative). 
+	\item After $v$ is processed, all edges incident to $v$ have the same (representative) color. %(more technically, the same representative). 
 %	\item When $\update(\stack)$ terminates, the head $h$ is ripe. 
 	\item Vertices on the stack are in increasing height order. 
 \end{compactitem}
@@ -1916,19 +1917,39 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
 % }
 % \end{proof}
 
-\subsection{Running Time}
-\label{sec:runTime}
-\Ben{This section needs to be reduced dramatically in size.}
 
-We now bound the running time of the above algorithm.  In the subsequent sections we will then provide a 
-matching lower bound for the running time.  Therefore, it will be useful to set up some terminology that can 
-be used consistently in both places.  Specifically, the lower bound proof will be a purely combinatorial 
-statement on colored rooted trees, and so the terminology is of this form.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newcommand{\algorithmRunTimeSection}{
+\InNotSoCGVer{\subsection{Running Time}}
+\InSoCGVer{\section{Running Time}}
+\label{sec:runTime}
+
+We now bound the running time of the algorithm of \Sec{algo}.  
+In subsequent sections, through a sophisticated charging argument, this bound is then related to matching upper 
+and lower bounds in terms of path decompositions. 
+%In the subsequent sections we will then provide a matching lower bound for the running time.  
+Therefore, it will be useful to set up some terminology that can 
+be used consistently in both places.  Specifically, the path decomposition bounds will be purely combinatorial 
+statements on colored rooted trees, and so the terminology is of this form.
 
 Any tree $T$ considered in following will be a rooted binary tree\footnote{Note 
-that technically the trees considered should have a leaf vertex hanging below the root of this 
+that technically the trees considered should have a leaf vertex hanging below the root  
 in order to represent the global minimum of the complex.  This vertex is 
-(safely) ignored to simplify the presentation.} where the height of a vertex is its distance 
+(safely) ignored to simplify presentation.} where the height of a vertex is its distance 
 from the root $r$ (i.e.\ conceptually $T$ will be a join tree with $r$ at the bottom).  
 As such, the children of a vertex $v\in T$ are the adjacent vertices of larger height
 (and $v$ is the parent of such vertices).  Then the subtree rooted at $v$, denoted $T_v$ consists of the graph induced on all 
@@ -1946,7 +1967,7 @@ For a set of nodes $U$, $A(U) = \bigcup_{u \in U} A(u)$.
 \end{definition}
 
 For a vertex $v\in T$, we use $H_v$ to denote the \emph{heap} at $v$.
-Formally, $H_v = \{u | u \in A(v), \chi(u) \cap L(T_v) \neq \emptyset\}$.
+Formally, $H_v = \{u | u \in A(v), \chi(u) \cap L(T_v) \neq \emptyset\}$, where $L(T_v)$ is the set of leaves of $T_v$.
 In words, $H_v$ is the set of ancestors of $v$ which are colored by some leaf in $T_v$.
 
 % We will use the $H_v$ values for a given $\chi$ to define a specific path decomposition of $T$ \Def{path}.
@@ -2005,6 +2026,37 @@ Now when $v$ is handled, three queue operations are performed.  Specifically, $v
 are merged together.  By the above arguments the sizes of the queues for each of these operations are $H_{c_1}$, $H_{c_2}$, and $H_v$, respectively.  
 As merging and deleting takes logarithmic time in the heap size for binomial heaps, the claim now follows.
 \end{proof}
+}
+
+\InNotSoCGVer{\algorithmRunTimeSection}
+%%%%%%%%%%%%%%%%%%%%
+\InSoCGVer{
+\subsection{Upper and Lower bounds for Running Time}
+We now bound the running time of the algorithm of \Sec{algo}. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Ben{Summarize \Sec{runTime} on the run time in terms of heap sizes.}
+
+\Ben{Summarize \Sec{pathDecomp} on path decomposition upped bound here.}
+
+\Ben{summarize \Sec{lb}, the lower bound section, result here.}
+
+% % We complement \Thm{main-alg} with a lower bound, suggesting that the comparison model complexity
+% % of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
+% % of the lower bound requires some care. Consider the $d=2$ (terrain) case.
+% Let a path decomposition $P$ be called \emph{valid} if it is actually output by the algorithm on some input.
+% \begin{theorem} 
+% \label{thm:main-lb}
+% Consider a valid path decomposition $P$. There exists a family $\bF_P$ of terrains (i.e.\ $d=2$) with the following properties.
+% Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
+% Furthermore, for any terrain in $\bF_P$, the algorithm of \Thm{main-alg} makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
+% \end{theorem}
+% 
+% In other words, for any path decomposition, $P$, that our algorithm chooses, we can design a hard family where any 
+% algorithm requires $\sum_{p \in P} |p|\log |p|$ time in the worst case, and our algorithm matches this bound. 
+}
+%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2545,10 +2597,6 @@ O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\InSoCGVer{
-\Ben{Summarize Appendix~\ref{sec:pathDecomp} on path decomposition upped bound here.}
-}
-
 \InNotSoCGVer{
 \leafAssignPathDecomp
 }
@@ -2819,9 +2867,6 @@ Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\InSoCGVer{
-\Ben{summarize Appendix \ref{sec:lb}, the lower bound section, result here.}
-}
 \InNotSoCGVer{
 \lowerBoundbyPathDecomp
 }
@@ -2896,6 +2941,10 @@ Conventionally, all edges are directed from higher to lower function value.
 % of the contour tree on extremum dominant manifolds and the critical join tree of Definition~\ref{def:criticalJoin}.
 We are now ready to prove Theorem~\ref{thm:contour-tree}.
 \proofofContourJoinEquiv
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\algorithmRunTimeSection
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
