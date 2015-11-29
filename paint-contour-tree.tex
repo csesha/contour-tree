@@ -1033,7 +1033,7 @@ we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree.
 
 \InSoCGVer{
 \subsection{How to Read this paper}
-\Ben{New section:}
+\Ben{New section, read carefully:}
 The final algorithm is quite technical and has numerous moving parts. However, for the $d=2$ case, 
 where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
 can be explained clearly. Therefore, in \Sec{approach} we provide a high level view of the entire result.
@@ -1051,8 +1051,9 @@ Roughly speaking the resulting pieces are ``nice'' because the contour tree of e
 looks like a rooted tree, i.e.\ the join tree of \cite{csa-cctad-00}, and the precise relation to join trees is the subject of \Sec{extreme}.
 \Sec{paint} then describes how to optimally compute the join tree (and hence the contour tree) 
 on each piece (see Appendix~\ref{sec:approach} for discussion on why the join tree should not be computed directly on the input complex). 
-\Ben{Mention lower bound an analysis sections which are going to be moved to appendix.}
-
+Finally, \Sec{runTimeSummary} summarizes all sections relating to the running time, specifically \Sec{runTime} which upper bound the 
+running time of the algorithm of \Sec{paint}, \Sec{pathDecomp} which uses a sophisticated charging argument to express this bound 
+in terms of path decompositions, and \Sec{lb} which provides matching running time lower bounds.
 }
 
 \InNotSoCGVer{
@@ -2031,16 +2032,83 @@ As merging and deleting takes logarithmic time in the heap size for binomial hea
 \InNotSoCGVer{\algorithmRunTimeSection}
 %%%%%%%%%%%%%%%%%%%%
 \InSoCGVer{
-\subsection{Upper and Lower bounds for Running Time}
-We now bound the running time of the algorithm of \Sec{algo}. 
+\subsection{Upper and Lower bounds for Running Time}\label{sec:runTimeSummary}
+The full running time analysis can be found in \Sec{runTime}, \Sec{pathDecomp}, and \Sec{lb}, or in the full version \CiteFullVer.  
+The main results of these sections are summarized here.
+%
+In \Sec{runTime}, we give a tight bound on the running time of $\build(\MM)$, as a function of the choices made by the subroutine $\init(\MM)$.
+To state this bound we require the following technical definitions (which are repeated in \Sec{runTime}).  
+
+\begin{definition}
+A \emph{leaf assignment} $\chi$ of a binary tree $T$ assigns \emph{two} distinct leaves to each internal vertex $v$,
+one from the left and one from the right subtree of $v$ (or only one leaf if $v$ has only one child). % naturally if $v$ has only one child it is assigned only one color). 
+The subroutine $\init(\MM)$ naturally defines a leaf assignment to $\jc(\MM)$ (which 
+is a rooted binary tree) according to the priority queue for each up-star we put a given vertex in.  
+Call this the \emph{initial coloring} of the vertices in $\jc(\MM)$, and denote it by $\chi$.  
+
+For a vertex $v$ in $\jc(\MM)$, let $L(v)$ denote the set of leaves of the subtree rooted at $v$, and let $A(v)$ denote the set of 
+ancestors of $v$, i.e.\ the vertices on the $v$ to root path. For a vertex $v\in \jc(\MM)$, and an initial coloring $\chi$, 
+we use $H_v$ to denote the \emph{heap} at $v$. Formally, $H_v = \{u | u \in A(v), \chi(u) \cap L(v) \neq \emptyset\}$, i.e.\
+the set of ancestors colored by some leaf in $L(v)$.
+\end{definition}
+
+The algorithm $\build(\MM)$ processes vertices in $\jc(\MM)$ one at a time.  The main processing cost  
+comes from priority queue operations.  The heap as defined above characterizes the  
+priority queue size at the time a vertex gets processed and hence we get the following.
+
+\begin{lemma}
+Let $\MM$ be a simplicial complex with $t$ critical points.  
+The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$, where $H_v$ is defined by an initial coloring.
+%For every vertex in $\jc(\MM)$, let $H_v$ be defined by the initial coloring of $\MM$.
+%The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$.
+\end{lemma}
+
+While the above gives a full running time characterization, ideally the bound should be expressed as   
+a function of some structural property of $\jc(\MM)$.
+This is the focus of \Sec{pathDecomp}, where it is shown that for any binary tree $T$ 
+the $H_v$ sets (defined by any leaf assignment) naturally induces a path decomposition of $T$ (see \Def{path}), 
+denoted $\pmax(T)$ (see \Sec{pathDecomp} for details).   
+
+% Specifically, the main result of \Sec{pathDecomp} is the following theorem, which together with the above 
+% bound in terms of heap size immediately implies our main result, Theorem~\ref{thm:main-alg} .
+
+\begin{theorem} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in \pmax(T)} |p| \log |p|)$.
+\end{theorem}
+
+The above is a purely combinatorial statement on binary trees, and may find applications in other charging arguments.  
+However, for the specific when $T=\jc(\MM)$, plugging this theorem into the above lemma, and applying this lemma 
+to each subcomplex piece output by $\rain$, yields our main result, Theorem~\ref{thm:main-alg}.
+
+The path decomposition $\pmax(T)$ is a function of the choices made by the linear time $\init(\MM)$.  
+One cannot control which path decomposition $\init$ determines, as sorting can be reduced to finding the optimal path decomposition.  
+Specifically, in \Sec{lb} we exploit this connection to prove the following matching lower bound for our approach.
+In the following a rain consistent path decomposition is a decomposition which is the union of paths from 
+any decomposition on each subcomplex output by $\rain$ (see Definition~\ref{def:path2} for a formal definition).
+
+% \begin{theorem}
+% Consider a rooted tree $T$ and an arbitrary path decomposition $P$ of $T$.
+% There is a family $\bF_P$ of terrains such that any algebraic decision
+% tree computing the join tree (on $\bF_P$) requires $\Omega(\sum_{p \in P} |p|\log |p|)$ time.
+% Furthermore, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons on all these instances.
+% \end{theorem}
+% 
+% The result can also 
+% For simplicity we now restrict our attention to path decompositions 
+% consistent with the raining procedure described in \Sec{rain} 
+% (more general decompositions can work, but it is not needed for our purposes).
+% 
+% Note that in the above $T$ is assumed to be a rooted tree, and so the contour tree is equivalent to the join tree.   
+% In general our input $\MM$ will not have a contour tree with this structure, which is why we required the cutting procedure of \Sec{rain}.  
+% The above result can be extended to such general contour trees, however, here we restrict to rain consistent path decomposition, 
+% i.e.\ decompositions which are the union of paths decompositions from each piece (see \ref{def:path2} for a formal definition)
+
+\begin{theorem} 
+Consider any rain consistent path decomposition $P$. There exists a family $\bF_P$ of terrains ($d=2$) with the following properties.
+Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
+Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
+\end{theorem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\Ben{Summarize \Sec{runTime} on the run time in terms of heap sizes.}
-
-\Ben{Summarize \Sec{pathDecomp} on path decomposition upped bound here.}
-
-\Ben{summarize \Sec{lb}, the lower bound section, result here.}
 
 % % We complement \Thm{main-alg} with a lower bound, suggesting that the comparison model complexity
 % % of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
@@ -2716,7 +2784,7 @@ We show that regardless of how paint spilling is done, the number of heap operat
  
  Take any join $v$, with two children $w_1$ and $w_2$. Suppose $w_1$ and $v$ belong to the same path
  in the decomposition. The key is that any color from a maximum in the subtree at $w_2$ cannot touch
- any ancestor of $v$. This subtree is exactly the contour tree of the child diamond attached at $v$.
+ any ancestor of $v$. This subtree is exactly the join tree of the child diamond attached at $v$.
  The base of this diamond is completely contained in a face of the parent diamond. So all colors
  from the child ``drain off" to the base of the parent, and do not touch any joins on the parent diamond.
  
@@ -2746,7 +2814,8 @@ the previous lemmas.
 \begin{theorem}\label{thm:joinLB}
 Consider a rooted tree $T$ and an arbitrary path decomposition $P$ of $T$.
 There is a family $\bF_P$ of terrains such that any algebraic decision
-tree computing the contour tree (on $\bF_P$) requires $\Omega(\sum_{p \in P} |p|\log |p|)$ time.
+tree computing the join tree\footnote{Note that for the referenced family of terrains, the join tree and contour tree are equivalent} 
+(on $\bF_P$) requires $\Omega(\sum_{p \in P} |p|\log |p|)$ time.
 Furthermore, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons on all these instances.
 %
 %Consider the set of functions $\bF_C$ that all have the same join tree valid cost $C$.  
