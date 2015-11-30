@@ -484,7 +484,9 @@ Then a \emph{path decomposition}, $P(T)$, is a partition of the vertices of $T$ 
 has maximum degree $3$}.\footnote{The degree $\leq 3$ assumption helps simplify the proof and presentation, and is often made, as in \cite{kobps-ctsssit-97}.}\Ben{See footnote} 
 There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm)\Ben{More than one reviewer has complained about the running 
-time being stated as a function of our algorithm.  So Rephrase, and maybe discussion about connection to sorting.}.
+time being stated as a function of our algorithm.  So rephrase or add remark/footnote saying controlling which path decomp is used is like knowing the right ordering 
+before sorting, but unlike sorting, there are certain contour tree shapes such that there is no bad path decomp.  This somewhat said in the paragraph below, 
+but reviewers are not getting it.}.
 
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
 \end{theorem}
@@ -786,7 +788,7 @@ The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $
 and $v$ is adjacent (in $\MM$) to a vertex in this component. 
 \end{definition}
 
-Abusing notation, for now we will just call this the join tree. (In \Sec{extreme} we carefully handle the distinction 
+Abusing notation, for now we will just call this the join tree. (In \Sec{extreme} \InSoCGVer{and \Sec{jstedm}} we carefully handle the distinction 
 between the join tree and the critical join tree.)
 Refer to \Fig{sorting} for the join tree of a terrain. Note that nothing happens at splits, but these
 are still put as vertices in the join tree. They simply form a long path. The split tree
@@ -1051,7 +1053,7 @@ Roughly speaking the resulting pieces are ``nice'' because the contour tree of e
 looks like a rooted tree, i.e.\ the join tree of \cite{csa-cctad-00}, and the precise relation to join trees is the subject of \Sec{extreme}.
 \Sec{paint} then describes how to optimally compute the join tree (and hence the contour tree) 
 on each piece (see Appendix~\ref{sec:approach} for discussion on why the join tree should not be computed directly on the input complex). 
-Finally, \Sec{runTimeSummary} summarizes all sections relating to the running time, specifically \Sec{runTime} which upper bound the 
+Finally, \Sec{runTimeSummary} summarizes all sections relating to the running time, specifically \Sec{runTime} which upper bounds the 
 running time of the algorithm of \Sec{paint}, \Sec{pathDecomp} which uses a sophisticated charging argument to express this bound 
 in terms of path decompositions, and \Sec{lb} which provides matching running time lower bounds.
 }
@@ -1405,7 +1407,7 @@ Intuitively, the cutting procedure of \Sec{rain} introduced ``stumps'' where we 
 is why we allowed for non-dominant minima and maxima in the definition of extremum dominant manifolds.  
 The punchline is that, ignoring these stumps, the contour tree of an extremum dominant manifold is equivalent to its \emph{join} (or \emph{split}) tree, defined in~\cite{csa-cctad-00}.
 Hence the critical join tree below is just the join tree without these stumps.  
-Precise definitions and proofs are given \Sec{jstedm}.
+Precise definitions and proofs are given in \Sec{jstedm}.
 }
 
 
@@ -2033,6 +2035,7 @@ As merging and deleting takes logarithmic time in the heap size for binomial hea
 %%%%%%%%%%%%%%%%%%%%
 \InSoCGVer{
 \subsection{Upper and Lower bounds for Running Time}\label{sec:runTimeSummary}
+\Ben{This section is new, and only appears in the socg version}
 The full running time analysis can be found in \Sec{runTime}, \Sec{pathDecomp}, and \Sec{lb}, or in the full version \CiteFullVer.  
 The main results of these sections are summarized here.
 %
@@ -2082,8 +2085,8 @@ to each subcomplex piece output by $\rain$, yields our main result, Theorem~\ref
 The path decomposition $\pmax(T)$ is a function of the choices made by the linear time $\init(\MM)$.  
 One cannot control which path decomposition $\init$ determines, as sorting can be reduced to finding the optimal path decomposition.  
 Specifically, in \Sec{lb} we exploit this connection to prove the following matching lower bound for our approach.
-In the following a rain consistent path decomposition is a decomposition which is the union of paths from 
-any decomposition on each subcomplex output by $\rain$ (see Definition~\ref{def:path2} for a formal definition).
+In the following a rain consistent path decomposition is any decomposition which is the union of paths from 
+decompositions on each subcomplex output by $\rain$ (see Definition~\ref{def:path2} for a formal definition).
 
 % \begin{theorem}
 % Consider a rooted tree $T$ and an arbitrary path decomposition $P$ of $T$.
@@ -2703,7 +2706,7 @@ be labeled with the corresponding vertices of the terrain.
     \includegraphics[width=.3\linewidth]{figs/cones}
 %    \includegraphics[width=.125\linewidth]{figs/topView}\hspace{2cm}
 %    \includegraphics[width=.095\linewidth]{figs/sideView}
-    \caption{Left: angled view of a diamond / Right: a parent and child diamond put together}
+    \caption{Left: angled view of a tent / Right: a parent and child tent put together}
     \label{fig:diamond}
 \end{figure}
 
@@ -2721,37 +2724,37 @@ such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ 
 % this triangulation will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of join trees 
 % whose size is that described in the lemma statement. 
  We describe the basic building block of these terrains, which corresponds to a fixed path $p\in P$.  
- Informally, a \emph{diamond} is an upside down cone with $m$ triangular faces (see \Fig{diamond}). 
+ Informally, a \emph{tent} is an upside down cone with $m$ triangular faces (see \Fig{diamond}). 
  Construct a slightly tilted cycle 
- of length $m$ with the two antipodal points at heights $1$ and $0$. These are called the anchor and trap of the diamond, respectively.
+ of length $m$ with the two antipodal points at heights $1$ and $0$. These are called the anchor and trap of the tent, respectively.
  The remaining $m-2$ vertices are evenly spread around the cycle and heights decrease monotonically when going from the anchor to the trap.
  Next, create an apex vertex at some appropriately large height, and add an edge to each vertex in the cycle. 
 
 
- Now we describe how to attach two different diamonds.  In this process, we glue the base of a scaled down ``child'' diamond on to a triangular cone face of the larger  ``parent'' diamond (see \Fig{diamond}).
- Specifically, the anchor of the child diamond is attached directly to a face of the parent diamond at some height $h$. The remainder of the base of the child cone is then 
+ Now we describe how to attach two different tents.  In this process, we glue the base of a scaled down ``child'' tent on to a triangular cone face of the larger  ``parent'' tent (see \Fig{diamond}).
+ Specifically, the anchor of the child tent is attached directly to a face of the parent tent at some height $h$. The remainder of the base of the child cone is then 
  extended down (at a slight angle) until it hits the face of the parent.
  
- The full terrain is obtained by repeatedly gluing diamonds. For each path $p_i\in P$, we create a diamond of size $|p_i|+1$.
- The two faces adjacent to the anchor are always empty, and the remaining faces are for gluing on other diamonds.
- (Note that diamonds have size $|p_i|+1$ since $|p_i|-1$ faces represent the joins of $p_i$, the apex represents the leaf, 
+ The full terrain is obtained by repeatedly gluing tents. For each path $p_i\in P$, we create a tent of size $|p_i|+1$.
+ The two faces adjacent to the anchor are always empty, and the remaining faces are for gluing on other tents.
+ (Note that tents have size $|p_i|+1$ since $|p_i|-1$ faces represent the joins of $p_i$, the apex represents the leaf, 
  and we need two empty faces next to the anchor.)
- Now we glue together diamonds of different paths in the same way the paths are connected in the shrub $\pathTree$ (see \Sec{shrubs}).  
+ Now we glue together tents of different paths in the same way the paths are connected in the shrub $\pathTree$ (see \Sec{shrubs}).  
  Specially, for two paths $p,q\in P$ where 
- $p$ is the parent of $q$ in $\pathTree$, we glue $q$ onto a face of the diamond for $p$ as described above.
- (Naturally for this construction to work, diamonds for a given path will be scaled down relative to the size of the diamond of their parent).
+ $p$ is the parent of $q$ in $\pathTree$, we glue $q$ onto a face of the tent for $p$ as described above.
+ (Naturally for this construction to work, tents for a given path will be scaled down relative to the size of the tent of their parent).
  By varying the heights of the gluing, we get the family of terrains.
  
  Observe now that the only saddle points in this construction are the anchor points.  Moreover, the only maxima are the apexes of the 
- diamonds.  We create a global boundary minimum by setting the vertices at the base of the diamond representing the root of $\pathTree$ all to the same height (and there are no other minima).  
- Therefore, the saddles on a given diamond will appear contiguously on a root to leaf path in the join tree of the terrain, where the leaf corresponds to the maximum of the diamond 
+ tents.  We create a global boundary minimum by setting the vertices at the base of the tent representing the root of $\pathTree$ all to the same height (and there are no other minima).  
+ Therefore, the saddles on a given tent will appear contiguously on a root to leaf path in the join tree of the terrain, where the leaf corresponds to the maximum of the tent 
  (since all these saddles have a direct line of sight to this apex).  In particular, 
  this implies that, regardless of the heights assigned to the anchors, the join tree has a path decomposition whose corresponding shrub is equivalent to $\pathTree$.  
  
- There is a valid instance of this described construction for any relative ordering of the heights of the saddles on a given diamond.  
- In particular, there are $(|p_i|-1)!$ possible orderings of the heights of the saddles on the diamond for $p_i$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible 
- terrains we can build.  Each one of these functions will result in a different (labeled) join tree. All saddles on a given diamond will appear in sorted order in the join tree.
- So, any permutation of the heights on a given diamond corresponds to a permutation of the vertices along a path in $P$.
+ There is a valid instance of this described construction for any relative ordering of the heights of the saddles on a given tent.  
+ In particular, there are $(|p_i|-1)!$ possible orderings of the heights of the saddles on the tent for $p_i$, and hence $\Pi_{p_i\in P} (|p_i|-1)!$ possible 
+ terrains we can build.  Each one of these functions will result in a different (labeled) join tree. All saddles on a given tent will appear in sorted order in the join tree.
+ So, any permutation of the heights on a given tent corresponds to a permutation of the vertices along a path in $P$.
 \end{proof}
 
 Two path decompositions $P_1$ and $P_2$ (of potentially different complexes and/or height functions) are equivalent 
@@ -2767,26 +2770,26 @@ For all $\MM \in \bF_P$, the total number of heap operations performed by $\buil
 \end{lemma}
 \begin{proof}
 %For any choice of $\MM \in \bF$, there is a path decomposition $\overline{P}(T)$ of the join tree equivalent to $\mathcal{P}$.
-%Specifically, this is the decomposition where each path $p\in \overline{P}(T)$ consists exactly of the set of critical points (except for its anchor) from a given diamond. 
+%Specifically, this is the decomposition where each path $p\in \overline{P}(T)$ consists exactly of the set of critical points (except for its anchor) from a given tent. 
 The primary ``non-determinism" of the algorithm is the initial painting constructed by $\init(\MM)$. 
 We show that regardless of how paint spilling is done, the number of heap operations is bounded as above.
 
  Consider an arbitrary order of the initial paint spilling over the surface.
- Consider any join on a face of some diamond, which is the anchor point of some connecting child diamond.  
+ Consider any join on a face of some tent, which is the anchor point of some connecting child tent.  
  The join has two up-stars, each of which has exactly one edge. Each edge connects to a maximum
  and must be colored by that maximum.
  Hence, the two colors touching this join (according to \Def{initialColoring})
- are the colors of the apexes of the child and parent diamond.  
+ are the colors of the apexes of the child and parent tent.  
 % 
-% Specifically, one of these edges connects directly to the apex of the parent diamond and so the join must get the color of this maxima.
-% The other edge connects directly to the apex of the child diamond (this is why we left the faces adjacent to an anchor empty) and 
-% so the second color is that of the maxima of the child diamond.
+% Specifically, one of these edges connects directly to the apex of the parent tent and so the join must get the color of this maxima.
+% The other edge connects directly to the apex of the child tent (this is why we left the faces adjacent to an anchor empty) and 
+% so the second color is that of the maxima of the child tent.
  
  Take any join $v$, with two children $w_1$ and $w_2$. Suppose $w_1$ and $v$ belong to the same path
  in the decomposition. The key is that any color from a maximum in the subtree at $w_2$ cannot touch
- any ancestor of $v$. This subtree is exactly the join tree of the child diamond attached at $v$.
- The base of this diamond is completely contained in a face of the parent diamond. So all colors
- from the child ``drain off" to the base of the parent, and do not touch any joins on the parent diamond.
+ any ancestor of $v$. This subtree is exactly the join tree of the child tent attached at $v$.
+ The base of this tent is completely contained in a face of the parent tent. So all colors
+ from the child ``drain off" to the base of the parent, and do not touch any joins on the parent tent.
  
  Hence, $|H_v|$ is at most the size of the path in $P$ containing $v$. By \Lem{runTimeUpper}, the total number of heap operations
  is at most $\sum_v \log |H_v|$, completing the proof.
@@ -2794,7 +2797,7 @@ We show that regardless of how paint spilling is done, the number of heap operat
 % 
 % So let $c$ be the color of some maxima, $m$.  The above proven property of the coloring implies that in the join tree, the vertices for 
 % which $c$ appears are exactly the vertices of the path in  $\overline{P}(T)$ corresponding $m$, as well as 
-% the vertex to which the root of this path connects to (i.e.\ the anchor of the diamond of $m$).
+% the vertex to which the root of this path connects to (i.e.\ the anchor of the tent of $m$).
 % Now we show this implies $\overline{P}(T)$ is a maximum path decomposition.
 % To see this, consider a vertex $v\in T$, and let $p$ be the path in $\overline{P}(T)$ which contain $v$. 
 % Now $v$ has two children (if it is a join).  Let $c_1$ be the child which is in $p$, and $c_2$ the child which is the root of some adjacent path $p'$.  
@@ -2831,7 +2834,7 @@ must distinguish all inputs in this family. By Stirling's approximation, the dep
 %
 % If $C$ is a join tree valid cost then there some $f$ such that $\cost_{\jc}(f)=\sum_{p\in P(f)} |p|\log|p|$.
 % By the above lemmas, there is then a set $\bF$ of $\Pi_{p_i\in P} |p_i|!$ functions, such that for any $g\in \bF$, $C= \cost(g)$.  
-% (Specifically, each sorted ordering of the relative height values of the saddles on each diamond yields a function in this class.)
+% (Specifically, each sorted ordering of the relative height values of the saddles on each tent yields a function in this class.)
 % Hence $\bF\subseteq \bF_C$, and so any height function decision tree for the set $\bF_C$ must distinguish between these possibilities, and therefore must 
 % have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, the average depth in this tree is $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
 \end{proof}
@@ -2876,7 +2879,7 @@ such that the size of $\bF_P$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two terrain
  Note that the $P_i$ sets naturally define a tree where $P_i$ is the parent of $P_j$ if $r_i$ (i.e.\ the root of $T_i$) is adjacent to a vertex in $P_j$.  
  
  As the set $P_i$ is a path decomposition of a rooted binary tree $T_i$, the terrain construction of \Lem{pathDecomp} for $P_i$ is well defined.  
- Actually the only difference is that here the rooted tree is not a full binary tree, and so some of the (non-achor adjacent) faces of the constructed diamonds will be blank.  
+ Actually the only difference is that here the rooted tree is not a full binary tree, and so some of the (non-achor adjacent) faces of the constructed tents will be blank.  
  Specifically, these blank faces correspond to the adjacent children of $P_i$, and they tell us how to connect the terrains of the different $P_i$'s.
  
  So for each $P_i$ construct a terrain as described in \Lem{pathDecomp}.  Now each $T_i$ is (roughly speaking) a join or a split tree, depending on 
@@ -2886,19 +2889,19 @@ such that the size of $\bF_P$ is $\Pi_{p_i\in P} (|p_i|-1)!$, and no two terrain
   
  \begin{figure}[h]\centering
     \includegraphics[width=.28\linewidth]{figs/cones2}
-    \caption{A child diamond attached to a parent diamond with opposite orientation.}
+    \caption{A child tent attached to a parent tent with opposite orientation.}
     \label{fig:diamond2}
 \end{figure} 
   
- By construction, the diamonds corresponding to the paths in $P_i$ are connected 
- into a tree structure (i.e.\ corresponding to the shrub of $P_i$).  Therefore the bottoms of all these diamonds are covered except for the one corresponding 
+ By construction, the tents corresponding to the paths in $P_i$ are connected 
+ into a tree structure (i.e.\ corresponding to the shrub of $P_i$).  Therefore the bottoms of all these tents are covered except for the one corresponding 
  to the path containing the root $r_i$.  
  If $r_i$ corresponds to the initial maximum that the rain consistent path decomposition was defined from, then this will be flat and corresponds to the global outer face.
- Otherwise, $P_i$ has some parent $P_j$ in which case we connect the bottom of the diamond for $r_i$ to a free face of a diamond in the construction for $P_j$, specifically, the face corresponding to the 
+ Otherwise, $P_i$ has some parent $P_j$ in which case we connect the bottom of the tent for $r_i$ to a free face of a tent in the construction for $P_j$, specifically, the face corresponding to the 
  vertex in $T$ which $r_i$ is adjacent to. This gluing is done in the same manner as in \Lem{pathDecomp}, attaching the anchor for the root of $P_i$ directly the corresponding face of $P_j$, except that now $P_i$ and $P_j$ have opposite orientations.  See \Fig{diamond2}.
  
  Just as in \Lem{pathDecomp} we now have one fixed terrain structure, such that each different relative ordering of the heights of the join and split vertices 
- on each diamond produces a surface with a distinct contour tree.  The specific bound on the size of $\bF_P$, defining these distinct contour trees, follows by applying the 
+ on each tent produces a surface with a distinct contour tree.  The specific bound on the size of $\bF_P$, defining these distinct contour trees, follows by applying the 
  bound from \Lem{pathDecomp} to each $P_i$.
 \end{proof}
 
