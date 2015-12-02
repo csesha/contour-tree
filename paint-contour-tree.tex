@@ -7,7 +7,7 @@
 %%%
 \def\SoCGVer{TRUE}%
 %%%
-%\def\HideComments{TRUE}%
+\def\HideComments{TRUE}%
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -496,7 +496,7 @@ longest directed path passing through $v$.
 
 \begin{theorem} \label{thm:main-corr} Consider a simplicial complex $f:\MM \to \RR$, described as above, and denote
 the contour tree by $T$ with vertex set (the critical points) $C(T)$. There exists an algorithm to compute the contour tree $T$
-can be computed in $O(\sum_{v \in C(T)} \log \ell_v + t\alpha(t) + N)$ time. Moreover, this algorithm only
+in $O(\sum_{v \in C(T)} \log \ell_v + t\alpha(t) + N)$ time. Moreover, this algorithm only
 compares function values at pairs of points that are ancestor-descendant in $T$.
 \end{theorem}
 
@@ -551,7 +551,7 @@ in Appendix~\Sec{lb}.)
 \begin{theorem} 
 \label{thm:main-lb}
 There exists some absolute constant $\alpha$ such that the following holds.
-For sufficiently large $t$ and $C$: consider the set $\bF_C$ of terrains with $t$ critical points such that
+For sufficiently large $t$ and any $C\in [t, t\log t]$, consider the set $\bF_C$ of terrains with $t$ critical points such that
 the number of comparisons made by the algorithm of \Thm{main-alg} on these terrains is in $[C,\alpha C]$.
 Any algebraic decision tree that correctly computes
 the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
@@ -641,8 +641,8 @@ $f|B_\eps(x)$ be the restriction of $f$ to $B_\eps(x)$.
 as $\delta, \eps \rightarrow 0^+$. The \emph{Morse down-degree} is the number of $(f(x) - \delta)$-contours of $f|B_\eps(x)$
 as $\delta, \eps \rightarrow 0^+$.
 
-A \emph{regular} point has both Morse up-degree and down-degree $1$. A \emph{maximum} has Morse up-degree $1$, while
-a \emph{minimum} has Morse up-degree $2$. A \emph{Morse Join} has Morse up-degree strictly greater than $1$,
+A \emph{regular} point has both Morse up-degree and down-degree $1$. A \emph{maximum} has Morse up-degree $0$, while
+a \emph{minimum} has Morse down-degree $0$. A \emph{Morse Join} has Morse up-degree strictly greater than $1$,
 while a \emph{Morse Split} has Morse down-degree strictly greater than $1$. Non-regular points are called \emph{critical}.
 \end{definition}
 
@@ -676,7 +676,7 @@ if there exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$
 such that no $x \in p$ belongs to a critical contour.
 \end{definition}
 
-This equivalence relation gives a set \emph{contour classes}. 
+This equivalence relation gives a set of \emph{contour classes}. 
 %By continuity, a regular point is present on a single contour,
 %and we can partition the regular contours into these classes. 
 Every such class maps to intervals
@@ -694,9 +694,9 @@ It is not immediately obvious that this graph is a tree, but alternate definitio
 in~\cite{csa-cctad-00} imply this is a tree. 
 Since this tree has height values associated with the vertices, we can talk about up-degrees and down-degrees in $\reeb(\MM)$.
 %
-\Ben{Similar to \cite{kobps-ctsssit-97} (among others), multi-saddles are treated as a set of ordinary saddles, which can be realized 
+Similar to \cite{kobps-ctsssit-97} (among others), multi-saddles are treated as a set of ordinary saddles, which can be realized 
 via vertex unfolding (which can increase surface complexity if multi-saddle degrees are allowed to be super-constant).
-Therefore, to simplify the presentation, for the remainder of the paper up and down-degrees are at most $2$, and the total degree is at most $3$.}
+Therefore, to simplify the presentation, for the remainder of the paper up and down-degrees are at most $2$, and total degree is at most $3$.
 %
 %We assume there are no ``multi-saddles", so up and down-degrees are at most $2$, and the total degree is at most $3$. 
 %This is again a standard assumption in topological algorithms and can be achieved by vertex unfolding (Section 6.3 in~\cite{HaEd10}).
@@ -759,7 +759,7 @@ Take an arbitrary maximum $x$ and imagine torrential rain at the maximum. The wa
 from $x$. We end up with two portions, the wet part of $\MM$ and the dry part. This is similar
 to \emph{watershed} algorithms used for image segmentation~\cite{RoMe00}. The wet part is obviously connected and
 can be shown to be extremum dominant. We can cut along the interface of the wet and dry, remove
-the wet part, and recurse of the dry part. This is carefully done to ensure that the total complexity
+the wet part, and recurse on the dry parts. This is carefully done to ensure that the total complexity
 of the pieces is linear.
 % 
 % 
@@ -791,7 +791,7 @@ at a valley $v$. Suppose this was the entire input, and $\ell_1$ was colored blu
 Both mounds are colored completely blue or red, while $v$ is touched by both colors.
 So this indicates that $v$ joins the blue maximum and red maximum in the join tree and is a critical point.
 To process $v$, we ``merge" the colors red and blue into a new color, purple. 
-In terms of join tree, this
+In terms of the join tree, this
 is equivalent to removing leaves $\ell_1$ and $\ell_2$, and making $v$ a new leaf.
 
 Of course, things are more complicated when there are other mounds. There may be a yellow mound,
@@ -1314,7 +1314,7 @@ of the manifold, not just vertices.
 
 \begin{definition} \label{def:wet} Fix $x \in \MM$. The set of points $y \in \MM$ such that there is a non-ascending path from $x$ to $y$
 is denoted by $\wet(x,\MM)$ (which in turn is represented as a simplicial complex). A point $z$ is at the \emph{interface} of $\wet(x,\MM)$ if every neighborhood of $z$
-has non-trivial intersection with $\wet(x,\MM)$ \Ben{(i.e.\ the intersection is neither empty nor the entire neighborhood)}.
+has non-trivial intersection with $\wet(x,\MM)$ (i.e.\ the intersection is neither empty nor the entire neighborhood).
 \end{definition}
 
 The following claim gives a description of the interface. 
@@ -1452,7 +1452,7 @@ boundary of $U$ is in the boundary $B_i$. Since a recursive call is made to $\ra
 (and $\LL_i$ is inverted), $U$ becomes wet. Hence $U$, and correspondingly $F$, will not be subsequently cut.
 \end{proof}
 
-The following are direct consequences of \Lem{new-verts} and the surgery procedure.
+The following are direct consequences of \Lem{new-verts} and the $\surgery$ procedure.
 
 \begin{theorem} \label{thm:rain-time} The total running time of $\rain(x,\MM)$ is $O(|\MM|)$.
 \end{theorem}
@@ -1608,7 +1608,7 @@ delete $v$ and connect its neighbors by an edge (i.e.\ smooth $v$ out). This tre
 The \emph{critical join tree} $\jc(\MM)$ is built on the set $V'$ of all
 critical points other than the non-dominant minima. 
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
-and $v$ \Ben{is adjacent (in $\MM$) to a vertex} in this component. 
+and $v$ is adjacent (in $\MM$) to a vertex in this component. 
 \end{definition}
 
 \InSoCGVer{Each non-dominant minimum, $m_i$, connects to the contour tree at a corresponding split $s_i$. We have the following (see \Sec{jstedm} for more details).}
@@ -2782,6 +2782,9 @@ O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alp
 \section{Lower Bound by Path Decomposition}
 \label{sec:lb}
 We first prove a lower bound for join trees, and then generalize to contour trees.
+Note that form of the theorem statements in this section differ from \Thm{main-lb}, 
+as they are stated directly in terms of path decompositions.  \Thm{main-lb} 
+is an immediate corollary of the final theorem of this section \Thm{path-main-lb}.
 
 \subsection{Join Trees}
 
@@ -3010,7 +3013,7 @@ For all $\MM \in \bF_P$, the number of heap operations is $\Theta(\sum_{p\in P} 
 
 We now restate \Thm{main-lb}, which follows immediately from an entropy argument, analogous to \Thm{joinLB}.
 
-\begin{theorem} 
+\begin{theorem}\label{thm:path-main-lb}
 Consider any rain consistent path decomposition $P$. There exists a family $\bF_P$ of terrains ($d=2$) with the following properties.
 Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
 Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
@@ -3070,7 +3073,7 @@ Nuclear Security Administration under contract DE-AC04-94AL85000.
 \InSoCGVer{
 \appendix
 
-\intuitionSection
+%\intuitionSection
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
