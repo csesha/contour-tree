@@ -397,8 +397,9 @@ Our results match all existing upper bounds, but also
 characterize the amount of sorting required to compute the contour tree.
 This leads to an almost linear (inverse Ackermann overhead) time algorithm for contour tree computation for many
 classes of natural instances. 
-Specifically, our approach ensures that any comparison made is between nodes in the same descending path in the contour tree, 
-allowing us to complement our algorithmic results with matching lower bounds for contour tree computation.
+Specifically, our approach ensures that any comparison made is between nodes in the same descending path in the contour tree,
+allowing us to argue strong optimality properties of our algorithm.
+
 
 Our algorithm requires several novel ideas: partitioning $\MM$ in well-behaved portions, 
 a local growing procedure to iteratively build contour trees, and the use of heavy path 
@@ -412,13 +413,13 @@ decompositions for the time complexity analysis.
 
 \section{Introduction}
 
-Geometric data (potentially massive in size) is often represented as a function $f: \RR^d \to \RR$. Typically, a finite representation is given
+Geometric data is often represented as a function $f: \RR^d \to \RR$. Typically, a finite representation is given
 by considering $f$ to be piecewise linear over some triangulated mesh (i.e.\ simplicial complex) $\MM$ in $\RR^d$.
-\emph{Contour trees} are a specific topological structure used to represent and visualize
+\emph{Contour trees} are a topological structure used to represent and visualize
 the function $f$. 
-For example, consider a rocket engine during a burn.  The 3D mesh represents the locations of points in space around the engine, 
-and $f$ represents the temperature at each point.  The boundary of the flame is then represented by an isotherm, i.e.\ a contour. 
-
+% For example, consider a rocket engine during a burn.  The 3D mesh represents the locations of points in space around the engine, 
+% and $f$ represents the temperature at each point.  The boundary of the flame is then represented by an isotherm, i.e.\ a contour. 
+% 
 It is convenient to think of $f$ as a manifold sitting in $\RR^{d+1}$,
 %  or alternately consider
 % $\MM$ in $\RR^{d+1}$
@@ -427,11 +428,9 @@ with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection 
 with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
 proceeds various events occur: new contours are created or destroyed, contours merge into each other or
 split into new components, contours acquire or lose handles. More generally, these are the events where 
-the topology of the level set changes. The contour tree is a concise representation of all these events.\footnote{%
+the topology of the level set changes. The contour tree is a concise representation of all these events.
 Throughout we follow the definition of contour trees from \cite{kobps-ctsssit-97} which includes all changes in topology.  
 For $d>2$, some subsequent works, such as \cite{csa-cctad-00}, only include changes in the number of components.
-}
-\Ben{See added footnote}
 
 
 If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
@@ -449,7 +448,9 @@ In dimensions $d \geq 3$, we may have internal vertices of both up and down-degr
 For example, these could be events where contours gain or lose handles.
 
 Suppose we have $f: \MM \to \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points. 
-\Ben{It is standard to assume that $f$ has distinct values on the vertices of $\MM$ and the value at interior points is linearly interpolated.}
+We assume the input is $f:\MM \to \RR$ a linear interpolant over distinct valued vertices, where the contour tree
+$T$ has maximum degree $3$. The degree assumption simplifies the proof and presentation, and is commonly made~\cite{kobps-ctsssit-97}.
+% \Ben{It is standard to assume that $f$ has distinct values on the vertices of $\MM$ and the value at interior points is linearly interpolated.}
 %It is standard to assume that $f$ is PL-Morse (a well-behaved input assumption) and that the maximum degree in the contour tree is $3$. 
 A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
 which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-00} (where $\alpha(\cdot)$ denotes the inverse
@@ -461,9 +462,56 @@ Common applications for contour trees involve turbulent combustion or noisy data
 So we are still left with the bottleneck of sorting a large set of numbers. Unfortunately, there is a worst-case
 lower bound of $\Omega(t\log t)$ by Chiang \etal \cite{cllr-sooscctmp-05}, based on a construction of Bajaj \etal \cite{BaKr+98}.
 
+% \Sesh{Almost everything below is new/reordered. Please read through.}
 But this is only a worst-case bound. All previous algorithms begin by sorting (at least) the critical points, and
 hence must pay $\Omega(t\log t)$ for all instances. Can we beat this sorting bound for certain instances,
-and can we characterize which inputs are hard? Our main result gives an affirmative answer. 
+and can we characterize which inputs are hard? Intuitively, points that are incomparable in the contour tree
+do not need to be compared. Look at \Fig{relative} to see such an example. All previous algorithms waste time
+sorting all the maxima. Also consider the surface of \Fig{sorting}. The final contour tree is basically two binary
+trees joined at their roots, and we do not need to entire sorted order of critical points
+to construct the contour tree. Is it possible to beat the $t\log t$ bound for these examples?
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.26\linewidth]{figs/spikey1}%
+    \hspace{.35in}
+    \includegraphics[width=.26\linewidth]{figs/spikey2}%
+    \hspace{.4in}
+    \includegraphics[width=.215\linewidth]{figs/spikeyTree}
+    \caption{Two surfaces with different orderings of the maxima, but the same contour tree.}
+    \label{fig:relative}
+\end{figure}
+
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.35\linewidth,height=.15\linewidth]{figs/balanced4}
+    \hspace{.3in}
+    \includegraphics[width=.35\linewidth,height=.15\linewidth]{figs/trees}
+    \caption{On left, a surface with a balanced contour tree, but whose join and split trees have long tails.  
+    On right (from left to right), the contour, join and split trees.}
+    \label{fig:sorting}
+\end{figure}
+
+Our main result gives an affirmative answer. Remember that we can consider
+the contour tree as directed from top to bottom. For any node $v$ in the tree, let $\ell_v$ denote the length of the 
+longest directed path passing through $v$. 
+
+\begin{theorem} \label{thm:main-corr} Consider a simplicial complex $f:\MM \to \RR$, described as above, and denote
+the contour tree by $T$ with vertex set (the critical points) $C(T)$. There exists an algorithm to compute the contour tree $T$
+can be computed in $O(\sum_{v \in C(T)} \ell_v + t\alpha(t) + N)$ time. Moreover, this algorithm only
+compares function values at pairs of points that are ancestor-descendant in $T$.
+\end{theorem}
+
+Essentially, the ``run time per critical point" is the height/depth of the point in the contour tree.
+This bound immediately yields a run time of $O(t\log D + t\alpha(t) + N)$,
+where $D$ is the diameter of the contour tree. 
+This is a significant improvement for short and fat contour trees. For example, if the tree is balanced,
+then we get a bound of $O(t\log\log t)$.
+Even if $T$ contains a long path of length $O(t/\log t)$, but is otherwise short, we get the improved bound of $O(t\log\log t)$.
+
+\subsection{A refined bound with optimality properties}
+
+\Thm{main-corr} is a direct corollary of a more cumbersome theorem.
+
 % First, we require some technical definitions.
 
 % In a contour tree $T$, a \emph{leaf path} is simply a path in $T$
@@ -480,70 +528,46 @@ Then a \emph{path decomposition}, $P(T)$, is a partition of the vertices of $T$ 
 \label{thm:main-alg} 
 %Consider a PL-Morse\footnote{This is a standard ``well-behaved" input assumption that implies that all critical points have distinct values. 
 %Our algorithm does not need this, but it simplifies the proof and presentation.} 
-\Ben{Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the contour tree $T$
-has maximum degree $3$}.\footnote{The degree $\leq 3$ assumption helps simplify the proof and presentation, and is often made, as in \cite{kobps-ctsssit-97}.}\Ben{See footnote} 
 There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
-where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm)\Ben{More than one reviewer has complained about the running 
-time being stated as a function of our algorithm.  So rephrase or add remark/footnote saying controlling which path decomp is used is like knowing the right ordering 
-before sorting, but unlike sorting, there are certain contour tree shapes such that there is no bad path decomp.  This somewhat said in the paragraph below, 
-but reviewers are not getting it.}.
-
+where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
+In particular, any comparisons made are only between ancestors and descendants in the contour tree.
 \end{theorem}
 
-In particular, any comparisons made are only between ancestors and descendants in the contour tree, while previous algorithms compared everything. 
+Note that \Thm{main-corr} is a direct corollary of this statement. This is strictly stronger,
+since for any balanced contour tree, the run time bound is $O(t\alpha(t) + N)$, and $O(t)$
+comparisons are made.
 
-Let us interpret the running time. 
-For any path decomposition $P(T)$, obviously $\sum_{p\in P(T)}|p| = |T| = t$, and 
-so the running time is $O(t\log t + N)$. But this is tight only when $T$ is tall and thin.  
-A better upper bound is $O(t\log D + t\alpha(t) + N)$, where $D$ is the diameter of $T$. 
-This is clearly an improvement when the tree is short and fat, but it can be even better. 
-Consider a contour tree that is constant balanced, meaning that the ratio of sizes of sibling subtrees
-is $\Theta(1)$. 
-A calculation yields that for any decomposition of such a contour tree, 
-our bound is $O(t\alpha(t) + n)$. 
-%
-%In particular, for any decomposition of a rooted balanced binary tree, this gives $O(t\log\log n + t\alpha(t) + N)$, a significant improvement from $O(t\log t+N)$.
-%However, our actual bound in this case gives an even further improved $O(t\alpha(t)+N)$.
-Consider the example of \Fig{sorting} extended to a larger binary tree both above and below,
-so $t = \Omega(n)$. The running time of the algorithm of \Thm{main-alg}
-is $O(n\alpha(n))$, whereas all previous algorithms require $\Omega(n\log n)$ time.
-
-We complement \Thm{main-alg} with a lower bound, suggesting that the comparison model complexity
-of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
-of the lower bound requires some care. Consider the $d=2$ (terrain) case.
-Let a path decomposition $P$ be called \emph{valid} if it is actually output by the algorithm
-on some input.
+The bound of \Thm{main-alg} may seem artificial, since it actually depends on the $P(T)$ that
+is implicitly constructed by the algorithm. Nonetheless, we prove that the algorithm of \Thm{main-alg}
+has strong optimality properties. For convenience, fix some value of $t$, and consider the set
+of terrains ($d=2$) with $t$ critical points. The bound of \Thm{main-alg} takes values ranging
+from $t$ to $t\log t$. Consider some $C \in [t,t\log t]$, and consider the set of terrains
+where the algorithm makes $C$ comparisons. Then \emph{any algorithm} must make roughly $C$
+comparisons in the worst-case over this set.
 
 \begin{theorem} 
 \label{thm:main-lb}
-%Fix a sufficiently large numbers $t$ and $C$, 
-%where $t$ is the number of critical points and $C$ is a valid cost for an instance with $t$ critical point.
-Consider a valid path decomposition $P$. There exists a family $\bF_P$ of terrains (i.e.\ $d=2$) with the following properties.
-Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
-Furthermore, for any terrain in $\bF_P$, the algorithm of \Thm{main-alg} makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
-%
-%the set of functions $\bF_C$ that have the same number of critical points and the same (valid) cost $C$.  Any algebraic decision tree that correctly computes
-%the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
+There exists some absolute constant $\alpha$ such that the following holds.
+For sufficiently large $t$ and $C$: consider the set $\bF_C$ of terrains with $t$ critical points such that
+the number of comparisons made by the algorithm of \Thm{main-alg} on these terrains is in $[C,\alpha C]$.
+Any algebraic decision tree that correctly computes
+the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
 \end{theorem}
-
-In other words, for any path decomposition, $P$, we can design a hard family where any algorithm
-requires $\sum_{p \in P} |p|\log |p|$ time in the worst case, and our algorithm matches this bound. 
-
-
-\myparagraph{Beyond worst-case analysis.} Our result provides understanding of the complexity
-of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound 
-characterize hard instances.
-% explain \emph{when}
-% computing contour trees is expensive, and provide insight into the hardness of particular instances. 
-%It is intriguing
-%that the cost (as defined earlier) roughly captures the hardness of an instance.
-Trees that are short and fat are easy to compute, whereas trees with long paths are hard.
-This is tangentially related to the concept of instance-optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
-Their notion of optimality is far more refined that what we prove, but it shares the flavor of understanding the spectrum
-of easy to hard instances. In general, our analysis forces one to look closely
-at the relationship between sorting and the contour tree problem. 
-
+% 
+% \myparagraph{Beyond worst-case analysis.} Our result provides understanding of the complexity
+% of contour tree construction beyond the standard worst-case analysis. Our theorem and lower bound 
+% characterize hard instances.
+% % explain \emph{when}
+% % computing contour trees is expensive, and provide insight into the hardness of particular instances. 
+% %It is intriguing
+% %that the cost (as defined earlier) roughly captures the hardness of an instance.
+% Trees that are short and fat are easy to compute, whereas trees with long paths are hard.
+% This is tangentially related to the concept of instance-optimal algorithms, as defined by Afshani \etal \cite{abc-ioga-09}.
+% Their notion of optimality is far more refined that what we prove, but it shares the flavor of understanding the spectrum
+% of easy to hard instances. In general, our analysis forces one to look closely
+% at the relationship between sorting and the contour tree problem. 
+% 
 
 \subsection{Previous Work}
 
@@ -572,26 +596,6 @@ on any manifold. We refer the reader to Chapter 6 in~\cite{HaEd10} for more deta
 is an active topic of research~\cite{sk-crgacs-91,cehnp-lrbm-03,PaScBr07,DoNa09,HaWaWe10,Pa12}, where
 two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 
-
-\begin{figure}[h]\centering
-    \includegraphics[width=.26\linewidth]{figs/spikey1}%
-    \hspace{.35in}
-    \includegraphics[width=.26\linewidth]{figs/spikey2}%
-    \hspace{.4in}
-    \includegraphics[width=.215\linewidth]{figs/spikeyTree}
-    \caption{Two surfaces with different orderings of the maxima, but the same contour tree.}
-    \label{fig:relative}
-\end{figure}
-
-
-\begin{figure}[h]\centering
-    \includegraphics[width=.35\linewidth,height=.15\linewidth]{figs/balanced4}
-    \hspace{.3in}
-    \includegraphics[width=.35\linewidth,height=.15\linewidth]{figs/trees}
-    \caption{On left, a surface with a balanced contour tree, but whose join and split trees have long tails.  
-    On right (from left to right), the contour, join and split trees.}
-    \label{fig:sorting}
-\end{figure}
 
 % \paragraph{Organization.}  
 % \Sec{basics} contains basic definition for contour trees.  In \Sec{approach} we give a high level overview and intuition for our approach 
@@ -740,6 +744,89 @@ set of vertices, though we will not delve into these aspects in this paper.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\newintuitionSection}{
+\section{A tour of the new contour tree algorithm} \label{sec:approach}
+Our final algorithm is quite technical and has numerous moving parts. However, for the $d=2$ case, 
+where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
+can be explained clearly.
+ 
+\myparagraph{Cutting $\MM$ into extremum dominant pieces:} We define a simplicial complex
+endowed with a height to be \emph{minimum dominant} if there exists only a single minimum.
+Analogously, we can define maximum dominant complexes, and both are collectively called extremum dominant.
+
+We first cut $\MM$ into disjoint extremum dominant pieces in linear time.
+Take an arbitrary maximum $x$ and imagine torrential rain at the maximum. The water flows down, wetting any point that has a non-ascending path 
+from $x$. We end up with two portions, the wet part of $\MM$ and the dry part. This is similar
+to \emph{watershed} algorithms used for image segmentation~\cite{RoMe00}. The wet part is obviously connected and
+can be shown to be extremum dominant. We can cut along the interface of the wet and dry, remove
+the wet part, and recurse of the dry part. Each additional cut increases the complexity of the surface,
+so care is required to keep the total complexity linear. This is achieved by alternately ``raining"
+upwards and downwards.  We finally get a collection of extremum dominant pieces.
+We prove a simple contour surgery theorem that builds the contour tree of $\MM$
+from the contour trees of the various pieces created.
+ 
+Using ideas from~\cite{csa-cctad-00}, we prove that the contour tree of an extremum dominant complex is (basically) just the \emph{join tree}.
+For the $d=2$ case, it helps to visualize such an input as a terrain with no minima,
+except at a unique boundary face (think of a large boundary triangle that is the boundary).
+Consider sweeping down via the hyperplane $x_{d+1} = h$ and taking the connected components of the portion of $\MM$ above height $h$. For a terrain, these superlevel
+sets are a collection of ``mounds". As we sweep downwards, these mounds keep joining each other,
+until finally, we end up with all of $\MM$. The join tree tracks exactly these events. 
+
+\myparagraph{Join trees from painted mountaintops:} Our main result is a faster algorithm for join trees.
+Denote the input as a terrain $\NN$.
+The key idea is \emph{paint spilling}. Start with each maximum having a large can of paint, with distinct
+colors for each maximum. In arbitrary order, we spill paint from each maximum, wait till it flows down,
+then spill from the next, etc. Paint is viscous, and only flows down edges. \emph{It does not
+paint the interior of higher dimensional faces.} That is, this process is restricted to the 1-skeleton of $\NN$.
+Furthermore, our paints do not mix, so each edge receives a unique color, decided by the first
+paint to reach it.  We begin with an initial painting, since all maximum
+colors are distinct.
+ 
+Our algorithm incrementally builds $\jc(\MM)$ from the leaves (maxima) to the root (dominant minimum). 
+We say that vertex $v$ is \emph{touched} by color $c$, if there is a $c$-colored edge with lower endpoint $v$.
+Let us focus on an initial painting, where the colors have 1-1 correspondence with the maxima. Refer to the left part of \Fig{colors}.
+Consider two sibling leaves $\ell_1, \ell_2$ and their common parent $v$. The leaves are maxima,
+and $v$ is a join that ``merges" $\ell_1, \ell_2$. 
+In that case, there are ``mounds" corresponding to $\ell_1$ and $\ell_2$ that merge
+at a valley $v$. Suppose this was the entire input, and $\ell_1$ was colored blue and $\ell_2$ was colored red. 
+Both mounds are colored completely blue or red, while $v$ is touched by both colors.
+So this indicates that $v$ joins the blue maximum and red maximum in $\jc(\MM)$, and is a critical point.
+
+To process $v$, we ``merge" the colors red and blue into a new color, purple. 
+In terms of $\jc(\MM)$, this
+is equivalent to removing leaves $\ell_1$ and $\ell_2$, and making $v$ a new leaf.
+Alternatively, $\jc(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
+
+Of course, things are more complicated when there are other mounds. There may be a yellow mound,
+corresponding to $\ell_3$ that joins with the blue mound higher up at some vertex $u$ (see the right part of \Fig{colors}). In $\jc(\MM)$, $\ell_1$ and $\ell_3$
+are sibling leaves, and $\ell_2$ is a sibling of some ancestor of these leaves. So we cannot
+merge red and blue, until yellow and blue merge. Naturally, we use priority queues to handle this issue.
+
+\begin{figure}[h]\centering
+    \includegraphics[width=.25\linewidth]{figs/redBlue}%
+    \hspace{.07in}
+    \includegraphics[width=.25\linewidth]{figs/redBlue2}%
+    \hspace{.07in}
+    \includegraphics[width=.03\linewidth]{figs/redBlueTree}
+    \hspace{.09in}
+    \includegraphics[width=.3\linewidth]{figs/mound}%
+    \hspace{.07in}
+    \includegraphics[width=.065\linewidth]{figs/moundTree}
+    \caption{On the left, red and blue merge to make purple, followed by the contour tree with initial colors.  On the right, additional maxima and the resulting contour tree.}
+    \label{fig:colors}
+\end{figure}
+
+
+What happens when finally blue and red join at $v$? We merge the two colors, but now have
+blue and red queues of critical vertices, which also need to be merged to get a consistent painting. 
+This necessitates using a priority queue with efficient merges.
+Specifically, we use \emph{binomial heaps}~\cite{Vu78}, as they provide logarithmic time merges and deletes (though other similar heaps work). 
+We stress that the feasibility of the entire approach hinges on the use of such an efficient heap structure.
+There are numerous details to handle to prove the final run time bound, but this should provide the reader
+some intuition behind our algorithm.
+}
+
 
 \newcommand{\intuitionSection}{
 \section{A tour of the new contour tree algorithm} \label{sec:approach}
@@ -1034,28 +1121,35 @@ we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree.
 }
 
 \InSoCGVer{
-\subsection{How to Read this paper}
-\Ben{New section, read carefully:}
-The final algorithm is quite technical and has numerous moving parts. However, for the $d=2$ case, 
-where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
-can be explained clearly. Therefore, in \Sec{approach} we provide a high level view of the entire result.
-We strongly encourage the reader to overview this section, as then the remainder of the paper can be understood 
-as a simple matter of implementing these ideas.
 
-Alternatively, the reader can view the full version of the paper \CiteFullVer{} which contains this high level overview and all other appendices 
-in the main body of the text.
+\newintuitionSection
 
 
-\myparagraph{Outline of the algorithm and the following sections.} 
-The high level idea is to partition $\MM$ into nicely behaved pieces, on which we know how to compute the contour tree optimally. 
-\Sec{surgery} describes our cutting procedure, and \Sec{rain} describes how to use this cutting procedure.
-Roughly speaking the resulting pieces are ``nice'' because the contour tree of each piece 
-looks like a rooted tree, i.e.\ the join tree of \cite{csa-cctad-00}, and the precise relation to join trees is the subject of \Sec{extreme}.
-\Sec{paint} then describes how to optimally compute the join tree (and hence the contour tree) 
-on each piece (see Appendix~\ref{sec:approach} for discussion on why the join tree should not be computed directly on the input complex). 
-Finally, \Sec{runTimeSummary} summarizes all sections relating to the running time, specifically \Sec{runTime} which upper bounds the 
-running time of the algorithm of \Sec{paint}, \Sec{pathDecomp} which uses a sophisticated charging argument to express this bound 
-in terms of path decompositions, and \Sec{lb} which provides matching running time lower bounds.
+% \subsection{Outline}
+% The first step is to partition $\MM$ into nicely behaved pieces, such that the contour tree of
+% each piece is a rooted tree.  This is done by cutting $\MM$ at certain contours. Of course, any such ``cut"
+% increases the complexity of the input, so care is required to keep the complexity down.
+% \Sec{surgery} describes our cutting procedure, and \Sec{rain} describes how to use this cutting procedure.
+% It turns out that a simpler construct, the \emph{join tree}~\cite{csa-cctad-00} of each piece is exactly
+% the contour tree. Thus, it suffices to 
+% 
+% Roughly speaking the resulting pieces are ``nice'' because the contour tree of each piece 
+% looks like a rooted tree, i.e.\ the join tree of \cite{csa-cctad-00}, and the precise relation to join trees is the subject of \Sec{extreme}.
+% \Sec{paint} then describes how to optimally compute the join tree (and hence the contour tree) 
+% on each piece (see Appendix~\ref{sec:approach} for discussion on why the join tree should not be computed directly on the input complex). 
+% Finally, \Sec{runTimeSummary} summarizes all sections relating to the running time, specifically \Sec{runTime} which upper bounds the 
+% running time of the algorithm of \Sec{paint}, \Sec{pathDecomp} which uses a sophisticated charging argument to express this bound 
+% in terms of path decompositions, and \Sec{lb} which provides matching running time lower bounds.
+% 
+% The final algorithm is quite technical and has numerous moving parts. However, for the $d=2$ case, 
+% where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
+% can be explained clearly. Therefore, in \Sec{approach} we provide a high level view of the entire result.
+% We strongly encourage the reader to overview this section, as then the remainder of the paper can be understood 
+% as a simple matter of implementing these ideas.
+% 
+% Alternatively, the reader can view the full version of the paper \CiteFullVer{} which contains this high level overview and all other appendices 
+% in the main body of the text.
+% 
 }
 
 \InNotSoCGVer{
