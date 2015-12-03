@@ -2160,7 +2160,7 @@ comes from priority queue operations.  The cost of these operations is a functio
 
 %The heap as defined above characterizes the priority queue size at the time a vertex gets processed and hence we get the following.
 
-\begin{definition}
+\begin{definition}\label{def:initialColoring}
 A \emph{leaf assignment} $\chi$ of a binary tree $T$ assigns \emph{two} distinct leaves to each internal vertex $v$,
 one from the left and one from the right subtree of $v$ (or only one leaf if $v$ has only one child). % naturally if $v$ has only one child it is assigned only one color). 
 The subroutine $\init(\MM)$ naturally defines a leaf assignment to $\jc(\MM)$ (which 
@@ -2175,7 +2175,7 @@ the set of ancestors colored by some leaf in $L(v)$.
 
 Given the above technical definition, the proof of the following lemma is straightforward, though long and so has been moved to \Sec{runTime}.
 
-\begin{lemma}\label{heapRunTimeBound}
+\begin{lemma}\label{lem:runTimeUpper}
 Let $\MM$ be a simplicial complex with $t$ critical points.  
 The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$, where $H_v$ is defined by an initial coloring.
 %For every vertex in $\jc(\MM)$, let $H_v$ be defined by the initial coloring of $\MM$.
@@ -3158,7 +3158,7 @@ We are now ready to prove Theorem~\ref{thm:contour-tree}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %\algorithmRunTimeSection
-\section{Proof of Lemma~\ref{heapRunTimeBound}}
+\section{Proof of \Lem{runTimeUpper}}
 \label{sec:runTime}
 \proofofRunTime
 
