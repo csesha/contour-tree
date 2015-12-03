@@ -1610,7 +1610,10 @@ delete $v$ and connect its neighbors by an edge (i.e.\ smooth $v$ out). This tre
 The \emph{critical join tree} $\jc(\MM)$ is built on the set $V'$ of all
 critical points other than the non-dominant minima. 
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
-and $v$ is adjacent (in $\MM$) to a vertex in this component. 
+and $v$ is adjacent (in $\MM$) to a vertex in this component. \InSoCGVer{The \emph{join tree}, $\cJ(\MM)$, is defined analogously, but instead on $\cV(\MM)$.}
+%
+%\InSoCGVer{Have sentence defining the join tree here.}
+%
 \end{definition}
 
 \InSoCGVer{Each non-dominant minimum, $m_i$, connects to the contour tree at a corresponding split $s_i$. We have the following (see \Sec{jstedm} for more details).}
@@ -1634,6 +1637,13 @@ points from $\cJ(\MM) \ominus \{m_i\}$ yields the edges of $\jc(\MM)$.
 
 \InNotSoCGVer{\proofofContourJoinEquiv}
 
+\begin{remark}
+The above theorem, combined with the previous sections, implies that in order to get an efficient contour tree algorithm, 
+it suffices to have an efficient algorithm for computing $\jc(\MM)$.
+Due to minor technicalities, the following section is instead phrased in terms of computing $\cJ(\MM)$ efficiently.  
+Note however that for minimum dominant complexes output by $\rain$, converting between $\jc$ and $\cJ$ is trivial, as $\cJ$ is just $\jc$ 
+with each non-dominant minimum $m_i$ augmented along the edge leaving $s_i$.
+\end{remark}
 
 
 
@@ -2176,7 +2186,7 @@ Our main result, \Thm{main-corr}, is an easy corollary of the above lemma. Speci
 complex.  By \Thm{jordan} this vertex appears in exactly one of the pieces output by $\rain$.  As in the \Thm{main-corr} statement, let $\ell_v$ 
 denote the length of the longest directed path passing through $v$ in the contour tree the input complex, and let $\ell_v'$ 
 denote the longest directed path passing through $v$ in the join tree of the piece containing $v$.
-By \Thm{surgery}, ignoring non-dominant extremum introduced from cutting, the join tree on each piece output by $\rain$ is isomorphic to some 
+By \Thm{surgery}, ignoring non-dominant extrema introduced from cutting (whose cost can be charged to a corresponding saddle), the join tree on each piece output by $\rain$ is isomorphic to some 
 connected subgraph of the contour tree of the input complex, and hence $\ell_v'\leq \ell_v$.  
 Moreover, $|H_v|$ only counts vertices in a $v$ to root path and so trivially $|H_v|\leq \ell_v'$, implying \Thm{main-corr}.
 
