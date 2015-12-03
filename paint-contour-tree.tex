@@ -507,9 +507,9 @@ This is a significant improvement for short and fat contour trees. For example, 
 then we get a bound of $O(t\log\log t)$.
 Even if $T$ contains a long path of length $O(t/\log t)$, but is otherwise short, we get the improved bound of $O(t\log\log t)$.
 
-\subsection{A refined bound with optimality properties}
+\subsection{A refined bound with optimality properties}\label{sec:more-refined}
 
-\Thm{main-corr} is a direct corollary of a more cumbersome theorem.
+\Thm{main-corr} is a direct corollary of a stronger but more cumbersome theorem.
 
 % First, we require some technical definitions.
 
@@ -527,7 +527,7 @@ Then a \emph{path decomposition}, $P(T)$, is a partition of the vertices of $T$ 
 \label{thm:main-alg} 
 %Consider a PL-Morse\footnote{This is a standard ``well-behaved" input assumption that implies that all critical points have distinct values. 
 %Our algorithm does not need this, but it simplifies the proof and presentation.} 
-There is a deterministic algorithm to compute $T$ whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
+There is a deterministic algorithm to compute the contour tree, $T$, whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
 In particular, any comparisons made are only between ancestors and descendants in the contour tree.
@@ -746,14 +746,15 @@ set of vertices, though we will not delve into these aspects in this paper.
 
 \newcommand{\newintuitionSection}{
 \section{A tour of the new contour tree algorithm} \label{sec:approach}
-We provide a short, high-level
-description of the main ideas.
+We provide a short, high-level description of the main ideas of subsequent sections. 
+A longer more detailed version of this high-level description can be found in the full version \CiteFullVer.
 % However, for the $d=2$ case, 
 % where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
 % can be explained clearly.
  
 \myparagraph{Cutting $\MM$ into extremum dominant pieces:} We define a simplicial complex
 endowed with a height to be \emph{extremum dominant} if there exists only a single minimum, or only a single maximum.
+(When formally defined in \Sec{rain}, extremum dominant complexes will allow additional trivial minima or maxima which are a small complication resulting from the following cutting procedure.)
 We first cut $\MM$ into disjoint extremum dominant pieces in linear time.
 Take an arbitrary maximum $x$ and imagine torrential rain at the maximum. The water flows down, wetting any point that has a non-ascending path 
 from $x$. We end up with two portions, the wet part of $\MM$ and the dry part. This is similar
@@ -769,10 +770,11 @@ of the pieces is linear.
 We prove a simple contour surgery theorem that builds the contour tree of $\MM$
 from the contour trees of the various pieces created.
  
-Using ideas from~\cite{csa-cctad-00}, we prove that the contour tree of an extremum dominant complex is (basically) just the \emph{join tree}.
+Using ideas from~\cite{csa-cctad-00}, we prove that the contour tree of an extremum dominant complex is (basically) just the \emph{join tree}, 
+which unlike the contour tree tracks superlevel sets rather than level sets.
 % For the $d=2$ case, it helps to visualize such an input as a terrain with no minima,
 % except at a unique boundary face (think of a large boundary triangle that is the boundary).
-Consider sweeping down via the hyperplane $x_{d+1} = h$ and taking the connected components of the portion of $\MM$ above height $h$. For a terrain, these superlevel
+Consider sweeping down the hyperplane $x_{d+1} = h$ and taking the connected components of the portion of $\MM$ above height $h$. For a terrain, these superlevel
 sets are a collection of ``mounds". As we sweep downwards, these mounds keep joining each other,
 until finally, we end up with all of $\MM$. The join tree tracks exactly these events. 
 
@@ -857,7 +859,7 @@ How do we sort exactly what is required, without knowing the contour tree in adv
 \subsection{Breaking $\MM$ into simpler pieces} \label{sec:break}
 Let us begin with the algorithm of Carr, Snoeyink, and Axen~\cite{csa-cctad-00}. The key insight is to build
 two different trees, called the join and split trees, and then merge them together into the contour tree.
-Consider sweeping down via the hyperplane $x_{d+1} = h$ and taking the \emph{superlevel} sets. These 
+Consider sweeping down the hyperplane $x_{d+1} = h$ and taking the \emph{superlevel} sets. These 
 are the connected components of the portion of $\MM$ above height $h$. For a terrain, the superlevel
 sets are a collection of ``mounds". As we sweep downwards, these mounds keep joining each other,
 until finally, we end up with all of $\MM$. The join tree tracks exactly these events. 
@@ -2028,9 +2030,11 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\newcommand{\algorithmRunTimeSection}{
-\InNotSoCGVer{\subsection{Running Time}}
-\InSoCGVer{\section{Running Time}}
+%\newcommand{\algorithmRunTimeSection}{
+%\InNotSoCGVer{\subsection{Running Time}}
+%\InSoCGVer{\section{Running Time}}
+\InNotSoCGVer{
+\subsection{Running Time}
 \label{sec:runTime}
 
 We now bound the running time of the algorithm of \Sec{algo}.  
@@ -2087,7 +2091,10 @@ Let $\MM$ be a simplicial complex with $t$ critical points.  For every vertex in
 let $H_v$ be defined by the initial coloring of $\MM$.
 The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$.
 \end{lemma}
-
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\proofofRunTime}{
 \begin{proof}
 First we look at the initialization procedure $\init(\MM)$.  This procedure runs in $O(N)$ time.
 Indeed, the painting procedure consists of several BFS's but as each vertex is only explored by one of the BFS's, it is linear time overall.
@@ -2122,16 +2129,26 @@ are merged together.  By the above arguments the sizes of the queues for each of
 As merging and deleting takes logarithmic time in the heap size for binomial heaps, the claim now follows.
 \end{proof}
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\InNotSoCGVer{\proofofRunTime}
 
-\InNotSoCGVer{\algorithmRunTimeSection}
+%\InNotSoCGVer{\algorithmRunTimeSection}
 %%%%%%%%%%%%%%%%%%%%
 \InSoCGVer{
-\subsection{Upper and Lower bounds for Running Time}\label{sec:runTimeSummary}
-The full running time analysis can be found in \Sec{runTime}, \Sec{pathDecomp}, and \Sec{lb}, or in the full version \CiteFullVer.  
-The main results of these sections are summarized here.
-%
-In \Sec{runTime}, we give a tight bound on the running time of $\build(\MM)$, as a function of the choices made by the subroutine $\init(\MM)$.
-% To state this bound we require the following technical definitions (which are repeated in \Sec{runTime}).  
+\subsection{Upper Bounds for Running Time}\label{sec:runTimeSummary}
+
+% The full running time analysis can be found in \Sec{runTime}, \Sec{pathDecomp}, and \Sec{lb}, or in the full version \CiteFullVer.  
+% \Sec{runTime} is summarized here, which gives a bound immediately implying the running time of our main result \Thm{main-corr}.  
+% Using a significantly more sophisticated analysis involving path decompositions, this bound will also implies the more refined running time bounds mentioned in \Sec{more-refined} 
+% are the topics \Sec{pathDecomp} and \Sec{lb}.
+% %
+% %In \Sec{runTime}, we give a tight bound on the running time of $\build(\MM)$, as a function of the choices made by the subroutine $\init(\MM)$.
+
+The algorithm $\build(\MM)$ processes vertices in $\jc(\MM)$ one at a time.  The main processing cost  
+comes from priority queue operations.  The cost of these operations is a function of the size of the queue which is in turn a function of the choices made by the subroutine $\init(\MM)$.
+
+%The heap as defined above characterizes the priority queue size at the time a vertex gets processed and hence we get the following.
 
 \begin{definition}
 A \emph{leaf assignment} $\chi$ of a binary tree $T$ assigns \emph{two} distinct leaves to each internal vertex $v$,
@@ -2146,28 +2163,48 @@ we use $H_v$ to denote the \emph{heap} at $v$. Formally, $H_v = \{u | u \in A(v)
 the set of ancestors colored by some leaf in $L(v)$.
 \end{definition}
 
-The algorithm $\build(\MM)$ processes vertices in $\jc(\MM)$ one at a time.  The main processing cost  
-comes from priority queue operations.  The heap as defined above characterizes the  
-priority queue size at the time a vertex gets processed and hence we get the following.
+Given the above technical definition, the proof of the following lemma is straightforward, though long and so has been moved to \Sec{runTime}.
 
-\begin{lemma}
+\begin{lemma}\label{heapRunTimeBound}
 Let $\MM$ be a simplicial complex with $t$ critical points.  
 The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$, where $H_v$ is defined by an initial coloring.
 %For every vertex in $\jc(\MM)$, let $H_v$ be defined by the initial coloring of $\MM$.
 %The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$.
 \end{lemma}
 
-While the above gives a full running time characterization, ideally the bound should be expressed as   
-a function of some structural property of $\jc(\MM)$.
-This is the focus of \Sec{pathDecomp}, where it is shown that for any binary tree $T$ 
-the $H_v$ sets (defined by any leaf assignment) naturally induces a path decomposition of $T$ (see \Def{path}), 
-denoted $\pmax(T)$ (see \Sec{pathDecomp} for details).   
+Our main result, \Thm{main-corr}, is an easy corollary of the above lemma. Specifically, consider a critical point $v$ of the initial input 
+complex.  By \Thm{jordan} this vertex appears in exactly one of the pieces output by $\rain$.  As in the \Thm{main-corr} statement, let $\ell_v$ 
+denote the length of the longest directed path passing through $v$ in the contour tree the input complex, and let $\ell_v'$ 
+denote the longest directed path passing through $v$ in the join tree of the piece containing $v$.
+By \Thm{surgery}, ignoring non-dominant extremum introduced from cutting, the join tree on each piece output by $\rain$ is isomorphic to some 
+connected subgraph of the contour tree of the input complex, and hence $\ell_v'\leq \ell_v$.  
+Moreover, $|H_v|$ only counts vertices in a $v$ to root path and so trivially $|H_v|\leq \ell_v'$, implying \Thm{main-corr}.
 
-% Specifically, the main result of \Sec{pathDecomp} is the following theorem, which together with the above 
-% bound in terms of heap size immediately implies our main result, Theorem~\ref{thm:main-alg} .
+Note that there is fair amount of slack in this argument as $|H_v|$ may be significantly smaller than $\ell_v'$.  
+This slack allows for the more refined upper and lower bounds mentioned in \Sec{more-refined}.  Quantifying this slack however is quite challenging, 
+and requires a significantly more sophisticated analysis involving path decompositions, which is the subject of \Sec{pathDecomp} and \Sec{lb}.
 
-\begin{theorem} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in \pmax(T)} |p| \log |p|)$.
-\end{theorem}
+% The full running time analysis can be found in \Sec{runTime}, \Sec{pathDecomp}, and \Sec{lb}, or in the full version \CiteFullVer.  
+% \Sec{runTime} is summarized here, which gives a bound immediately implying the running time of our main result \Thm{main-corr}.  
+% Using a significantly more sophisticated analysis involving path decompositions, this bound will also implies the more refined running time bounds mentioned in \Sec{more-refined} 
+% are the topics \Sec{pathDecomp} and \Sec{lb}.
+
+
+
+
+
+
+% While the above gives a full running time characterization, ideally the bound should be expressed as   
+% a function of some structural property of $\jc(\MM)$.
+% This is the focus of \Sec{pathDecomp}, where it is shown that for any binary tree $T$ 
+% the $H_v$ sets (defined by any leaf assignment) naturally induces a path decomposition of $T$ (see \Def{path}), 
+% denoted $\pmax(T)$ (see \Sec{pathDecomp} for details).   
+% 
+% % Specifically, the main result of \Sec{pathDecomp} is the following theorem, which together with the above 
+% % bound in terms of heap size immediately implies our main result, Theorem~\ref{thm:main-alg} .
+% 
+% \begin{theorem} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in \pmax(T)} |p| \log |p|)$.
+% \end{theorem}
 
 % The above is a purely combinatorial statement on binary trees, and may find applications in other charging arguments.  
 % However, for the specific when $T=\jc(\MM)$, plugging this theorem into the above lemma, and applying this lemma 
@@ -3110,7 +3147,10 @@ We are now ready to prove Theorem~\ref{thm:contour-tree}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\algorithmRunTimeSection
+%\algorithmRunTimeSection
+\section{Proof of Lemma~\ref{heapRunTimeBound}}
+\label{sec:runTime}
+\proofofRunTime
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
