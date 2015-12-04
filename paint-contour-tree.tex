@@ -468,7 +468,7 @@ All previous algorithms begin by sorting (at least) the critical points. Can we 
 and can we characterize which inputs are hard? Intuitively, points that are incomparable in the contour tree
 do not need to be compared. Look at \Fig{relative} to see such an example. All previous algorithms waste time
 sorting all the maxima. Also consider the surface of \Fig{sorting}. The final contour tree is basically two binary
-trees joined at their roots, and we do not need to entire sorted order of critical points
+trees joined at their roots, and we do not need the entire sorted order of critical points
 to construct the contour tree. 
 
 \begin{figure}[h]\centering
@@ -546,8 +546,7 @@ has strong optimality properties. For convenience, fix some value of $t$, and co
 of terrains ($d=2$) with $t$ critical points. The bound of \Thm{main-alg} takes values ranging
 from $t$ to $t\log t$. Consider some $C \in [t,t\log t]$, and consider the set of terrains
 where the algorithm makes $C$ comparisons. Then \emph{any algorithm} must make roughly $C$
-comparisons in the worst-case over this set. (All further details are 
-in Appendix~\Sec{lb}.)
+comparisons in the worst-case over this set. (All further details are in \InSoCGVer{Appendix~}\Sec{lb}.)
 
 \begin{theorem} 
 \label{thm:main-lb}
@@ -1505,7 +1504,7 @@ Intuitively, the cutting procedure of \Sec{rain} introduced ``stumps'' where we 
 is why we allowed for non-dominant minima and maxima in the definition of extremum dominant manifolds.  
 The punchline is that, ignoring these stumps, the contour tree of an extremum dominant manifold is equivalent to its \emph{join} (or \emph{split}) tree, defined in~\cite{csa-cctad-00}.
 Hence the critical join tree below is just the join tree without these stumps.  
-Precise definitions and proofs are given in \Sec{jstedm}.
+Additional definitions and proofs are given in \Sec{jstedm}.
 }
 
 
@@ -2147,7 +2146,7 @@ As merging and deleting takes logarithmic time in the heap size for binomial hea
 %\InNotSoCGVer{\algorithmRunTimeSection}
 %%%%%%%%%%%%%%%%%%%%
 \InSoCGVer{
-\subsection{Upper Bounds for Running Time}\label{sec:runTimeSummary}
+\subsection{Upper Bounds for Running Time}\label{sec:runTime}
 
 % The full running time analysis can be found in \Sec{runTime}, \Sec{pathDecomp}, and \Sec{lb}, or in the full version \CiteFullVer.  
 % \Sec{runTime} is summarized here, which gives a bound immediately implying the running time of our main result \Thm{main-corr}.  
@@ -2174,7 +2173,7 @@ we use $H_v$ to denote the \emph{heap} at $v$. Formally, $H_v = \{u | u \in A(v)
 the set of ancestors colored by some leaf in $L(v)$.
 \end{definition}
 
-Given the above technical definition, the proof of the following lemma is straightforward, though long and so has been moved to \Sec{runTime}.
+Given the above technical definition, the proof of the following lemma is straightforward, though long and so has been moved to \Sec{runTimeProof}.
 
 \begin{lemma}\label{lem:runTimeUpper}
 Let $\MM$ be a simplicial complex with $t$ critical points.  
@@ -2185,7 +2184,7 @@ The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \lo
 
 Our main result, \Thm{main-corr}, is an easy corollary of the above lemma. Specifically, consider a critical point $v$ of the initial input 
 complex.  By \Thm{jordan} this vertex appears in exactly one of the pieces output by $\rain$.  As in the \Thm{main-corr} statement, let $\ell_v$ 
-denote the length of the longest directed path passing through $v$ in the contour tree the input complex, and let $\ell_v'$ 
+denote the length of the longest directed path passing through $v$ in the contour tree of the input complex, and let $\ell_v'$ 
 denote the longest directed path passing through $v$ in the join tree of the piece containing $v$.
 By \Thm{surgery}, ignoring non-dominant extrema introduced from cutting (whose cost can be charged to a corresponding saddle), the join tree on each piece output by $\rain$ is isomorphic to some 
 connected subgraph of the contour tree of the input complex, and hence $\ell_v'\leq \ell_v$.  
@@ -2777,18 +2776,18 @@ Remark~\ref{rem:joinAndCriticalJoin} implies that $\jc(\MM_i)$ is trivially obta
 (where $t_i$ and $N_i$ are the number of critical points and faces when restricted to $\MM_i$).
 
 At this point we can now see what the path decomposition referenced in theorem statement should be.  It is just the union of all the maximum 
-path decomposition across the extremum dominant pieces, $\pmax(\cC(\MM)) = \cup_{i=1}^k \pmax(\jc(\MM_i))$.
+path decomposition across the extremum dominant pieces, $\pmax(\cC(\MM)) = \cup_{i=1}^k \pmax(\cJ(\MM_i))$.
 Since all procedures besides computing the join trees take linear time in the size of the input complex, we can therefore 
 compute the contour tree in time
 \InSoCGVer{
 \begin{align*}
-\hspace{.8in} O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i}& \\
+\hspace{.8in} O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\cJ(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i}& \\
 =\break O\pth{\pth{\sum_{p \in \pmax(\cC(\MM))} |p|\log |p|} + t\alpha(t) + N}&
 \end{align*}
 }
 \InNotSoCGVer{
 \[
-O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i}
+O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\cJ(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i}
 =\break O\pth{\pth{\sum_{p \in \pmax(\cC(\MM))} |p|\log |p|} + t\alpha(t) + N}
 \]
 }
@@ -2840,9 +2839,9 @@ O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alp
 \section{Lower Bound by Path Decomposition}
 \label{sec:lb}
 We first prove a lower bound for join trees, and then generalize to contour trees.
-Note that form of the theorem statements in this section differ from \Thm{main-lb}, 
+Note that the form of the theorem statements in this section differ from \Thm{main-lb}, 
 as they are stated directly in terms of path decompositions.  \Thm{main-lb} 
-is an immediate corollary of the final theorem of this section \Thm{path-main-lb}.
+is an immediate corollary of the final theorem of this section, \Thm{path-main-lb}.
 
 \subsection{Join Trees}
 
@@ -3170,7 +3169,7 @@ We are now ready to prove Theorem~\ref{thm:contour-tree}.
 
 %\algorithmRunTimeSection
 \section{Proof of \Lem{runTimeUpper}}
-\label{sec:runTime}
+\label{sec:runTimeProof}
 \proofofRunTime
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
