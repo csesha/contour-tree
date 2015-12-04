@@ -117,9 +117,10 @@
 \newtheorem{conjecture}[theorem]{Conjecture}
 \newtheorem{question}[theorem]{Question}
 \theoremstyle{definition}
-\InNotSoCGVer{ 
- \newtheorem{remark}[theorem]{Remark} 
-}
+% \InNotSoCGVer{ 
+%  \newtheorem{remark}[theorem]{Remark} 
+% }
+\newtheorem{Remark}[theorem]{Remark}
 \newtheorem{observation}[theorem]{Observation}
 
 
@@ -1637,13 +1638,13 @@ points from $\cJ(\MM) \ominus \{m_i\}$ yields the edges of $\jc(\MM)$.
 
 \InNotSoCGVer{\proofofContourJoinEquiv}
 
-\begin{remark}
+\begin{Remark}\label{rem:joinAndCriticalJoin}
 The above theorem, combined with the previous sections, implies that in order to get an efficient contour tree algorithm, 
 it suffices to have an efficient algorithm for computing $\jc(\MM)$.
-Due to minor technicalities, the following section is instead phrased in terms of computing $\cJ(\MM)$ efficiently.  
+Due to minor technicalities, it is easier to phrase the following section instead in terms of computing $\cJ(\MM)$ efficiently.  
 Note however that for minimum dominant complexes output by $\rain$, converting between $\jc$ and $\cJ$ is trivial, as $\cJ$ is just $\jc$ 
 with each non-dominant minimum $m_i$ augmented along the edge leaving $s_i$.
-\end{remark}
+\end{Remark}
 
 
 
@@ -1775,7 +1776,7 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 		\item Let $\cur(h) = \{\rep(c) | c \in \col(h)\}$.
 		\item For all $c' \in \cur(h)$:
 		\begin{compactenum}
-			\item Add edge $(\h(c'),h)$ to $\jc(\MM)$.
+			\item Add edge $(\h(c'),h)$ to $\cJ(\MM)$.
 			\item Delete $h$ from $T(c')$.
 		\end{compactenum}
 	\item Merge heaps $\{T(c') | c' \in \cur(h)\}$.
@@ -1944,11 +1945,11 @@ so $w \in T(\rep(c))$ (contradiction to ripeness). Therefore, all edges in $\PP$
 
 
 \begin{claim} \label{clm:process} The partial output on the processed vertices is exactly
-the restriction of $\jc(\MM)$ to these vertices.
+the restriction of $\cJ(\MM)$ to these vertices.
 \end{claim}
 
 \begin{proof} More generally, we prove the following: all outputs on processed vertices
-are edges of $\jc(\MM)$ and for any current color $c$, $\h(c)$ is the lowest processed vertex
+are edges of $\cJ(\MM)$ and for any current color $c$, $\h(c)$ is the lowest processed vertex
 of that color. We prove this by induction on the processing order. The base case is trivially
 true, as initially the processed vertices and attachments of the color classes are the set of maxima.
 For the induction step, consider the situation
@@ -1958,13 +1959,13 @@ Since $v$ is being processed, we know by \Cor{terminate} that it is ripe. Take a
 of $\MM^+_v$ that it connects to. By \Clm{upstar}, all edges in $\PP$ and the up-star
 have the same color (say $c$). If some critical vertex in $\PP$ is not processed,
 it must be in $T(c)$, which violates the ripeness of $v$.
-Thus, all critical vertices in $\PP$ have been processed, and so by the induction hypothesis, the restriction of $\jc(\MM)$ to $\PP$ has been correctly computed.
+Thus, all critical vertices in $\PP$ have been processed, and so by the induction hypothesis, the restriction of $\cJ(\MM)$ to $\PP$ has been correctly computed.
 Additionally, since all critical vertices in $\PP$ have processed, they all have the same color $c$ of the lowest critical vertex in $\PP$.
 Thus by the strengthened induction hypothesis, this lowest critical vertex is $\h(c)$.
 
 If there is another component of $\MM^+_v$, the same argument implies 
 the lowest critical vertex in this component is $\h(c')$ (where $c'$ is the color of edges in the respective component).
-Now by the definition of $\jc(\MM)$, the critical vertex $v$ connects to the lowest critical vertex in each component of $\MM^+_v$, 
+Now by the definition of $\cJ(\MM)$, the critical vertex $v$ connects to the lowest critical vertex in each component of $\MM^+_v$, 
 and so by the above $v$ should connect to $\h(c)$ and $\h(c')$, which is precisely what $v$ is connected to by $\build(\MM)$.
 Moreover, $\build$ merges the colors $c$ and $c'$ and correctly sets $v$ to be the attachment, 
 as $v$ is the lowest processed vertex of this merged color (as by induction $\h(c)$ and $\h(c')$ were the lowest vertices before merging colors).
@@ -1981,13 +1982,13 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
 
 \begin{theorem}
 \label{thm:correct}
- Given an input complex $\MM$, $\build(\MM)$ terminates and outputs $\jc(\MM)$.
+ Given an input complex $\MM$, $\build(\MM)$ terminates and outputs $\cJ(\MM)$.
 \end{theorem}
 \begin{proof}
  First observe that each vertex can be processed at most once by $\build(\MM)$.  By \Cor{terminate}, we know that as long as there 
  is an unprocessed vertex, $\update(K)$ will be called and will terminate with a ripe vertex which is ready to be processed. 
  Therefore, eventually all vertices will be processed, and so by \Clm{process} the algorithm will terminate having 
- computed $\jc(\MM)$.
+ computed $\cJ(\MM)$.
 \end{proof}
 
 % The following crucial claim demonstrates the utility of the stack.
@@ -2088,18 +2089,18 @@ In words, $H_v$ is the set of ancestors of $v$ which are colored by some leaf in
 
 \begin{definition}
 \label{def:initialColoring}
-Note that the subroutine $\init(\MM)$ from \Sec{algo} naturally defines a leaf assignment to $\jc(\MM)$ 
+Note that the subroutine $\init(\MM)$ from \Sec{algo} naturally defines a leaf assignment to $\cJ(\MM)$ 
 according to the priority queue for each up-star we put a given vertex in.  Call this the \emph{initial coloring}
-of the vertices in $\jc(\MM)$.  Note also that this initial coloring defines the $H_v$ values for all $v\in \jc(\MM)$.
+of the vertices in $\cJ(\MM)$.  Note also that this initial coloring defines the $H_v$ values for all $v\in \cJ(\MM)$.
 \end{definition}
 
 The following lemma should justify these technical definitions.
 
 \begin{lemma}
 \label{lem:runTimeUpper}
-Let $\MM$ be a simplicial complex with $t$ critical points.  For every vertex in $\jc(\MM)$, 
+Let $\MM$ be a simplicial complex with $t$ critical points.  For every vertex in $\cJ(\MM)$, 
 let $H_v$ be defined by the initial coloring of $\MM$.
-The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$.
+The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \log |H_v|)$.
 \end{lemma}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2128,7 +2129,7 @@ Therefore the total running time due to $\update$ is linear (ignoring the find o
 What remains is the time it takes to process a vertex $v$ in $\build(\MM)$.  
 In order to process a vertex there are a few constant time operations, union-find operations, and queue operations.
 Therefore the only thing left to bound are the queue operations.
-Let $v$ be a vertex in $\jc(\MM)$, and let $c_1$ and $c_2$ be its children (the same argument holds if $v$ has only one child).
+Let $v$ be a vertex in $\cJ(\MM)$, and let $c_1$ and $c_2$ be its children (the same argument holds if $v$ has only one child).
 At the time $v$ is processed, the colors and queues of all vertices in a given component of $\MM^+_v$ have merged together.
 In particular, when $v$ is processed we know it is ripe and so all vertices above $v$ in each component of $\MM^+_v$ have been processed, implying 
 these merged queues are the queues of the current colors of $c_1$ and $c_2$.  Again since $v$ is ripe, it must be on the top of these queues and so 
@@ -2155,7 +2156,7 @@ As merging and deleting takes logarithmic time in the heap size for binomial hea
 % %
 % %In \Sec{runTime}, we give a tight bound on the running time of $\build(\MM)$, as a function of the choices made by the subroutine $\init(\MM)$.
 
-The algorithm $\build(\MM)$ processes vertices in $\jc(\MM)$ one at a time.  The main processing cost  
+The algorithm $\build(\MM)$ processes vertices in $\cJ(\MM)$ one at a time.  The main processing cost  
 comes from priority queue operations.  The cost of these operations is a function of the size of the queue which is in turn a function of the choices made by the subroutine $\init(\MM)$.
 
 %The heap as defined above characterizes the priority queue size at the time a vertex gets processed and hence we get the following.
@@ -2163,12 +2164,12 @@ comes from priority queue operations.  The cost of these operations is a functio
 \begin{definition}\label{def:initialColoring}
 A \emph{leaf assignment} $\chi$ of a binary tree $T$ assigns \emph{two} distinct leaves to each internal vertex $v$,
 one from the left and one from the right subtree of $v$ (or only one leaf if $v$ has only one child). % naturally if $v$ has only one child it is assigned only one color). 
-The subroutine $\init(\MM)$ naturally defines a leaf assignment to $\jc(\MM)$ (which 
+The subroutine $\init(\MM)$ naturally defines a leaf assignment to $\cJ(\MM)$ (which 
 is a rooted binary tree) according to the priority queue for each up-star we put a given vertex in.  
-Call this the \emph{initial coloring} of the vertices in $\jc(\MM)$, and denote it by $\chi$.  
+Call this the \emph{initial coloring} of the vertices in $\cJ(\MM)$, and denote it by $\chi$.  
 
-For a vertex $v$ in $\jc(\MM)$, let $L(v)$ denote the set of leaves of the subtree rooted at $v$, and let $A(v)$ denote the set of 
-ancestors of $v$, i.e.\ the vertices on the $v$ to root path. For a vertex $v\in \jc(\MM)$, and an initial coloring $\chi$, 
+For a vertex $v$ in $\cJ(\MM)$, let $L(v)$ denote the set of leaves of the subtree rooted at $v$, and let $A(v)$ denote the set of 
+ancestors of $v$, i.e.\ the vertices on the $v$ to root path. For a vertex $v\in \cJ(\MM)$, and an initial coloring $\chi$, 
 we use $H_v$ to denote the \emph{heap} at $v$. Formally, $H_v = \{u | u \in A(v), \chi(u) \cap L(v) \neq \emptyset\}$, i.e.\
 the set of ancestors colored by some leaf in $L(v)$.
 \end{definition}
@@ -2177,9 +2178,9 @@ Given the above technical definition, the proof of the following lemma is straig
 
 \begin{lemma}\label{lem:runTimeUpper}
 Let $\MM$ be a simplicial complex with $t$ critical points.  
-The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$, where $H_v$ is defined by an initial coloring.
-%For every vertex in $\jc(\MM)$, let $H_v$ be defined by the initial coloring of $\MM$.
-%The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \jc(\MM)} \log |H_v|)$.
+The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \log |H_v|)$, where $H_v$ is defined by an initial coloring.
+%For every vertex in $\cJ(\MM)$, let $H_v$ be defined by the initial coloring of $\MM$.
+%The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \log |H_v|)$.
 \end{lemma}
 
 Our main result, \Thm{main-corr}, is an easy corollary of the above lemma. Specifically, consider a critical point $v$ of the initial input 
@@ -2205,7 +2206,7 @@ and requires a significantly more sophisticated analysis involving path decompos
 
 
 % While the above gives a full running time characterization, ideally the bound should be expressed as   
-% a function of some structural property of $\jc(\MM)$.
+% a function of some structural property of $\cJ(\MM)$.
 % This is the focus of \Sec{pathDecomp}, where it is shown that for any binary tree $T$ 
 % the $H_v$ sets (defined by any leaf assignment) naturally induces a path decomposition of $T$ (see \Def{path}), 
 % denoted $\pmax(T)$ (see \Sec{pathDecomp} for details).   
@@ -2217,7 +2218,7 @@ and requires a significantly more sophisticated analysis involving path decompos
 % \end{theorem}
 
 % The above is a purely combinatorial statement on binary trees, and may find applications in other charging arguments.  
-% However, for the specific when $T=\jc(\MM)$, plugging this theorem into the above lemma, and applying this lemma 
+% However, for the specific when $T=\cJ(\MM)$, plugging this theorem into the above lemma, and applying this lemma 
 % to each subcomplex piece output by $\rain$, yields our main result, Theorem~\ref{thm:main-alg}.
 % 
 % The path decomposition $\pmax(T)$ is a function of the choices made by the linear time $\init(\MM)$.  
@@ -2285,7 +2286,7 @@ and requires a significantly more sophisticated analysis involving path decompos
 \section{Leaf assignments and path decompositions}
 \label{sec:pathDecomp}
 
-In this section, we set up a framework to analyze the time taken to compute a critical join tree $\jc(\MM)$ (see \Def{criticalJoin}).
+In this section, we set up a framework to analyze the time taken to compute a join tree $\cJ(\MM)$ (see \Def{criticalJoin}).
 We adopt all notation already defined in \Sec{runTime}.  From here forward we will often assume binary trees are full binary trees 
 (this assumption simplifies the presentation but is not necessary).
 
@@ -2495,7 +2496,7 @@ This is where the critical \Lem{cu-root} plays a role.
 \end{claim}
 
 \begin{proof} Let $\cU$ denote a connected component of the shrub forest.
-We have $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| \leq \sum_{\cU} \sum_{p \in \cU} \sum_{v \in p} \log |H_v|$.
+We have $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| \allowbreak \leq \sum_{\cU} \sum_{p \in \cU} \sum_{v \in p} \log |H_v|$.
 By \Lem{cu-root}, $|H_v| = O(|H_r|)$, where $r$ is the root of $\cU$.
 Furthermore, $\sum_{p \in \cU} |p| = O(|H_r|)$. 
 We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
@@ -2742,15 +2743,15 @@ We now show that \Thm{runtime} allows us to upper bound the running time for our
 tree algorithms in terms of path decompositions.
 
 \begin{theorem}
-%Consider a PL-Morse $f:\MM \to \RR$, where the join tree $\jc(\MM)$ has maximum degree $3$.
-Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the join tree $\jc(\MM)$ has maximum degree $3$.
-There is an algorithm to compute the join tree whose running time is $O(\sum_{p \in \pmax(\jc)} |p|\log |p| + t\alpha(t) + N)$.
+%Consider a PL-Morse $f:\MM \to \RR$, where the join tree $\cJ(\MM)$ has maximum degree $3$.
+Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the join tree $\cJ(\MM)$ has maximum degree $3$.
+There is an algorithm to compute the join tree whose running time is $O(\sum_{p \in \pmax(\cJ)} |p|\log |p| + t\alpha(t) + N)$.
 \end{theorem}
 \begin{proof}
-By \Thm{correct} we know that $\build(\MM)$ correctly outputs $\jc(\MM)$, and by \Lem{runTimeUpper}
-we know this takes $O(\sum_{v \in \jc(\MM)} \log |H_v| + t\alpha(t) + N)$ time, where the $H_v$ values are determined as in \Def{initialColoring}.
-Therefore by \Thm{runtime}, $\build(\MM)$ takes $O(\sum_{p \in \pmax(\jc)} |p|\log |p| + t\alpha(t) + N)$ 
-time to correctly compute $\jc(\MM)$.
+By \Thm{correct} we know that $\build(\MM)$ correctly outputs $\cJ(\MM)$, and by \Lem{runTimeUpper}
+we know this takes $O(\sum_{v \in \cJ(\MM)} \log |H_v| + t\alpha(t) + N)$ time, where the $H_v$ values are determined as in \Def{initialColoring}.
+Therefore by \Thm{runtime}, $\build(\MM)$ takes $O(\sum_{p \in \pmax(\cJ)} |p|\log |p| + t\alpha(t) + N)$ 
+time to correctly compute $\cJ(\MM)$.
 \end{proof}
 
 This result for join trees easily implies our main result, \Thm{main-alg}, which we now restate and prove.
@@ -2771,16 +2772,26 @@ the full contour tree, $\cC(\MM)$, can be constructed (in $O(|\MM|)$ time).
 Now one of the key observations was that for extremum dominant manifolds, computing the contour tree is roughly the same as 
 computing the join tree.  Specifically, \Thm{contour-tree} implies that given $\jc(\MM_i)$ , 
 we can obtain $\cC(\MM_i)$ by simply sticking on the non-dominant minima at their respective splits (which can easily be done in linear time).
-However, by the above theorem we know $\jc(\MM_i)$ can be computed in $O(\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p| + t_i\alpha(t_i) + N_i)$
+Remark~\ref{rem:joinAndCriticalJoin} implies that $\jc(\MM_i)$ is trivially obtained from the $\cJ(\MM_i)$, and 
+ by the above theorem we know $\cJ(\MM_i)$ can be computed in $O(\sum_{p \in \pmax(\cJ(\MM_i))} |p|\log |p| + t_i\alpha(t_i) + N_i)$
 (where $t_i$ and $N_i$ are the number of critical points and faces when restricted to $\MM_i$).
 
 At this point we can now see what the path decomposition referenced in theorem statement should be.  It is just the union of all the maximum 
 path decomposition across the extremum dominant pieces, $\pmax(\cC(\MM)) = \cup_{i=1}^k \pmax(\jc(\MM_i))$.
 Since all procedures besides computing the join trees take linear time in the size of the input complex, we can therefore 
 compute the contour tree in time
+\InSoCGVer{
+\begin{align*}
+\hspace{.8in} O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i}& \\
+=\break O\pth{\pth{\sum_{p \in \pmax(\cC(\MM))} |p|\log |p|} + t\alpha(t) + N}&
+\end{align*}
+}
+\InNotSoCGVer{
 \[
-O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i} = O\pth{\pth{\sum_{p \in \pmax(\cC(\MM))} |p|\log |p|} + t\alpha(t) + N}
+O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\jc(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i}
+=\break O\pth{\pth{\sum_{p \in \pmax(\cC(\MM))} |p|\log |p|} + t\alpha(t) + N}
 \]
+}
 
 %\Thm{rain-time} proves that $\rain$ takes $O(|\MM|)$ time
 
@@ -3066,10 +3077,10 @@ Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparison
 Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
 \end{theorem}
 
-\begin{remark}
+\begin{Remark}
  Note that for the terrains described in this section, the number of critical points is within a constant factor of 
  the total number of vertices.  In particular, for this family of terrains, all previous algorithms required $\Omega(n\log n)$ time.
-\end{remark}
+\end{Remark}
 }
 
 
