@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
-\def\SoCGVer{TRUE}%
+%\def\SoCGVer{TRUE}%
 %%%
 \def\HideComments{TRUE}%
 %%%
@@ -396,8 +396,6 @@ on the contour tree structure, and avoids the global sort for non-pathological i
 If $C$ denotes the set of critical points in $\MM$, the running time is
 roughly $O(\sum_{v \in C} \log \ell_v)$, where $\ell_v$ is the depth of $v$ in the contour tree.
 This matches all existing upper bounds, but is a significant improvement when the contour tree is short and fat.
-% Our results match all existing upper bounds, but also
-% characterize the amount of sorting required to compute the contour tree.
 Specifically, our approach ensures that any comparison made is between nodes in the same descending path in the contour tree,
 allowing us to argue strong optimality properties of our algorithm.
 
@@ -868,14 +866,13 @@ vertices which are higher than $v$.
 
 \begin{definition} 
 \label{def:int-criticalJoin}
-The \emph{critical join tree} $\jc(\MM)$ is built on the set $\cV$ of all critical points.\footnote{%
-In Definition~\ref{def:criticalJoin}, we define the critical join tree on a certain subset of $\cV$.}
+The \emph{join tree} $\cJ(\MM)$ is built on the set $\cV$ of all critical points.
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $\cV$ in a connected component of $\MM^+_v$
 and $v$ is adjacent (in $\MM$) to a vertex in this component. 
 \end{definition}
 
-Abusing notation, for now we will just call this the join tree. (In \Sec{extreme} \InSoCGVer{and \Sec{jstedm}} we carefully handle the distinction 
-between the join tree and the critical join tree.)
+%Abusing notation, for now we will just call this the join tree. 
+%(In \Sec{extreme} \InSoCGVer{and \Sec{jstedm}} we carefully handle the distinction between the join tree and the critical join tree.)
 Refer to \Fig{sorting} for the join tree of a terrain. Note that nothing happens at splits, but these
 are still put as vertices in the join tree. They simply form a long path. The split tree
 is obtained by simply inverting this procedure, sweeping upwards and tracking sublevel sets.
@@ -988,7 +985,7 @@ dominant. This is only required to relate the join trees, of the resulting subco
 For clarity, we use $\NN$ to denote the input here. Note that in \Def{int-criticalJoin},
 the join tree is defined purely combinatorially in terms of the 1-skeleton (the underlying graph) of $\NN$.
 
-The join tree $\jc(\NN)$ is a rooted tree with the dominant minimum at the root, and we direct edges downwards (towards the root). So it makes sense to talk
+The join tree $\cJ(\NN)$ is a rooted tree with the dominant minimum at the root, and we direct edges downwards (towards the root). So it makes sense to talk
 of comparable vs incomparable vertices.
 We arrive at the main challenge: how to sort only the comparable critical points, without
 constructing the join tree? The join tree algorithm of~\cite{csa-cctad-00} is a typical event-based
@@ -1018,7 +1015,7 @@ Clearly, an initial painting can be constructed in $O(N)$ time. This is the trad
 Water allows for an easy divide-and-conquer, at the cost of more complexity in the input. For an extremum
 dominant input, using water to divide the input $\NN$ raises the complexity too much.
 
-Our algorithm incrementally builds $\jc(\MM)$ from the leaves (maxima) to the root (dominant minimum). 
+Our algorithm incrementally builds $\cJ(\MM)$ from the leaves (maxima) to the root (dominant minimum). 
 We say that vertex $v$ is \emph{touched} by color $c$, if there is a $c$-colored edge with lower endpoint $v$.
 Let us focus on an initial painting, where the colors have 1-1 correspondence with the maxima. Refer to the left part of \Fig{colors}.
 Consider two sibling leaves $\ell_1, \ell_2$ and their common parent $v$. The leaves are maxima,
@@ -1026,21 +1023,21 @@ and $v$ is a join that ``merges" $\ell_1, \ell_2$.
 In that case, there are ``mounds" corresponding to $\ell_1$ and $\ell_2$ that merge
 at a valley $v$. Suppose this was the entire input, and $\ell_1$ was colored blue and $\ell_2$ was colored red. 
 Both mounds are colored completely blue or red, while $v$ is touched by both colors.
-So this indicates that $v$ joins the blue maximum and red maximum in $\jc(\MM)$.
+So this indicates that $v$ joins the blue maximum and red maximum in $\cJ(\MM)$.
 
 This is precisely how we hope to exploit the information in the painting. We prove later that
 when some join $v$ has all incident edges with exactly two colors, the corresponding maxima (of those colors) are exactly
-the children of $v$ in $\jc(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
+the children of $v$ in $\cJ(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
 we replace all red and blue edges by purple edges. This indicates that the red and blue maxima have been
 handled. Imagine flattening the red and blue mounds until reaching $v$, so that the former join $v$
-is now a new maximum, from which purple paint is poured. In terms of $\jc(\MM)$, this
+is now a new maximum, from which purple paint is poured. In terms of $\cJ(\MM)$, this
 is equivalent to removing leaves $\ell_1$ and $\ell_2$, and making $v$ a new leaf.
-Alternatively, $\jc(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
+Alternatively, $\cJ(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
 The merging of the colors is not explicitly performed as that would be too expensive; instead we maintain a union-find
 data structure for that.
 
 Of course, things are more complicated when there are other mounds. There may be a yellow mound,
-corresponding to $\ell_3$ that joins with the blue mound higher up at some vertex $u$ (see the right part of \Fig{colors}). In $\jc(\MM)$, $\ell_1$ and $\ell_3$
+corresponding to $\ell_3$ that joins with the blue mound higher up at some vertex $u$ (see the right part of \Fig{colors}). In $\cJ(\MM)$, $\ell_1$ and $\ell_3$
 are sibling leaves, and $\ell_2$ is a sibling of some ancestor of these leaves. So we cannot
 merge red and blue, until yellow and blue merge. Naturally, we use priority queues to handle this issue.
 We know that $u$ must also be touched by blue. So all critical vertices touched by blue
@@ -1076,26 +1073,59 @@ to extra overhead. We show that it suffices to simply put each vertex $v$ into a
 at most $2$ colors, because of all the color merges that previously occurred.
 
 
-\myparagraph{The running time analysis:} Relating the running time to a path decomposition is the most technical part of the paper. 
-All the non-heap operations can be easily bounded by $O(t\alpha(t) + N)$ (the $t\alpha(t)$ is from the union-find data structure
-for colors). It is not hard to argue that at all times, any heap always contains a subset of a leaf
-to root path. Unfortunately, this subset is \emph{not} contiguous, as the right part of \Fig{colors} shows. 
+\myparagraph{The running time analysis:} 
+ All the non-heap operations can be easily bounded by $O(t\alpha(t) + N)$ (the $t\alpha(t)$ is from the union-find data structure
+ for colors). It is not hard to argue that at all times, any heap always contains a subset of a leaf to root path.
+ This observation suffices to get a running time bound which is the analogue of \Thm{main-corr}, but for join trees. 
+ Each heap deletion and merge can be charged to a vertex in the join tree (where each vertex gets charged only a constant number of times).
+ Let $d_v$ denote the distance to the root for a vertex $v$ in the join tree, then since a heap's elements are on a single leaf to root 
+ path, the size of $v$'s heap at the time an associated heap operation is made is at most $d_v$.
+ Therefore, the total cost (of the heap operations) is at most $O(\sum_v \log d_v)$. This immediately proves a bound of $O(t\log D)$, where
+ $D$ is the maximum distance to the root, an improvement over previous work. 
+ 
+ However, this bound is non-optimal.  For example, for a balanced binary tree, this gives a bound of $O(t\log\log t)$, however, by using 
+ an analysis involving path decompositions we can get an $O(t)$ bound.  Imagine walking from some leaf 
+ towards the root. Each vertex on this path can have at most two colors (the ones getting merged), however, as we get closer to the root 
+ the competition for which two colors a vertex gets assigned to grows, as the number of descendant leaf colors grows. This means that for some vertices, 
+ $v$, the size of the heap for an associated heap operation will be significantly smaller than $d_v$. 
+ 
+The intuition is that the paint spilling from the maxmima in the simplicial complex, corresponds to paint spilling from the leaves in 
+the join tree, which decomposes the join tree into a set of colored paths.  Unfortunately, the situation is more complex since 
+while a given color class is confined to a single leaf to root path, it may \emph{not} appear contiguously on this path, as the right part of \Fig{colors} shows. 
 Specifically, in this figure the far left saddle (labeled $i$) is hit by blue paint.  However, there is another 
 saddle on the far right (labeled $j$) which is not hit by blue paint.  Since this far right saddle is slightly 
 higher than the far left one, it will merge into the component containing the blue mound (and also the yellow and red mounds)
-before the far left one.  Hence, the vertices initially touched by blue are not contiguous in the contour tree.
+before the far left one.  Hence, the vertices initially touched by blue are not contiguous in the join tree.
 
-Nonetheless, we can get a non-trivial (but non-optimal) bound. Let $d_v$ denote the distance to the root for vertex $v$ in the join tree.
-The total cost (of the heap operations) is at most $\sum_v \log d_v$. This immediately proves a bound of $O(t\log D)$, where
-$D$ is the maximum distance to the root, an improvement over previous work. But this bound is non-optimal.
-For a balanced binary tree, this bound is $O(t\log\log t)$, whereas the cost of any path decomposition is $O(t)$.
-
-The cost of heap operations depends on heap sizes, which keep changing because
-of the repeated merging. This causes the analysis to be technically challenging. There are situations where
-the initial heap sizes are small, but they eventually merge to create larger heaps. 
-We employ a variant
-of \emph{heavy path decompositions}, first used by Sleator and Tarjan for analyzing link/cut trees~\cite{st-dsdt-83}.
-The final analysis charges expensive heap operations to long paths in the decomposition.
+This non-contiguous complication along with the fact that heap size keep changing as color classes merge, causes the analysis to be technically challenging. 
+%There are situations where the initial heap sizes are small, but they eventually merge to create larger heaps. 
+We employ a variant of \emph{heavy path decompositions}, first used by Sleator and Tarjan for analyzing link/cut trees~\cite{st-dsdt-83}.
+The final analysis charges expensive heap operations to long paths in the decomposition, resulting in the bound stated in \Thm{main-alg}.
+ 
+ 
+ 
+% Relating the running time to a path decomposition is the most technical part of the paper. 
+% All the non-heap operations can be easily bounded by $O(t\alpha(t) + N)$ (the $t\alpha(t)$ is from the union-find data structure
+% for colors). It is not hard to argue that at all times, any heap always contains a subset of a leaf
+% to root path. Unfortunately, this subset is \emph{not} contiguous, as the right part of \Fig{colors} shows. 
+% Specifically, in this figure the far left saddle (labeled $i$) is hit by blue paint.  However, there is another 
+% saddle on the far right (labeled $j$) which is not hit by blue paint.  Since this far right saddle is slightly 
+% higher than the far left one, it will merge into the component containing the blue mound (and also the yellow and red mounds)
+% before the far left one.  Hence, the vertices initially touched by blue are not contiguous in the contour tree.
+% 
+% Nonetheless, we can get a non-trivial (but non-optimal) bound, which is the analogue of \Thm{main-corr} for join trees. 
+% Let $d_v$ denote the distance to the root for vertex $v$ in the join tree.
+% The total cost (of the heap operations) is at most $\sum_v \log d_v$. This immediately proves a bound of $O(t\log D)$, where
+% $D$ is the maximum distance to the root, an improvement over previous work. But this bound is non-optimal.
+% For a balanced binary tree, this bound is $O(t\log\log t)$, whereas the cost of any path decomposition is $O(t)$.
+% \Thm{main-alg}
+%
+% The cost of heap operations depends on heap sizes, which keep changing because
+% of the repeated merging. This causes the analysis to be technically challenging. There are situations where
+% the initial heap sizes are small, but they eventually merge to create larger heaps. 
+% We employ a variant
+% of \emph{heavy path decompositions}, first used by Sleator and Tarjan for analyzing link/cut trees~\cite{st-dsdt-83}.
+% The final analysis charges expensive heap operations to long paths in the decomposition.
 
 \subsection{The lower bound} 
 
@@ -1511,7 +1541,7 @@ Additional definitions and proofs are given in \Sec{jstedm}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\joinTreeSplitTreeMerge}{
-\begin{definition} \label{join} The \emph{join tree} $\cJ(\MM)$ of $\MM$ is built on vertex set $\cV(\MM)$.
+\begin{definition} \label{def:join} The \emph{join tree} $\cJ(\MM)$ of $\MM$ is built on vertex set $\cV(\MM)$.
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in a connected component of $\MM^+_v$
 \emph{and} $v$ is adjacent to a vertex in this component (in $\MM$). The \emph{split tree} $\cS(\MM)$ is obtained
 by looking at $\MM^-_v$ (or alternatively, by taking the join tree of the inversion of $\MM$). 
@@ -2141,24 +2171,16 @@ As merging and deleting takes logarithmic time in the heap size for binomial hea
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\InNotSoCGVer{\proofofRunTime}
-
-%\InNotSoCGVer{\algorithmRunTimeSection}
-%%%%%%%%%%%%%%%%%%%%
+\InNotSoCGVer{
+\proofofRunTime
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \InSoCGVer{
 \subsection{Upper Bounds for Running Time}\label{sec:runTime}
 
-% The full running time analysis can be found in \Sec{runTime}, \Sec{pathDecomp}, and \Sec{lb}, or in the full version \CiteFullVer.  
-% \Sec{runTime} is summarized here, which gives a bound immediately implying the running time of our main result \Thm{main-corr}.  
-% Using a significantly more sophisticated analysis involving path decompositions, this bound will also implies the more refined running time bounds mentioned in \Sec{more-refined} 
-% are the topics \Sec{pathDecomp} and \Sec{lb}.
-% %
-% %In \Sec{runTime}, we give a tight bound on the running time of $\build(\MM)$, as a function of the choices made by the subroutine $\init(\MM)$.
-
 The algorithm $\build(\MM)$ processes vertices in $\cJ(\MM)$ one at a time.  The main processing cost  
 comes from priority queue operations.  The cost of these operations is a function of the size of the queue which is in turn a function of the choices made by the subroutine $\init(\MM)$.
-
-%The heap as defined above characterizes the priority queue size at the time a vertex gets processed and hence we get the following.
 
 \begin{definition}\label{def:initialColoring}
 A \emph{leaf assignment} $\chi$ of a binary tree $T$ assigns \emph{two} distinct leaves to each internal vertex $v$,
@@ -2178,11 +2200,13 @@ Given the above technical definition, the proof of the following lemma is straig
 \begin{lemma}\label{lem:runTimeUpper}
 Let $\MM$ be a simplicial complex with $t$ critical points.  
 The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \log |H_v|)$, where $H_v$ is defined by an initial coloring.
-%For every vertex in $\cJ(\MM)$, let $H_v$ be defined by the initial coloring of $\MM$.
-%The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \log |H_v|)$.
 \end{lemma}
+}
 
-Our main result, \Thm{main-corr}, is an easy corollary of the above lemma. Specifically, consider a critical point $v$ of the initial input 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\InSoCGVer{Our main result, } \Thm{main-corr}, is an easy corollary of the above lemma. Specifically, consider a critical point $v$ of the initial input 
 complex.  By \Thm{jordan} this vertex appears in exactly one of the pieces output by $\rain$.  As in the \Thm{main-corr} statement, let $\ell_v$ 
 denote the length of the longest directed path passing through $v$ in the contour tree of the input complex, and let $\ell_v'$ 
 denote the longest directed path passing through $v$ in the join tree of the piece containing $v$.
@@ -2192,80 +2216,7 @@ Moreover, $|H_v|$ only counts vertices in a $v$ to root path and so trivially $|
 
 Note that there is fair amount of slack in this argument as $|H_v|$ may be significantly smaller than $\ell_v'$.  
 This slack allows for the more refined upper and lower bounds mentioned in \Sec{more-refined}.  Quantifying this slack however is quite challenging, 
-and requires a significantly more sophisticated analysis involving path decompositions, which is the subject of \Sec{pathDecomp} and \Sec{lb}.
-
-% The full running time analysis can be found in \Sec{runTime}, \Sec{pathDecomp}, and \Sec{lb}, or in the full version \CiteFullVer.  
-% \Sec{runTime} is summarized here, which gives a bound immediately implying the running time of our main result \Thm{main-corr}.  
-% Using a significantly more sophisticated analysis involving path decompositions, this bound will also implies the more refined running time bounds mentioned in \Sec{more-refined} 
-% are the topics \Sec{pathDecomp} and \Sec{lb}.
-
-
-
-
-
-
-% While the above gives a full running time characterization, ideally the bound should be expressed as   
-% a function of some structural property of $\cJ(\MM)$.
-% This is the focus of \Sec{pathDecomp}, where it is shown that for any binary tree $T$ 
-% the $H_v$ sets (defined by any leaf assignment) naturally induces a path decomposition of $T$ (see \Def{path}), 
-% denoted $\pmax(T)$ (see \Sec{pathDecomp} for details).   
-% 
-% % Specifically, the main result of \Sec{pathDecomp} is the following theorem, which together with the above 
-% % bound in terms of heap size immediately implies our main result, Theorem~\ref{thm:main-alg} .
-% 
-% \begin{theorem} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in \pmax(T)} |p| \log |p|)$.
-% \end{theorem}
-
-% The above is a purely combinatorial statement on binary trees, and may find applications in other charging arguments.  
-% However, for the specific when $T=\cJ(\MM)$, plugging this theorem into the above lemma, and applying this lemma 
-% to each subcomplex piece output by $\rain$, yields our main result, Theorem~\ref{thm:main-alg}.
-% 
-% The path decomposition $\pmax(T)$ is a function of the choices made by the linear time $\init(\MM)$.  
-% One cannot control which path decomposition $\init$ determines, as sorting can be reduced to finding the optimal path decomposition.  
-% Specifically, in \Sec{lb} we exploit this connection to prove the following matching lower bound for our approach.
-% In the following a rain consistent path decomposition is any decomposition which is the union of paths from 
-% decompositions on each subcomplex output by $\rain$ (see Definition~\ref{def:path2} for a formal definition).
-
-% \begin{theorem}
-% Consider a rooted tree $T$ and an arbitrary path decomposition $P$ of $T$.
-% There is a family $\bF_P$ of terrains such that any algebraic decision
-% tree computing the join tree (on $\bF_P$) requires $\Omega(\sum_{p \in P} |p|\log |p|)$ time.
-% Furthermore, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons on all these instances.
-% \end{theorem}
-% 
-% The result can also 
-% For simplicity we now restrict our attention to path decompositions 
-% consistent with the raining procedure described in \Sec{rain} 
-% (more general decompositions can work, but it is not needed for our purposes).
-% 
-% Note that in the above $T$ is assumed to be a rooted tree, and so the contour tree is equivalent to the join tree.   
-% In general our input $\MM$ will not have a contour tree with this structure, which is why we required the cutting procedure of \Sec{rain}.  
-% The above result can be extended to such general contour trees, however, here we restrict to rain consistent path decomposition, 
-% i.e.\ decompositions which are the union of paths decompositions from each piece (see \ref{def:path2} for a formal definition)
-
-% \begin{theorem} 
-% Consider any rain consistent path decomposition $P$. There exists a family $\bF_P$ of terrains ($d=2$) with the following properties.
-% Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
-% Furthermore, for any terrain in $\bF_P$, our algorithm makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
-% \end{theorem}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% % We complement \Thm{main-alg} with a lower bound, suggesting that the comparison model complexity
-% % of $\sum_{p \in P(T)} |p|\log |p|$ is inherent for any contour tree algorithm. The exact phrasing
-% % of the lower bound requires some care. Consider the $d=2$ (terrain) case.
-% Let a path decomposition $P$ be called \emph{valid} if it is actually output by the algorithm on some input.
-% \begin{theorem} 
-% \label{thm:main-lb}
-% Consider a valid path decomposition $P$. There exists a family $\bF_P$ of terrains (i.e.\ $d=2$) with the following properties.
-% Any contour tree algorithm makes $\Omega(\sum_{p \in P} |p|\log |p|)$ comparisons in the worst case over $\bF_P$.
-% Furthermore, for any terrain in $\bF_P$, the algorithm of \Thm{main-alg} makes $O(\sum_{p \in P} |p|\log |p|)$ comparisons.
-% \end{theorem}
-% 
-% In other words, for any path decomposition, $P$, that our algorithm chooses, we can design a hard family where any 
-% algorithm requires $\sum_{p \in P} |p|\log |p|$ time in the worst case, and our algorithm matches this bound. 
-}
-%%%%%%%%%%%%%
+and requires a significantly more sophisticated analysis involving path decompositions, which is the subject of \Sec{pathDecomp} and \Sec{lb}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2285,7 +2236,7 @@ and requires a significantly more sophisticated analysis involving path decompos
 \section{Leaf assignments and path decompositions}
 \label{sec:pathDecomp}
 
-In this section, we set up a framework to analyze the time taken to compute a join tree $\cJ(\MM)$ (see \Def{criticalJoin}).
+In this section, we set up a framework to analyze the time taken to compute a join tree $\cJ(\MM)$ (see \InSoCGVer{\Def{criticalJoin}}\InNotSoCGVer{\Def{join}}).
 We adopt all notation already defined in \Sec{runTime}.  From here forward we will often assume binary trees are full binary trees 
 (this assumption simplifies the presentation but is not necessary).
 
