@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
-%\def\SoCGVer{TRUE}%
+\def\SoCGVer{TRUE}%
 %%%
 \def\HideComments{TRUE}%
 %%%
@@ -23,7 +23,7 @@
    \newcommand{\InNotSoCGVer}[1]{}%
 \fi
 
-\newcommand{\CiteFullVer}{\cite{rs-mvrms-14}}%
+\newcommand{\CiteFullVer}{\cite{rs-mvrms-14}\xspace}%
 
 % \InNotSoCGVer{%
 %    \newcommand{\SeeFullVer}{}%
@@ -46,7 +46,7 @@
 % }
 
 \InSoCGVer{%
-   \documentclass[a4paper,UKenglish]{lipics}
+   \documentclass[a4paper,UKenglish]{lipics-v2016}
 %   \documentclass[11pt]{article}%
 
 %  \usepackage{proofapnd}
@@ -273,6 +273,8 @@
 \newcommand{\pathTree}{P_{\mathcal{S}}}
 \newcommand{\pathTreeA}{\mathcal{P}_{\mathcal{S}}}
 
+\newcommand{\thmConst}{\gamma}
+
 \newcommand{\CodeComment}[1]{\textcolor{blue}{\texttt{#1}}}
 
 
@@ -294,21 +296,14 @@
 \newcommand{\remove}[1]{}
 \newcommand{\pth}[2][\!]{#1\left({#2}\right)}
 
-
-
-%\usepackage{thmtools}
-%\usepackage{thm-restate}
-%\declaretheorem[name=Theorem,numberwithin=section]{thm}
-
 \newcommand{\atgen}{\symbol{'100}}
 \newcommand{\si}[1]{#1}
 \newcommand{\BenThanks}[1]{\thanks{%
       Department of Computer Science; %
-      University of Illinois; %
-%      201 N. Goodwin Avenue; %
-      Urbana, IL, USA; %
-      {\tt \si{raichel}2\atgen{}\si{uiuc}.\si{edu}}; %
-      {\tt \url{\si{http://illinois.edu/\string~\si{raichel2}}}}%
+      University of Texas at Dallas; %
+      Richardson, TX, USA; %
+      {\tt \si{benjamin.raichel}@\si{utdallas}.\si{edu}}; %
+      {\tt \url{\si{http://utdallas.edu/\string~\si{benjamin.raichel}}}}%
       . %
       #1}}
       
@@ -356,24 +351,25 @@ Avoiding the Global Sort:
 
 \authorrunning{B. Raichel and C. Seshadhri} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
 
-\Copyright{Benjamin Raichel and Seshadhri Comandur}%mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+\Copyright{Benjamin Raichel and C. Seshadhri}%mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
 
 \subjclass{F.2.2, I.1.2, I.3.5}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
 \keywords{contour trees, computational topology, computational geometry}% mandatory: Please provide 1-5 keywords
 % Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \serieslogo{}%please provide filename (without suffix)
-% \volumeinfo%(easychair interface)
-%   {Billy Editor and Bill Editors}% editors
-%   {2}% number of editors: 1, 2, ....
-%   {Conference title on which this volume is based on}% event
-%   {1}% volume
-%   {1}% issue
-%   {1}% starting page number
-% \EventShortName{}
-% \DOI{10.4230/LIPIcs.xxx.yyy.p}% to be completed by the volume editor
-% % Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{S\'andor Fekete and Anna Lubiw}
+\EventNoEds{2}
+\EventLongTitle{32nd International Symposium on Computational Geometry
+(SoCG 2016)}
+\EventShortTitle{SoCG 2016}
+\EventAcronym{SoCG}
+\EventYear{2016}
+\EventDate{June 14-18, 2016}
+\EventLocation{Boston, USA}
+\EventLogo{}
+\SeriesVolume{51}
+\ArticleNo{57}   
+
 }
 
 \maketitle
@@ -395,8 +391,9 @@ We present the first algorithm whose time complexity depends
 on the contour tree structure, and avoids the global sort for non-pathological inputs.
 If $C$ denotes the set of critical points in $\MM$, the running time is
 roughly $O(\sum_{v \in C} \log \ell_v)$, where $\ell_v$ is the depth of $v$ in the contour tree.
-This matches all existing upper bounds, but is a significant improvement when the contour tree is short and fat.
-Specifically, our approach ensures that any comparison made is between nodes in the same descending path in the contour tree,
+This matches all existing upper bounds, but is a significant asymptotic improvement when the contour tree is short and fat.
+Specifically, our approach ensures that any comparison made is between nodes that are either adjacent in $\MM$ 
+or in the same descending path in the contour tree,
 allowing us to argue strong optimality properties of our algorithm.
 
 Our algorithm requires several novel ideas: partitioning $\MM$ in well-behaved portions, 
@@ -415,12 +412,7 @@ Geometric data is often represented as a function $f: \RR^d \to \RR$. Typically,
 by considering $f$ to be piecewise linear over some triangulated mesh (i.e.\ simplicial complex) $\MM$ in $\RR^d$.
 \emph{Contour trees} are a topological structure used to represent and visualize
 the function $f$. 
-% For example, consider a rocket engine during a burn.  The 3D mesh represents the locations of points in space around the engine, 
-% and $f$ represents the temperature at each point.  The boundary of the flame is then represented by an isotherm, i.e.\ a contour. 
-% 
-It is convenient to think of $f$ as a manifold sitting in $\RR^{d+1}$,
-%  or alternately consider
-% $\MM$ in $\RR^{d+1}$
+It is convenient to think of $f$ as a simplicial complex sitting in $\RR^{d+1}$,
 with the last coordinate (i.e.\ height) given by $f$. Imagine sweeping the hyperplane $x_{d+1} = h$
 with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection of this plane 
 with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
@@ -428,7 +420,7 @@ proceeds various events occur: new contours are created or destroyed, contours m
 split into new components, contours acquire or lose handles. 
 The contour tree is a concise representation of all these events.
 Throughout we follow the definition of contour trees from \cite{kobps-ctsssit-97} which includes all changes in topology.  
-For $d>2$, some subsequent works, such as \cite{csa-cctad-00}, only include changes in the number of components.
+For $d>2$, some subsequent works, such as \cite{csa-cctad-03}, only include changes in the number of components.
 
 If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
 These points are the ``events" where the contour topology changes and form the vertices of the contour tree. 
@@ -452,7 +444,7 @@ $T$ has maximum degree $3$. The degree assumption simplifies the presentation, a
 % \Ben{It is standard to assume that $f$ has distinct values on the vertices of $\MM$ and the value at interior points is linearly interpolated.}
 %It is standard to assume that $f$ is PL-Morse (a well-behaved input assumption) and that the maximum degree in the contour tree is $3$. 
 A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
-which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-00} (where $\alpha(\cdot)$ denotes the inverse
+which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-03} (where $\alpha(\cdot)$ denotes the inverse
 Ackermann function). In practical applications, $N$ is typically $\Theta(n)$
 (certainly true for $d=2$). The most expensive operation is an initial sort of all the vertex
 heights. Chiang \etal build on this approach to get a faster algorithm that only sorts the critical vertices,
@@ -494,15 +486,15 @@ the contour tree as directed from top to bottom. For any node $v$ in the tree, l
 longest directed path passing through $v$. 
 
 \begin{theorem} \label{thm:main-corr} Consider a simplicial complex $f:\MM \to \RR$, described as above, and denote
-the contour tree by $T$ with vertex set (the critical points) $C(T)$. There exists an algorithm to compute the contour tree $T$
+the contour tree by $T$ with vertex set (the critical points) $C(T)$. There exists an algorithm to compute $T$
 in $O(\sum_{v \in C(T)} \log \ell_v + t\alpha(t) + N)$ time. Moreover, this algorithm only
-compares function values at pairs of points that are ancestor-descendant in $T$.
+compares function values at pairs of vertices that are ancestor-descendant in $T$ or adjacent in $\MM$.
 \end{theorem}
 
 Essentially, the ``run time per critical point" is the height/depth of the point in the contour tree.
 This bound immediately yields a run time of $O(t\log D + t\alpha(t) + N)$,
 where $D$ is the diameter of the contour tree. 
-This is a significant improvement for short and fat contour trees. For example, if the tree is balanced,
+This is a significant asymptotic improvement for short and fat contour trees. For example, if the tree is balanced,
 then we get a bound of $O(t\log\log t)$.
 Even if $T$ contains a long path of length $O(t/\log t)$, but is otherwise short, we get the improved bound of $O(t\log\log t)$.
 
@@ -529,30 +521,30 @@ Then a \emph{path decomposition}, $P(T)$, is a partition of the vertices of $T$ 
 There is a deterministic algorithm to compute the contour tree, $T$, whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
-In particular, any comparisons made are only between ancestors and descendants in the contour tree.
+In particular, comparisons are only made between pairs of vertices that are ancestor-descendant in $T$ or adjacent in $\MM$.
 \end{theorem}
 
-Note that \Thm{main-corr} is a direct corollary of this statement. For any $v$, $\ell_v$ is at most
+Note that \Thm{main-corr} is a direct corollary of this statement. For any $v$, $\ell_v$ is at least
 the length of the path in $P(T)$ that contains $v$.
 This bound is strictly stronger,
-since for any balanced contour tree, the run time bound of \Thm{main-alg} is $O(t\alpha(t) + N)$, and $O(t)$
-comparisons are made.
+since for any balanced contour tree, the run time bound of \Thm{main-alg} is $O(t\alpha(t) + N)$, and $O(N)$
+comparisons are made. (Since for a balanced tree, one can show $\sum_{p \in P(T)} |p|\log |p|= O(t)$.)
 
 The bound of \Thm{main-alg} may seem artificial, since it actually depends on the $P(T)$ that
 is implicitly constructed by the algorithm. Nonetheless, we prove that the algorithm of \Thm{main-alg}
-has strong optimality properties. For convenience, fix some value of $t$, and consider the set
+has strong optimality properties. For convenience, fix some value $t=\Omega(N)$, and consider the set
 of terrains ($d=2$) with $t$ critical points. The bound of \Thm{main-alg} takes values ranging
-from $t$ to $t\log t$. Consider some $C \in [t,t\log t]$, and consider the set of terrains
-where the algorithm makes $C$ comparisons. Then \emph{any algorithm} must make roughly $C$
-comparisons in the worst-case over this set. (All further details are in \InSoCGVer{Appendix~}\Sec{lb}.)
+from $t$ to $t\log t$. Consider some $\thmConst \in [t,t\log t]$, and consider the set of terrains
+where the algorithm makes $\thmConst$ comparisons. Then \emph{any algorithm} must make roughly $\thmConst$
+comparisons in the worst-case over this set. (Further details are in \InSoCGVer{the full version \CiteFullVer}\InNotSoCGVer{\Sec{lb}}.)
 
 \begin{theorem} 
 \label{thm:main-lb}
 There exists some absolute constant $\alpha$ such that the following holds.
-For sufficiently large $t$ and any $C\in [t, t\log t]$, consider the set $\bF_C$ of terrains with $t$ critical points such that
-the number of comparisons made by the algorithm of \Thm{main-alg} on these terrains is in $[C,\alpha C]$.
+For sufficiently large $t$ and any $\thmConst\in [t, t\log t]$, consider the set $\bF_\thmConst$ of terrains with $t$ critical points such that
+the number of comparisons made by the algorithm of \Thm{main-alg} on these terrains is in $[\thmConst,\alpha \thmConst]$.
 Any algebraic decision tree that correctly computes
-the contour tree on all of $\bF_C$ has a worst case running time of $\Omega(C)$.
+the contour tree on all of $\bF_\thmConst$ has a worst case running time of $\Omega(\thmConst)$.
 \end{theorem}
 % 
 % \myparagraph{Beyond worst-case analysis.} Our result provides understanding of the complexity
@@ -579,7 +571,7 @@ applications of contour trees for data visualization and is an excellent referen
 The first formal result was an $O(N\log N)$ time algorithm for functions over 2D 
 meshes and an $O(N^2)$ algorithm for higher dimensions, by van Kreveld \etal \cite{kobps-ctsssit-97}. 
 Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case.
-The influential paper of Carr \etal \cite{csa-cctad-00} improved the running time for all dimensions to $O(n\log n + N\alpha(N))$.
+The influential paper of Carr \etal \cite{csa-cctad-03} improved the running time for all dimensions to $O(n\log n + N\alpha(N))$.
 Pascucci and Cole-McLaughlin \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
 $3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} provide an unconditional $O(N+t\log t)$ algorithm.
 % Carr's thesis shows relationships between monotone paths
@@ -665,7 +657,7 @@ A value $h$ is called \emph{critical}, if $f(v) = h$, for some $v \in \cV(f)$.
 A contour is called \emph{critical}, if it contains a critical point, and it is called \emph{regular} otherwise.
 
 The critical points are exactly where the topology of level sets change.
-By assuming that our manifold is boundary critical, the vertices on a given boundary are either collectively all maxima or all minima.  
+By assuming that our simplicial complex is boundary critical, the vertices on a given boundary are either collectively all maxima or all minima.  
 We abuse notation and refer to this entire set of vertices as a maximum or minimum.
 
 
@@ -689,7 +681,7 @@ there is an edge $(v_i,v_j)$. (Conventionally, edges are directed from higher to
 We denote the contour tree of $\MM$
 by $\reeb(\MM)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
 It is not immediately obvious that this graph is a tree, but alternate definitions of the contour tree
-in~\cite{csa-cctad-00} imply this is a tree. 
+in~\cite{csa-cctad-03} imply this is a tree. 
 Since this tree has height values associated with the vertices, we can talk about up-degrees and down-degrees in $\reeb(\MM)$.
 %
 Similar to \cite{kobps-ctsssit-97} (among others), multi-saddles are treated as a set of ordinary saddles, which can be realized 
@@ -704,7 +696,7 @@ Therefore, to simplify the presentation, for the remainder of the paper up and d
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\InSoCGVer{See \Sec{techmarks} for further technical remarks on the above definitions.}
+\InSoCGVer{See the full version \CiteFullVer for further technical remarks on the above definitions.}
 \newcommand{\technicalRemarks}{
 %\subsection{Some technical remarks}
 Note that if one intersects $\MM$ with a given ball $B$, then a single contour in $\MM$ might be split into more than one contour in the intersection. 
@@ -768,7 +760,7 @@ of the pieces is linear.
 We prove a simple contour surgery theorem that builds the contour tree of $\MM$
 from the contour trees of the various pieces created.
  
-Using ideas from~\cite{csa-cctad-00}, we prove that the contour tree of an extremum dominant complex is (basically) just the \emph{join tree}, 
+Using ideas from~\cite{csa-cctad-03}, we prove that the contour tree of an extremum dominant complex is (basically) just the \emph{join tree}, 
 which unlike the contour tree tracks superlevel sets rather than level sets.
 % For the $d=2$ case, it helps to visualize such an input as a terrain with no minima,
 % except at a unique boundary face (think of a large boundary triangle that is the boundary).
@@ -798,8 +790,8 @@ Of course, things are more complicated when there are other mounds. There may be
 corresponding to $\ell_3$ that joins with the blue mound higher up at some vertex $u$ (see the right part of \Fig{colors}). In the join tree, $\ell_1$ and $\ell_3$
 are sibling leaves, and $\ell_2$ is a sibling of some ancestor of these leaves. So we cannot
 merge red and blue, until yellow and blue merge. 
-A critical insight is the use of \emph{binomial heaps}~\cite{Vu78} to handle all the priorities and the merging.
-This ensures that all comparisons are only made between points that are ancestor-descendant in the join tree.
+A critical insight is the use of \emph{binomial heaps}~\cite{Vu78}, or any other efficiently mergeable heaps, to handle all the priorities and the merging.
+This ensures that all comparisons are only made between points that are ancestor-descendant in the join tree or adjacent in $\MM$.
 There are numerous details to handle to prove the final run time bound, but this should provide the reader
 some intuition behind our algorithm.
 
@@ -855,7 +847,7 @@ in sorted order, but incomparable points in the tree are unconstrained.
 How do we sort exactly what is required, without knowing the contour tree in advance?
 
 \subsection{Breaking $\MM$ into simpler pieces} \label{sec:break}
-Let us begin with the algorithm of Carr, Snoeyink, and Axen~\cite{csa-cctad-00}. The key insight is to build
+Let us begin with the algorithm of Carr, Snoeyink, and Axen~\cite{csa-cctad-03}. The key insight is to build
 two different trees, called the join and split trees, and then merge them together into the contour tree.
 Consider sweeping down the hyperplane $x_{d+1} = h$ and taking the \emph{superlevel} sets. These 
 are the connected components of the portion of $\MM$ above height $h$. For a terrain, the superlevel
@@ -877,11 +869,11 @@ Refer to \Fig{sorting} for the join tree of a terrain. Note that nothing happens
 are still put as vertices in the join tree. They simply form a long path. The split tree
 is obtained by simply inverting this procedure, sweeping upwards and tracking sublevel sets.
 
-A major insight of~\cite{csa-cctad-00} is an ingeniously simple linear time procedure to construct
+A major insight of~\cite{csa-cctad-03} is an ingeniously simple linear time procedure to construct
 the contour tree from the join and split trees. So the bottleneck is computing these trees. Observe
 in \Fig{sorting} that the split vertices form a long path in the join tree (and vice versa). Therefore, constructing
 these trees forces a global sort of the splits, an unnecessary computation for the contour tree. Unfortunately, in general (i.e.\ unlike \Fig{sorting}) 
-the heights of joins and splits may be interleaved in a complex manner, and hence the final merging of~\cite{csa-cctad-00}
+the heights of joins and splits may be interleaved in a complex manner, and hence the final merging of~\cite{csa-cctad-03}
 to get the contour tree requires having the split vertices in the join tree. Without
 this, it is not clear how to get a consistent view of both joins and splits, required for the contour tree.
 
@@ -964,13 +956,13 @@ More formally, $\MM^-_v$ is connected for all $v$, so there are no splits.
 
 We can prove that the split tree is just a path, and the contour tree is exactly
 the join tree. The formal argument is a little involved, and we employ the merging procedure
-of~\cite{csa-cctad-00} to get a proof. We demonstrate that the merging procedure will
+of~\cite{csa-cctad-03} to get a proof. We demonstrate that the merging procedure will
 actually just output the join tree, so we do not need to actually compute the split tree.
 (The real definition of minimum dominant is a little more complicated,
 so the contour tree is more than just the join tree. But computationally, it suffices
 to construct the join tree.)
 
-We stress the importance of this step for our approach. Given the algorithm of~\cite{csa-cctad-00},
+We stress the importance of this step for our approach. Given the algorithm of~\cite{csa-cctad-03},
 one may think that it suffices to design faster algorithms for join trees. But this
 cannot give the sort of optimality we hope for. Again, consider \Fig{sorting}. Any algorithm
 to construct the true join tree must construct the path of splits, which implies
@@ -988,7 +980,7 @@ the join tree is defined purely combinatorially in terms of the 1-skeleton (the 
 The join tree $\cJ(\NN)$ is a rooted tree with the dominant minimum at the root, and we direct edges downwards (towards the root). So it makes sense to talk
 of comparable vs incomparable vertices.
 We arrive at the main challenge: how to sort only the comparable critical points, without
-constructing the join tree? The join tree algorithm of~\cite{csa-cctad-00} is a typical event-based
+constructing the join tree? The join tree algorithm of~\cite{csa-cctad-03} is a typical event-based
 computational geometry algorithm. We have to step away from this viewpoint to avoid the global sort.
 
 The key idea is \emph{paint spilling}. Start with each maximum having a large can of paint, with distinct
@@ -1240,7 +1232,7 @@ This is how it is eventually used in Claim\ref{clm:rain-reeb}. Currently it does
 
 \medskip
 
-\InSoCGVer{The following theorems are intuitively obvious, and are proven in \Sec{proofOfSurgery}.}
+\InSoCGVer{The following theorems are intuitively obvious, and are proven in the full version \CiteFullVer.}
 
 \begin{theorem} \label{thm:surgery} For any regular contour $\phi$, the output of $\surgery(\MM,\phi)$ is $\reeb(\MM)$.
 \end{theorem}
@@ -1336,13 +1328,13 @@ In this section, we describe a linear time procedure that partitions $\MM$ into 
 \emph{extremum dominant} simplicial complexes.
 
 \begin{definition} \label{def:dom} A simplicial complex is \emph{minimum dominant} if there exists
-a minimum $x$ such that every non-minimal \emph{vertex} in the manifold has a non-ascending path to $x$.
+a minimum $x$ such that every non-minimal \emph{vertex} in the complex has a non-ascending path to $x$.
 Analogously define \emph{maximum dominant}. 
 \end{definition}
 
 The first aspect of the partitioning is ``raining''. Start at some point $x \in \MM$ and imagine rain at $x$.
 The water will flow downwards along non-ascending paths and ``wet'' all the points encountered. Note that this procedure considers all points
-of the manifold, not just vertices.
+of the complex, not just vertices.
 
 \begin{definition} \label{def:wet} Fix $x \in \MM$. The set of points $y \in \MM$ such that there is a non-ascending path from $x$ to $y$
 is denoted by $\wet(x,\MM)$ (which in turn is represented as a simplicial complex). A point $z$ is at the \emph{interface} of $\wet(x,\MM)$ if every neighborhood of $z$
@@ -1359,9 +1351,9 @@ The following claim gives a description of the interface.
  so $\wet(x,\MM)$ contains entire contours.
 
 Let $\eps, \delta$ be sufficiently small as usual. Fix some $y$ at the interface.
-Note that $y \in \wet(x,\MM)$. (Otherwise, $B_\eps(y)$ is dry.)
-The points in $B_\eps(y)$ that lie below $y$ have a descending path from $y$ and hence must be wet.
-There must also be a dry point in $B_\eps(y)$ that is above $y$, and hence,
+Note that $y \in \wet(x,\MM)$. (Otherwise, $B_\eps(y)\cap \MM$ is dry.)
+The points in $B_\eps(y)\cap \MM$ that lie below $y$ have a descending path from $y$ and hence must be wet.
+There must also be a dry point in $B_\eps(y)\cap \MM$ that is above $y$, and hence,
 there exists a dry, regular $(f(y)+\delta)$-contour $\phi$ intersecting $B_\eps(y)$.
 
 Let $\Gamma_y$ be the contour containing $y$.  Suppose for contradiction
@@ -1512,9 +1504,9 @@ Each $\surgery$ call takes constant time, and the total time is the size of the 
 \end{proof}
 }
 
-\section{Contour trees of extremum dominant manifolds} \label{sec:extreme}
+\section{Contour trees of extremum dominant complexes} \label{sec:extreme}
 
-The previous section allows us to restrict attention to extremum dominant manifolds.
+The previous section allows us to restrict attention to extremum dominant complexes.
 We will orient so that the extremum in question is always a \emph{minimum}.
 We will fix such a simplicial complex $\MM$, with the dominant minimum $m^*$. 
 %The set of non-dominant minima is denoted by $M$.
@@ -1523,18 +1515,18 @@ keeping vertices $u$ such that $f(u) > f(v)$. Analogously, define $\MM^-_v$. Not
 numerous connected components. 
 
 \InNotSoCGVer{
-The main theorem of this section asserts that contour trees of minimum dominant manifolds have a simple description.
+The main theorem of this section asserts that contour trees of minimum dominant complexes have a simple description.
 The exact statement will require some definitions and notation.
-We require the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-00}.
+We require the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-03}.
 Conventionally, all edges are directed from higher to lower function value. 
 }
 \InSoCGVer{
-The main theorem of this section asserts that contour trees of minimum dominant manifolds have a simple description. 
+The main theorem of this section asserts that contour trees of minimum dominant complexes have a simple description. 
 Intuitively, the cutting procedure of \Sec{rain} introduced ``stumps'' where we made cuts, which 
-is why we allowed for non-dominant minima and maxima in the definition of extremum dominant manifolds.  
-The punchline is that, ignoring these stumps, the contour tree of an extremum dominant manifold is equivalent to its \emph{join} (or \emph{split}) tree, defined in~\cite{csa-cctad-00}.
+is why we allowed for non-dominant minima and maxima in the definition of extremum dominant complexes.  
+The punchline is that, ignoring these stumps, the contour tree of an extremum dominant complex is equivalent to its \emph{join} (or \emph{split}) tree, defined in~\cite{csa-cctad-03}.
 Hence the critical join tree below is just the join tree without these stumps.  
-Additional definitions and proofs are given in \Sec{jstedm}.
+Additional definitions and proofs are given in the full version \CiteFullVer.
 }
 
 
@@ -1562,7 +1554,7 @@ Specifically, for two adjacent vertices $u$ and $v$, $u$ is the parent of $v$ if
 The key observation is that $\cS(\MM)$ is trivial for a minimum dominant $\MM$.
 
 
-\begin{lemma} \label{lem:split} $\cS(\MM)$ consists of:
+\begin{lemma} \label{lem:split} For minimum dominant $\MM$, $\cS(\MM)$ consists of:
 \begin{asparaitem}
 	\item A single path (in sorted order) with all vertices except non-dominant minima.
 	\item Each non-dominant minimum is attached to a unique split (which is adjacent to it).
@@ -1594,9 +1586,9 @@ be the non-dominant minimum $w$, which is a leaf.
 It is convenient to denote the non-dominant minima as $m_1, m_2, \ldots, m_k$
 and the corresponding splits (as given by the lemma above) as $s_1, s_2, \ldots, s_k$. 
 
-Using the above lemma we can now prove that computing the contour tree for a minimum dominant manifold 
+Using the above lemma we can now prove that computing the contour tree for a minimum dominant complex 
 amounts to computing its join tree.  Specifically, to prove our main theorem, we rely on the correctness of the
-merging procedure from~\cite{csa-cctad-00} that constructs the contour tree from the join and split trees. 
+merging procedure from~\cite{csa-cctad-03} that constructs the contour tree from the join and split trees. 
 It actually constructs the \emph{augmented contour tree} $\cA(\MM)$, which is 
 obtained by replacing each edge in the contour tree with a path of all regular vertices 
 (sorted by height) whose corresponding contour belongs to the equivalence class of that edge.
@@ -1646,7 +1638,7 @@ and $v$ is adjacent (in $\MM$) to a vertex in this component. \InSoCGVer{The \em
 %
 \end{definition}
 
-\InSoCGVer{Each non-dominant minimum, $m_i$, connects to the contour tree at a corresponding split $s_i$. We have the following (see \Sec{jstedm} for more details).}
+\InSoCGVer{Each non-dominant minimum, $m_i$, connects to the contour tree at a corresponding split $s_i$. We have the following (see the full version \CiteFullVer for more details).}
 
 \begin{theorem} \label{thm:contour-tree} Let $\MM$ have a dominant minimum. 
 The contour tree $\cC(\MM)$ consists of all edges $\{(s_i, m_i)\}$ and $\jc(\MM)$.
@@ -1700,7 +1692,8 @@ works purely on the 1-skeleton of $\MM$, which is just a graph.
 \InNotSoCGVer{We now restate \Def{paint1}.}
 
 \begin{definition} \label{def:paint2} Let the 1-skeleton of $\MM$ have edge set $E$ and maxima $X$.
-A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \to [|X|]$ with the following property. 
+A  \emph{painting} of $\MM$ is a map $\chi:X \cup E \to [|X|]$, where $\chi(z)$ is referred to as the \emph{color} of $z$,
+with the following property. 
  Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
 	consisting of edges in $E$, such that all edges along this path have the same color as $x$. 
 
@@ -1758,7 +1751,7 @@ the following invariants.
 \medskip
 \noindent
 {\bf Attachment vertex $\h(c)$:} For each color $c$, we maintain a critical point $\h(c)$ of this color.
-We will maintain the guarantee that the portion of the contour tree above (and including) $\h(c)$ has already been constructed.
+We will maintain the guarantee that the portion of the join tree above (and including) $\h(c)$ has already been constructed.
 %This is initialized to the maximum corresponding to $c$.
 
 	
@@ -1998,8 +1991,8 @@ Now by the definition of $\cJ(\MM)$, the critical vertex $v$ connects to the low
 and so by the above $v$ should connect to $\h(c)$ and $\h(c')$, which is precisely what $v$ is connected to by $\build(\MM)$.
 Moreover, $\build$ merges the colors $c$ and $c'$ and correctly sets $v$ to be the attachment, 
 as $v$ is the lowest processed vertex of this merged color (as by induction $\h(c)$ and $\h(c')$ were the lowest vertices before merging colors).
-
-
+%
+%
 % Consider $w$, the lowest critical vertex in $\PP$. Note that $w$ is a parent of $v$. When $w$ was processed, it was set to $\h(c')$, for
 % some color $c'$. At this stage, all edges in $\PP$ above $w$ were also colored $c'$ (just apply the argument
 % above for $w$). Since there are no critical points below $w$, all edges in $\PP$ below $w$
@@ -2143,7 +2136,7 @@ Finally, each vertex is inserted into at most two heaps and so initializing the 
 
 Now consider the union-find operations performed by $\build$ and $\update$.  
 Initially the union find data structure has a singleton component for each leaf (and no new components are ever created), 
-and so each union-find operation takes $O(\alpha(t))$ time.
+and so each union-find operation takes $O(\alpha(t))$ amortized time.
 For $\update$, by \Obs{twoQueues}, each iteration of the while loop requires a constant number of finds (and no unions).
 Specifically, if a vertex is found to be ripe (and hence processed next) then these can be charged to that vertex.
 If a vertex is not ripe, then these can be charged to the vertex put on the stack.
@@ -2165,7 +2158,7 @@ these merged queues are the queues of the current colors of $c_1$ and $c_2$.  Ag
 the only vertices left in these queues are those in $H_{c_1}$ and $H_{c_2}$. 
 
 Now when $v$ is handled, three queue operations are performed.  Specifically, $v$ is removed from the queues of $c_1$ and $c_2$, and then the queues are 
-are merged together.  By the above arguments the sizes of the queues for each of these operations are $H_{c_1}$, $H_{c_2}$, and $H_v$, respectively.  
+are merged together.  By the above arguments the sizes of the queues for each of these operations are $|H_{c_1}|$, $|H_{c_2}|$, and $|H_v|$, respectively.  
 As merging and deleting takes logarithmic time in the heap size for binomial heaps, the claim now follows.
 \end{proof}
 }
@@ -2195,7 +2188,7 @@ we use $H_v$ to denote the \emph{heap} at $v$. Formally, $H_v = \{u | u \in A(v)
 the set of ancestors colored by some leaf in $L(v)$.
 \end{definition}
 
-Given the above technical definition, the proof of the following lemma is straightforward, though long and so has been moved to \Sec{runTimeProof}.
+Given the above technical definition, the proof of the following lemma is straightforward, though long and so has been moved to the full version \CiteFullVer.
 
 \begin{lemma}\label{lem:runTimeUpper}
 Let $\MM$ be a simplicial complex with $t$ critical points.  
@@ -2206,17 +2199,20 @@ The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \lo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\InSoCGVer{Our main result, } \Thm{main-corr}, is an easy corollary of the above lemma. Specifically, consider a critical point $v$ of the initial input 
+\InSoCGVer{Our main result, }\Thm{main-corr}\InSoCGVer{,} is an easy corollary of the above lemma.
+\begin{proof}[Proof of \Thm{main-corr}]
+Consider a critical point $v$ of the initial input 
 complex.  By \Thm{jordan} this vertex appears in exactly one of the pieces output by $\rain$.  As in the \Thm{main-corr} statement, let $\ell_v$ 
 denote the length of the longest directed path passing through $v$ in the contour tree of the input complex, and let $\ell_v'$ 
 denote the longest directed path passing through $v$ in the join tree of the piece containing $v$.
 By \Thm{surgery}, ignoring non-dominant extrema introduced from cutting (whose cost can be charged to a corresponding saddle), the join tree on each piece output by $\rain$ is isomorphic to some 
 connected subgraph of the contour tree of the input complex, and hence $\ell_v'\leq \ell_v$.  
 Moreover, $|H_v|$ only counts vertices in a $v$ to root path and so trivially $|H_v|\leq \ell_v'$, implying \Thm{main-corr}.
+\end{proof}
 
 Note that there is fair amount of slack in this argument as $|H_v|$ may be significantly smaller than $\ell_v'$.  
 This slack allows for the more refined upper and lower bounds mentioned in \Sec{more-refined}.  Quantifying this slack however is quite challenging, 
-and requires a significantly more sophisticated analysis involving path decompositions, which is the subject of \Sec{pathDecomp} and \Sec{lb}. 
+and requires a significantly more sophisticated analysis involving path decompositions, detailed in the full version \CiteFullVer. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2274,7 +2270,7 @@ We use $H_p$ to denote the $H_{b(p)}$.
 \begin{lemma}
 \label{lem:adjacent}
  Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the children on $p$.
-Then $H_{\ell(p)} + \sum_{i=1}^k |H_{q_i}| \leq |H_p|+2|p|$. 
+Then $|H_{\ell(p)}| + \sum_{i=1}^k |H_{q_i}| \leq |H_p|+2|p|$. 
 \end{lemma}
 
 \begin{proof} For convenience, denote $H_i = H_{q_i}$ and $H_0 = H_{\ell(p)}$.
@@ -2719,7 +2715,7 @@ Specifically, \Lem{rain-1} proves that the output of $\rain(\MM)$ is a set of ex
 $\MM_1, \dots, \MM_k$, and \Clm{rain-reeb} shows that given the contour trees, $\cC(\MM_1), \dots, \cC(\MM_k)$, 
 the full contour tree, $\cC(\MM)$, can be constructed (in $O(|\MM|)$ time).
 
-Now one of the key observations was that for extremum dominant manifolds, computing the contour tree is roughly the same as 
+Now one of the key observations was that for extremum dominant complexes, computing the contour tree is roughly the same as 
 computing the join tree.  Specifically, \Thm{contour-tree} implies that given $\jc(\MM_i)$ , 
 we can obtain $\cC(\MM_i)$ by simply sticking on the non-dominant minima at their respective splits (which can easily be done in linear time).
 Remark~\ref{rem:joinAndCriticalJoin} implies that $\jc(\MM_i)$ is trivially obtained from the $\cJ(\MM_i)$, and 
@@ -2913,7 +2909,9 @@ We show that regardless of how paint spilling is done, the number of heap operat
 \end{proof}
 
 The following is the equivalent of \Thm{main-lb} for join trees, and immediately follows from
-the previous lemmas.
+the previous lemmas.  Note that the phrasing of the two theorems differ, but can be connected by observing that for any value of $\thmConst$ from \Thm{main-lb}, 
+there is a path decomposition $P$ of some tree $T$ such that $\thmConst= \Theta(\sum_{p \in P} |p|\log |p|)$.
+
 %Call a cost $C$ join tree valid if $C = cost_{\jc}(f)$ for some $f$ defined over a given complex $\MM$.
 
 \begin{theorem}\label{thm:joinLB}
@@ -3020,6 +3018,7 @@ For all $\MM \in \bF_P$, the number of heap operations is $\Theta(\sum_{p\in P} 
 \end{proof}
 
 We now restate \Thm{main-lb}, which follows immediately from an entropy argument, analogous to \Thm{joinLB}.
+Again, as discussed above for \Thm{joinLB}, the phrasing differs from \Thm{main-lb}.
 
 \begin{theorem}\label{thm:path-main-lb}
 Consider any rain consistent path decomposition $P$. There exists a family $\bF_P$ of terrains ($d=2$) with the following properties.
@@ -3074,14 +3073,8 @@ Nuclear Security Administration under contract DE-AC04-94AL85000.
 
 
 
-
-
-
-
 \InSoCGVer{
 \appendix
-
-%\intuitionSection
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -3101,24 +3094,21 @@ That is, Theorem~\ref{thm:jordan}, which is proven below.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Join and Split Trees of Extremum Dominant Manifolds}
+\section{Join and Split Trees of Extremum Dominant Complexes}
 \label{sec:jstedm}
 In this section we prove Theorem~\ref{thm:contour-tree} (of \Sec{extreme}), which states the equivalence 
-of the contour tree on extremum dominant manifolds and the critical join tree of Definition~\ref{def:criticalJoin}.
+of the contour tree on extremum dominant complexes and the critical join tree of Definition~\ref{def:criticalJoin}.
 This proof requires some definitions and notation, specially
-the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-00}.
+the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-03}.
 Conventionally, all edges are directed from higher to lower function value. 
 
 \joinTreeSplitTreeMerge
 
-% We now prove Theorem~\ref{thm:contour-tree} (of Section~\ref{sec:extreme}), which states the equivalence 
-% of the contour tree on extremum dominant manifolds and the critical join tree of Definition~\ref{def:criticalJoin}.
 We are now ready to prove Theorem~\ref{thm:contour-tree}.
 \proofofContourJoinEquiv
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%reeb graph
 
-%\algorithmRunTimeSection
 \section{Proof of \Lem{runTimeUpper}}
 \label{sec:runTimeProof}
 \proofofRunTime
@@ -3131,17 +3121,7 @@ We are now ready to prove Theorem~\ref{thm:contour-tree}.
 
 \lowerBoundbyPathDecomp
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%\InsertAppendixOfProofs
 }
-
-
-
-
-
-
-
 
 
 
