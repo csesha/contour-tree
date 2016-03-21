@@ -1,0 +1,328 @@
+----------------------- REVIEW 1 ---------------------
+PAPER: 22
+TITLE: Avoiding the Global Sort:  A Faster Contour Tree Algorithm
+AUTHORS: Benjamin Raichel and C. Seshadhri
+
+
+----------- REVIEW -----------
+This paper presents a new algorithm for constructing the contour tree of a PL map on a simplicial complex. The paper is quite well-written, if not only too lengthy, and to me the algorithm seems fine and correct. The main feature of this new algorithm is that the running time avoids global sorting of the critical vertices and instead depends on path decompositions of the contour tree. It decomposes the input into pieces whose contour trees are (roughly) paths, then connects these paths to form the whole tree. The running time is proved to be bounded by a certain implicit path decomposition, and is thus output-sensitive. The authors
+also prove optimality of their results in terms of how much sorting has to be done by any algorithm on a specific terrain.
+
+I suggest accepting this paper, however in the following I mention a list of more important issues that I think should be resolved and later a list of some minor problems.
+
+- The authors mention in several places that comparisons are made only on the path to the root, but this is not true. Always there has to be O( number of edges ) of comparisons to determine local behavior, hence for doing downward BFS and also finding critical points. Thus there is always this much comparison, which is O(N) and the extra ones are as they say between values of vertices on the same path.
+Ben--Sesh--> Changed abstract, main theorems, and several other places, to also include adjacent in M.  
+Sesh, theorem 4 and the paragraph before it are sort of a mess in this regard. I just added $t=\Omega(n)$ before theorem 4, see if this suffices.
+
+- Since this paper is about getting rid of a log(n) factor, the authors should care more about the data structure of the input complex, and the running time of the surgeries. It seems that their suggestion of simplex-trees of [3] does not actually support all operations in constant time. They do not need compact data structures and can use a redundant representation of the simplcial complex so that access to and from adjacent faces is constant time, as well as adding and removing new simplices, etc.
+Ben--Sesh--> please address, I am not familiar with the data structure.
+
+- In the update() procedure, they have to keep track of which colors touching a vertex in the stack have been tested. This is because col(h) is colors of all the edges with lower endpoint h and these are more than 2. This can be done by say a list of colors for each vertex. Each color which is found to be highest in T(rep(c)) is removed from the list. Otherwise, each time all adjacent colors have to be checked.
+Ben--Sesh--> This is a good point, but I don't think is necessary as this is done at most once for each upstar of a vertex.
+Should we add a footnote?  Not sure exactly what it would say.
+
+- It seems to me that the restriction to degree 3 is not necessary
+ and it might actually be better to remove it. Intuitively, as degree becomes larger tree tends to be fatter. The degree 3 is used at some places to argue that some of the degrees is 3t. In general, it should be possible to replace those arguments by : some of all pairs (v, e) where v is a vertex of the tree and e an edge incident on v is 3t. I suggest authors do this for a later version of the paper.
+Ben--IGNORE--> We should change this at some point, but lets wait for the journal version.
+
+- In the spirit of the last point, I think doing the rains up and down is not necessary, since all the minimums can be found in O(N) time. This is easier than finding all the critical points.
+
+- It seems that the authors have changed the input from manifolds into simplcial complex and in many places it is still manifold whereas it has to be changed into simplicial complex.
+Ben-----> "manifold" changed to "simplicial complex"
+
+Here is a list of typos and minor issues:
+
+- in Def. 2 it should be "partition of T".
+Ben-----> I see what the reviewer is saying, but I think best to leave as is.
+
+- in Theorems 3 and 4 it should be mentioned that comparisons extra to O(N) are made on the paths, as in comments above I explained why.
+Ben-----> Added to theorem 3
+
+- In line 2, page 8, it should be "B_\epsilon (y) \cap M" and also in the continuation.
+Ben-----> Changed
+
+- in def. 23, instead of color should be \chi-value.
+Ben-----> added ", where $\chi(z)$ is referred to as the \emph{color} of $z$,"
+
+- in lemma 27, it is good to say that "at all times ... ".
+Ben--Sesh--> ?? I don't understand what the reviewer wants here ??
+
+- in lemma 37 there has to be conditions on M.
+Ben-----> Added "For minimum dominant M"
+
+- In Appendix D, in par. 2, they say that "each union-time operation takes O(\alpha(t))". This is not correct. This bound is amortized over t operations. In the last lines of the proof instead of H_{c_1} , ... should be |H_{c_1}|, ... .
+Ben-----> Added the word "amortized".  Also fixed the || issue.
+
+- in lemma 39 it should be |H_{l(p)}|.
+Ben-----> Added ||
+
+
+
+Ben-----> The followig comments still need to be handled, but am ignoring for now, since not related to camera ready.
+
+- in the left-hand side of the equation on top of page 21 it seems L has to be P_\max.
+
+- in the paragraph above Claim 47 two p's should be q!
+
+- in the proof of Claim 48 it is not clear what is meant by U^-. In the last line also R_p should be R_q.
+
+- In the proof of Claim 49, 19 must be 18.
+
+- In theorem 52, P(T) should be P(C).
+
+- in lemma 54 the bound is actually running time of heap data structures, the term "number of heap operations" might be confusing.
+
+
+
+
+
+
+
+
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 22
+TITLE: Avoiding the Global Sort:  A Faster Contour Tree Algorithm
+AUTHORS: Benjamin Raichel and C. Seshadhri
+
+
+----------- REVIEW -----------
+This paper presents an algorithm for constructing a contour tree from a simplicial complex whose running time depends upon the structure of the contour tree. The algorithm runs in $O(t log D + t \alpha(t) + N)$ time where $N$ is the number of vertices in the simplicial complex, $t$ is the number of critical points of all types, and $D$ is the diameter of the tree.  The authors also give more complicated, tighter bounds which sum over the "height" and "depth" of the critical vertices in the tree. The previous fastest algorithm ran in $O(t log t + t \alpha(t) + N)$ time.
+
+The main innovation in the algorithm is the use of binary heaps to construct join trees and split trees.  (The contour tree is constructed from join and split trees.)  The binary heaps track the vertices which are candidates to be added to the join or split tree.
+
+The algorithm is new and the bounds are improvements over the running times of previous algorithms. The algorithms present three theorems (labelled, 1, 3 and 4). Theorem 1 is an upper bound on the algorithm running time. The proof is relatively straightforward. Theorem 3 is a tighter upper bound on the running time, which involves a path decomposition of the contour tree. The proof is very complicated and there may be a problem in Claim 47. (See comments below.)
+The other lemmas seem correct. Theorem 4 is a lower bound on the algorithm running time.
+
+The algorithm and analysis have more theoretical than practical importance, since they require binary heaps and only improve a log term. On the other hand, the analysis, particularly the upper bounds in Theorem 3, is quite intricate and impressive. Because this paper introduces new ideas in the building of contour trees and includes some very challenging analysis, I recommend acceptance.
+
+
+Specific comments:
+
+p. 3: Theorem 1, Theorem 3 and Theorem 4:
+Having Theorems 3 and 4 without Theorem 2 is odd.
+Number your theorems 1, 2 and 3, independent of the numbering of the  definitions, claims and lemmas.  The other statements labelled "Theorem" should be renamed as "Propositions" and can be numbered together with
+the lemmas and claims.
+Ben--Sesh--> Not sure how to address this.  We could do what the authors suggests, however, we have a lot of later things we also labelled as "theorems" that would then need to be turned into lemmas? 
+
+p. 3, paragraph 6: "For any v, l_v is at most..." -
+Should this be "at least"?
+Ben-----> Good catch, changed.
+
+p. 3: paragraph 7: "Consider some C in [t, log t]..." -
+The use of C here conflicts with the use of C(T) in Theorem 1 to represent critical points.  Replace C by some other variable.
+Ben-----> Changed to a macro
+
+p. 7: surgery -
+The linear time contour tree algorithm by Carr et al constructs the contour tree from the 1-skeleton of the simplicial complex.  This greatly simplifies implementation. Can the surgery described here be restricted to the 1-skeleton?  Is it actually necessary to cut faces?
+Ben--Sesh--> Lets not change anything here. However, do we really need to consider the higher dimensional faces?  By ignoring them we may end of with a non-proper complex, but I am not sure it actually matters for the algorithm.
+
+p. 7: Raining to partition M.
+The algorithm first partitions the simplicial complex into "extremal dominant" regions, and then constructs the join and split trees of those regions.  The algorithm in Section 7.2 for computing the join tree does not require the simplicial complex to be "extremal dominant".  The partition step is required to obtain the running time bounds in Theorems 1 and 3 (although the looser $O(t log D + t \alpha(t) + N)$ time does not require this partition step.)  Without the partition step, the join tree is not isomorphic to a connected subgraph of the contour tree as stated in Lemma 33, and the bounds in Lemma 33 on the join tree do not translate to the bounds in Theorem 1 on the contour tree.  The reason for the partition step is obscure in the current version of the paper and could be made more explicit.
+Ben--IGNORED--> It is well explained in our intuition section in the full version, but some (but not all) of this intuition was dropped to fit 15 pages.
+
+p. 10, bottom: "... the portion of the contour tree above..."
+Do you mean the "join tree"?
+Ben-----> Changed
+
+p. 11: "T(rep(c))", "T(c)" -
+You sometimes use T(rep(c)) and sometimes T(c).  Aren't these the same?
+If so, use one or the other.
+Ben--IGNORED--> This is all handled correctly.  T(c) is used when c=rep(c), and otherwise T(rep(c)) is used.
+
+p. 11: update(K) -
+A slightly simpler version of the algorithm would be:
+1. If K is empty, push arbitrary unprocessed critical point v.
+2. While (head(K) is not ripe):
+  a. Find c \in col(h) such that h is not the highest in T(rep(c)).
+  b. Push the highest of T(rep(c)) onto K.
+Ben--IGNORED--> h is not defined in the above then
+
+p. 13, line -4:  "...we use H_v to denote the heap at v."
+This is a bit cryptic.  You mean H_v denotes the heap when v is processed in steps 2b-2f, but you're not referring to the algorithm here.  Give a more precise definition of H_v.
+Ben--IGNORED--> This definition is precise, I don't know what the reviewers problem is here.
+
+p. 33: You give a proof of Theorem 1 here.  Even though Theorem 1 can be derived from Theorem 3, you should formally state this as a proof of Theorem 1 with "Proof" in bold as you do for the other proofs.
+Ben--Sesh--> Changed as the reviewer suggested, see if you like the way it looks
+
+
+
+
+Ben-----> The followig comments still need to be handled, but am ignoring for now, since not related to camera ready. 
+
+p. 22, paragraph 5:
+You use U_p but I can't find the definition.  Provide the definition.
+(U_p is the subtree of U rooted at p.)
+
+p. 22, proof of Claim 47: "We write... $\sum R^+_q - R_q$ ..."
+
+Add parentheses "\sum (R^+_q - R_q)$.
+
+p. 22, proof of Claim 47: "The vertices of H~_{q'_i} that are deleted are exactly those present in the path q...  Therefore when R_q is negative, it is at most by 2|q|."
+
+I don;t quite follow the argument. This statement seems to be false.  H~q and H~_{q'_i} are reduced heaps. Thus H~q does not include ancestors of q which are in paths in the tall support chain of q.  Such vertices will be included in the H~_{q'_i} since they are not in paths in the tall support chains of the q'_i.  These vertices could add to -R_q = sum|H~_{q_i}-R_q.
+
+Claim 47 or some variation still seem to be correct, but I cannot follow the current argument. I could be mistaken. At any rate, the argument should be rewritten and made more clear.
+
+p. 23, proof of claim 50:  "Combining this with Claim 47 gives |H~_{p'}| >= 19 W_{p'}/20."
+
+When I do the calculations, I get |H~_{p'}| >= 9 W_{p'}/10.
+
+W_{p'}/20 >= sum |q|
+W_{p'}/10 >= 2 sum |q|
+|H~_{p'}| >= W_{p'} - 2 sum |q| >= W_{p'} - W_{p'}/10 = 9 W_{p'}/10.
+
+p. 24, Lemma 53.  Fix any path decomposition P.  There is a family of terrains, F_P, all with the same triangulation, such that |F_p| = ... and no two terrains in F_P define the same join tree.
+
+The statement of the lemma is not clear.  The lemma does not explain how F_P is related to P.  I had to read the proof to understand what role P plays in the lemma.  The terrains all have the same paths P and the same shrub tree on the paths.  This needs to be stated explicitly in the formulation of the lemma.
+
+p. 28, Theorem 59: "We now restate Theorem 4..."
+Theorem 59 looks quite different than Theorem 4.  How does Theorem 4 follow
+from Theorem 59?
+Theorems 55 and 59 are correct, but I don't see how they imply Theorem 4.
+Ben------> Added some guiding sentences before theorem 55 and theorem 59.
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 22
+TITLE: Avoiding the Global Sort:  A Faster Contour Tree Algorithm
+AUTHORS: Benjamin Raichel and C. Seshadhri
+
+
+----------- REVIEW -----------
+-----
+A quick summary of my review includes the following two main points:
+
++ On the positive side, this paper gives the first algorithm for
+computing contour trees that avoids the global sorting step, with
+several new and sophisticated techniques. Thus the paper is technically
+interesting.
+
+- On the negative side, this paper does not work on the right problem!
+Previous experimental results (as reported in [9]) show that in
+practice the global sorting step is never the bottleneck of the
+computation. The new algorithm has the same bottleneck operation of
+[9], plus additional complicated steps to get rid of the cheap sorting
+cost, which I believe would not pay off in practice. (There is no
+implementation/experimentation in the paper, which I would like to see
+for its practical efficiency.)
+
+More details follow.
+-----
+
+This paper presents a new algorithm for computing the contour tree of
+a scalar field over a triangulated simplicial mesh M in R^d. Suppose
+the mesh M has n vertices, N faces, and t critical points (where t <=
+n), the new algorithm achieves a worst-case running time of
+O(\Sum_{v \in C(T)} log l_v + t \alpha(t) + N), where C(T) is the set of
+critical points (thus |C(T)| = t), and l_v is the length of the
+longest directed path passing through v for any node v in the contour
+tree. This running time is equivalent to O(t log D + t \alpha(t) + N),
+where D is the diameter of the contour tree. Previously, the fastest
+algorithm is by Chiang et al [9] (CGTA 2005), with worst-case running
+time O(t log t + N), which improves the earlier algorithm of Carr et
+al [8] (the citation should be the journal version CGTA 2003 rather
+than SODA 2000) with worst-case running time O(n log n + N) (the
+current paper cites a slightly worse bound of O(n log n + N \alpha(N))).
+Chiang et al [9] also shows a lower bound of \Omega(t log t) based on
+a construction of Baja et al [1], therefore the algorithm of Chiang et
+al [9] is optimal output-sensitive. The new running time bound
+O(t log D + t \alpha(t) + N) matches all existing upper bounds, but is
+asymptotically better when the diameter D is small (e.g., when D is
+O(log t) the bound becomes O(t log log t + t \alpha(t) + N)).
+
+Contour tree is important due to its wide-spread usage in the
+Scientific Visualization community, in addition to the Computational
+Geometry/Topology community, therefore its efficient computation is
+very interesting and fundamental. All previous algorithms need to
+perform a global sorting (on all critical points in Chiang et al [9],
+and on all vertices in Carr et al [8]). The main focus of this paper
+is to avoid such global sorting, by developing new techniques such as
+cutting the input mesh M into extremum dominant pieces (using a
+"raining" idea), building join trees from painted mountaintops (using
+a "painting" idea and mergeable priority queues such as binomial
+heaps), etc. The overall algorithm is sophisticated with many
+technical lemmas and proofs. (I did not verify all the proofs, but am
+willing to believe that they are correct.) Therefore, this paper is
+interesting from the technical viewpoint.
+
+However, I am afraid that this paper is only of theoretical interest.
+As shown in the experimental results reported in Chiang et al [9], the
+global sorting step is never a computational bottleneck in practice!
+In the algorithm of Carr et al [8], the actual O(n log n) sorting time
+is very fast, and the major bottleneck in practice is the time to
+sweep and compute the join and split trees (expressed in the O(N)
+bound). In the algorithm of Chiang et al [9], this time is greatly
+reduced by the monotone-path approach so that it is no longer the
+bottleneck, and the sorting time is also reduced (O(t log t) rather
+than O(n log n)). However, these benefits are offset by the initial
+step of identifying critical points from all vertices (expressed in
+the bound O(N)), which is by far the major bottleneck in
+practice. Overall, this additional overhead pays off and the algorithm
+of Chiang et al [9] is still faster than that of Carr et al [8] in
+practice. In the new algorithm of this paper, it still performs the
+same step of identifying critical points from all vertices, plus
+additional steps such as cutting the mesh M by a hyperplane (avoiding
+any vertex) and re-triangulating the faces, etc., which look
+complicated (though it is still charged into the O(N) bound). In other
+words, the bottleneck step of [9] in practice is still retained, and
+the (practically) cheap and simple sorting step is replaced by other
+more complex operations, which I doubt will pay off. To address this
+concern, I would suggest that the authors implement and experiment on
+their new algorithm against the existing ones to evaluate its
+practical efficiency.
+
+Overall, I think this paper has a good technical quality but I have
+concerns on its practical usefulness (and practical usefulness is what
+makes contour trees important). Therefore I recommend a "weak accept"
+for this paper.
+
+Additional Comments:
+
+* In various places, it is said that the new algorithm "significantly
+  improves the running time" when the sorting bound is reduces. This
+  could be misleading (please see discussions above). Please say that
+  these improvements are *asymptotic*, to be distinguished from the
+  actual running time in practice (unless new experimental analysis is
+  provided).
+Ben--Sesh--> I guess the reviewer is right, so I added "asymptotic" in abstract and page 3. 
+
+* P.2, 3rd paragraph, lines 3-2 from bottom, "Common applications for
+  contour trees involve turbulent combustion or noisy data, where the
+  number of critical points is likely to be \Omega(n).": This is
+  somewhat misleading. (1) For noisy data, spurious critical points
+  are useless and people would not use contour trees directly on noisy
+  data. (2) For "clean data", typically t is much smaller than n (in
+  the experiments of [9] it is reported that t/n is less than 5%).
+Ben--Sesh-->, should we add a parenthetical "(albeit with a constant factor reduction)", or do we need really need to remove this (which is not ideal).
+
+* P.3, the paragraph right after Theorem 3: why are the bounds
+  O(t \alpha(t) + N) and O(t)? They are not obvious to me and why is N
+  no longer in the second bound? Please explain more on both bounds.
+Ben-----> O(t) is now O(N), and added parenthetical:
+(Since for a balanced tree, one can show $\sum_{p \in P(T)} |p|\log |p|= O(t)$.)
+
+* P.6, the paragraph before Fig. 3, "A critical insight is the use of
+  binomial heaps [26]...": This is not clear until on P.11 it is
+  mentioned to merge heaps --- but any mergeable heaps should
+  do. Maybe you want to say "mergeable priority queue" here instead,
+  and mention what operations are needed from the queue.
+Ben-----> Added ", or any other efficiently mergeable heaps,"
+
+* For the paper by Carr et al [8], please cite the journal version
+  (CGTA 2003) rather than the current citation of SODA 2000:
+  H. Carr, J. Snoeyink, U. Axen, Computing contour trees in all
+  dimensions, Computational Geometry 24 (2003) 75-94.
+Ben----> Replaced all occurrences with the journal version.

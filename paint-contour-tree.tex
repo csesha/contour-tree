@@ -613,7 +613,7 @@ has a well-defined height, including the infinite facet, which is required to be
 we allow for other boundary facets, to capture the resulting surface pieces after our algorithm makes a horizontal cut. 
 
 We think of the dimension $d$, as constant, and assume that $\MM$ is represented in a data structure that allows constant-time access to neighboring simplices
-in $\MM$ (e.g.~\cite{BoMa12}). (This is analogous to a doubly connected edge list, but for higher dimensions.)
+in $\MM$ (e.g. incidence graphs~\cite{Ed87}). (This is analogous to a doubly connected edge list, but for higher dimensions.)
 Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simplicial complex living in $\RR^{d+1}$, 
 where $f(x)$ is the ``height" of a point $x \in \MM$, which is encoded in the representation of $\MM$. 
 Specifically, rather than writing our input as $(\MM,f)$, we abuse notation and typically just write $\MM$ to denote the lifted complex.
@@ -1733,6 +1733,18 @@ For any color $c$, $\rep(c)$ denotes the representative of its class.
 
 \medskip
 \noindent
+{\bf Color list $\col(v)$:} For each point $v$, we maintain $\col(v)$ as a simple list.
+In addition, we will maintain another (sub)list of colors $L$ such that $\forall c \in L$,
+$v$ is \emph{not} the highest vertex in $T(\rep(c))$. Note that given $c \in \col(v)$
+and $\rep(c)$, this property can be checked in constant time. If $c$ is ever removed
+from this sublist, it can never enter it again.
+
+For notational convenience, we will not explicitly
+maintain this sublist. We simply assume that, in constant
+time, one can determine (if it exists) an arbitrary color $c \in \col(v)$ such that $v$ is not the highest vertex in $T(\rep(c))$.
+
+\medskip
+\noindent
 {\bf The stack $\stack$:} This consists of non-extremal critical points, with monotonically increasing
 heights as we go from the base to the head.
 \ignore{
@@ -1754,7 +1766,6 @@ the following invariants.
 We will maintain the guarantee that the portion of the join tree above (and including) $\h(c)$ has already been constructed.
 %This is initialized to the maximum corresponding to $c$.
 
-	
 \subsection{The algorithm} \label{sec:algo}
 
 We formally describe the algorithm below. 
@@ -1907,7 +1918,7 @@ where $\chi(e)$ is the color of $e$ from the initial painting.
 %\Ben{Current color is never defined, but it means the the current rep(c).}
 
 \begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component $\PP$ of $\MM^+_v$
-by an edge $e$ which is currently colored $c$. Either all edges in $\PP$ are currently colored $c$, or there
+by an edge $e$ which is currently colored $c$. At all times: either all edges in $\PP$ are currently colored $c$, or there
 exists a critical vertex $w \in \PP$ fully touched by $c$ and touched by another color.
 \end{lemma}
 
