@@ -461,12 +461,22 @@ sorting all the maxima. Also consider the surface of \Fig{sorting}. The final co
 trees joined at their roots, and we do not need the entire sorted order of critical points
 to construct the contour tree. 
 
+% \begin{figure}[h]\centering
+%     \includegraphics[width=.26\linewidth]{figs/spikey1}%
+%     \hspace{.35in}
+%     \includegraphics[width=.26\linewidth]{figs/spikey2}%
+%     \hspace{.4in}
+%     \includegraphics[width=.215\linewidth]{figs/spikeyTree}
+%     \caption{Two surfaces with different orderings of the maxima, but the same contour tree.}
+%     \label{fig:relative}
+% \end{figure}
+
 \begin{figure}[h]\centering
-    \includegraphics[width=.26\linewidth]{figs/spikey1}%
-    \hspace{.35in}
-    \includegraphics[width=.26\linewidth]{figs/spikey2}%
-    \hspace{.4in}
-    \includegraphics[width=.215\linewidth]{figs/spikeyTree}
+    \includegraphics[width=.23\linewidth]{figs/spikey1}%
+    \hspace{.37in}
+    \includegraphics[width=.23\linewidth]{figs/spikey2}%
+    \hspace{.41in}
+    \includegraphics[width=.21\linewidth]{figs/spikeyTree}
     \caption{Two surfaces with different orderings of the maxima, but the same contour tree.}
     \label{fig:relative}
 \end{figure}
@@ -1447,10 +1457,10 @@ For convenience, denote the total output of $\rain(x,\MM)$ by $\MM_1, \MM_2, \ld
 
 \begin{proof} Consider a call to $\rain(x,\NN)$. If the interface is empty, then all of $\NN$
 is in $\wet(x,\NN)$, so $\NN$ is trivially extremum dominant. So suppose the interface
-is non-empty and consists of $\phi_1, \phi_2, \ldots, \phi_k$ (as denoted in the procedure).
+is non-empty and consists of $\phi_1, \ldots, \phi_k$ (as denoted in the procedure).
 By repeated applications of \Clm{cut-int}, $\NN_{k+1}$ contains $\wet(x,\MM)$. 
-Consider $\wet(x,\NN_{k+1})$. The interface must exactly be $\phi_1, \phi_2, \ldots, \phi_k$.
-So the only dry vertices are those in the boundaries $B_1, B_2, \ldots, B_k$. But these
+Consider $\wet(x,\NN_{k+1})$. The interface is exactly $\phi_1, \ldots, \phi_k$.
+So the only dry vertices are those in the boundaries $B_1, \ldots, B_k$. But these
 boundaries are maxima.
 \end{proof}
 
@@ -1697,7 +1707,7 @@ with the following property.
  Consider an edge $e$. There exists a descending path from some maximum $x$ to $e$
 	consisting of edges in $E$, such that all edges along this path have the same color as $x$. 
 
-An \emph{initial} painting has the additional property that the restriction $\chi:X \to [|X|]$ is a bijection.
+An \emph{initial} painting also requires that the restriction $\chi:X \to [|X|]$ is a bijection.
 \end{definition}
 
 % A painting colors edges, not vertices. We associate certain
@@ -1777,7 +1787,7 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 %Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(\rep(c))$ is empty.
 \end{definition} 
 
-\medskip
+\smallskip
 \fbox{
 \begin{minipage}{0.9\textwidth}
 {\bf $\init(\MM)$}
@@ -1795,7 +1805,7 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 \end{minipage}}
 
 
-\medskip
+\smallskip
 \fbox{
 \begin{minipage}{0.9\textwidth}
 {\bf $\build(\MM)$}
@@ -1819,7 +1829,7 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 \end{compactenum}
 \end{minipage}}
 
-\medskip
+\smallskip
 \fbox{
 \begin{minipage}{0.9\textwidth}
 {\bf $\update(\stack)$}
@@ -1857,7 +1867,7 @@ A few simple facts:
 \end{observation}
 
 
-\medskip
+%\medskip
 \ignore{	
 	Suppose $\mcol(h) = \{c\}$ (so $h$ is split). 
 	\begin{compactenum}
@@ -3082,58 +3092,58 @@ Nuclear Security Administration under contract DE-AC04-94AL85000.
 
 
 
-
-
-\InSoCGVer{
-\appendix
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Some technical remarks}
-\label{sec:techmarks}
-The following is a continuation from the end of \Sec{basics}.
-
-\technicalRemarks
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Proof of Surgery}
-\label{sec:proofOfSurgery}
-\surgeryBody
-That is, Theorem~\ref{thm:jordan}, which is proven below.
-\proofofDisconnected
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Join and Split Trees of Extremum Dominant Complexes}
-\label{sec:jstedm}
-In this section we prove Theorem~\ref{thm:contour-tree} (of \Sec{extreme}), which states the equivalence 
-of the contour tree on extremum dominant complexes and the critical join tree of Definition~\ref{def:criticalJoin}.
-This proof requires some definitions and notation, specially
-the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-03}.
-Conventionally, all edges are directed from higher to lower function value. 
-
-\joinTreeSplitTreeMerge
-
-We are now ready to prove Theorem~\ref{thm:contour-tree}.
-\proofofContourJoinEquiv
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%reeb graph
-
-\section{Proof of \Lem{runTimeUpper}}
-\label{sec:runTimeProof}
-\proofofRunTime
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\leafAssignPathDecomp
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\lowerBoundbyPathDecomp
-
-}
-
+% % 
+% % 
+% % \InSoCGVer{
+% % \appendix
+% % 
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % 
+% % \section{Some technical remarks}
+% % \label{sec:techmarks}
+% % The following is a continuation from the end of \Sec{basics}.
+% % 
+% % \technicalRemarks
+% % 
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % 
+% % \section{Proof of Surgery}
+% % \label{sec:proofOfSurgery}
+% % \surgeryBody
+% % That is, Theorem~\ref{thm:jordan}, which is proven below.
+% % \proofofDisconnected
+% % 
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % 
+% % \section{Join and Split Trees of Extremum Dominant Complexes}
+% % \label{sec:jstedm}
+% % In this section we prove Theorem~\ref{thm:contour-tree} (of \Sec{extreme}), which states the equivalence 
+% % of the contour tree on extremum dominant complexes and the critical join tree of Definition~\ref{def:criticalJoin}.
+% % This proof requires some definitions and notation, specially
+% % the notions of \emph{join} and \emph{split} trees, as given by~\cite{csa-cctad-03}.
+% % Conventionally, all edges are directed from higher to lower function value. 
+% % 
+% % \joinTreeSplitTreeMerge
+% % 
+% % We are now ready to prove Theorem~\ref{thm:contour-tree}.
+% % \proofofContourJoinEquiv
+% % 
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%reeb graph
+% % 
+% % \section{Proof of \Lem{runTimeUpper}}
+% % \label{sec:runTimeProof}
+% % \proofofRunTime
+% % 
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % 
+% % \leafAssignPathDecomp
+% % 
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % 
+% % \lowerBoundbyPathDecomp
+% % 
+% % }
+% % 
 
 
 
