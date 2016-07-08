@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
-\def\SoCGVer{TRUE}%
+%\def\SoCGVer{TRUE}%
 %%%
 \def\HideComments{TRUE}%
 %%%
@@ -501,7 +501,7 @@ in $O(\sum_{v \in C(T)} \log \ell_v + t\alpha(t) + N)$ time. Moreover, this algo
 compares function values at pairs of vertices that are ancestor-descendant in $T$ or adjacent in $\MM$.
 \end{theorem}
 
-Essentially, the ``run time per critical point" is the height/depth of the point in the contour tree.
+Essentially, the ``run time per critical point" is determined by the height/depth of the point in the contour tree.
 This bound immediately yields a run time of $O(t\log D + t\alpha(t) + N)$,
 where $D$ is the diameter of the contour tree. 
 This is a significant asymptotic improvement for short and fat contour trees. For example, if the tree is balanced,
@@ -690,7 +690,7 @@ there is an edge $(v_i,v_j)$. (Conventionally, edges are directed from higher to
 
 We denote the contour tree of $\MM$
 by $\reeb(\MM)$. The corresponding node and edge sets are denoted as $\cV(\cdot)$ and $\cE(\cdot)$.
-It is not immediately obvious that this graph is a tree, but alternate definitions of the contour tree
+It is not immediately obvious that this graph is a tree, but alternative definitions of the contour tree
 in~\cite{csa-cctad-03} imply this is a tree. 
 Since this tree has height values associated with the vertices, we can talk about up-degrees and down-degrees in $\reeb(\MM)$.
 %
@@ -2281,16 +2281,16 @@ The paths in $P(T)$ naturally define a tree\footnote{Please excuse the
 overloading of the term 'tree', it is the most natural term to use here.} of their own.  Specifically, in the original 
 tree $T$ contract each path down to its root.  Call the resulting tree the \emph{shrub} of $T$ corresponding to 
 the path decomposition $P(T)$. Abusing notation, we simply use $P(T)$ to denote the shrub.
-As a result, we use terms like `parent', `child', `sibling', etc. for paths as well.
+As a result, we use terms like `parent', `child', `sibling', etc.\ for paths as well.
 The shrub gives a handle on the heaps of a path.
-We use $b(p)$ to denote the \emph{base} of the path, which is vertex in $p$ closest
+We use $b(p)$ to denote the \emph{base} of the path, which is the vertex in $p$ closest
 to root of $T$. We use $\ell(p)$ to denote the leaf in $p$.
-We use $H_p$ to denote the $H_{b(p)}$.
+We use $H_p$ to denote $H_{b(p)}$.
 % and denote it by $\pathTree(T)$.
 
 \begin{lemma}
 \label{lem:adjacent}
- Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the children on $p$.
+ Let $p$ be any path in $P(T)$ and let $\{q_1, \dots q_k\}$ be the children of $p$.
 Then $|H_{\ell(p)}| + \sum_{i=1}^k |H_{q_i}| \leq |H_p|+2|p|$. 
 \end{lemma}
 
@@ -2382,7 +2382,7 @@ given by $\pmax(T)$.
 We now construct the shrub of unsupported short paths. Consider $p \in \cL \setminus \cL'$,
 and traverse the chain of ancestors from $p$. Eventually, we must reach another short path $q$.
 (If not, we have reached the root $r$ of $\pmax(T)$. Hence, $p$ is supported.)
-Insert edge from $p$ to $q$, so $q$ is the parent of $p$ in $\cU$. This construction leads
+Insert an edge from $p$ to $q$, so $q$ is the parent of $p$. This construction leads
 to the shrub forest of $\cL \setminus \cL'$, where all the roots are supported short paths, 
 and the remaining nodes are the unsupported short paths.
 
@@ -2399,14 +2399,14 @@ which involves routine calculations. Then we prove \Lem{cu-root}, where the inte
 
 \subsection{Proving \Thm{runtime}} \label{sec:thm-runtime}
 
-We split the summation into tall, short, and unsupported short paths.
+We split the summation into tall, supported short, and unsupported short paths.
 \begin{eqnarray*} 
-\sum_{p \in \cL} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cH} \sum_{v \in p} \log |H_v|
+\sum_{p \in \pmax(T)} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cH} \sum_{v \in p} \log |H_v|
 %& = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |p|\log |H_p|) = \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + O(\sum_{p \in \cL'} |H_p|\log |H_p|)
 \end{eqnarray*}
 The last term can be bounded by $O(\sum_{p \in \pmax(T)} |p|\log |p|)$, by \Lem{pathBounds}.
-The second term can be bounded by $O(\sum_{p \in \cL'} |H_p| \log |H_p|)$, by \Lem{pathBounds} again.
-The following claim shows that this in turn is at most the last term.
+The second term can be bounded by $O(\sum_{p \in \cL'} |H_p| \log |H_p|)$, again by \Lem{pathBounds}.
+The following claim shows that this in turn is asymptotically bounded by the last term.
 
 %We have a claim that also bounds heap sizes for special set of paths.
 
@@ -2464,8 +2464,7 @@ This is where the critical \Lem{cu-root} plays a role.
 
 \begin{proof} Let $\cU$ denote a connected component of the shrub forest.
 We have $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| \allowbreak \leq \sum_{\cU} \sum_{p \in \cU} \sum_{v \in p} \log |H_v|$.
-By \Lem{cu-root}, $|H_v| = O(|H_r|)$, where $r$ is the root of $\cU$.
-Furthermore, $\sum_{p \in \cU} |p| = O(|H_r|)$. 
+By \Lem{cu-root}, $|H_v| = O(|H_r|)$, where $r$ is the root of $\cU$, and furthermore, $\sum_{p \in \cU} |p| = O(|H_r|)$. 
 We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
 We sum this over all $\cU$ in the shrub forest, and note that roots in the shrub forest are supported short paths.
 \end{proof}
@@ -2568,16 +2567,17 @@ This immediately proves part (i) of \Lem{cu-root}. Part (ii) requires much more 
 
 We define a \emph{residue} $R_p$ for each $p \in \cU$. Suppose $p$ has children
 $q_1, q_2, \ldots, q_k$ in $\cU$. Then $R_p = |\redH_p| - \sum_i |\redH_{q_i}|$. 
-By definition, $|\redH_p| = \sum_{q \in \cU_p} R_p$. 
+By definition, $|\redH_p| = \sum_{q \in \cU_p} R_q$. 
 Note that $R_p$ can be negative. 
-Now, define $R^+_p = \max(R_p,0)$, and set $W_p = \sum_{q \in \cU_p} R^+_p$.
+Now, define $R^+_p = \max(R_p,0)$, and set $W_p = \sum_{q \in \cU_p} R^+_q$, 
+where $\cU_p$ is the subtree of $\cU$ rooted at $p$.
 Observe that $W_p \geq |\redH_p|$. We also get an approximate converse.
 
 
 \begin{claim} \label{clm:loss} For any path $p\in \cU$, $|\redH_p| \geq W_p - 2\sum_{q \in \cU_p} |q|$.
 \end{claim}
 
-\begin{proof} We write $W_p - |\redH_p| = \sum_{q \in \cU_p} R^+_q - R_q$ $= -\sum_{q \in \cU_p: R_q < 0} R_q$.
+\begin{proof} We write $W_p - |\redH_p| = \sum_{q \in \cU_p} (R^+_q - R_q)$ $= -\sum_{q \in \cU_p: R_q < 0} R_q$.
 Consider $q \in \cU_p$ and denote the children in $\cU_p$ by $q'_1, q'_2, \ldots$.
 Note that $R_q$ is negative exactly when $|\redH_q| < \sum_i |\redH_{q'_i}|$.
 Traverse $\pmax(T)$ from $q'_i$ to $q$.
