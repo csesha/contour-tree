@@ -2396,6 +2396,96 @@ $|H_v| = O(|H_r|)$. (ii) $\sum_{p \in \cU} |p| = O(|H_r|)$.
 We split the remaining argument into two subsections. We first prove \Thm{runtime} from \Lem{cu-root},
 which involves routine calculations. Then we prove \Lem{cu-root}, where the interesting work happens.
 
+\newcommand{\buff}{\mathcal{B}}
+\newcommand{\loss}{\lambda}
+\subsection{Pruning Away Buffered Sub-shrubs}
+Let $\cU$ be a shrub in $\cL \setminus \cL'$.  For any node $q$ in the shrub $\cU$, let $TSC(q)$ denote the set of all vertices of $T$ from all paths in the tall support chain of $q$.
+For $q$ in $\cU$ we then define the \emph{loss} to be $\loss(q) = TSC(q)\cap H_q$. 
+Intuitively, if $c$ is a child node of a parent node $p$ in $\cU$, then $\loss(c)$ are the vertices ``lost'' from the heap of $c$ to its tall support chain, by the time one reaches $p$.
+
+% In the following, any connected subgraph of a shrub will be called a \emph{sub-shrub} (i.e. it may not be a proper subtree).
+% 
+% \begin{definition}
+%  Let $\cU$ denote a shrub of $\cL \setminus \cL'$.  
+%  Then a sub-shrub $\buff$ of $\cU$ is called \emph{buffered} if the following holds:
+%  \begin{enumerate}
+%   \item $\sum_{p\in \buff} \loss(p) \geq \frac{1}{100} \sum_{p\in \buff} |p|$
+%   \item $\buff$ is minimal, i.e.\ there is no sub-shrub of $\buff$ for which the above inequality holds.  
+%  \end{enumerate}
+% \end{definition}
+
+Ultimately our goal in this subsection is to prune away subtrees from $\cU$ which can be paid for by charging to their tall support chains (similarly to supported short paths). The remaining portion of the shrub will then be handled in a later subsection. We now formally define this pruning process, which is quite intuitive if one thinks of $\cU$ as an actual physical shrub.
+
+\begin{definition}
+  Let $\cU$ denote a shrub of $\cL \setminus \cL'$. A \emph{pruning} $\cU'$ of $\cU$ is any subgraph defined by some number of rounds of the following iterative process.  Initially set $\cU' = \cU$.  In each iteration select some subtree $\cU'_r$ rooted at a node $r\in \cU'$ and set $\cU' = \cU'\setminus \{\cU'_r\}$.  
+\end{definition}
+
+The above definition does not specify which subtrees are pruned, which we now formally define.
+
+\begin{definition}\label{def:buff}
+ Let $\cU'$ be a pruning of a shrub of $\cU$ of $\cL \setminus \cL'$. Then a rooted subtree $\buff$ of $\cU'$ is called a \emph{buffered sub-shrub} if the following conditions hold:
+  \begin{enumerate}
+  \item $\sum_{p\in \buff} |\loss(p)| \geq \frac{1}{100} \sum_{p\in \buff} |p|$
+  \item No rooted subtree of $\buff$ satisfies the above inequality (other than $\buff$ itself). 
+ \end{enumerate}
+\end{definition}
+
+% \begin{definition}
+%  Let $\cU$ denote a shrub of $\cL \setminus \cL'$. We define an interative  procedure which ``prunes'' $\cU$.  Specifically, let $\cU'$ denote the current remaining portion of the shrub, so initially, $\cU' = \cU$.  A single iteration consists of the following: Visit the nodes in $\cU'$ in a reverse topological order (i.e. leaves first).  Let $q$ be the current node being considered, and let $\cU'_q$ be the subtree rooted at $q$.  We say $\cU'_q$ is buffered if the following condition holds
+%  \[
+%   \sum_{p\in \cU'_q} \loss(p) \geq \frac{1}{100} \sum_{p\in \cU'_q} |p|
+%  \]
+%  An iteration stops when we reach a node $q$ defining a buffered subtree, at which point we set $\cU' = \cU'\setminus{\cU'_q}$.
+% \end{definition}
+
+Ultimately we will prune buffered subtrees from $\cU$ by starting at the leaves and working towards the root, and hence the second condition of buffered will trivially be satisfied. 
+
+We require the following lemma so that we can charge to the root in a buffered subtree.
+
+
+\begin{lemma}
+ Let $p$ be any node in a buffered sub-shrub $\buff$, and let $d$ be any descendant node of $p$ in $\buff$.  Then for any $v \in d$, $|H_v| = O(|H_p|)$.
+\end{lemma}
+\begin{proof}
+ Missing.  \Lem{cu-root} will be rephrased to handle this slightly more general case (i.e. here $p$ may not be the root of $\cU$). Note the proof will not 
+ have to be changed as \Lem{geometric} is the proof which already implies general case.
+\end{proof}
+
+\begin{lemma}
+ Let $\buff$ be a buffered sub-shrub.  Then $\sum_{p\in \buff}\sum_{v\in p} \log |H_v| = O(\sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| )$
+\end{lemma}
+\begin{proof}
+ ????  Ignore this ``proof'', it is just a graveyard of observations. ????
+ 
+ Let $r$ be the root of $\buff$. First observe that $\loss(r) \geq |r|/100$.  Suppose otherwise, then in order for the first condition of \Def{buff} to be satisfied for $\buff$, the rooted subtree of some child of $r$, call it $\buff'$, must satisfy $\sum_{p\in \buff'} \loss(p) \geq \frac{1}{100} \sum_{p\in \buff'} |p|$.  However, this would contradict the second condition of \Def{buff}.
+ 
+ Consider any node $q\in \buff$.  Then for any vertex $v\in \loss(q)$, we have $|H_v| = \Omega(|H_q|)$, since $q$ is unsupported and hence by definition less than $|H_q|/100$ vertices of $H_q$ appear in $\loss(q)$.
+ 
+ \begin{align*}
+  \sum_{p\in \buff}\sum_{v\in p} \log |H_v| &=  O\left( \sum_{p\in \buff}\sum_{v\in p} \log |H_p| \right)   &\mbox{definition of short} \\
+  &= O\left( \sum_{p\in \buff} |p| \log |H_p| \right)   &\mbox{} \\
+  &= ????   &\mbox{buffered is not sufficient to get to next line} \\
+  &= O\left( \sum_{p\in \buff} |\loss(p)| \log |H_p| \right)   &\mbox{} \\
+  &= O\left( \sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| \right)
+ \end{align*}
+\end{proof}
+
+
+
+Let $p$ and $q$ be two distinct paths in $\cL \setminus \cL'$.  Note that while it is possible that $TSC(p)\cap TSC(q)\neq \emptyset$, 
+it holds that $\loss(p)\cap \loss(q) = \emptyset$.  Thus the above lemma implies that the total heap costs due to vertices in buffered sub-shrubs can be charged to those in tall paths.
+
+\begin{corollary}
+ Let $B= \{\buff_1, \ldots, \buff_k\}$ be any collection of disjoint buffered sub-shrubs from $\cL \setminus \cL'$. Then, 
+ $\sum_{i=1}^k \sum_{p\in \buff_i}\sum_{v\in p} |H_v| = O(\sum_{p\in \cH}\sum_{v\in p} \log |H_v| )$
+\end{corollary}
+
+
+
+
+
+
+
 
 \subsection{Proving \Thm{runtime}} \label{sec:thm-runtime}
 
