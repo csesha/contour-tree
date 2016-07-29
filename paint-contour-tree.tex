@@ -2273,7 +2273,7 @@ We conclude this section in \Sec{implications} by showing that proving this theo
 
 
 
-\subsection{Shrubs, tall paths, and short paths}
+\subsection{Tall and short paths}
 \label{sec:shrubs}
 
 
@@ -2288,34 +2288,34 @@ to root of $T$. We use $\ell(p)$ to denote the leaf in $p$.
 We use $H_p$ to denote $H_{b(p)}$.
 % and denote it by $\pathTree(T)$.
 
-\begin{lemma}
-\label{lem:adjacent}
- Let $p$ be any path in $\pmax(T)$ and let $\{q_1, \dots q_k\}$ be the children of $p$.
-Then $|H_{\ell(p)}| + \sum_{i=1}^k |H_{q_i}| \leq |H_p|+2|p|$. 
-\end{lemma}
-
-\begin{proof} For convenience, denote $H_i = H_{q_i}$ and $H_0 = H_{\ell(p)}$.
-Consider $v \in \bigcup_{i} H_i$ that lies below $b(p)$ in $T$. 
-Note that such a vertex has only one of its two colors in $L(b(p))$.  
-Since the colors tracked by $H_i$ and $H_j$ for $i\neq j$ are disjoint, 
-such a vertex can appear in only one of the $H_i$'s.
-On the other hand, a vertex $u\in p$ can appear in more than one $H_i$, 
-but since any vertex has exactly two colors it can appear in at most two 
-such heaps.  Hence, $\sum_i |H_i| \leq |H_p| + 2|p|$.
-\ignore{
- First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
- Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
-  
- Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e.\ $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
- In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
- as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
- Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
- Putting these together gives
- \[
-  \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
- \]
-}
-\end{proof}
+% \begin{lemma}
+% \label{lem:adjacent}
+%  Let $p$ be any path in $\pmax(T)$ and let $\{q_1, \dots q_k\}$ be the children of $p$.
+% Then $|H_{\ell(p)}| + \sum_{i=1}^k |H_{q_i}| \leq |H_p|+2|p|$. 
+% \end{lemma}
+% 
+% \begin{proof} For convenience, denote $H_i = H_{q_i}$ and $H_0 = H_{\ell(p)}$.
+% Consider $v \in \bigcup_{i} H_i$ that lies below $b(p)$ in $T$. 
+% Note that such a vertex has only one of its two colors in $L(b(p))$.  
+% Since the colors tracked by $H_i$ and $H_j$ for $i\neq j$ are disjoint, 
+% such a vertex can appear in only one of the $H_i$'s.
+% On the other hand, a vertex $u\in p$ can appear in more than one $H_i$, 
+% but since any vertex has exactly two colors it can appear in at most two 
+% such heaps.  Hence, $\sum_i |H_i| \leq |H_p| + 2|p|$.
+% \ignore{
+%  First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
+%  Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
+%   
+%  Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e.\ $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
+%  In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
+%  as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
+%  Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
+%  Putting these together gives
+%  \[
+%   \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
+%  \]
+% }
+% \end{proof}
 
 
 
@@ -2378,6 +2378,60 @@ at least $|H_p|/100$ vertices $v$ in $H_p$ lie in paths in the tall support chai
 \end{definition}
 
 Let $\cL$ be the set of short paths, $\cL'$ be the set of supported short paths, and $\cH$ be the set of tall paths
+given by $\pmax(T)$ (notation which we be used for the remainder of this section).  
+
+\begin{claim} \label{clm:above} 
+$\sum_{p \in \cL'} |H_p| \log |H_p| = O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
+\end{claim}
+\begin{proof} 
+Pick $p \in \cL'$. 
+As we traverse the tall support chain of $p$, there
+are at least $|H_p|/100$ vertices of $H_p$ that lie in these paths. These are encountered in
+a fixed order. Let $H'_p$ be the first $|H_p|/200$ of these vertices. When $v \in H'_p$
+is encountered, there are $|H_p|/200$ vertices of $H_p$ not yet encountered. Hence,
+$|H_v| \geq |H_p|/200$. Hence, $|H_p|\log |H_p| = O(\sum_{v \in H'_p} \log |H_v|)$.
+Since all the vertices lie in tall paths,
+we can write this as $O(\sum_{q \in \cH} \sum_{v \in H'_p \cap q} \log |H_v|)$.
+Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum_{v \in H'_p \cap q} \log |H_v|$.
+%and $\sum_{p \in \cL'} |H_p|\log |H_p| = O(\sum_{p \in \cL'} \sum_{v \in H'_p} \log |H_v|)$.
+
+Consider any $v \in H'_p$.  Let $S$ be the set of paths $\widetilde{p}\in \cL'$ such that 
+$v\in H'_{\widetilde{p}}$.  We now show $|S|\leq 2$ (i.e.\ it contains at most one path other than $p$).
+First observe that any two paths in $S$ must be unrelated (i.e.\ $S$ is an anti-chain), 
+since paths which have an ancestor-descendant relationship have disjoint tall support chains.  
+However, any vertex $v$ receives exactly one color from each of its two subtrees (in $T$), and therefore $|S|\leq 2$ since any two 
+paths which share descendant leaves in $T$ (i.e.\ their heaps are tracking the same color) must have an ancestor-descendant relationship.
+
+In other words, any $\log |H_v|$ appears at most twice in the above triple summation.
+Hence, we can bound it by $O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
+\end{proof}
+
+\begin{corollary}\label{cor:supported}
+  $\sum_{p \in \cL'} \sum_{v \in p} \log |H_v|= O(\sum_{p\in \pmax} |p|\log |p|)$
+\end{corollary}
+\begin{proof}
+ By applying \Lem{pathBounds}, \Clm{above}, and then \Lem{pathBounds} again, we have the following.
+ \begin{align*}
+  \sum_{p \in \cL'} \sum_{v \in p} \log |H_v| 
+  =  O\left(\sum_{p \in \cL'} |H_p| \log |H_p|\right)
+  = O\left(\sum_{p \in \cH} \sum_{v \in p} \log |H_v|\right)
+  = O\left(\sum_{p\in \pmax} |p|\log |p|\right)
+ \end{align*}
+%
+% By \Lem{pathBounds}, $\sum_{p \in \cL'} \sum_{v \in p} \log |H_v|$
+\end{proof}
+
+
+
+
+
+
+\subsection{Unsupported shrubs}
+
+So far we know that tall paths and supported short paths can be ``paid for.''  We will also be able to pay for 
+unsupported paths, though doing so is much trickier.
+
+Recall that $\cL$ denotes the set of short paths, $\cL'$ the set of supported short paths, and $\cH$ the set of tall paths
 given by $\pmax(T)$. We now describe a partitioning of the unsupported paths into a forest of shrubs. Consider $p \in \cL \setminus \cL'$,
 and traverse the chain of ancestors from $p$. Eventually, we must reach another short path $q$.
 (If not, we have reached the root $r$ of $\pmax(T)$. Hence, $p$ is supported.)
@@ -2385,8 +2439,7 @@ Insert an edge from $p$ to $q$, so $q$ is the parent of $p$. This construction l
 to the \emph{shrub forest} of $\cL \setminus \cL'$, denoted $\cF$, where all the roots are supported short paths, 
 and the remaining nodes are the unsupported short paths. 
 
-So far we know that tall paths and supported short paths can be ``paid for.''  We will also be able to pay for 
-unsupported paths, though doing so is much trickier.  The following is a key property of unsupported paths which 
+The following is a key property of unsupported paths which 
 we will use multiple times. It is worth noting that the proof of this lemma is where the construction of $\pmax(T)$ enters the picture.
 
 
@@ -2432,7 +2485,7 @@ which is the most difficult part of the argument.  Afterwards in \Sec{thm-runtim
 
 \newcommand{\buff}{\mathcal{B}}
 \newcommand{\loss}{\lambda}
-\subsection{Pruning Away Buffered Sub-shrubs}\label{sec:buffSub}
+\subsection{Pruning away buffered sub-shrubs}\label{sec:buffSub}
 Let $\cU$ be a shrub in $\cF$.  For any node $q$ in the shrub $\cU$, let $TSC(q)$ denote the set of all vertices of $T$ from all paths in the tall support chain of $q$.
 For $q$ in $\cU$ we then define the \emph{loss} to be $\loss(q) = TSC(q)\cap H_q$. 
 Intuitively, if $c$ is a child node of a parent node $p$ in $\cU$, then $\loss(c)$ are the vertices ``lost'' from the heap of $c$ to its tall support chain, by the time one reaches $p$.
@@ -2457,16 +2510,6 @@ Ultimately we will prune buffered subtrees from $\cU$ by starting at the leaves 
 
 The following will allow buffered sub-shrubs to be charged to their tall support chains.
 
-%We require the following lemma so that we can charge to the root in a buffered subtree.
-%
-% \begin{lemma}
-%  Let $p$ be any node in a buffered sub-shrub $\buff$, and let $d$ be any descendant node of $p$ in $\buff$.  Then for any $v \in d$, $|H_v| = O(|H_p|)$.
-% \end{lemma}
-% \begin{proof}
-%  Missing.  \Lem{cu-root} will be rephrased to handle this slightly more general case (i.e. here $p$ may not be the root of $\cU$). Note the proof will not 
-%  have to be changed as \Lem{geometric} is the proof which already implies general case.
-% \end{proof}
-
 \begin{lemma}
  Let $\buff$ be a buffered sub-shrub.  Then $\sum_{p\in \buff}\sum_{v\in p} \log |H_v| = O(\sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| )$
 \end{lemma}
@@ -2488,14 +2531,18 @@ The following will allow buffered sub-shrubs to be charged to their tall support
  \Cor{geometric} should be used somewhere.
 \end{proof}
 
+For any fixed vertex $v$ on a tall path, there are at most two unsupported short paths such that $v$ is contained in $\loss(\cdot)$. Specifically, 
+$v$ is assigned exactly two colors, one from each of its child subtrees in $T$.  Pick one of these two colors, which corresponds to some leaf in $T$.  
+Any two unsupported short paths which are tracking the color of this leaf, must be ancestor-descendant in $\pmax$, however such paths have disjoint tall support chains, 
+and hence only one such path can count $v$ in $\loss(\cdot)$.
+(Note this is the same argument as in \Clm{above}.)  Thus by summing over all tall support chains we have the following.
 
+%Let $p$ and $q$ be two distinct paths in $\cF$.  Note that while it is possible that $TSC(p)\cap TSC(q)\neq \emptyset$, 
+%it holds that $\loss(p)\cap \loss(q) = \emptyset$.  Thus the above lemma implies that the total heap costs due to vertices in buffered sub-shrubs can be charged to those in tall paths.
 
-Let $p$ and $q$ be two distinct paths in $\cF$.  Note that while it is possible that $TSC(p)\cap TSC(q)\neq \emptyset$, 
-it holds that $\loss(p)\cap \loss(q) = \emptyset$.  Thus the above lemma implies that the total heap costs due to vertices in buffered sub-shrubs can be charged to those in tall paths.
-
-\begin{corollary}
+\begin{corollary}\label{cor:disjointBuff}
  Let $B= \{\buff_1, \ldots, \buff_k\}$ be any collection of disjoint buffered sub-shrubs from $\cF$. Then, 
- $\sum_{i=1}^k \sum_{p\in \buff_i}\sum_{v\in p} |H_v| = O(\sum_{p\in \cH}\sum_{v\in p} \log |H_v| )$
+ $\sum_{i=1}^k \sum_{p\in \buff_i}\sum_{v\in p} |H_v| = O(\sum_{p\in \cH}\sum_{v\in p} \log |H_v| )$.
 \end{corollary}
 
 
@@ -2511,7 +2558,7 @@ it holds that $\loss(p)\cap \loss(q) = \emptyset$.  Thus the above lemma implies
 \newcommand{\pruned}{\cU/\cB}
 \subsection{Paying for Pruned Shrubs: the root is everything} \label{sec:weight}
 
-\begin{definition}
+\begin{definition}\label{def:pruningAShrub}
  Let $\cU$ be a shrub in $\cF$. Consider a reverse topological ordering (i.e.\ leaves first) of the nodes in $\cU$, and use it to define a total ordering.  
  We compute a pruning of $\cU$ (see \Def{prune}), by iteratively removing all buffered sub-shrubs (see \Def{buff}), where buffered sub-shrubs whose roots are earlier in the total ordering are pruned first. We use $\pruned$ to denote the resulting sub-shrub, which we refer to as the \emph{buffer-pruned} sub-shrub of $\cU$.
 \end{definition}
@@ -2683,53 +2730,72 @@ That completes the whole proof.
 
 
 \subsection{Proving \Thm{runtime}} \label{sec:thm-runtime}
-\textcolor{red}{\huge Ben will update this subsection to be consistent with new changes}
 
 We split the summation into tall, supported short, and unsupported short paths.
 \begin{eqnarray*} 
 \sum_{p \in \pmax(T)} \sum_{v \in p} \log |H_v| & = & \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cL'} \sum_{v \in p} \log |H_v| + \sum_{p \in \cH} \sum_{v \in p} \log |H_v|
 \end{eqnarray*}
-The last term can be bounded by $O(\sum_{p \in \pmax(T)} |p|\log |p|)$, by \Lem{pathBounds}.
-The second term can be bounded by $O(\sum_{p \in \cL'} |H_p| \log |H_p|)$, again by \Lem{pathBounds}.
-The following claim shows that this in turn is asymptotically bounded by the last term.
+By \Cor{supported} and \Lem{pathBounds}, the second and last term can be bounded by $O(\sum_{p \in \pmax(T)} |p|\log |p|)$.
+The following claim applies the results of the previous two subsections to give the same bound on the first term, 
+thus completing the proof of \Thm{runtime}.
 
-\begin{claim} \label{clm:above} $\sum_{p \in \cL'} |H_p| \log |H_p| = O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
+% \begin{claim} \label{clm:above} $\sum_{p \in \cL'} |H_p| \log |H_p| = O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
+% \end{claim}
+% 
+% \begin{proof} 
+% Pick $p \in \cL'$. 
+% As we traverse the tall support chain of $p$, there
+% are at least $|H_p|/100$ vertices of $H_p$ that lie in these paths. These are encountered in
+% a fixed order. Let $H'_p$ be the first $|H_p|/200$ of these vertices. When $v \in H'_p$
+% is encountered, there are $|H_p|/200$ vertices of $H_p$ not yet encountered. Hence,
+% $|H_v| \geq |H_p|/200$. Hence, $|H_p|\log |H_p| = O(\sum_{v \in H'_p} \log |H_v|)$.
+% Since all the vertices lie in tall paths,
+% we can write this as $O(\sum_{q \in \cH} \sum_{v \in H'_p \cap q} \log |H_v|)$.
+% Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum_{v \in H'_p \cap q} \log |H_v|$.
+% %and $\sum_{p \in \cL'} |H_p|\log |H_p| = O(\sum_{p \in \cL'} \sum_{v \in H'_p} \log |H_v|)$.
+% 
+% Consider any $v \in H'_p$.  Let $S$ be the set of paths $\widetilde{p}\in \cL'$ such that 
+% $v\in H'_{\widetilde{p}}$.  We now show $|S|\leq 2$ (i.e.\ it contains at most one path other than $p$).
+% First observe that any two paths in $S$ must be unrelated (i.e.\ $S$ is an anti-chain), 
+% since paths which have an ancestor-descendant relationship have disjoint tall support chains.  
+% However, any vertex $v$ receives exactly one color from each of its two subtrees (in $T$), and therefore $|S|\leq 2$ since any two 
+% paths which share descendant leaves in $T$ (i.e.\ their heaps are tracking the same color) must have an ancestor-descendant relationship.
+% 
+% In other words, any $\log |H_v|$ appears at most twice in the above triple summation.
+% Hence, we can bound it by $O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
+% \end{proof}
+
+% The first term (unsupported short paths) can be charged to the second term (supported short paths).
+% This is where the critical \Lem{cu-root} plays a role.
+
+\begin{claim} \label{clm:first} 
+$\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p\in \pmax} |p|\log |p|)$.%= O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 \end{claim}
 
 \begin{proof} 
-Pick $p \in \cL'$. 
-As we traverse the tall support chain of $p$, there
-are at least $|H_p|/100$ vertices of $H_p$ that lie in these paths. These are encountered in
-a fixed order. Let $H'_p$ be the first $|H_p|/200$ of these vertices. When $v \in H'_p$
-is encountered, there are $|H_p|/200$ vertices of $H_p$ not yet encountered. Hence,
-$|H_v| \geq |H_p|/200$. Hence, $|H_p|\log |H_p| = O(\sum_{v \in H'_p} \log |H_v|)$.
-Since all the vertices lie in tall paths,
-we can write this as $O(\sum_{q \in \cH} \sum_{v \in H'_p \cap q} \log |H_v|)$.
-Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum_{v \in H'_p \cap q} \log |H_v|$.
-%and $\sum_{p \in \cL'} |H_p|\log |H_p| = O(\sum_{p \in \cL'} \sum_{v \in H'_p} \log |H_v|)$.
+For any component $\cU$ of the shrub forest $\cF$ of $\cL\setminus \cL'$, let $B(\cU)$ denote the collection of buffered sub-shrubs that we 
+removed in the pruning process of \Def{pruningAShrub} that produced the buffer-pruned sub-shrub $\pruned$
+(i.e.\ these are disjoint sub-shrubs whose union cover $\cU\setminus (\pruned)$). 
+Thus we can decompose the sum as follows, 
+\begin{align*}
+ \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| 
+ &\leq \sum_{\cU\in \cF} \sum_{p \in \cU} \sum_{v \in p} \log |H_v|
+ = \sum_{\cU\in \cF}\sum_{p \in \pruned} \sum_{v \in p} \log |H_v|  +  \sum_{\cU\in \cF}\sum_{\buff\in B(\cU)} \sum_{p \in \buff} \sum_{v \in p} \log |H_v|\\
+ &= \sum_{\cU\in \cF}\sum_{p \in \pruned} \sum_{v \in p} \log |H_v|  +  O\left(\sum_{p\in \cH}\sum_{v\in p} \log |H_v| \right)\\
+ &= \sum_{\cU\in \cF}\sum_{p \in \pruned} \sum_{v \in p} \log |H_v|  +  O\left(\sum_{p\in \pmax} |p|\log |p|\right),
+\end{align*}
+where the last two lines follow from \Cor{disjointBuff} and \Lem{pathBounds}, respectively. 
 
-Consider any $v \in H'_p$.  Let $S$ be the set of paths $\widetilde{p}\in \cL'$ such that 
-$v\in H'_{\widetilde{p}}$.  We now show $|S|\leq 2$ (i.e.\ it contains at most one path other than $p$).
-First observe that any two paths in $S$ must be unrelated (i.e.\ $S$ is an anti-chain), 
-since paths which have an ancestor-descendant relationship have disjoint tall support chains.  
-However, any vertex $v$ receives exactly one color from each of its two subtrees (in $T$), and therefore $|S|\leq 2$ since any two 
-paths which share descendant leaves in $T$ (i.e.\ their heaps are tracking the same color) must have an ancestor-descendant relationship.
-
-In other words, any $\log |H_v|$ appears at most twice in the above triple summation.
-Hence, we can bound it by $O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
-\end{proof}
-
-The first term (unsupported short paths) can be charged to the second term (supported short paths).
-This is where the critical \Lem{cu-root} plays a role.
-
-\begin{claim} \label{clm:first} $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
-\end{claim}
-
-\begin{proof} Let $\cU$ denote a connected component of the shrub forest.
-We have $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| \allowbreak \leq \sum_{\cU} \sum_{p \in \cU} \sum_{v \in p} \log |H_v|$.
-By \Lem{cu-root}, $|H_v| = O(|H_r|)$, where $r$ is the root of $\cU$, and furthermore, $\sum_{p \in \cU} |p| = O(|H_r|)$. 
-We have $\sum_{p \in \cU} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \cU} |p|) = O(|H_r|\log |H_r|)$.
-We sum this over all $\cU$ in the shrub forest, and note that roots in the shrub forest are supported short paths.
+So what remains is to bound the first term.  
+%We have $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| \allowbreak \leq \sum_{\cU} \sum_{p \in \cU} \sum_{v \in p} \log |H_v|$.
+By \Lem{cu-root}, $|H_v| = O(|H_r|)$, where $r$ is the root of $\pruned$, and furthermore, $\sum_{p \in \pruned} |p| = O(|H_r|)$. 
+We have $\sum_{p \in \pruned} \sum_{v \in p} \log |H_v| = O((\log |H_r|) \sum_{p \in \pruned} |p|) = O(|H_r|\log |H_r|)$.
+Note that the roots in the shrub forest are supported short paths, and hence when we sum this over all $\cU$ in the shrub forest we get, 
+\[
+\sum_{\cU\in \cF} O\left(|H_{r(\pruned)}|\log |H_{r(\pruned)}|\right)
+=\sum_{p\in \cL'} O(|H_p|\log |H_p|) = O\left(\sum_{p\in \pmax} |p|\log |p|\right),
+\]
+where the last equality follows by \Clm{above} (via the same argument as in \Cor{supported}).
 \end{proof}
 
 
