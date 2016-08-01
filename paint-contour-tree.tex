@@ -2425,6 +2425,7 @@ Hence, we can bound it by $O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
 
 
 
+\newcommand{\loss}{\lambda}
 
 \subsection{Unsupported shrubs}
 
@@ -2439,10 +2440,12 @@ Insert an edge from $p$ to $q$, so $q$ is the parent of $p$. This construction l
 to the \emph{shrub forest} of $\cL \setminus \cL'$, denoted $\cF$, where all the roots are supported short paths, 
 and the remaining nodes are the unsupported short paths. 
 
+Let $\cU$ be a shrub in $\cF$.  For any node $q$ in the shrub $\cU$, let $TSC(q)$ denote the set of all vertices of $T$ from all paths in the tall support chain of $q$.
+For $q$ in $\cU$ we then define the \emph{loss} to be $\loss(q) = TSC(q)\cap H_q$. 
+Intuitively, if $c$ is a child node of a parent node $p$ in $\cU$, then $\loss(c)$ are the vertices ``lost'' from the heap of $c$ to its tall support chain, by the time one reaches $p$.
+
 The following is a key property of unsupported paths which 
 we will use multiple times. It is worth noting that the proof of this lemma is where the construction of $\pmax(T)$ enters the picture.
-
-
 
 \begin{lemma}
 \label{lem:geometric}
@@ -2473,8 +2476,14 @@ to get $|H_p| \geq 197|H_q|/100$, implying the lemma.
 
 \begin{corollary}\label{cor:geometric}
  Let $\cU$ denote a connected component of $\cF$. Let $p$ and $d$ be any two nodes in $\cU$ such that $d$ is a descendant of $p$.
- Then for any $v \in d$, $|H_v| = O(|H_p|)$.
+ Then for any $w \in d$ and $v \in \lambda(p)$, $|H_w| = O(|H_v|)$.
 \end{corollary}
+
+\begin{proof} By the previous lemma, $|H_w| = O(|H_p|)$. Note that there are at most
+$|H_p|/100$ nodes in $\lambda(p)$, since these are all in the tall support chain of $v$
+(which is unsupported). Thus, for any $v \in \lambda(p)$, $H_v \geq 99|H_p|/100$,
+completing the proof.
+\end{proof}
 
 To handle the unsupported paths, for every shrub $\cU$ in $\cF$ we first prune away what we call buffered sub-shrubs.  In the following subsection, 
 we show how to charge away the cost of these sub-shrubs to their tall support chains.  In \Sec{weight} we then show how to pay for the remaining pruned shrubs, 
@@ -2484,12 +2493,7 @@ which is the most difficult part of the argument.  Afterwards in \Sec{thm-runtim
 %which involves routine calculations. Then we prove \Lem{cu-root}, where the interesting work happens.
 
 \newcommand{\buff}{\mathcal{B}}
-\newcommand{\loss}{\lambda}
 \subsection{Pruning away buffered sub-shrubs}\label{sec:buffSub}
-Let $\cU$ be a shrub in $\cF$.  For any node $q$ in the shrub $\cU$, let $TSC(q)$ denote the set of all vertices of $T$ from all paths in the tall support chain of $q$.
-For $q$ in $\cU$ we then define the \emph{loss} to be $\loss(q) = TSC(q)\cap H_q$. 
-Intuitively, if $c$ is a child node of a parent node $p$ in $\cU$, then $\loss(c)$ are the vertices ``lost'' from the heap of $c$ to its tall support chain, by the time one reaches $p$.
-
 Ultimately our goal in this subsection is to prune away subtrees from $\cU$ which can be paid for by charging to their tall support chains (similarly to supported short paths). The remaining portion of the shrub will then be handled in a later subsection. We now formally define this pruning process, which is quite intuitive if one thinks of $\cU$ as an actual physical shrub.
 
 \begin{definition}\label{def:prune}
@@ -2501,34 +2505,88 @@ The above definition does not specify which subtrees are pruned, which we now fo
 \begin{definition}\label{def:buff}
  Let $\cU'$ be a pruning of a shrub of $\cU$ of $\cF$. Then a rooted subtree $\buff$ of $\cU'$ is called a \emph{buffered sub-shrub} if the following conditions hold:
   \begin{enumerate}
-  \item $\sum_{p\in \buff} |\loss(p)| \geq \frac{1}{100} \sum_{p\in \buff} |p|$
+  \item $\sum_{p\in \buff} |\loss(p)| > \frac{1}{100} \sum_{p\in \buff} |p|$
   \item No rooted subtree of $\buff$ satisfies the above inequality (other than $\buff$ itself). 
  \end{enumerate}
 \end{definition}
 
-Ultimately we will prune buffered subtrees from $\cU$ by starting at the leaves and working towards the root, and hence the second condition of buffered will trivially be satisfied. 
+The following is quite straightforward. By pruning from the leaves towards
+the root, we can remove all buffered sub-shrubs from a given $\cU$.
 
-The following will allow buffered sub-shrubs to be charged to their tall support chains.
+\begin{lemma} \label{lem:split-buff} Any shrub $\cU$ can be partitioned
+into $\{\cU', \cB_1, \cB_2, \ldots \cB_r\}$ where each $\cB_i$ is buffered.
+Furthermore, no subtree of $\cU'$ is buffered.
+\end{lemma}
 
-\begin{lemma}
+\begin{proof} Take any reverse topological order of the nodes in $\cU$
+(so descendants occur before ancestors). Initialize $\cU'$ to $\cU$.
+We process the nodes in order. For node $p$, let $\cU'_p$ denote the rooted
+subtree of $p$ in $\cU'$. We simply check if $\sum_{q \in \cU'_p} |\loss(p)| \geq \sum_{q \in \cU'_p} |q|/100$. If so, we prune off $\cU'_p$. (Note that $\cU'$ is redefined
+to be the remainder.)
+
+At the end of this process, we have the desired decomposition. Since we process
+in reverse topological order, the minimality condition of \Def{buff}
+automatically holds. Thus, each pruned sub-shrub is buffered and the remaining $\cU'$
+has the desired property.
+\end{proof}
+
+We prove an important lemma. The cost of heap operations corresponding 
+to a buffered sub-shrub to be charged to tall support chains.
+
+\begin{lemma} \label{lem:buff}
  Let $\buff$ be a buffered sub-shrub.  Then $\sum_{p\in \buff}\sum_{v\in p} \log |H_v| = O(\sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| )$
 \end{lemma}
-\begin{proof}
-\textcolor{red}{\huge Proof missing. Potentially useful observations below}
- 
- Let $r$ be the root of $\buff$. First observe that $\loss(r) \geq |r|/100$.  Suppose otherwise, then in order for the first condition of \Def{buff} to be satisfied for $\buff$, the rooted subtree of some child of $r$, call it $\buff'$, must satisfy $\sum_{p\in \buff'} \loss(p) \geq \frac{1}{100} \sum_{p\in \buff'} |p|$.  However, this would contradict the second condition of \Def{buff}.
- 
- Consider any node $q\in \buff$.  Then for any vertex $v\in \loss(q)$, we have $|H_v| = \Omega(|H_q|)$, since $q$ is unsupported and hence by definition less than $|H_q|/100$ vertices of $H_q$ appear in $\loss(q)$.
- 
- \begin{align*}
-  \sum_{p\in \buff}\sum_{v\in p} \log |H_v| &=  O\left( \sum_{p\in \buff}\sum_{v\in p} \log |H_p| \right)   &\mbox{definition of short} \\
-  &= O\left( \sum_{p\in \buff} |p| \log |H_p| \right)   &\mbox{} \\
-  &= ????   &\mbox{buffered is not sufficient to get to next line} \\
-  &= O\left( \sum_{p\in \buff} |\loss(p)| \log |H_p| \right)   &\mbox{} \\
-  &= O\left( \sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| \right)
- \end{align*}
- 
- \Cor{geometric} should be used somewhere.
+\begin{proof} The proof is done by a charging argument. For every $p \in \buff$
+and $v \in \loss(p)$, we create 100 tokens. Each of these tokens is labeled $\log |H_v|$,
+and this is called the ``value" of the token. Observe that the sum of token values is, up to a constant
+factor, the bound we wish to show. The set of tokens created for all $v \in \loss(p)$ is denoted
+$T_p$. 
+
+There is a grand total of $100 \sum_{p \in \buff} |\loss(p)|$ tokens, which
+(by the buffered property of $\buff$) is strictly more than $\sum_{p \in \buff} |p|$.
+We will place all these tokens on the nodes in $\buff$, using the following process.
+We reserve topologically sort (descendants before ancestors) the nodes in $\buff$.
+For each $p$ in order, we will place tokens in $T_p$ on the nodes of the subtree $\buff_p$.
+Take an arbitrary token in $T_p$, and find the smallest (in the ordering) descendant $q$
+of $p$ that currently has strictly less than $|q|$ tokens. Place the token on $q$,
+and repeat. This is repeated until all descendants $q$ have $|q|$ tokens, or
+all tokens in $T_p$ are used up. When a node $q$ has $|q|$ tokens, we use
+``$q$ is full".
+
+Now for a useful claim. \emph{For non-root $p$, all tokens of $T_p$ are used up.}
+Suppose not. Consider the first such $p$ in the ordering, and look at the situation
+when we finish processing $T_p$. Every descendant $q$ of $p$ must be full. Furthermore,
+all the tokens on $q \in \buff_p$ must have come from some $T_{p'}$, where $p' \in \buff_p$.
+Thus, $\sum_{q \in \buff_p} |q| < |\bigcup_{p' \in \buff_p} T_{p'}|$ $=100\sum_{p' \in \buff_p} |\loss(p')|$. This violates the second condition of buffered shrubs.
+
+Let $r$ be the root of $\buff$. We argue that $T_r$ is \emph{not used up}.
+Suppose the contrary, so $T_r$ is used up. By the previous paragraph,
+all tokens are used up. But this implies that $\sum_{p \in \buff} |p| \geq |\bigcup_{p \in \buff} T_p|$
+$ = 100\sum_{p \in \buff} |\loss(p)|$, violating the buffered condition.
+
+Since $T_r$ is not used up, it must mean that all $p$s are full. Consider any $p$,
+and let $K_p$ be the set of tokens placed at $p$. Each token is labeled $\log |H_v|$,
+for some $v \in \loss(\hat{p})$, for some ancestor $\hat{p}$ of $p$. By \Cor{geometric},
+for every $w \in p$, $\log |H_w| = O(\log |H_v|)$. Because $p$ is full,
+there are exactly $|p|$ tokens on $p$. Thus, $\sum_{w \in p} \log |H_w|$
+is $O(V_p)$, where $V_p$ is the sum of token values in $K_p$. We sum
+over all $p$ to complete the proof.
+
+% \textcolor{red}{\huge Proof missing. Potentially useful observations below}
+%  
+%  Let $r$ be the root of $\buff$. First observe that $\loss(r) \geq |r|/100$.  Suppose otherwise, then in order for the first condition of \Def{buff} to be satisfied for $\buff$, the rooted subtree of some child of $r$, call it $\buff'$, must satisfy $\sum_{p\in \buff'} \loss(p) \geq \frac{1}{100} \sum_{p\in \buff'} |p|$.  However, this would contradict the second condition of \Def{buff}.
+%  
+%  Consider any node $q\in \buff$.  Then for any vertex $v\in \loss(q)$, we have $|H_v| = \Omega(|H_q|)$, since $q$ is unsupported and hence by definition less than $|H_q|/100$ vertices of $H_q$ appear in $\loss(q)$.
+%  
+%  \begin{align*}
+%   \sum_{p\in \buff}\sum_{v\in p} \log |H_v| &=  O\left( \sum_{p\in \buff}\sum_{v\in p} \log |H_p| \right)   &\mbox{definition of short} \\
+%   &= O\left( \sum_{p\in \buff} |p| \log |H_p| \right)   &\mbox{} \\
+%   &= ????   &\mbox{buffered is not sufficient to get to next line} \\
+%   &= O\left( \sum_{p\in \buff} |\loss(p)| \log |H_p| \right)   &\mbox{} \\
+%   &= O\left( \sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| \right)
+%  \end{align*}
+%  
+%  \Cor{geometric} should be used somewhere.
 \end{proof}
 
 For any fixed vertex $v$ on a tall path, there are at most two unsupported short paths such that $v$ is contained in $\loss(\cdot)$. Specifically, 
@@ -2555,15 +2613,21 @@ and hence only one such path can count $v$ in $\loss(\cdot)$.
 
 
 
-\newcommand{\pruned}{\cU/\cB}
+\newcommand{\pruned}{\cU'}
 \subsection{Paying for Pruned Shrubs: the root is everything} \label{sec:weight}
 
-\begin{definition}\label{def:pruningAShrub}
- Let $\cU$ be a shrub in $\cF$. Consider a reverse topological ordering (i.e.\ leaves first) of the nodes in $\cU$, and use it to define a total ordering.  
- We compute a pruning of $\cU$ (see \Def{prune}), by iteratively removing all buffered sub-shrubs (see \Def{buff}), where buffered sub-shrubs whose roots are earlier in the total ordering are pruned first. We use $\pruned$ to denote the resulting sub-shrub, which we refer to as the \emph{buffer-pruned} sub-shrub of $\cU$.
-\end{definition}
+We focus attention on the remaining shrub left by \Lem{split-buff}: this is 
+a shrub $\cU$ such that no subtree of $\cU$ is buffered. Refer to such
+a shrub as \emph{buffer-pruned}.
 
-The goal of this section is to prove the following lemma, which ultimately allows us to pay for pruned shrubs.
+% 
+% \begin{definition}\label{def:pruningAShrub}
+%  Let $\cU$ be a shrub in $\cF$. Consider a reverse topological ordering (i.e.\ leaves first) of the nodes in $\cU$, and use it to define a total ordering.  
+%  We compute a pruning of $\cU$ (see \Def{prune}), by iteratively removing all buffered sub-shrubs (see \Def{buff}), where buffered sub-shrubs whose roots are earlier in the total ordering are pruned first. We use $\pruned$ to denote the resulting sub-shrub, which we refer to as the \emph{buffer-pruned} sub-shrub of $\cU$.
+% \end{definition}
+% 
+The goal of this section is to prove the following lemma.
+% , which ultimately allows us to pay for pruned shrubs.
 
 \begin{lemma} \label{lem:cu-root} Let $\pruned$ denote a buffer-pruned sub-shrub of a shrub in $\cF$ and let $r$
 be the root of $\pruned$. (i) For any $v \in p$ such that $p \in \pruned$,
@@ -2579,83 +2643,163 @@ Observe that part (i) of \Lem{cu-root} is immediate, as it is a special case of 
 % removed. Note that some of the $q_i$'s are the corresponding $h(q')$ vertices,
 % for a child $q'$ in $\cU$.
 
-\textcolor{red}{\huge The rest of this subsection needs updating}
+We need the following technical claim. Let $N(\pruned)$ denote the set of nodes in $\pruned$.
 
-We define a \emph{residue} $R_p$ for each $p \in \cU$. Suppose $p$ has children
-$q_1, q_2, \ldots, q_k$ in $\cU$. Then $R_p = |\redH_p| - \sum_i |\redH_{q_i}|$. 
-By definition, $|\redH_p| = \sum_{q \in \cU_p} R_q$. 
-Note that $R_p$ can be negative. 
-Now, define $R^+_p = \max(R_p,0)$, and set $W_p = \sum_{q \in \cU_p} R^+_q$, 
-where $\cU_p$ is the subtree of $\cU$ rooted at $p$.
-Observe that $W_p \geq |\redH_p|$. We also get an approximate converse.
-
-
-\begin{claim} \label{clm:loss} For any path $p\in \cU$, $|\redH_p| \geq W_p - 2\sum_{q \in \cU_p} |q|$.
+\begin{claim} \label{clm:weights} There exists a function $\alpha:N(\pruned) \mapsto \RR^+$
+with the following properties. (We use $\alpha_p$ to denote the function value.)
+Let $A_p = \sum_{q \in \pruned_p} \alpha_q$.
+Then, $A_p - 3\sum_{q \in \pruned_p, q \neq p} |q| \leq |H_p| \leq A_p$.
 \end{claim}
 
-\begin{proof} We write $W_p - |\redH_p| = \sum_{q \in \cU_p} (R^+_q - R_q)$ $= -\sum_{q \in \cU_p: R_q < 0} R_q$.
-Consider $q \in \cU_p$ and denote the children in $\cU_p$ by $q'_1, q'_2, \ldots$.
-Note that $R_q$ is negative exactly when $|\redH_q| < \sum_i |\redH_{q'_i}|$.
-Traverse $\pmax(T)$ from $q'_i$ to $q$.
-Other than $q$, all other nodes encountered are in the tall support chain of $q'_i$ and hence
-do not affect its reduced heap.
-The vertices of $\redH_{q'_i}$ that are deleted
-are exactly those present in the path $q$. 
-Any vertex in $q$ can be deleted from at most two of the reduced heaps (of the children of $q$ in $\cU_p$), since 
-theses reduced heaps do not have an ancestor-descendant relationship.
-Therefore when $R_q$ is negative, it is at most by $2|q|$.
-We sum over all $q$ to complete the proof.
+\begin{proof} We define $\alpha$ inductively, from leaves upwards.
+For a leaf $\ell$ in $\pruned$, set $\alpha_\ell = |H_\ell|$. Consider internal node $p$
+with children $q_1, q_2, \ldots, q_k$. The heap $H(p)$ is formed by the union
+of the $H(q_i)$ heaps, after deleting certain vertices from them, and potentially
+adding some new vertices. The new vertices are potentially those that come
+from other nodes that have been pruned off.
+The vertices in each $q_i$ as well as $\lambda(q_i)$ are deleted.
+Define $\alpha_p$ to be the number of new vertices added to $H_p$.
+
+Thus, we have $|H_p| = \sum_{i \leq k} |H_q| + \alpha_p$
+$- \textrm{\# vertices deleted from $H_q$s}$.
+The number of vertices deleted is at most $2\sum_{i \leq k} (|q_i| + |\lambda(q_i)|)$.
+There is a factor $2$ because each vertex appears in at most $2$ heaps.
+
+It is evident that $|H_p| \leq \sum_{q \in \pruned_p, q \neq p} \alpha_q = A_p$.
+Note that $|H_p| \geq A_p - 2\sum_{q \in \pruned_p, q \neq p} (|q| + |\lambda(q)|)$.
+Crucially, since $\pruned$ is buffer-pruned, $\sum_{q \in \pruned_p, q \neq p} |\lambda(p)|
+\leq \sum_{q \in \pruned_p} |q|/100$. This completes the proof.
 \end{proof}
 
-\ignore{Let $D_q = H_q \setminus \bigcup_i H_{q'_i}$. In other words, as we traverse $\cU$,
-$D_q$ is the set of vertices ``added" at $q$. Suppose we traverse $\pmax(T)$ from $q'_i$
-to $q$. All vertices of $H_{q'_i}$ that lie on these paths are removed.
+We have the main charging claim. This assumes that $A_p$ is increasing exponentially
+as we go up the tree. That property is proven later by induction, using
+the following claim for sub-shrubs.
 
-
- and traverse $\pmax(T)$ up to $p$. Suppose we encounter
-the paths $q_0 = q, q_1, q_2, \ldots, q_k = p$. The vertices in the residue $R_q$ that 
-are removed from $H_p$ are exactly the vertices that lie in these paths. 
-We split this contribution into tall and short paths, observing that the latter
-are all unsupported. Hence, we can (crudely) upper bound the number of vertices
-removed by $\sum_{q \in \cU_p} |q| + \sum_{q \in \cU_p} \sum_{h \in \cH} |h \cap q|$.
-Each vertex can be removed from at most two distinct $R_q$'s, completing the proof.
-}
-
-
-The main challenge of the entire proof is bounding the sum of path lengths, which is done next.
-We stress that the all the previous work is mostly the setup for this claim.
-
-
-\begin{claim} \label{clm:charge} Fix any path $p \in \cU\setminus\{r(\cU)\}$. Suppose for any $q,q' \in \cU_p$
-where $q$ is a parent of $q'$ in $\cU_p$, $W_q \geq (4/3)W_{q'}$. Then $\sum_{q \in \cU_p} |q| \leq W_p/20$.
+\begin{claim} \label{clm:charge} Fix any path $p \in \pruned\setminus r$. Suppose for any $q,q' \in \pruned_p$
+where $q$ is a parent of $q'$ in $\pruned_p$, $A_q \geq (5/4)A_{q'}$. Then $\sum_{q \in \pruned_p} |q| \leq A_p/20$.
 \end{claim}
 
-\begin{proof} Since $q$ is an unsupported short path, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|\redH_q|}/99 \leq \sqrt{|W_q|}/99$.
-We prove that $\sum_{q \in \cU_p} \sqrt{|W_q|}/99 \leq W_p/20$
-by a charge redistribution scheme. Assume that each $q \in \cU_p^-$
-starts with $\sqrt{W_q}/99$ units of charge. We redistribute this charge over all
-nodes in $\cU_q$, and then calculate the total charge. For $q \in \cU_p$, spread
-its charge to all nodes in $\cU_q$ proportional to $R^+$ values. In other words,
-give $(\sqrt{W_q}/99)\cdot(R^+_{q'}/W_q)$ units of charge to each $q' \in \cU_q$.
+\begin{proof} Since $q$ is an unsupported short path, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|A_q|}/99$.
+We prove that $\sum_{q \in \pruned_p} \sqrt{|A_q|}/99 \leq A_p/20$
+by a charge redistribution scheme. Assume that each $q \in \pruned_p$
+starts with $\sqrt{A_q}/99$ units of charge. We redistribute this charge over all
+nodes in $\pruned_q$, and then calculate the total charge. For $q \in \pruned_p$, spread
+its charge to all nodes in $\pruned_q$ proportional to $\alpha$ values. In other words,
+give $(\sqrt{A_q}/99)\cdot(\alpha_{q'}/A_q)$ units of charge to each $q' \in \pruned_q$.
 
-After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\cU_p^-$ 
-$q = a_0, a_1, a_2, \ldots, a_k$ contributes to the charge at $q$. The charge is expressed in the following
-equation. We use the assumption that $W_{a_i} \geq (4/3) W_{a_{i-1}}$ and hence $W_{a_i} \geq (4/3)^i W_{a_0} \geq (4/3)^i$, 
-as $a_0$ is an unsupported short path and hence $W_{a_0}\geq 1$. 
-$$ ({R^+_q}/99)\sum_{a_i} 1/\sqrt{W_{a_i}} \leq ({R^+_q}/99)\sum_{a_i} (3/4)^{i/2} \leq R^+_q/20 $$
-The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$. 
+After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\pruned_p$,
+denoted $a_0, a_1, a_2, \ldots, a_k$, contributes to the charge at $q$. The charge is expressed in the following
+equation. Ae use the assumption that $A_{a_i} \geq (5/4) A_{a_{i-1}}$ and hence $A_{a_i} \geq (5/4)^i A_{a_0} \geq (5/4)^i$, 
+as $a_0$ is an unsupported short path and hence $A_{a_0}\geq 1$. 
+$$ ({\alpha_q}/99)\sum_{a_i} 1/\sqrt{A_{a_i}} \leq ({\alpha_q}/99)\sum_{a_i} (5/4)^{i/2} \leq \alpha_q/20 $$
+The total charge is $\sum_{q \in \pruned_p} \alpha_p/20 = A_p/20$. 
 \end{proof}
 
-\begin{corollary} \label{cor:chargeCor}
- Let $r$ be the root of $\cU$, and suppose that for any paths $q,q' \in \cU\setminus \{r\}$, where $q$ is a parent of $q'$ in $\cU$, $W_q \geq (4/3)W_{q'}$.
- Then $\sum_{p \in \cU} |p| \leq W_r/20+|r|$.
-\end{corollary}
-\begin{proof}
- Let $c_1, \dots, c_m$ be the children of $r$ in $\cU$.  By definition, $W_r = \sum_i W_{c_i}+R^+_r \geq \sum_i W_{c_i}$.
- By \Clm{charge}, for each $c_i$ we have $W_{c_i}/20\geq \sum_{p \in \cU_{c_i}} |p|$.  Combining these to facts yields the claim.
+\begin{claim} \label{clm:exp-A} For any $q, q' \in \pruned_p$ where $q$
+is a parent of $q'$, $A_q \geq (4/3)A_{q'}$.
+\end{claim}
+
+\begin{proof} We prove this by induction over the depth of $q$.
+When $q$ is a leaf, this is vacuously tree. Consider some internal node $q$,
+with children $q'_1, q'_2, \ldots, q'_k$. Applying the induction
+hypothesis to the subshrubs rooted at $q'_i$, we can invoke \Clm{charge}
+on each subshrub $\pruned_{q'_i}$. Thus, for all $i$,
+$\sum_{\hat{q} \in \pruned_{q'_i}} |\hat{q}| \leq A_{q'_i}/20$. 
+By \Clm{weights}, $|H_{q'_i}| \leq 17A_{q'_i}/20$ and $A_q \geq |H_q|$.
+By \Lem{geometric}, $|H_q| \geq (3/2)|H_{q'_i}|$. We combine these bounds
+to complete the proof.
 \end{proof}
 
-
+The proof of \Lem{cu-root} just combines all these claims, and essentially
+repeats the argument in the previous claim. We apply \Clm{exp-A} and \Clm{charge}
+to every child of the root $r$. Denoting the children as $q_1, q_2, \ldots$,
+we get that $\sum_{q' \in \pruned_{q_i}} |q| \leq A_{q_i}/20$.
+Summing this over the children, $\sum_{p \in \pruned, p \neq r} \leq A_r/20$.
+By \Clm{weights}, $A_r \leq 17|H_r|/20$. Furthermore $|r| \leq |H_r$.
+We combine these bounds to show that $\sum_{p \in \pruned} |p| = O(|H_r|)$.
+% 
+% 
+% 
+% \begin{proof}[Proof of \Lem{cu-root}] We first pro 
+% We use $r$ for $r(\cU)$. %Our aim is to simply apply \Clm{charge} from $r(\cU)$. 
+% Suppose $W_q \geq (4/3)W_{q'}$ (for any choice in $\cU\setminus\{r\}$ of $q$ parent of $q'$), 
+% then by \Cor{chargeCor}, $\sum_{p \in \cU} |p| \leq W_{r}/20+|r|$.
+% By \Clm{loss}, $|\redH_r| \geq W_r - 2\sum_{p \in \cU} |p|$, and so combining these inequalities gives,
+% \[
+% % \sum_{p \in \cU} |p| \leq \pth{|\redH_r|+2\sum_{p \in \cU} |p|}/20+|r| \Rightarrow 
+%  \sum_{p \in \cU} |p|\leq \frac{10}{9} \pth{|\redH_r|/20+|r|} \leq 
+%  \frac{10}{9}\pth{|H_r|/20+\sqrt{|H_r|}/100} \leq |H_r|/10.
+% \]
+% 
+% We now prove that for any $q$ parent of $q'$ (other than $r$), $W_q \geq (4/3)W_{q'}$.
+% Suppose not. Let $p, p'$ be the counterexample furthest from the root,
+% where $p$ is the parent of $p'$. 
+% Note that for $q$ and child $q'$ in $\cU_{p'}$, $W_q \geq (4/3)W_{q'}$.
+% We will apply \Clm{charge} for $\cU_{p'}$ to deduce that $\sum_{q \in \cU_{p'}} |q| \leq W_{p'}/20$.
+% Combining this with \Clm{loss} gives, $|\redH_{p'}| \geq 19W_{p'}/20$. By \Lem{geometric}, $|\redH_p| \geq (3/2)|\redH_{p'}|$.
+% Noting that $W_p \geq |\redH_p|$, we deduce that $W_p \geq (4/3)W_{p'}$.
+% Hence, $p, p'$ is not a counterexample, and more generally, there is no counterexample.
+% That completes the whole proof.
+% \end{proof}
+% 
+% 
+% \textcolor{red}{\huge The rest of this subsection needs updating}
+% 
+% We define a \emph{residue} $R_p$ for each $p \in \cU$. Suppose $p$ has children
+% $q_1, q_2, \ldots, q_k$ in $\cU$. Then $R_p = |\redH_p| - \sum_i |\redH_{q_i}|$. 
+% By definition, $|\redH_p| = \sum_{q \in \cU_p} R_q$. 
+% Note that $R_p$ can be negative. 
+% Now, define $R^+_p = \max(R_p,0)$, and set $W_p = \sum_{q \in \cU_p} R^+_q$, 
+% where $\cU_p$ is the subtree of $\cU$ rooted at $p$.
+% Observe that $W_p \geq |\redH_p|$. We also get an approximate converse.
+% 
+% 
+% \begin{claim} \label{clm:loss} For any path $p\in \cU$, $|\redH_p| \geq W_p - 2\sum_{q \in \cU_p} |q|$.
+% \end{claim}
+% 
+% \begin{proof} We write $W_p - |\redH_p| = \sum_{q \in \cU_p} (R^+_q - R_q)$ $= -\sum_{q \in \cU_p: R_q < 0} R_q$.
+% Consider $q \in \cU_p$ and denote the children in $\cU_p$ by $q'_1, q'_2, \ldots$.
+% Note that $R_q$ is negative exactly when $|\redH_q| < \sum_i |\redH_{q'_i}|$.
+% Traverse $\pmax(T)$ from $q'_i$ to $q$.
+% Other than $q$, all other nodes encountered are in the tall support chain of $q'_i$ and hence
+% do not affect its reduced heap.
+% The vertices of $\redH_{q'_i}$ that are deleted
+% are exactly those present in the path $q$. 
+% Any vertex in $q$ can be deleted from at most two of the reduced heaps (of the children of $q$ in $\cU_p$), since 
+% theses reduced heaps do not have an ancestor-descendant relationship.
+% Therefore when $R_q$ is negative, it is at most by $2|q|$.
+% We sum over all $q$ to complete the proof.
+% \end{proof}
+% 
+% \ignore{Let $D_q = H_q \setminus \bigcup_i H_{q'_i}$. In other words, as we traverse $\cU$,
+% $D_q$ is the set of vertices ``added" at $q$. Suppose we traverse $\pmax(T)$ from $q'_i$
+% to $q$. All vertices of $H_{q'_i}$ that lie on these paths are removed.
+% 
+% 
+%  and traverse $\pmax(T)$ up to $p$. Suppose we encounter
+% the paths $q_0 = q, q_1, q_2, \ldots, q_k = p$. The vertices in the residue $R_q$ that 
+% are removed from $H_p$ are exactly the vertices that lie in these paths. 
+% We split this contribution into tall and short paths, observing that the latter
+% are all unsupported. Hence, we can (crudely) upper bound the number of vertices
+% removed by $\sum_{q \in \cU_p} |q| + \sum_{q \in \cU_p} \sum_{h \in \cH} |h \cap q|$.
+% Each vertex can be removed from at most two distinct $R_q$'s, completing the proof.
+% }
+% 
+% 
+% The main challenge of the entire proof is bounding the sum of path lengths, which is done next.
+% We stress that the all the previous work is mostly the setup for this claim.
+% 
+% 
+% \begin{corollary} \label{cor:chargeCor}
+%  Let $r$ be the root of $\cU$, and suppose that for any paths $q,q' \in \cU\setminus \{r\}$, where $q$ is a parent of $q'$ in $\cU$, $W_q \geq (4/3)W_{q'}$.
+%  Then $\sum_{p \in \cU} |p| \leq W_r/20+|r|$.
+% \end{corollary}
+% \begin{proof}
+%  Let $c_1, \dots, c_m$ be the children of $r$ in $\cU$.  By definition, $W_r = \sum_i W_{c_i}+R^+_r \geq \sum_i W_{c_i}$.
+%  By \Clm{charge}, for each $c_i$ we have $W_{c_i}/20\geq \sum_{p \in \cU_{c_i}} |p|$.  Combining these to facts yields the claim.
+% \end{proof}
+% 
+% 
 
 
 % \begin{claim} \label{clm:charge} Fix $p \in \cU$. Suppose for any $q,q' \in \cU_p$
@@ -2697,28 +2841,6 @@ The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$.
 % % Hence, $p, p'$ is not a counterexample, and more generally, this is no counterexample.
 % % That completes the whole proof.
 % % \end{proof}
-
-\begin{proof}[Proof of \Lem{cu-root}]
-We use $r$ for $r(\cU)$. %Our aim is to simply apply \Clm{charge} from $r(\cU)$. 
-Suppose $W_q \geq (4/3)W_{q'}$ (for any choice in $\cU\setminus\{r\}$ of $q$ parent of $q'$), 
-then by \Cor{chargeCor}, $\sum_{p \in \cU} |p| \leq W_{r}/20+|r|$.
-By \Clm{loss}, $|\redH_r| \geq W_r - 2\sum_{p \in \cU} |p|$, and so combining these inequalities gives,
-\[
-% \sum_{p \in \cU} |p| \leq \pth{|\redH_r|+2\sum_{p \in \cU} |p|}/20+|r| \Rightarrow 
- \sum_{p \in \cU} |p|\leq \frac{10}{9} \pth{|\redH_r|/20+|r|} \leq 
- \frac{10}{9}\pth{|H_r|/20+\sqrt{|H_r|}/100} \leq |H_r|/10.
-\]
-
-We now prove that for any $q$ parent of $q'$ (other than $r$), $W_q \geq (4/3)W_{q'}$.
-Suppose not. Let $p, p'$ be the counterexample furthest from the root,
-where $p$ is the parent of $p'$. 
-Note that for $q$ and child $q'$ in $\cU_{p'}$, $W_q \geq (4/3)W_{q'}$.
-We will apply \Clm{charge} for $\cU_{p'}$ to deduce that $\sum_{q \in \cU_{p'}} |q| \leq W_{p'}/20$.
-Combining this with \Clm{loss} gives, $|\redH_{p'}| \geq 19W_{p'}/20$. By \Lem{geometric}, $|\redH_p| \geq (3/2)|\redH_{p'}|$.
-Noting that $W_p \geq |\redH_p|$, we deduce that $W_p \geq (4/3)W_{p'}$.
-Hence, $p, p'$ is not a counterexample, and more generally, there is no counterexample.
-That completes the whole proof.
-\end{proof}
 
 
 
@@ -2772,11 +2894,12 @@ thus completing the proof of \Thm{runtime}.
 $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p\in \pmax} |p|\log |p|)$.%= O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
 \end{claim}
 
-\begin{proof} 
-For any component $\cU$ of the shrub forest $\cF$ of $\cL\setminus \cL'$, let $B(\cU)$ denote the collection of buffered sub-shrubs that we 
-removed in the pruning process of \Def{pruningAShrub} that produced the buffer-pruned sub-shrub $\pruned$
-(i.e.\ these are disjoint sub-shrubs whose union cover $\cU\setminus (\pruned)$). 
-Thus we can decompose the sum as follows, 
+\begin{proof} Apply \Lem{split-buff} to $\cU$ to get the family of buffered
+sub-shrubs $B(\cU)$ and buffer-pruned $\pruned$.
+% For any component $\cU$ of the shrub forest $\cF$ of $\cL\setminus \cL'$, let $B(\cU)$ denote the collection of buffered sub-shrubs that we 
+% remo that produced the buffer-pruned sub-shrub $\pruned$
+% (i.e.\ these are disjoint sub-shrubs whose union cover $\cU\setminus (\pruned)$). 
+% Thus we can decompose the sum as follows, 
 \begin{align*}
  \sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| 
  &\leq \sum_{\cU\in \cF} \sum_{p \in \cU} \sum_{v \in p} \log |H_v|
