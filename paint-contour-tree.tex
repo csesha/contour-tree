@@ -2531,7 +2531,7 @@ has the desired property.
 \end{proof}
 
 We prove an important lemma. The cost of heap operations corresponding 
-to a buffered sub-shrub to be charged to tall support chains.
+to a buffered sub-shrub can be charged to tall support chains.
 
 \begin{lemma} \label{lem:buff}
  Let $\buff$ be a buffered sub-shrub.  Then $\sum_{p\in \buff}\sum_{v\in p} \log |H_v| = O(\sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| )$
@@ -2545,7 +2545,7 @@ $T_p$.
 There is a grand total of $100 \sum_{p \in \buff} |\loss(p)|$ tokens, which
 (by the buffered property of $\buff$) is strictly more than $\sum_{p \in \buff} |p|$.
 We will place all these tokens on the nodes in $\buff$, using the following process.
-We reserve topologically sort (descendants before ancestors) the nodes in $\buff$.
+We reverse topologically sort (descendants before ancestors) the nodes in $\buff$.
 For each $p$ in order, we will place tokens in $T_p$ on the nodes of the subtree $\buff_p$.
 Take an arbitrary token in $T_p$, and find the smallest (in the ordering) descendant $q$
 of $p$ that currently has strictly less than $|q|$ tokens. Place the token on $q$,
@@ -2652,7 +2652,7 @@ Then, $A_p - 3\sum_{q \in \pruned_p, q \neq p} |q| \leq |H_p| \leq A_p$.
 \end{claim}
 
 \begin{proof} We define $\alpha$ inductively, from leaves upwards.
-For a leaf $\ell$ in $\pruned$, set $\alpha_\ell = |H_\ell|$. Consider internal node $p$
+For a leaf $\ell$ in $\pruned$, set $\alpha_\ell = |H_\ell|$. Consider an internal node $p$
 with children $q_1, q_2, \ldots, q_k$. The heap $H(p)$ is formed by the union
 of the $H(q_i)$ heaps, after deleting certain vertices from them, and potentially
 adding some new vertices. The new vertices are potentially those that come
@@ -2689,7 +2689,7 @@ give $(\sqrt{A_q}/99)\cdot(\alpha_{q'}/A_q)$ units of charge to each $q' \in \pr
 
 After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\pruned_p$,
 denoted $a_0, a_1, a_2, \ldots, a_k$, contributes to the charge at $q$. The charge is expressed in the following
-equation. Ae use the assumption that $A_{a_i} \geq (5/4) A_{a_{i-1}}$ and hence $A_{a_i} \geq (5/4)^i A_{a_0} \geq (5/4)^i$, 
+equation. We use the assumption that $A_{a_i} \geq (5/4) A_{a_{i-1}}$ and hence $A_{a_i} \geq (5/4)^i A_{a_0} \geq (5/4)^i$, 
 as $a_0$ is an unsupported short path and hence $A_{a_0}\geq 1$. 
 $$ ({\alpha_q}/99)\sum_{a_i} 1/\sqrt{A_{a_i}} \leq ({\alpha_q}/99)\sum_{a_i} (5/4)^{i/2} \leq \alpha_q/20 $$
 The total charge is $\sum_{q \in \pruned_p} \alpha_p/20 = A_p/20$. 
