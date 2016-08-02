@@ -2661,8 +2661,8 @@ from other nodes that have been pruned off.
 The vertices in each $q_i$ as well as $\lambda(q_i)$ are deleted.
 Define $\alpha_p$ to be the number of new vertices added to $H_p$.
 
-Thus, we have $|H_p| = \sum_{i \leq k} |H_q| + \alpha_p$
-$- \textrm{\# vertices deleted from $H_q$'s}$.
+Thus, we have $|H_p| = \sum_{i \leq k} |H_{q_i}| + \alpha_p$
+$- \textrm{\# vertices deleted from $H_{q_i}$'s}$.
 The number of vertices deleted is at most $2\sum_{i \leq k} (|q_i| + |\lambda(q_i)|)$.
 There is a factor $2$ because each vertex appears in at most $2$ heaps.
 
@@ -2697,7 +2697,7 @@ The total charge is $\sum_{q \in \pruned_p} \alpha_p/20 = A_p/20$.
 \end{proof}
 
 \begin{claim} \label{clm:exp-A} For any $q, q' \in \pruned_p$ where $q$
-is a parent of $q'$, $A_q \geq (4/3)A_{q'}$.
+is a parent of $q'$, $A_q \geq (5/4)A_{q'}$.
 \end{claim}
 
 \begin{proof} We prove this by induction over the depth of $q$.
@@ -2706,7 +2706,7 @@ with children $q'_1, q'_2, \ldots, q'_k$. Applying the induction
 hypothesis to the subshrubs rooted at $q'_i$, we can invoke \Clm{charge}
 on each subshrub $\pruned_{q'_i}$. Thus, for all $i$,
 $\sum_{\hat{q} \in \pruned_{q'_i}} |\hat{q}| \leq A_{q'_i}/20$. 
-By \Clm{weights}, $|H_{q'_i}| \leq 17A_{q'_i}/20$ and $A_q \geq |H_q|$.
+By \Clm{weights}, $|H_{q'_i}| \geq 17A_{q'_i}/20$ and $A_q \geq |H_q|$.
 By \Lem{geometric}, $|H_q| \geq (3/2)|H_{q'_i}|$. We combine these bounds
 to complete the proof.
 \end{proof}
@@ -2714,9 +2714,9 @@ to complete the proof.
 The proof of \Lem{cu-root} just combines all these claims, and essentially
 repeats the argument in the previous claim. We apply \Clm{exp-A} and \Clm{charge}
 to every child of the root $r$. Denoting the children as $q_1, q_2, \ldots$,
-we get that $\sum_{q' \in \pruned_{q_i}} |q| \leq A_{q_i}/20$.
-Summing this over the children, $\sum_{p \in \pruned, p \neq r} \leq A_r/20$.
-By \Clm{weights}, $A_r \leq 17|H_r|/20$. Furthermore $|r| \leq |H_r|$.
+we get that $\sum_{p \in \pruned_{q_i}} |p| \leq A_{q_i}/20$.
+Summing this over the children, $\sum_{p \in \pruned, p \neq r} |p| \leq A_r/20$.
+By \Clm{weights}, $|H_r| \geq 17A_r/20$. Furthermore $|r| \leq |H_r|$.
 We combine these bounds to show that $\sum_{p \in \pruned} |p| = O(|H_r|)$.
 % 
 % 
