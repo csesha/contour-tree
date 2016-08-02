@@ -2649,7 +2649,7 @@ We need the following technical claim. Let $N(\pruned)$ denote the set of nodes 
 \begin{claim} \label{clm:weights} There exists a function $\alpha:N(\pruned) \mapsto \RR^+$
 with the following properties. (We use $\alpha_p$ to denote the function value.)
 Let $A_p = \sum_{q \in \pruned_p} \alpha_q$.
-Then, $A_p - 3\sum_{q \in \pruned_p, q \neq p} |q| \leq |H_p| \leq A_p$.
+Then, $A_p - 3\sum_{q \in \pruned_p} |q| \leq |H_p| \leq A_p$.
 \end{claim}
 
 \begin{proof} We define $\alpha$ inductively, from leaves upwards.
@@ -2667,9 +2667,9 @@ The number of vertices deleted is at most $2\sum_{i \leq k} (|q_i| + |\lambda(q_
 There is a factor $2$ because each vertex appears in at most $2$ heaps.
 
 It is evident that $|H_p| \leq \sum_{q \in \pruned_p, q \neq p} \alpha_q = A_p$.
-Note that $|H_p| \geq A_p - 2\sum_{q \in \pruned_p, q \neq p} (|q| + |\lambda(q)|)$.
+Note that $|H_p| \geq A_p - 2\sum_{q \in \pruned_p, q \neq p} |\lambda(q)|$ $-2\sum_{q \in \pruned_p} |q|$.
 Crucially, since $\pruned$ is buffer-pruned, $\sum_{q \in \pruned_p, q \neq p} |\lambda(p)|
-\leq \sum_{q \in \pruned_p, q \neq p} |q|/100$. This completes the proof.
+\leq \sum_{q \in \pruned_p, q \neq p} |q|/100$ $\leq \sum_{q \in \pruned_p} |q|/100$. This completes the proof.
 \end{proof}
 
 We have the main charging claim. This assumes that $A_p$ is increasing exponentially
@@ -2696,7 +2696,8 @@ $$ ({\alpha_q}/99)\sum_{a_i} 1/\sqrt{A_{a_i}} \leq ({\alpha_q}/99)\sum_{a_i} (4/
 The total charge is $\sum_{q \in \pruned_p} \alpha_p/20 = A_p/20$. 
 \end{proof}
 
-\begin{claim} \label{clm:exp-A} For any $q, q' \in \pruned_p$ where $q$
+\begin{claim} \label{clm:exp-A} Fix any path $p \in \pruned \setminus r$.
+For any $q, q' \in \pruned_p$ where $q$
 is a parent of $q'$, $A_q \geq (5/4)A_{q'}$.
 \end{claim}
 
@@ -2706,7 +2707,8 @@ with children $q'_1, q'_2, \ldots, q'_k$. Applying the induction
 hypothesis to the subshrubs rooted at $q'_i$, we can invoke \Clm{charge}
 on each subshrub $\pruned_{q'_i}$. Thus, for all $i$,
 $\sum_{\hat{q} \in \pruned_{q'_i}} |\hat{q}| \leq A_{q'_i}/20$. 
-By \Clm{weights}, $|H_{q'_i}| \geq 17A_{q'_i}/20$ and $A_q \geq |H_q|$.
+By \Clm{weights}, 
+$|H_{q'_i}| \geq 17A_{q'_i}/20$ and $A_q \geq |H_q|$.
 By \Lem{geometric}, $|H_q| \geq (3/2)|H_{q'_i}|$. We combine these bounds
 to complete the proof.
 \end{proof}
@@ -2716,7 +2718,8 @@ repeats the argument in the previous claim. We apply \Clm{exp-A} and \Clm{charge
 to every child of the root $r$. Denoting the children as $q_1, q_2, \ldots$,
 we get that $\sum_{p \in \pruned_{q_i}} |p| \leq A_{q_i}/20$.
 Summing this over the children, $\sum_{p \in \pruned, p \neq r} |p| \leq A_r/20$.
-By \Clm{weights}, $|H_r| \geq 17A_r/20$. Furthermore $|r| \leq |H_r|$.
+By \Clm{weights}, $|H_r| \geq 17A_r/20 - 3|r|$. Since $r$ represented a short path, 
+we have the bound $|r| \leq \sqrt{|H_r|}/100$. Thus, $|H_r| = \Omega(A_r)$.
 We combine these bounds to show that $\sum_{p \in \pruned} |p| = O(|H_r|)$.
 % 
 % 
