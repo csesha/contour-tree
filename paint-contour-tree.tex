@@ -2669,7 +2669,7 @@ There is a factor $2$ because each vertex appears in at most $2$ heaps.
 It is evident that $|H_p| \leq \sum_{q \in \pruned_p, q \neq p} \alpha_q = A_p$.
 Note that $|H_p| \geq A_p - 2\sum_{q \in \pruned_p, q \neq p} (|q| + |\lambda(q)|)$.
 Crucially, since $\pruned$ is buffer-pruned, $\sum_{q \in \pruned_p, q \neq p} |\lambda(p)|
-\leq \sum_{q \in \pruned_p} |q|/100$. This completes the proof.
+\leq \sum_{q \in \pruned_p, q \neq p} |q|/100$. This completes the proof.
 \end{proof}
 
 We have the main charging claim. This assumes that $A_p$ is increasing exponentially
