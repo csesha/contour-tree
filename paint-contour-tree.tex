@@ -2475,13 +2475,13 @@ to get $|H_p| \geq 197|H_q|/100$, implying the lemma.
 \end{proof}
 
 \begin{corollary}\label{cor:geometric}
- Let $\cU$ denote a connected component of $\cF$. Let $p$ and $d$ be any two nodes in $\cU$ such that $d$ is a descendant of $p$.
- Then for any $w \in d$ and $v \in \lambda(p)$, $|H_w| = O(|H_v|)$.
+ Let $\cU$ denote a connected component of $\cF$. Let $p$ and $d$ be any two nodes in $\cU$ such that $d$ is a descendant of $p$, and $p$ 
+ is not the root of $\cU$.  Then for any $w \in d$ and $v \in \lambda(p)$, $|H_w| = O(|H_v|)$.
 \end{corollary}
 
 \begin{proof} By the previous lemma, $|H_w| = O(|H_p|)$. Note that there are at most
-$|H_p|/100$ nodes in $\lambda(p)$, since these are all in the tall support chain of $v$
-(which is unsupported). Thus, for any $v \in \lambda(p)$, $H_v \geq 99|H_p|/100$,
+$|H_p|/100$ nodes in $\lambda(p)$, since these are all in the tall support chain of $p$
+(which is unsupported). Thus, for any $v \in \lambda(p)$, $|H_v| \geq 99|H_p|/100$,
 completing the proof.
 \end{proof}
 
@@ -2503,7 +2503,7 @@ Ultimately our goal in this subsection is to prune away subtrees from $\cU$ whic
 The above definition does not specify which subtrees are pruned, which we now formally define.
 
 \begin{definition}\label{def:buff}
- Let $\cU'$ be a pruning of a shrub of $\cU$ of $\cF$. Then a rooted subtree $\buff$ of $\cU'$ is called a \emph{buffered sub-shrub} if the following conditions hold:
+ Let $\cU'$ be a pruning of a shrub of $\cU$ of $\cF$. Then a rooted subtree $\buff$ of $\cU'$ is called a \emph{buffered sub-shrub}, if it does not contain the root of $\cU'$ (i.e.\ it is a proper subtree), and the following conditions hold:
   \begin{enumerate}
   \item $\sum_{p\in \buff} |\loss(p)| > \frac{1}{100} \sum_{p\in \buff} |p|$
   \item No rooted subtree of $\buff$ satisfies the above inequality (other than $\buff$ itself). 
@@ -2521,7 +2521,8 @@ Furthermore, no subtree of $\cU'$ is buffered.
 \begin{proof} Take any reverse topological order of the nodes in $\cU$
 (so descendants occur before ancestors). Initialize $\cU'$ to $\cU$.
 We process the nodes in order. For node $p$, let $\cU'_p$ denote the rooted
-subtree of $p$ in $\cU'$. We simply check if $\sum_{q \in \cU'_p} |\loss(p)| \geq \sum_{q \in \cU'_p} |q|/100$. If so, we prune off $\cU'_p$. (Note that $\cU'$ is redefined
+subtree of $p$ in $\cU'$. We simply check if $\sum_{q \in \cU'_p} |\loss(p)| \geq \sum_{q \in \cU'_p} |q|/100$. If so, we prune off $\cU'_p$, unless $p$ is the root. 
+(Note that $\cU'$ is redefined
 to be the remainder.)
 
 At the end of this process, we have the desired decomposition. Since we process
@@ -2635,7 +2636,7 @@ $|H_v| = O(|H_r|)$. (ii) $\sum_{p \in \pruned} |p| = O(|H_r|)$.
 \end{lemma}
 
 \Lem{cu-root} asserts the root $r$ in $\pruned$ pretty much encompasses all sizes and heaps in $\pruned$.
-Observe that part (i) of \Lem{cu-root} is immediate, as it is a special case of \Cor{geometric}. Proving part (ii) requires much more work.
+Observe that part (i) of \Lem{cu-root} is immediate, as it follows directly from \Lem{geometric}. Proving part (ii) requires much more work.
 % It is helpful to spell out how the various heaps evolve. Consider $p \in \cU$,
 % which has children $q_1, q_2, \ldots, q_k$ in $\pmax(T)$, and a leaf vertex $\ell$ in $T$. 
 % The reduced heap $\redH_p$ is the
@@ -2653,15 +2654,15 @@ Then, $A_p - 3\sum_{q \in \pruned_p, q \neq p} |q| \leq |H_p| \leq A_p$.
 
 \begin{proof} We define $\alpha$ inductively, from leaves upwards.
 For a leaf $\ell$ in $\pruned$, set $\alpha_\ell = |H_\ell|$. Consider an internal node $p$
-with children $q_1, q_2, \ldots, q_k$. The heap $H(p)$ is formed by the union
-of the $H(q_i)$ heaps, after deleting certain vertices from them, and potentially
+with children $q_1, q_2, \ldots, q_k$. The heap $H_p$ is formed by the union
+of the $H_{q_i}$ heaps, after deleting certain vertices from them, and potentially
 adding some new vertices. The new vertices are potentially those that come
 from other nodes that have been pruned off.
 The vertices in each $q_i$ as well as $\lambda(q_i)$ are deleted.
 Define $\alpha_p$ to be the number of new vertices added to $H_p$.
 
 Thus, we have $|H_p| = \sum_{i \leq k} |H_q| + \alpha_p$
-$- \textrm{\# vertices deleted from $H_q$s}$.
+$- \textrm{\# vertices deleted from $H_q$'s}$.
 The number of vertices deleted is at most $2\sum_{i \leq k} (|q_i| + |\lambda(q_i)|)$.
 There is a factor $2$ because each vertex appears in at most $2$ heaps.
 
@@ -2691,7 +2692,7 @@ After the redistribution, let us compute the charge deposited at $q$. Every ance
 denoted $a_0, a_1, a_2, \ldots, a_k$, contributes to the charge at $q$. The charge is expressed in the following
 equation. We use the assumption that $A_{a_i} \geq (5/4) A_{a_{i-1}}$ and hence $A_{a_i} \geq (5/4)^i A_{a_0} \geq (5/4)^i$, 
 as $a_0$ is an unsupported short path and hence $A_{a_0}\geq 1$. 
-$$ ({\alpha_q}/99)\sum_{a_i} 1/\sqrt{A_{a_i}} \leq ({\alpha_q}/99)\sum_{a_i} (5/4)^{i/2} \leq \alpha_q/20 $$
+$$ ({\alpha_q}/99)\sum_{a_i} 1/\sqrt{A_{a_i}} \leq ({\alpha_q}/99)\sum_{a_i} (4/5)^{i/2} \leq \alpha_q/20 $$
 The total charge is $\sum_{q \in \pruned_p} \alpha_p/20 = A_p/20$. 
 \end{proof}
 
@@ -2700,7 +2701,7 @@ is a parent of $q'$, $A_q \geq (4/3)A_{q'}$.
 \end{claim}
 
 \begin{proof} We prove this by induction over the depth of $q$.
-When $q$ is a leaf, this is vacuously tree. Consider some internal node $q$,
+When $q$ is a leaf, this is vacuously true. Consider some internal node $q$,
 with children $q'_1, q'_2, \ldots, q'_k$. Applying the induction
 hypothesis to the subshrubs rooted at $q'_i$, we can invoke \Clm{charge}
 on each subshrub $\pruned_{q'_i}$. Thus, for all $i$,
@@ -2715,7 +2716,7 @@ repeats the argument in the previous claim. We apply \Clm{exp-A} and \Clm{charge
 to every child of the root $r$. Denoting the children as $q_1, q_2, \ldots$,
 we get that $\sum_{q' \in \pruned_{q_i}} |q| \leq A_{q_i}/20$.
 Summing this over the children, $\sum_{p \in \pruned, p \neq r} \leq A_r/20$.
-By \Clm{weights}, $A_r \leq 17|H_r|/20$. Furthermore $|r| \leq |H_r$.
+By \Clm{weights}, $A_r \leq 17|H_r|/20$. Furthermore $|r| \leq |H_r|$.
 We combine these bounds to show that $\sum_{p \in \pruned} |p| = O(|H_r|)$.
 % 
 % 
