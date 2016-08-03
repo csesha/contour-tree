@@ -2656,17 +2656,16 @@ Then, $A_p - 3\sum_{q \in \pruned_p} |q| \leq |H_p| \leq A_p$.
 For a leaf $\ell$ in $\pruned$, set $\alpha_\ell = |H_\ell|$. Consider an internal node $p$
 with children $q_1, q_2, \ldots, q_k$. The heap $H_p$ is formed by the union
 of the $H_{q_i}$ heaps, after deleting certain vertices from them, and potentially
-adding some new vertices. The new vertices are potentially those that come
-from other nodes that have been pruned off.
-The vertices in each $q_i$ as well as $\lambda(q_i)$ are deleted.
+adding some new vertices. 
+The vertices in $p$ and those in the $\lambda(q_i)$ are deleted.
 Define $\alpha_p$ to be the number of new vertices added to $H_p$.
 
 Thus, we have $|H_p| = \sum_{i \leq k} |H_{q_i}| + \alpha_p$
 $- \textrm{\# vertices deleted from $H_{q_i}$'s}$.
-The number of vertices deleted is at most $2\sum_{i \leq k} (|q_i| + |\lambda(q_i)|)$.
+The number of vertices deleted is at most $2(|p|+\sum_{i \leq k} |\lambda(q_i)|)$.
 There is a factor $2$ because each vertex appears in at most $2$ heaps.
 
-It is evident that $|H_p| \leq \sum_{q \in \pruned_p, q \neq p} \alpha_q = A_p$.
+It is evident that $|H_p| \leq \sum_{q \in \pruned_p} \alpha_q = A_p$.
 Note that $|H_p| \geq A_p - 2\sum_{q \in \pruned_p, q \neq p} |\lambda(q)|$ $-2\sum_{q \in \pruned_p} |q|$.
 Crucially, since $\pruned$ is buffer-pruned, $\sum_{q \in \pruned_p, q \neq p} |\lambda(p)|
 \leq \sum_{q \in \pruned_p, q \neq p} |q|/100$ $\leq \sum_{q \in \pruned_p} |q|/100$. This completes the proof.
