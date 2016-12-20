@@ -58,11 +58,15 @@ Ben-----> Added ||
 
 
 
+
+
 Ben-----> The followig comments still need to be handled, but am ignoring for now, since not related to camera ready.
 
 - in the left-hand side of the equation on top of page 21 it seems L has to be P_\max.
+Ben----->Fixed.
 
 - in the paragraph above Claim 47 two p's should be q!
+Ben----->Fixed.
 
 - in the proof of Claim 48 it is not clear what is meant by U^-. In the last line also R_p should be R_q.
 
@@ -149,15 +153,19 @@ Ben--Sesh--> Changed as the reviewer suggested, see if you like the way it looks
 
 
 
+
+
 Ben-----> The followig comments still need to be handled, but am ignoring for now, since not related to camera ready. 
 
 p. 22, paragraph 5:
 You use U_p but I can't find the definition.  Provide the definition.
 (U_p is the subtree of U rooted at p.)
+Ben-----> Defined now.
 
 p. 22, proof of Claim 47: "We write... $\sum R^+_q - R_q$ ..."
-
 Add parentheses "\sum (R^+_q - R_q)$.
+Ben-----> Added.
+
 
 p. 22, proof of Claim 47: "The vertices of H~_{q'_i} that are deleted are exactly those present in the path q...  Therefore when R_q is negative, it is at most by 2|q|."
 

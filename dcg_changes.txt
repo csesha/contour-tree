@@ -1,0 +1,342 @@
+
+Reviewer2:
+
+Review for the paper “Avoiding the Global Sort: A Faster Contour Tree Algorithm”
+
+This papers presents a new algorithm for computing the contour tree of meshes in R^d. In general, this is a nice paper but there are some general points and many small points that I must mention. Given the authors address the following issues I think the paper can be published. The overall reasoning seems correct to me.
+Since this paper is already accepted in SoCG I don't talk about relevance etc.
+
+General issues
+* The most important concern about this paper is how it tries to sell the result. Though it is a new and interesting algorithm, in order to sell it as a faster algorithm the authors push some details under the carpet. First of all, there is always an additive factor of O(N) in running-times that the authors do not mention in the abstract. This factor prevents the algorithm to be output-sensitive in many cases. The authors must be clear about the running time everywhere.
+---> Added "N" in the abstract.  As far as we can tell this was the only place it was missing, but please let us know if otherwise. 
+
+* The second important issue is the crucial restrictiction on input complexes. For the algorithm to work correctly the so called Morse up and down degrees have to be at most two, and not only the degrees in the contour tree. This is a more strict condition that the one stated by the authors often as “contour trees having degree 3”. The reason for this is the line 4 of init algorithm. Essentially, this is what is meant usually by computing a merge tree, that is, how the edges in an upper star of a vertex are divided into sets in different components of the super-level set. The authors can again assume this by the “vertex unfolding” process, but they do not make it clear how this process affects the size of the input complex. The authors must be clear about these assumptions. This is mentioned vaguely in the line before subsection 2.1.
+ 
+* The authors must be clear that M is a triangulation of R^d (or a ball) or not. In general the contour tree is not a tree so paragraph 2 of the introduction would not be correct. Also, in general there will be no “infinite facet”. I guess the authors want M to be a triangulation of some ball in R^d. This point must be cleared.
+
+* The definition of a critical point is not standard, even when the input is a manifold. This point should be mentioned.
+
+* The authors should refer to the algorithm boxes in the text.
+
+* I suggest to use the term “technical” less frequently.
+---> Removed more than half of the instances of this word.
+
+* The statements titled “Claim” should be changed perhaps to “Proposition”.
+
+* In general it is better to have constants in place of the big-O notation. This is because when a non-constant number of big-O’s are summed together one has to make sure that the constants do not depend on the number of summands or anything else. This however does not make a problem in this paper.
+
+* The spaces built in this paper are not simplicial complexes, though it is easy to make them simplicial complex. The authors should address this point.
+
+* I suggest the authors make the main lemma of the paper more clear and give it a name. That is, they show that the bound that is true for contiguous coloring is essentially true for non-contiguous coloring of binary trees.
+
+
+
+
+More specific comments
+* Put the O(N) factor in the abstract.
+--->Changed
+* P1 par(agraph)1 : the contour tree does not represent all handle changes, with the definition of critical point in this paper. The same about “topological changes”. The claim is true for d=3 perhaps.
+
+* P1 par2: Again by the definition of the critical points in the paper some of the classic critical points are regular, those that change the >1-handles of the contours. 
+
+* P1 par2 l2: there is no need for parentheses here.
+---> Removed parentheses from par2 (was not on l2 so not sure if this was what you were referencing).
+* The authors should mention the definition of the critical point before Theorem 1.1.
+
+* P2 l1: directed diameter
+--->Added "directed"
+* P2 last lines: the number of comparisons is c t log t for a constant c.
+--->Fixed, and also added constant \alpha for \gamma.
+* P3 one to last par: what is infinite face?
+
+* P4 Def 2.2: x \in M.
+--->Added
+* P4 par4: for the critical points to be vertices one needs also vertex values to be distinct.
+--->Good catch, and added to end of first paragraph of section 2. It was in the intro, but needed to be restated in section 2.
+* P4 par 4: “the critical points … change”, is wrong even if M were a manifold, remove “exactly”.
+
+*  Lines before subsection 2.1: as mentioned above, the degree here is Morse up degree, in order for line 4 in Init to be linear time. Also mention the contour tree is a tree since M is assumed to be simply-connected.
+
+* P5 par1: handle does not have a meaning for general M.
+
+* P5 par2 l2: regular vertex
+--->Changed
+* P5 par2 final lines: again contour tree does not contain all topological changes of the level sets.
+
+* P6 one to last par: extremum dominant in italics.
+--->Changed
+* P6 line 3: put the truth in the text!
+--->Changed
+* P8 line 1: remove “absolutely”
+--->Removed
+* P8 par 3: “higher dimensional faces” higher than what?
+--->Changed to dimension strictly larger than 1
+* P8 last line: “all incident edges” should be those with v as a lower vertex.
+--->Rewrote sentece to include this change
+* P9 example: when blue merges with other colors it is not blue anymore.
+++++Not sure what the issue is here.  When red/blue merge we first describe them as mixing to create a new color purple, to ilustrate the intuition that this really acts as a new maximum.  However, this repainting is not actually done as it is too expensive. An extra sentence was added for clarity after the reference to union-find: "So the red and blue mounds are not actually recolored purple, and instead say red now points to blue in the union find data structure."
+
+* P9 last line before subsection: “all edges” should be all incident from above.
+--->Changed
+* P10 par2: “it will merge into …” the saddle does not merge.
+--->Rewrote the senetence
+* P10 last par: it is much easier globally to identify all the vertices of the cut contour in the complex, hence replacing them with one vertex.
+???? We know joining all together is a bad idea, but maybe something else is being said here?
+
+* P12 Def 5.1: the definition is for a simplicial complex and a given map.
+????The simplicial complexes is the lifted R^{d+1} complex and so includes the map.
+
+* P12 Claim 5.3: each non-empty component
+???? How can a component be empty?
+
+* P13 line (b) in algorithm rain: “maximum” is not correct since it can be a “minimum” as well.
+???? Shouldn't it always be a maximum?
+
+* P14 proof of Lemma 5.5: the same issue as previous comment.
+???? Again it should be just maxima here.  However, the final sentence did require a rewrite for another reason.
+
+* P16 the first line of proof of 6.4 seems to have problems.
+--->Agreed that sentence has issues as stated.  It was removed as it is not needed for the proof. 
+Also, a number of other minor changes were made in and around theorem 6.4.
+* P17 Color list: “for each point” should be “for each vertex”.
+--->Changed
+* P18 algorithm build line (e): the resulting color is rep(c’).
+---> We agree this was not quite correct, so we added the word "representative"
+     (using c' would not be quite correct either as c' is not a specific color)
+* P18 third point after the boxes: incident from above to v.
+---> Changed.
+* P18 proof of Lemma 7.5: “c-colored and touched by c” everywhere should be preceded by “currently”.
+--->Added "currently" throughout lemma and proof
+* P19 proof of Cor 7.6 l7: and touched by some other color.
+--->Changed
+* P19 proof of Claim 7.7 l3 :similar to last comment.
+--->Changed
+* P19 proof of Claim 7.8 l 2: “current” should be representative, second paragraph: have been processed.
+--->Changed
+* P20 7.4 par2: in the following
+--->Changed
+* P20 Def 7.10: color is not yet defined.
+--->Changed
+* P20 Definition 7.11 should be a remark or note.
+++++ We feel this should not be a remark or note as 7.11 defines "initial coloring" and is cited repeatedly later. Instead we changed the wording a little. 
+
+* Lemma 7.12: the lemma actually computes the running time of the whole algorithm not only the build routine as the lemma statement says.
+--->Build is the algorithm so it was correct as stated.  For clarity we added ", including the subroutine call to $\init(\MM)$ and all calls to $\update$, "
+* P21 l1: “as so” is a typo.
+--->Changed to "and so"
+* P21 top of the page: here is where it is necessary to have Morse up degree two rather than degree three in the contour tree. The runtime of init will not be linear otherwise.
+
+* P21 last paragraph of proof of 7.12: “are” is a typo.
+--->Removed the extra "are"
+* P21 last line: this is supposed to be the full version.
+--->Changed to "which is provided in the next section"
+* P22 par2 l2: the path is defined as a subset of the edges, not the decomposition.
+
+* P22 par3: what is p?
+--->Added "a path"
+* P22 subsection 8.1 par2: here the constants in the big-O notation have to be independent of everything. So if one is strict the reasoning here is not correct.
+
+* P22 paragraph before Def 8.4: it seems to me that in the parenthesis should be tall paths.
+--->  Added "tall", but it is fine either way, as the parenthesis are just clarifying why the word "chain" was used.
+* P22 last line: notation which will be …
+--->Change "we" to "will"
+* P22 footnote: this is not overloading the term “tree”, since it is used with the same meaning.
+--->Changed wording of the footnote.
+* P25 l3: \lambda(p) should be \lambda(q).
+--->Changed
+* P25 Lemma 8.2: it is better that in the left-hand side be w in place of v like in the proof.
+--->Changed
+* P25 one to last par: the argument here is fuzzy.
+--->Added more explanation to the last paragraph of lemma 8.12 proof (assuming this is what you were referencing).
+* P25 Cor 8.13: a log is missing from the relation.
+--->Added the log
+* P26 last par of proof of Claim 8.15: the first q \neq p is a typo and the last \lambda(p) should be \lambda(q).
+++++ We don't see why "the first q \neq p" is a typo.  Changed lamda(p) to lambda(q).
+
+* P26 last line: \alpha_p should be \alpha_q.
+--->Changed
+* P27 proof of claim 8.17: the proof is actually not correct since the base of the induction is when q’ is a leaf not the case mentioned. This case should be handled separately.
+++++The lemma statement was modified so that the induction can be done on q instead of q'. Note that the induction can be done on q here, as the induction step just needs to be able to apply claim 8.16, which holds regardless of whether there are any parent child q,q' pairs or not. 
+
+* P28: in the statements of Theorems 8.19 and 8.20 the condition of degree 3 has to be strengthened to Morse up degree 3, per the comments in the top of the review.
+
+* P28 par before section 9: decompositions (plural)
+--->Added 's'
+* P29 in the statement of Lemma 9.1 “labeled join tree” is correct.
+--->Added "labeled"
+* P29: the fact that these constructions are not simplicial complexes should be dealt with.
+++++Added a sentence at the ends of both the first and second paragraphs of the proof of lemma 9.1.
+
+* P30 par3: this definition is not used elsewhere.
+++++Definition was left over from an earlier version, and has now been removed
+
+* In the references HWW10 and Par12 must be big O.
+--->Fixed
+* The paper title in PCM02 seems wrong.
+--->Changes "set" to "sets"
+* The references vKvOB+97 and BKO+98 seem to be versions of the same paper.
+++++ vKvOB+97 is the socg version, and BKO+98 is a tech report. We prefer to cite the more well known 97 paper, but the lower bound appears to only be in the tech report and hence we cite it in that one instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reviewer 1:
+Title: Avoiding the global sort: A faster contour tree algorithm
+Authors: B. Raichel, C. Sechadhri
+Review:
+This paper presents an algorithm for constructing a contour tree from a sim-
+plicial complex whose running time depends upon the structure of the contour
+tree. The algorithm runs in O(tlogD+tα(t)+N ) time where N is the number of
+vertices in the simplicial complex, t is the number of critical points of all types,
+and D is the diameter of the tree. The authors also give more complicated,
+tighter bounds which sum over the “height” and “depth” of the critical vertices
+in the tree. The previous fastest algorithm ran in O(tlogt + tα(t) + N ) time.
+The main innovation in the algorithm is the use of binary heaps to construct
+join trees and split trees. (The contour tree is constructed from join and split
+trees.) The binary heaps track the vertices which are candidates to be added
+to the join or split tree.
+The algorithm is new and the bounds are improvements over the running times
+of previous algorithms. The paper presents three theorems (labelled, 1.1, 1.3
+and 1.4). Theorem 1.1 is an upper bound on the algorithm running time. The
+proof is relatively straightforward. Theorem 1.3 is a tighter upper bound on
+the running time, which involves a path decomposition of the contour tree. The
+proof is very complicated. Theorem 1.4 is a lower bound on the algorithm
+running time.
+The paper is an extended version of a paper published in SOCG 2016. Sections
+1-7 contain the algorithm description. Except for Section 3, these sections are
+almost verbatim copies of the SOCG paper. Sections 8 and 9 contain the proofs
+of Theorems 1.3 and 1.4 and are new material.
+The algorithm description in Sections 1-7, while acceptable for a conference, is
+not acceptable for a journal publication. The main innovation, the new algo-
+rithm to construct a join tree, appears in half a page of pseudocode in Section
+7.2 with little explanation and no illustration. The algorithm to construct a join
+tree should appear immediately after Section 2, before all discussions of contour
+surgery, it should be described both in the text and in the pseudocode, and it
+should be illustrated by a non-trivial example. Section 3, an overview of the
+algorithm, also needs to be rewritten. (See detailed comments below.)
+The algorithm and analysis have more theoretical than practical importance,
+since they require binary heaps and only improve a log term. On the other hand,
+the analysis, particularly the upper bounds in Theorem 1.3, is quite intricate and
+impressive. Because this paper introduces new ideas in the building of contour
+trees and includes some very challenging analysis, I recommend acceptance butonly 
+subject to a major revision of Sections 1-7. The algorithm in this paper is
+not that difficult, and the authors should be able to provide a description which
+is intuitive and easy to follow.
+
+Specific comments:
+Abstract: On page 4, the paper discusses multi-saddles and vertex unfolding
+to remove multi-saddles. However, the paper notes that vertex unfolding of
+multi-saddles can increase surface complexity. Theorem 8.19 is actually stated
+for a join tree with maximum vertex degree is 3. Does the claim in the abstract
+and theorems hold for contour trees with super-constant degree? If not, modify
+the claim to assume super-constant degree or take into account the cost of high
+contour tree degree.
+
+p. 4, Definition 2.3: “A regular point has both Morse up-degree and down-
+degree 1... Non-regular points are called critical.” ... “The critical points are
+exactly where the topology changes...”
+****These two statements are inconsistent. There are lots of high order (H d for
+d > 1 or spheres to torus, etc.) topological changes which have Morse up and
+down degree equal to 1. The change in degree reflects changes in the number
+of connected components or the creation of a 1-cycle. Be more careful/precise
+about which topological changes are being recorded.
+
+p. 4: “Similar to [vKvOB+97] (among others), multi-saddles are treated as
+ordinary saddles.”
+****I did not find a discussion of multi-saddles in [vKvOB+97]. Are you sure this
+is the correct reference?
+
+p. 5: Section 3 is an attempt to help in the exposition by giving an overview
+of the algorithm but I found it more confusing than helpful. Section 3 had too
+many details for the big picture, but too few details to actually understand the
+algorithm. Six pages is far too much for an overview.
+
+Here is a suggestion at an overview of the algorithm:
+1. Cut the simplicial complex M into extremum dominant pieces.
+2. Construct the join or split tree of each extremum dominant piece.
+3. Connect the constructed join and split trees to form the contour tree.
+The details of contour surgery should not be part of an overview.
+
+p. 17, Definition 7.2: “An up-star of v is the set of edges that (are) all connected to a fixed component of M v + .”
+****This definition is extremely obscure. Do you mean the edges connected v to
+some maximal connected component of M v + .
+In that case, I suggest: For each maximal connected component Y of M v + , the
+2set of all edges connecting v to a vertex in Y is called an up-star of v.
+Whatever the definition, I suggest an illustration.
+
+p. 17, Section 7.2. As discussed above, this section should contain text to
+describe and explain the algorithm, and should contain a non-trivial example of
+the algorithm.
+
+Here is a suggestion at an overview of the algorithm to construct the join tree
+(Section 7.2.)
+1. Partition M into colors using a descending Breadth First search from max-
+ima.
+2. For each color, keep a heap of all the critical points touched by that color.
+3. While some critical point v is unprocessed do:
+(a) Find an unprocessed critical point w such that w is at the top of all
+heaps containing w.
+(b) Add w to the join tree.
+(c) Delete w from all heaps containing w and merge those heaps.
+
+The paper should also include the more detailed pseudocode in Section 7.2, since
+the details (use of the stack K) are necessary to get the tight running time.
+
+p. 18: “Each vertex is present in at most 2 heaps.”
+****I believe, this follows from the assumption that there are no multi-saddles so a
+vertex up degree is at most two. If so, this assumption should be repeated here
+as the reason that each vertex is present in at most 2 heaps.
+
+p. 21: “Quantifying this slack however is quite challenging, and requires a
+significantly more sophisticated analysis involving path decompositions, detailed
+in the full version [RS14].”
+****This line is left over from the conference version of the paper. Delete it.
+--->Removed, and changed to "which is provided in the next section"
+
+p. 22-27: Theorem 8.1, Lemmas 8.3, 8.12 and 8.14, Claim 8.5 and 8.18, Corol-
+laries 8.6, 8.12, and 8.13 : “= O(...).”
+***O(...) is a set. This should be “∈ O(...).”
+???? We agree it is an abuse of notation, but it is the standard usage within the algorithms community.  
+See for example chapter 3.1 of "Introduction to Algorithms" by Cormen Leiserson Rivest and Stein (the standard algorithms textbook).
+Thus we prefer to keep this notation.
+
+Moreover, notation +O(...) in the proof of Claim 8.18 is an abuse of the O(...) notation.
+****Use “≤ ... + cΣ p∈H Σ v∈p ... for some c”, not “= ... + O(Σ p∈H Σ v∈p ...)”.
+
+

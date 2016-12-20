@@ -312,9 +312,19 @@
 
 \InNotSoCGVer{
 \author{
-  Benjamin Raichel%\BenThanks{}
+  Benjamin Raichel\thanks{%
+      Department of Computer Science; %
+      University of Texas at Dallas; %
+      Richardson, TX, 75080, USA; %
+      \texttt{\si{benjamin.raichel}@\si{utdallas}.\si{edu}} %
+  }
   \and
-  C. Seshadhri%\thanks{University of California, Santa Cruz; {\tt scomandu@ucsc.edu}}
+  C. Seshadhri\thanks{%
+        Department of Computer Science; %
+      University of California, Santa Cruz; %
+      Santa Cruz, CA, 95064, USA; %
+      \texttt{\si{scomandu}@\si{ucsc}.\si{edu}} %
+  }
 }
 
 \title{%A Mountaintop View Requires Minimal Sorting:
@@ -390,7 +400,7 @@ Existing lower bounds show that there are pathological instances where this sort
 We present the first algorithm whose time complexity depends
 on the contour tree structure, and avoids the global sort for non-pathological inputs.
 If $C$ denotes the set of critical points in $\MM$, the running time is
-roughly $O(\sum_{v \in C} \log \ell_v)$, where $\ell_v$ is the depth of $v$ in the contour tree.
+roughly $O(N+\sum_{v \in C} \log \ell_v)$, where $\ell_v$ is the depth of $v$ in the contour tree and $N$ is the total complexity of $\MM$.
 This matches all existing upper bounds, but is a significant asymptotic improvement when the contour tree is short and fat.
 Specifically, our approach ensures that any comparison made is between nodes that are either adjacent in $\MM$ 
 or in the same descending path in the contour tree,
@@ -425,7 +435,7 @@ For $d>2$, some subsequent works, such as \cite{csa-cctad-03}, only include chan
 If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
 These points are the ``events" where the contour topology changes and form the vertices of the contour tree. 
 An edge of the contour tree connects two critical points if one event immediately ``follows"
-the other as the sweep plane makes its pass. (We provide formal definitions later.) 
+the other as the sweep plane makes its pass. We provide formal definitions later. 
 \Fig{relative} and \Fig{sorting} 
 show examples of simplicial complexes, with heights and their contour trees.
 Think of the contour tree edges as pointing downwards. Leaves are either maxima or minima,
@@ -503,7 +513,7 @@ compares function values at pairs of vertices that are ancestor-descendant in $T
 
 Essentially, the ``run time per critical point" is determined by the height/depth of the point in the contour tree.
 This bound immediately yields a run time of $O(t\log D + t\alpha(t) + N)$,
-where $D$ is the diameter of the contour tree. 
+where $D$ is the directed diameter of the contour tree. 
 This is a significant asymptotic improvement for short and fat contour trees. For example, if the tree is balanced,
 then we get a bound of $O(t\log\log t)$.
 Even if $T$ contains a long path of length $O(t/\log t)$, but is otherwise short, we get the improved bound of $O(t\log\log t)$.
@@ -544,8 +554,8 @@ The bound of \Thm{main-alg} may seem artificial, since it actually depends on th
 is implicitly constructed by the algorithm. Nonetheless, we prove that the algorithm of \Thm{main-alg}
 has strong optimality properties. For convenience, fix some value $t=\Omega(N)$, and consider the set
 of terrains ($d=2$) with $t$ critical points. The bound of \Thm{main-alg} takes values ranging
-from $t$ to $t\log t$. Consider some $\thmConst \in [t,t\log t]$, and consider the set of terrains
-where the algorithm makes $\thmConst$ comparisons. Then \emph{any algorithm} must make roughly $\thmConst$
+from $t$ to $c t\log t$, for some constant $c$. Consider some $\thmConst \in [t,t\log t]$, and consider the set of terrains
+where the algorithm makes $\alpha \thmConst$ comparisons, for any constant $\alpha$. Then \emph{any algorithm} must make roughly $\thmConst$
 comparisons in the worst-case over this set. (Further details are in \InSoCGVer{the full version \CiteFullVer}\InNotSoCGVer{\Sec{lb}}.)
 
 \begin{theorem} 
@@ -606,8 +616,8 @@ We detail the basic definitions about contour trees, following the terminology o
 All our assumptions and definitions
 are standard for results in this area, though there is some variability in notation.
 The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex in $\RR^d$,
-except for specially designated \emph{boundary facets}. So $f$ is explicitly defined only on the vertices of $\MM$,
-and all other values are obtained by linear interpolation. 
+except for specially designated \emph{boundary facets}. We assume that all vertices of $\MM$ have distinct function values, 
+and that $f$ is only explicitly defined on the vertices, and all other values are obtained by linear interpolation. 
 
 We assume that the boundary values satisfy a special property. This is mainly for convenience
 in presentation.
@@ -628,7 +638,7 @@ Observe that $f:\MM \rightarrow \RR$ can be thought of as a $d$-dimensional simp
 where $f(x)$ is the ``height" of a point $x \in \MM$, which is encoded in the representation of $\MM$. 
 Specifically, rather than writing our input as $(\MM,f)$, we abuse notation and typically just write $\MM$ to denote the lifted complex.
 
-\begin{definition} \label{def:level} The \emph{level set} at value $h$ is the set $\{x| f(x) = h\}$.
+\begin{definition} \label{def:level} The \emph{level set} at value $h$ is the set $\{x\in \MM| f(x) = h\}$.
 A \emph{contour} is a connected component of a level set. An \emph{$h$-contour} is a contour where $f$-values are $h$.
 \end{definition}
 
@@ -719,7 +729,7 @@ For example, when $d=3$ this is equivalent to the contour gaining a handle.
 When $d=2$, this distinction is not necessary, since any point with Morse degree strictly greater than $1$ will have degree strictly greater than $1$ in $\reeb(\MM)$.
 
 As Carr points out in Chapter 6 of his thesis, the term contour tree can be used for a family of related structures.
-Every vertex in $\MM$ is associated with an edge in $\reeb(\MM)$, and sometimes the
+Every regular vertex in $\MM$ is associated with an edge in $\reeb(\MM)$, and sometimes the
 vertex is explicitly placed in $\reeb(\MM)$ (by subdividing the respective edge). This is referred
 to as augmenting the contour tree, and it is common to augment $\reeb(\MM)$ with all vertices.
 Alternatively, one can smooth out all vertices of up-degree and down-degree $1$ to get the
@@ -730,7 +740,7 @@ of level sets. \Thm{main-alg} is applicable for any augmentation of $\reeb(\MM)$
 set of vertices, though we will not delve into these aspects in this paper.
 }
 \InNotSoCGVer{
-\subsection{Some technical remarks}
+\subsection{Some remarks}
 \technicalRemarks
 }
 
@@ -829,20 +839,13 @@ some intuition behind our algorithm.
 
 \newcommand{\intuitionSection}{
 \section{A tour of the new contour tree algorithm} \label{sec:approach}
-\InNotSoCGVer{
 Our final algorithm is quite technical and has numerous moving parts. However, for the $d=2$ case, 
 where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
 can be explained clearly.  Therefore, here we first provide a high level view of the entire result.
-}
-\InSoCGVer{
-For the $d=2$ case, where the input is just a triangulated terrain, the main ideas of the parts of the algorithm 
-can be explained clearly.  Therefore, here we provide a high level view of the entire result.
-}
 
 In the interest of presentation, the definitions and theorem statements in this section will
 slightly differ from those in the main body. They may also differ from the original definitions proposed
 in earlier work. 
-
 
 \myparagraph{Do not globally sort:} The starting point for this work is \Fig{relative}. We have two terrains
 with exactly the same contour tree, but different orderings of (heights of) the critical points.
@@ -914,8 +917,8 @@ endowed with a height to be \emph{minimum dominant} if there exists only a singl
 (Our real definition is more complicated, and involves simplicial complexes
 that allow additional ``trivial'' minima.)
 In such a complex, there exists a non-ascending path from any point to this unique minimum.
-Analogously, we can define maximum dominant complexes,
-and both are collectively called extremum dominant.
+Analogously, we can define \emph{maximum dominant} complexes,
+and both are collectively called \emph{extremum dominant}.
 
 We will cut $\MM$ into disjoint extremum dominant pieces, in linear time.
 One way to think of our procedure is a meteorological analogy. Take an arbitrary maximum $x$,
@@ -923,7 +926,8 @@ and imagine torrential rain at the maximum. The water flows down, wetting any po
 from $x$. We end up with two portions, the wet part of $\MM$ and the dry part. This is similar
 to \emph{watershed} algorithms used for image segmentation~\cite{RoMe00}. The wet part is obviously connected,
 while there may be numerous disconnected dry parts. The interface between the dry and wet parts
-is a set of contours\footnote{Technically, they are not contours, but rather the limits of sequences of contours.}, 
+%is a set of contours\footnote{Technically, they are not contours, but rather the limits of sequences of contours.}, 
+is a set of limits of sequences of contours, which informally we call just a set of contours, which are
 given by the ``water line". The wet part is clearly maximum dominant, since all
 wet points have a non-descending path to $x$. So we can simply cut along the interface
 contours to get the wet maximum dominant piece $\MM'$. By our contour surgery theorem,
@@ -976,7 +980,7 @@ We stress the importance of this step for our approach. Given the algorithm of~\
 one may think that it suffices to design faster algorithms for join trees. But this
 cannot give the sort of optimality we hope for. Again, consider \Fig{sorting}. Any algorithm
 to construct the true join tree must construct the path of splits, which implies
-sorting all of them. It is absolutely necessary to cut $\MM$ into pieces where the cost
+sorting all of them. Thus it is necessary to cut $\MM$ into pieces where the cost
 of building the join tree can be related to that of building $\cC(\MM)$.
 
 \subsection{Join trees from painted mountaintops} \label{sec:join-paint}
@@ -996,7 +1000,7 @@ computational geometry algorithm. We have to step away from this viewpoint to av
 The key idea is \emph{paint spilling}. Start with each maximum having a large can of paint, with distinct
 colors for each maximum. In arbitrary order, we spill paint from each maximum, wait till it flows down,
 then spill from the next, etc. Paint is viscous, and only flows down edges. \emph{It does not
-paint the interior of higher dimensional faces.} That is, this process is restricted to the 1-skeleton of $\NN$.
+paint the interior of faces with dimension strictly larger than 1.} That is, this process is restricted to the 1-skeleton of $\NN$.
 Furthermore, our paints do not mix, so each edge receives a unique color, decided by the first
 paint to reach it.  In the following, $[n]$ denotes the set $\{1, \ldots, n\}$, for any natural number $n$.
 
@@ -1028,7 +1032,7 @@ Both mounds are colored completely blue or red, while $v$ is touched by both col
 So this indicates that $v$ joins the blue maximum and red maximum in $\cJ(\MM)$.
 
 This is precisely how we hope to exploit the information in the painting. We prove later that
-when some join $v$ has all incident edges with exactly two colors, the corresponding maxima (of those colors) are exactly
+when some join $v$ has exactly two colors among all incident edges with $v$ as the lower endpoint, the corresponding maxima (of those colors) are exactly
 the children of $v$ in $\cJ(\MM)$. To proceed further, we ``merge" the colors red and blue into a new color, purple. In other words,
 we replace all red and blue edges by purple edges. This indicates that the red and blue maxima have been
 handled. Imagine flattening the red and blue mounds until reaching $v$, so that the former join $v$
@@ -1036,7 +1040,8 @@ is now a new maximum, from which purple paint is poured. In terms of $\cJ(\MM)$,
 is equivalent to removing leaves $\ell_1$ and $\ell_2$, and making $v$ a new leaf.
 Alternatively, $\cJ(\MM)$ has been constructed up to $v$, and it remains to determine $v$'s parent.
 The merging of the colors is not explicitly performed as that would be too expensive; instead we maintain a union-find
-data structure for that.
+data structure for that. So the red and blue mounds are not actually recolored purple, 
+and instead say red now points to blue in the union find data structure.
 
 Of course, things are more complicated when there are other mounds. There may be a yellow mound,
 corresponding to $\ell_3$ that joins with the blue mound higher up at some vertex $u$ (see the right part of \Fig{colors}). In $\cJ(\MM)$, $\ell_1$ and $\ell_3$
@@ -1071,7 +1076,7 @@ may actually be touched by numerous colors, not just one or two as assumed above
 would be to insert vertices into heaps corresponding to all colors touching it. But there could
 be super-constant numbers of copies of a vertex, and handling all these copies would lead
 to extra overhead. We show that it suffices to simply put each vertex $v$ into at most two heaps, one for each
-``side" of a possible join. We are guaranteed that when $v$ needs to be processed, all edges have
+``side" of a possible join. We are guaranteed that when $v$ needs to be processed, all edges incident from above have
 at most $2$ colors, because of all the color merges that previously occurred.
 
 
@@ -1096,8 +1101,8 @@ the join tree, which decomposes the join tree into a set of colored paths.  Unfo
 while a given color class is confined to a single leaf to root path, it may \emph{not} appear contiguously on this path, as the right part of \Fig{colors} shows. 
 Specifically, in this figure the far left saddle (labeled $i$) is hit by blue paint.  However, there is another 
 saddle on the far right (labeled $j$) which is not hit by blue paint.  Since this far right saddle is slightly 
-higher than the far left one, it will merge into the component containing the blue mound (and also the yellow and red mounds)
-before the far left one.  Hence, the vertices initially touched by blue are not contiguous in the join tree.
+higher than the far left one, the merge event involving the component containing the blue mound (and also the yellow and red mounds) and corresponding to the far right saddle
+will occur before the one corresponding to the far left saddle.  Hence, the vertices initially touched by blue are not contiguous in the join tree.
 
 This non-contiguous complication along with the fact that heap size keep changing as color classes merge, causes the analysis to be technically challenging. 
 %There are situations where the initial heap sizes are small, but they eventually merge to create larger heaps. 
@@ -1460,8 +1465,9 @@ is in $\wet(x,\NN)$, so $\NN$ is trivially extremum dominant. So suppose the int
 is non-empty and consists of $\phi_1, \ldots, \phi_k$ (as denoted in the procedure).
 By repeated applications of \Clm{cut-int}, $\NN_{k+1}$ contains $\wet(x,\MM)$. 
 Consider $\wet(x,\NN_{k+1})$. The interface is exactly $\phi_1, \ldots, \phi_k$.
-So the only dry vertices are those in the boundaries $B_1, \ldots, B_k$. But these
-boundaries are maxima.
+So the only dry vertices of $\NN_{k+1}$ are those on the boundaries created by calling $\cut$ for each $\phi_i$, 
+but such boundaries are all maxima.
+%$B_1, \ldots, B_k$. But these boundaries are maxima.
 \end{proof}
 
 As $\rain(x,\MM)$ proceeds, new faces/simplices are created because of repeated cutting. 
@@ -1469,7 +1475,7 @@ As $\rain(x,\MM)$ proceeds, new faces/simplices are created because of repeated 
 The key to the running time of $\rain(x,\MM)$ is bounding the number of newly created faces, for which we have the following lemma.
 
 \begin{lemma}\label{lem:new-verts}
-A face $F \in \MM$ is cut\footnote{Technically what we are calling a single cut is done with two hyperplanes.} at most once during $\rain(x,\MM)$.
+A face $F \in \MM$ is cut\footnote{What we are calling a single cut is actually done with two hyperplanes.} at most once during $\rain(x,\MM)$.
 \end{lemma}
 \begin{proof} Notation here follows the pseudocode of $\rain$.
 First, by \Thm{jordan}, all the pieces on which $\rain$ is invoked are disjoint.
@@ -1599,14 +1605,19 @@ and the corresponding splits (as given by the lemma above) as $s_1, s_2, \ldots,
 Using the above lemma we can now prove that computing the contour tree for a minimum dominant complex 
 amounts to computing its join tree.  Specifically, to prove our main theorem, we rely on the correctness of the
 merging procedure from~\cite{csa-cctad-03} that constructs the contour tree from the join and split trees. 
-It actually constructs the \emph{augmented contour tree} $\cA(\MM)$, which is 
+It actually first constructs the \emph{augmented contour tree} $\cA(\MM)$, which is 
 obtained by replacing each edge in the contour tree with a path of all regular vertices 
 (sorted by height) whose corresponding contour belongs to the equivalence class of that edge.
 
 Consider a tree $T$ with a vertex $v$ of in and out degree at most $1$.
 \emph{Erasing} $v$ from $T$ is the following operation: if $v$ is a leaf, just delete $v$. Otherwise, 
 delete $v$ and connect its neighbors by an edge (i.e.\ smooth $v$ out). This tree is denoted by $T \ominus v$.
-
+%
+The merging procedure of \cite{csa-cctad-03} is shown below as $\merge(\cJ(\MM),\cS(\MM))$.  
+This procedure builds $\cA(\MM)$ by iteratively adding edges that are adjacent to leaves of either $\cJ(\MM)$ or $\cS(\MM)$, 
+erasing the corresponding vertex from both $\cJ(\MM)$ and $\cS(\MM)$, and repeating.  $\cC(\MM)$ is then produced by erasing all regular vertices in $\cA(\MM)$.
+We use the fact that this procedure correctly produces the contour tree (regardless of the order leaves are processed), 
+and refer the interested reader to \cite{csa-cctad-03} for the proof of this fact, as it is not needed for our purposes.
 
 \medskip
 \fbox{
@@ -1625,7 +1636,7 @@ delete $v$ and connect its neighbors by an edge (i.e.\ smooth $v$ out). This tre
 		\item Insert $(v,w)$ in $\cA(\MM)$. 
 		\item Set $\cJ = \cJ \ominus v$ and $\cS = \cS \ominus v$. Enqueue any new candidates.
 	\end{compactenum}
-	\item Smooth out all regular vertices in $\cA(\MM)$ to get $\cC(\MM)$.
+	\item Erase all regular vertices in $\cA(\MM)$ to get $\cC(\MM)$.
 \end{compactenum}
 \end{minipage}}
 
@@ -1643,9 +1654,6 @@ The \emph{critical join tree} $\jc(\MM)$ is built on the set $V'$ of all
 critical points other than the non-dominant minima. 
 The directed edge $(u,v)$ is present when $u$ is the smallest valued vertex in $V'$ in a connected component of $\MM^+_v$
 and $v$ is adjacent (in $\MM$) to a vertex in this component. \InSoCGVer{The \emph{join tree}, $\cJ(\MM)$, is defined analogously, but instead on $\cV(\MM)$.}
-%
-%\InSoCGVer{Have sentence defining the join tree here.}
-%
 \end{definition}
 
 \InSoCGVer{Each non-dominant minimum, $m_i$, connects to the contour tree at a corresponding split $s_i$. We have the following (see the full version \CiteFullVer for more details).}
@@ -1655,15 +1663,18 @@ The contour tree $\cC(\MM)$ consists of all edges $\{(s_i, m_i)\}$ and $\jc(\MM)
 \end{theorem}
 
 \newcommand{\proofofContourJoinEquiv}{
-\begin{proof} We first show that $\cA(\MM)$ is $\cJ(\MM) \ominus \{m_i\}$ with edges $\{(s_i,m_i)\}$.
+\begin{proof} %We first show that $\cA(\MM)$ is $\cJ(\MM) \ominus \{m_i\}$ with edges $\{(s_i,m_i)\}$.
 We have flexibility in choosing the order of processing in $\merge$. We first put the non-dominant
-maxima $m_1, \ldots, m_k$ into the queue. As these are processed, the edges $\{(s_i,m_i)\}$ are inserted 
+minima $m_1, \ldots, m_k$ into the queue. As these are processed, the edges $\{(s_i,m_i)\}$ are inserted 
 into $\cA(\MM)$. Once all the $m_i$'s are erased, $\cS$ becomes a path, so all outdegrees are at most $1$.
-The join tree is now $\cJ(\MM) \ominus \{m_i\}$. We can now process $\cJ$ leaf by leaf, and all
-edges of $\cJ$ are inserted into $\cA(\MM)$.
-
-Note that $\cC(\MM)$ is obtained by smoothing out all regular points from $\cA(\MM)$. Similarly, smoothing out regular
-points from $\cJ(\MM) \ominus \{m_i\}$ yields the edges of $\jc(\MM)$.
+Moreover the join tree is now $\cJ(\MM) \ominus \{m_i\}$, and so we can now process $\cJ$ leaf by leaf, and all
+remaining edges of $\cJ$ are inserted into $\cA(\MM)$.
+%
+Note that smoothing out regular points from $\cJ(\MM) \ominus \{m_i\}$ yields the edges of $\jc(\MM)$.
+Thus after smoothing out all regular points from $\cA(\MM)$ we recover the edges of $\jc(\MM)$.  
+Hence the resulting contour tree contains these edges and the $\{(s_i,m_i)\}$ as claimed.
+%Note that $\cC(\MM)$ is obtained by smoothing out all regular points from $\cA(\MM)$. Similarly, smoothing out regular
+%points from $\cJ(\MM) \ominus \{m_i\}$ yields the edges of $\jc(\MM)$.
 \end{proof}
 }
 
@@ -1672,9 +1683,12 @@ points from $\cJ(\MM) \ominus \{m_i\}$ yields the edges of $\jc(\MM)$.
 \begin{Remark}\label{rem:joinAndCriticalJoin}
 The above theorem, combined with the previous sections, implies that in order to get an efficient contour tree algorithm, 
 it suffices to have an efficient algorithm for computing $\jc(\MM)$.
-Due to minor technicalities, it is easier to phrase the following section instead in terms of computing $\cJ(\MM)$ efficiently.  
-Note however that for minimum dominant complexes output by $\rain$, converting between $\jc$ and $\cJ$ is trivial, as $\cJ$ is just $\jc$ 
-with each non-dominant minimum $m_i$ augmented along the edge leaving $s_i$.
+In the other sections of the paper it is better to phrase things instead in terms of computing $\cJ(\MM)$ efficiently.  
+%Note however that for minimum dominant complexes output by $\rain$, converting between $\jc$ and $\cJ$ is trivial, as $\cJ$ is just $\jc$ 
+%with each non-dominant minimum $m_i$ augmented along the edge leaving $s_i$.
+Note however that for minimum dominant complexes, converting between $\jc$ and $\cJ$ is trivial, as $\cJ$ is just $\jc$ 
+with each non-dominant minimum $m_i$ augmented along the edge leaving $s_i$.  
+(Indeed $\jc(\MM)$ was only defined to make the above theorem statement clearer.)
 \end{Remark}
 
 
@@ -1743,7 +1757,7 @@ For any color $c$, $\rep(c)$ denotes the representative of its class.
 
 \medskip
 \noindent
-{\bf Color list $\col(v)$:} For each point $v$, we maintain $\col(v)$ as a simple list.
+{\bf Color list $\col(v)$:} For each vertex $v$, we maintain $\col(v)$ as a simple list.
 In addition, we will maintain another (sub)list of colors $L$ such that $\forall c \in L$,
 $v$ is \emph{not} the highest vertex in $T(\rep(c))$. Note that given $c \in \col(v)$
 and $\rep(c)$, this property can be checked in constant time. If $c$ is ever removed
@@ -1779,7 +1793,7 @@ We will maintain the guarantee that the portion of the join tree above (and incl
 \subsection{The algorithm} \label{sec:algo}
 
 We formally describe the algorithm below. 
-We require a technical definition of \emph{ripe} vertices.
+We require the following definition of \emph{ripe} vertices.
 
 
 \begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \col(v)$, $v$
@@ -1823,7 +1837,7 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 			\item Delete $h$ from $T(c')$.
 		\end{compactenum}
 	\item Merge heaps $\{T(c') | c' \in \cur(h)\}$.
-	\item Take union of $\cur(h)$ and denote resulting color by $\widehat{c}$.
+	\item Take union of $\cur(h)$ and denote resulting representative color by $\widehat{c}$.
 	\item Set $\h(\widehat{c}) = h$ and mark $h$ as processed.
 	\end{compactenum}
 \end{compactenum}
@@ -1852,7 +1866,7 @@ A few simple facts:
 \begin{compactitem}
 	\item At all times, the colors form a valid painting.
 	\item Each vertex is present in at most $2$ heaps. After processing, it is removed from all heaps.
-	\item After $v$ is processed, all edges incident to $v$ have the same (representative) color. %(more technically, the same representative). 
+	\item After $v$ is processed, all edges incident to $v$ from above have the same (representative) color. %(more technically, the same representative). 
 %	\item When $\update(\stack)$ terminates, the head $h$ is ripe. 
 	\item Vertices on the stack are in increasing height order. 
 \end{compactitem}
@@ -1922,28 +1936,28 @@ to $\h(c)$ in $\cC(\MM)$, which by \Thm{carr-mono} is the same as those in $\cC(
 \end{proof}
 }
 
-Our main workhorse is the following technical lemma. In the following, the current color of an edge, $e$, is the value of $\rep(\chi(e))$, 
+Our main workhorse is the following lemma. The \emph{current color} of an edge, $e$, refers to the value of $\rep(\chi(e))$, 
 where $\chi(e)$ is the color of $e$ from the initial painting.
 
 %\Ben{Current color is never defined, but it means the the current rep(c).}
 
 \begin{lemma} \label{lem:full} Suppose vertex $v$ is connected to a component $\PP$ of $\MM^+_v$
 by an edge $e$ which is currently colored $c$. At all times: either all edges in $\PP$ are currently colored $c$, or there
-exists a critical vertex $w \in \PP$ fully touched by $c$ and touched by another color.
+exists a critical vertex $w \in \PP$ currently fully touched by $c$ and currently touched by another color.
 \end{lemma}
 
-\begin{proof} Since $e$ has color $c$,
-there must exist vertices in $\PP$ touched by $c$. Consider the highest
-vertex $w$ in $\PP$ that is touched by $c$ and some other color. If no such vertex exists,
-this means all edges incident to a vertex touched by $c$ are colored $c$. By walking through
-$\PP$, we deduce that all edges are colored $c$. 
+\begin{proof} Since $e$ has current color $c$,
+there must exist vertices in $\PP$ currently touched by $c$. Consider the highest
+vertex $w$ in $\PP$ that is currently touched by $c$ and some other color. If no such vertex exists,
+this means all edges incident to a vertex currently touched by $c$ are currently colored $c$. By walking through
+$\PP$, we deduce that all edges are currently colored $c$. 
 
 So assume $w$ exists. Take the $(f(w)+\delta)$-contour $\phi$ that intersects $B_\eps(w)$
-and intersects some $c$-colored edge incident to $w$. Note that all edges intersecting $\phi$ are also colored $c$,
-since $w$ is the highest vertex to be touched by $c$ and some other color. (Take the path of $c$-colored
+and intersects some currently $c$-colored edge incident to $w$. Note that all edges intersecting $\phi$ are also currently colored $c$,
+since $w$ is the highest vertex to be currently touched by $c$ and some other color. (Take the path of currently $c$-colored
 edges from the maximum to $w$. For any point on this path, the contour passing through this point must
-be colored $c$.) Hence, $c$ fully touches $w$. 
-But $w$ is touched by another color, and the corresponding edge cannot intersect $\phi$. So $w$
+be currently colored $c$.) Hence, $c$ currently fully touches $w$. 
+But $w$ is currently touched by another color, and the corresponding edge cannot intersect $\phi$. So $w$
 must have up-degree $2$ and is critical.
 \end{proof}
 
@@ -1956,10 +1970,10 @@ must have up-degree $2$ and is critical.
  $\update(K)$, the stack has some unprocessed vertex $h$ on it.  
  If $h$ is ripe, then we are done, so suppose otherwise.
  
- Let $\PP$ be one of the components of $\MM^+_h$.  By construction, $h$ was put in the heap of some initial 
+ Let $\PP$ be one of the components of $\MM^+_h$.  By construction, $h$ was put in the heap of some initially  
  adjacent color $c$.  Therefore, $h$ must be in the current heap of $\rep(c)$ (see \Obs{twoQueues}).  
  Now by \Lem{full}, either all edges in $\PP$ are colored $\rep(c)$ or  
- there is some vertex $w$ fully touched by $\rep(c)$ and some other color.  
+ there is some vertex $w$ fully touched by $\rep(c)$ and touched by some other color.  
  The former case implies that if there are any unprocessed vertices in $\PP$ then they are all in $T(\rep(c))$, 
  implying that $h$ is not the highest vertex and a new higher up unprocessed vertex will be put on the stack for the next iteration of the while loop.  
  Otherwise, all the vertices in $\PP$ have been processed.  
@@ -1975,14 +1989,14 @@ must have up-degree $2$ and is critical.
 % We prove a series of claims that will lead to the correctness proof.
 
 \begin{claim} \label{clm:upstar} Consider a ripe vertex $v$ and take the up-star connecting
-to some component of $\MM^+_v$. All edges in this component and the up-star have the same color.
+to some component of $\MM^+_v$. All edges in this component and the up-star have the same current color.
 \end{claim}
 
 \begin{proof} Let $c$ be the color of some edge in this up-star.
 By ripeness, $v$ is the highest in $T(\rep(c))$.
 Denote the component of $\MM^+_v$ by $\PP$.
 By \Lem{full}, either all edges in $\PP$ are colored $\rep(c)$ or there exists critical vertex $w \in \PP$
-fully touched by $\rep(c)$ and another color. In the latter case, $w$ has not been processed,
+fully touched by $\rep(c)$ and touched by another color. In the latter case, $w$ has not been processed,
 so $w \in T(\rep(c))$ (contradiction to ripeness). Therefore, all edges in $\PP$ are colored $\rep(c)$.
 \end{proof}
 
@@ -1992,25 +2006,25 @@ the restriction of $\cJ(\MM)$ to these vertices.
 \end{claim}
 
 \begin{proof} More generally, we prove the following: all outputs on processed vertices
-are edges of $\cJ(\MM)$ and for any current color $c$, $\h(c)$ is the lowest processed vertex
-of that color. We prove this by induction on the processing order. The base case is trivially
+are edges of $\cJ(\MM)$ and for any representative color $c$, $\h(c)$ is the lowest processed vertex
+of that representative color. We prove this by induction on the processing order. The base case is trivially
 true, as initially the processed vertices and attachments of the color classes are the set of maxima.
 For the induction step, consider the situation
 when $v$ is being processed.
 
 Since $v$ is being processed, we know by \Cor{terminate} that it is ripe. Take any up-star of $v$, and the corresponding component $\PP$
 of $\MM^+_v$ that it connects to. By \Clm{upstar}, all edges in $\PP$ and the up-star
-have the same color (say $c$). If some critical vertex in $\PP$ is not processed,
+have the same current color, say $c$. If some critical vertex in $\PP$ is not processed,
 it must be in $T(c)$, which violates the ripeness of $v$.
 Thus, all critical vertices in $\PP$ have been processed, and so by the induction hypothesis, the restriction of $\cJ(\MM)$ to $\PP$ has been correctly computed.
-Additionally, since all critical vertices in $\PP$ have processed, they all have the same color $c$ of the lowest critical vertex in $\PP$.
+Additionally, since all critical vertices in $\PP$ have been processed, they all have the same representative color $c$ of the lowest critical vertex in $\PP$.
 Thus by the strengthened induction hypothesis, this lowest critical vertex is $\h(c)$.
 
 If there is another component of $\MM^+_v$, the same argument implies 
-the lowest critical vertex in this component is $\h(c')$ (where $c'$ is the color of edges in the respective component).
+the lowest critical vertex in this component is $\h(c')$ (where $c'$ is the current color of edges in the respective component).
 Now by the definition of $\cJ(\MM)$, the critical vertex $v$ connects to the lowest critical vertex in each component of $\MM^+_v$, 
 and so by the above $v$ should connect to $\h(c)$ and $\h(c')$, which is precisely what $v$ is connected to by $\build(\MM)$.
-Moreover, $\build$ merges the colors $c$ and $c'$ and correctly sets $v$ to be the attachment, 
+Moreover, $\build$ merges the representative colors $c$ and $c'$ and correctly sets $v$ to be the attachment, 
 as $v$ is the lowest processed vertex of this merged color (as by induction $\h(c)$ and $\h(c')$ were the lowest vertices before merging colors).
 %
 %
@@ -2099,7 +2113,7 @@ Therefore, it will be useful to set up some terminology that can
 be used consistently in both places.  Specifically, the path decomposition bounds will be purely combinatorial 
 statements on colored rooted trees, and so the terminology is of this form.
 
-Any tree $T$ considered in following will be a rooted binary tree\footnote{Note 
+Any tree $T$ considered in the following will be a rooted binary tree\footnote{Note 
 that technically the trees considered should have a leaf vertex hanging below the root  
 in order to represent the global minimum of the complex.  This vertex is 
 (safely) ignored to simplify presentation.} where the height of a vertex is its distance 
@@ -2116,7 +2130,7 @@ For a set of nodes $U$, $A(U) = \bigcup_{u \in U} A(u)$.
 \label{def:leafAssign}
  A \emph{leaf assignment} $\chi$ of a tree $T$ assigns \emph{two} distinct leaves to each internal vertex $v$,
  one from the left child and one from the right child subtree of $v$ (naturally if $v$ has only one child it is assigned 
- only one color).
+ only one leaf).
 \end{definition}
 
 For a vertex $v\in T$, we use $H_v$ to denote the \emph{heap} at $v$.
@@ -2132,18 +2146,18 @@ In words, $H_v$ is the set of ancestors of $v$ which are colored by some leaf in
 
 \begin{definition}
 \label{def:initialColoring}
-Note that the subroutine $\init(\MM)$ from \Sec{algo} naturally defines a leaf assignment to $\cJ(\MM)$ 
+The subroutine $\init(\MM)$ from \Sec{algo} naturally defines a leaf assignment to $\cJ(\MM)$ 
 according to the priority queue for each up-star we put a given vertex in.  Call this the \emph{initial coloring}
-of the vertices in $\cJ(\MM)$.  Note also that this initial coloring defines the $H_v$ values for all $v\in \cJ(\MM)$.
+of the vertices in $\cJ(\MM)$.  This initial coloring also defines the $H_v$ values for all $v\in \cJ(\MM)$.
 \end{definition}
 
-The following lemma should justify these technical definitions.
+The following lemma should justify these definitions.
 
 \begin{lemma}
 \label{lem:runTimeUpper}
 Let $\MM$ be a simplicial complex with $t$ critical points.  For every vertex in $\cJ(\MM)$, 
 let $H_v$ be defined by the initial coloring of $\MM$.
-The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \log |H_v|)$.
+The total running time of $\build(\MM)$, including the subroutine call to $\init(\MM)$ and all calls to $\update$, is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \log |H_v|)$.
 \end{lemma}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2152,7 +2166,7 @@ The running time of $\build(\MM)$ is $O(N+t\alpha(t) + \sum_{v \in \cJ(\MM)} \lo
 \begin{proof}
 First we look at the initialization procedure $\init(\MM)$.  This procedure runs in $O(N)$ time.
 Indeed, the painting procedure consists of several BFS's but as each vertex is only explored by one of the BFS's, it is linear time overall.
-Determining the critical points is a local computation on the neighborhood of each vertex as so is linear (i.e.\ each edge is viewed at most twice).
+Determining the critical points is a local computation on the neighborhood of each vertex and so is linear (i.e.\ each edge is viewed at most twice).
 Finally, each vertex is inserted into at most two heaps and so initializing the heaps takes linear time in the number of vertices.
 
 Now consider the union-find operations performed by $\build$ and $\update$.  
@@ -2179,7 +2193,7 @@ these merged queues are the queues of the current colors of $c_1$ and $c_2$.  Ag
 the only vertices left in these queues are those in $H_{c_1}$ and $H_{c_2}$. 
 
 Now when $v$ is handled, three queue operations are performed.  Specifically, $v$ is removed from the queues of $c_1$ and $c_2$, and then the queues are 
-are merged together.  By the above arguments the sizes of the queues for each of these operations are $|H_{c_1}|$, $|H_{c_2}|$, and $|H_v|$, respectively.  
+merged together.  By the above arguments the sizes of the queues for each of these operations are $|H_{c_1}|$, $|H_{c_2}|$, and $|H_v|$, respectively.  
 As merging and deleting takes logarithmic time in the heap size for binomial heaps, the claim now follows.
 \end{proof}
 }
@@ -2233,7 +2247,7 @@ Moreover, $|H_v|$ only counts vertices in a $v$ to root path and so trivially $|
 
 Note that there is fair amount of slack in this argument as $|H_v|$ may be significantly smaller than $\ell_v'$.  
 This slack allows for the more refined upper and lower bounds mentioned in \Sec{more-refined}.  Quantifying this slack however is quite challenging, 
-and requires a significantly more sophisticated analysis involving path decompositions, detailed in the full version \CiteFullVer. 
+and requires a significantly more sophisticated analysis involving path decompositions, which is provided in the next section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2264,7 +2278,7 @@ For each internal vertex $v\in T$, add the edge from $v$ to $\arg \max_{v_l, v_r
  where $v_l$ and $v_r$ are the children of $v$ (if $|H_{v_l}|=|H_{v_r}|$ then pick one arbitrarily).
 This is called the \emph{maximum} path decomposition, denoted by $\pmax(T)$.
 
-Our main goal in this section is to prove the following theorem.  We use $|p|$ to denote the number of vertices in $p$.
+Our main goal in this section is to prove the following theorem.  We use $|p|$ to denote the number of vertices in a path $p$.
 
 \begin{theorem} \label{thm:runtime} $\sum_{v \in T} \log |H_v| = O(\sum_{p\in \pmax(T)} |p| \log |p|)$.
 \end{theorem}
@@ -2276,9 +2290,10 @@ We conclude this section in \Sec{implications} by showing that proving this theo
 \subsection{Tall and short paths}
 \label{sec:shrubs}
 
-
-The paths in $\pmax(T)$ naturally define a tree\footnote{Please excuse the 
-overloading of the term 'tree', it is the most natural term to use here.} of their own.  Specifically, in the original 
+The paths in $\pmax(T)$ naturally define a tree\footnote{
+%Please excuse the overloading of the term 'tree', it is the most natural term to use here.
+The term 'tree' is the most natural term to use here, but the reader should be careful not to confuse this tree on paths from $T$ with the tree $T$ itself.
+} of their own.  Specifically, in the original 
 tree $T$ contract each path down to its root.  Call the resulting tree the \emph{shrub} of $T$ corresponding to 
 the path decomposition $\pmax(T)$. Abusing notation, we simply use $\pmax(T)$ to denote the shrub.
 As a result, we use terms like `parent', `child', `sibling', etc.\ for paths as well.
@@ -2286,38 +2301,6 @@ The shrub gives a handle on the heaps of a path.
 We use $b(p)$ to denote the \emph{base} of the path, which is the vertex in $p$ closest
 to root of $T$. We use $\ell(p)$ to denote the leaf in $p$.
 We use $H_p$ to denote $H_{b(p)}$.
-% and denote it by $\pathTree(T)$.
-
-% \begin{lemma}
-% \label{lem:adjacent}
-%  Let $p$ be any path in $\pmax(T)$ and let $\{q_1, \dots q_k\}$ be the children of $p$.
-% Then $|H_{\ell(p)}| + \sum_{i=1}^k |H_{q_i}| \leq |H_p|+2|p|$. 
-% \end{lemma}
-% 
-% \begin{proof} For convenience, denote $H_i = H_{q_i}$ and $H_0 = H_{\ell(p)}$.
-% Consider $v \in \bigcup_{i} H_i$ that lies below $b(p)$ in $T$. 
-% Note that such a vertex has only one of its two colors in $L(b(p))$.  
-% Since the colors tracked by $H_i$ and $H_j$ for $i\neq j$ are disjoint, 
-% such a vertex can appear in only one of the $H_i$'s.
-% On the other hand, a vertex $u\in p$ can appear in more than one $H_i$, 
-% but since any vertex has exactly two colors it can appear in at most two 
-% such heaps.  Hence, $\sum_i |H_i| \leq |H_p| + 2|p|$.
-% \ignore{
-%  First observe that for all $i$, $r_{i}$ lies above $r_p$ on some root to leaf path. 
-%  Let $H_i'$ be the subset of $H_i$ that lies below $r_p$.  Observe that $H_i'\subseteq H_p$, as $L(T_{r_i})\subseteq L(T_{r_p})$.
-%   
-%  Now for any $i\neq j$, $H_i \cap H_j = \emptyset$, as $r_{i}$ and $r_{j}$ are not on the same root to leaf path (i.e.\ $L(T_{r_i}) \cap L(T_{r_j}) = \emptyset$).
-%  In particular, $(H_i\setminus H_i') \cap (H_j \setminus H_j') = \emptyset$, and so $\sum_{i=0}^k |H_i\setminus H_i'| \leq |p|$ 
-%  as $H_i\setminus H_i'$ is precisely the subset of $H_i$ that lies on $p$.
-%  Moreover, for any $i\neq j$, $ H_i' \cap H_j' = \emptyset$, and so since $H_i'\subseteq H_p$ we have $\sum_{i=0}^k |H_i'|\leq |H_p|$.
-%  Putting these together gives
-%  \[
-%   \sum_{i=0}^k |H_i| = \sum_{i=0}^k |H_i'| + \sum_{i=0}^k |H_i\setminus H_i'| \leq |H_p|+|p|.
-%  \]
-% }
-% \end{proof}
-
-
 
 We wish to prove $\sum_{v\in T} \log |H_v| = O(\sum_{p\in \pmax} |p| \log |p|)$. 
 The simplest approach is to prove $\forall p\in \pmax$, $\sum_{v\in p} \log |H_v|= O(|p|\log|p|)$.
@@ -2327,58 +2310,29 @@ This is unfortunately not true, which is why we divide paths into two categories
  For $p\in \pmax(T)$, $p$ is \emph{short} if $|p| < \sqrt{|H_{p}|}/100$, and \emph{tall} otherwise.
 \end{definition}
 
-\ignore{
-\begin{observation}
-\label{obs:decrease}
- Let $v$ be a vertex in $T$ and let $w$ be its parent.  Then $|H_w| \geq |H_v| -1$, as $L(T_v) \subseteq L(T_w)$ and the path from 
- $w$ to the root has one less vertex than the path from $v$ to the root.
- In particular, we have the following more general property.
- Let $v$ and $u$ be any two vertices in the same root to leaf path of $T$, such that $v$ is a descendant of $u$.  
- Then $|H_v| \leq |H_u| + d(u,v)$. 
-\end{observation}
-
-The following can be thought of as a generalization of the above observation, and will be useful in later sections.
-}
-
-
-
 The following lemma demonstrates that tall paths can ``pay'' for themselves.
 
 \begin{lemma}
 \label{lem:pathBounds} If $p$ is tall, $\sum_{v\in p} \log |H_v| = O(|p| \log |p|)$.
 If $p$ is short, $\sum_{v\in p} \log |H_v| = O(|H_p| \log |H_p|)$.
 \end{lemma}
-\begin{proof} \ignore{
- By $\Obs{decrease}$ we know that for any vertex $v\in p$, $|H_v|\leq |H_{p}| + |p|$ (as $v$ is a descendant of $r_p$ along $p$).
-}
+\begin{proof}
 For $v \in p$, $|H_v|\leq |H_{p}| + |p|$ (as $v$ is a descendant of $b(p)$ along $p$).
 Hence, $\sum_{v\in p} \log |H_v| \leq \sum_{v\in p} \log(|H_{p}| + |p|)  = |p| \log (|H_{p}| + |p|)$.
  If $p$ is a tall path, then $|p| \log (|H_{p}| + |p|) = O(|p| \log |p|)$. If $p$ is short, then 
  $|p| \log (|H_{p}| + |p|) = O(|p| \log |H_{p}| )$. For short paths, $|p| = O(|H_p|)$.
 \end{proof}
 
-\ignore{
-For a short path $p$ we can think of the quantity $|p|(\log |H_p| - \log |p|)$ as the excess of $p$, i.e.\ what was not ``paid for'' locally by $p$.
-Our eventual goal will be to show that by choosing the right path decomposition, this excess 
-can be recharged to tall paths. In the next couple sections we introduce the appropriate path decomposition and prove 
-some useful facts about it.  Then given these facts, in \Sec{} we are able to make the recharging argument.
-}
-
 There are some short paths that we can also ``pay" for.  Consider any short path $p$ in the shrub.  We will refer to the 
 \emph{tall support chain} of $p$ as the tall ancestors of $p$ in the shrub which have a path to $p$ which does not use any 
-short path (i.e.\ it is a chain of paths adjacent to $p$).
+short path (i.e.\ it is a chain of tall paths adjacent to $p$).
 
 \begin{definition} \label{def:support} A short path $p$ is \emph{supported} if
 at least $|H_p|/100$ vertices $v$ in $H_p$ lie in paths in the tall support chain of $p$.
-%
-%
-% there exists
-%a contiguous (from $p$) chain of ancestors $q_1, q_2, \ldots, q_k$ (in $P(T)$) such that $|H_{q_k}| \leq 99|H_p|/100$
-%and all $q_i$'s are tall.
 \end{definition}
 
 Let $\cL$ be the set of short paths, $\cL'$ be the set of supported short paths, and $\cH$ be the set of tall paths
-given by $\pmax(T)$ (notation which we be used for the remainder of this section).  
+given by $\pmax(T)$ (notation which will be used for the remainder of this section).  
 
 \begin{claim} \label{clm:above} 
 $\sum_{p \in \cL'} |H_p| \log |H_p| = O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
@@ -2417,8 +2371,6 @@ Hence, we can bound it by $O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
   = O\left(\sum_{p \in \cH} \sum_{v \in p} \log |H_v|\right)
   = O\left(\sum_{p\in \pmax} |p|\log |p|\right)
  \end{align*}
-%
-% By \Lem{pathBounds}, $\sum_{p \in \cL'} \sum_{v \in p} \log |H_v|$
 \end{proof}
 
 
@@ -2521,7 +2473,7 @@ Furthermore, no subtree of $\cU'$ is buffered.
 \begin{proof} Take any reverse topological order of the nodes in $\cU$
 (so descendants occur before ancestors). Initialize $\cU'$ to $\cU$.
 We process the nodes in order. For node $p$, let $\cU'_p$ denote the rooted
-subtree of $p$ in $\cU'$. We simply check if $\sum_{q \in \cU'_p} |\loss(p)| \geq \sum_{q \in \cU'_p} |q|/100$. If so, we prune off $\cU'_p$, unless $p$ is the root. 
+subtree of $p$ in $\cU'$. We simply check if $\sum_{q \in \cU'_p} |\loss(q)| \geq \sum_{q \in \cU'_p} |q|/100$. If so, we prune off $\cU'_p$, unless $p$ is the root. 
 (Note that $\cU'$ is redefined
 to be the remainder.)
 
@@ -2535,7 +2487,7 @@ We prove an important lemma. The cost of heap operations corresponding
 to a buffered sub-shrub can be charged to tall support chains.
 
 \begin{lemma} \label{lem:buff}
- Let $\buff$ be a buffered sub-shrub.  Then $\sum_{p\in \buff}\sum_{v\in p} \log |H_v| = O(\sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| )$
+ Let $\buff$ be a buffered sub-shrub.  Then $\sum_{p\in \buff}\sum_{w\in p} \log |H_w| = O(\sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| )$
 \end{lemma}
 \begin{proof} The proof is done by a charging argument. For every $p \in \buff$
 and $v \in \loss(p)$, we create 100 tokens. Each of these tokens is labeled $\log |H_v|$,
@@ -2565,13 +2517,14 @@ Suppose the contrary, so $T_r$ is used up. By the previous paragraph,
 all tokens are used up. But this implies that $\sum_{p \in \buff} |p| \geq |\bigcup_{p \in \buff} T_p|$
 $ = 100\sum_{p \in \buff} |\loss(p)|$, violating the buffered condition.
 
-Since $T_r$ is not used up, it must mean that all $p$s are full. Consider any $p$,
-and let $K_p$ be the set of tokens placed at $p$. Each token is labeled $\log |H_v|$,
-for some $v \in \loss(\hat{p})$, for some ancestor $\hat{p}$ of $p$. By \Cor{geometric},
+Since $T_r$ is not used up, it must mean that all $p$'s are full, as $r$ is the root and so $T_r$ tokens can be placed on any path which is not full. 
+Consider any $p$, and let $K_p$ be the set of tokens placed at $p$. Each token is labeled $\log |H_v|$,
+for some $v \in \loss(\hat{p})$, where $\hat{p}$ is an ancestor of $p$ or $p$ itself (as descendants do not place tokens on ancestors). By \Cor{geometric},
 for every $w \in p$, $\log |H_w| = O(\log |H_v|)$. Because $p$ is full,
 there are exactly $|p|$ tokens on $p$. Thus, $\sum_{w \in p} \log |H_w|$
-is $O(V_p)$, where $V_p$ is the sum of token values in $K_p$. We sum
-over all $p$ to complete the proof.
+is $O(V_p)$, where $V_p$ is the sum of token values in $K_p$. 
+Thus summing over all $p$ in $\buff$ completes the proof. 
+Specifically, $\sum_{p\in \buff} \sum_{w \in p} \log |H_w| = O(\sum_{p\in \buff} V_p) = O(\sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| )$
 
 % \textcolor{red}{\huge Proof missing. Potentially useful observations below}
 %  
@@ -2601,7 +2554,7 @@ and hence only one such path can count $v$ in $\loss(\cdot)$.
 
 \begin{corollary}\label{cor:disjointBuff}
  Let $B= \{\buff_1, \ldots, \buff_k\}$ be any collection of disjoint buffered sub-shrubs from $\cF$. Then, 
- $\sum_{i=1}^k \sum_{p\in \buff_i}\sum_{v\in p} |H_v| = O(\sum_{p\in \cH}\sum_{v\in p} \log |H_v| )$.
+ $\sum_{i=1}^k \sum_{p\in \buff_i}\sum_{v\in p} \log |H_v| = O(\sum_{p\in \cH}\sum_{v\in p} \log |H_v| )$.
 \end{corollary}
 
 
@@ -2667,7 +2620,7 @@ There is a factor $2$ because each vertex appears in at most $2$ heaps.
 
 It is evident that $|H_p| \leq \sum_{q \in \pruned_p} \alpha_q = A_p$.
 Note that $|H_p| \geq A_p - 2\sum_{q \in \pruned_p, q \neq p} |\lambda(q)|$ $-2\sum_{q \in \pruned_p} |q|$.
-Crucially, since $\pruned$ is buffer-pruned, $\sum_{q \in \pruned_p, q \neq p} |\lambda(p)|
+Crucially, since $\pruned$ is buffer-pruned, $\sum_{q \in \pruned_p, q \neq p} |\lambda(q)|
 \leq \sum_{q \in \pruned_p, q \neq p} |q|/100$ $\leq \sum_{q \in \pruned_p} |q|/100$. This completes the proof.
 \end{proof}
 
@@ -2692,12 +2645,12 @@ denoted $a_0, a_1, a_2, \ldots, a_k$, contributes to the charge at $q$. The char
 equation. We use the assumption that $A_{a_i} \geq (5/4) A_{a_{i-1}}$ and hence $A_{a_i} \geq (5/4)^i A_{a_0} \geq (5/4)^i$, 
 as $a_0$ is an unsupported short path and hence $A_{a_0}\geq 1$. 
 $$ ({\alpha_q}/99)\sum_{a_i} 1/\sqrt{A_{a_i}} \leq ({\alpha_q}/99)\sum_{a_i} (4/5)^{i/2} \leq \alpha_q/20 $$
-The total charge is $\sum_{q \in \pruned_p} \alpha_p/20 = A_p/20$. 
+The total charge is $\sum_{q \in \pruned_p} \alpha_qt/20 = A_p/20$. 
 \end{proof}
 
 \begin{claim} \label{clm:exp-A} Fix any path $p \in \pruned \setminus r$.
-For any $q, q' \in \pruned_p$ where $q$
-is a parent of $q'$, $A_q \geq (5/4)A_{q'}$.
+%For any $q, q' \in \pruned_p$ where $q$ is a parent of $q'$, $A_q \geq (5/4)A_{q'}$.
+Let $q$ be any path in $\pruned_p$, then for any child path $q'$ of $q$ it holds that $A_q \geq (5/4)A_{q'}$
 \end{claim}
 
 \begin{proof} We prove this by induction over the depth of $q$.
@@ -2978,7 +2931,7 @@ Remark~\ref{rem:joinAndCriticalJoin} implies that $\jc(\MM_i)$ is trivially obta
 (where $t_i$ and $N_i$ are the number of critical points and faces when restricted to $\MM_i$).
 
 At this point we can now see what the path decomposition referenced in theorem statement should be.  It is just the union of all the maximum 
-path decomposition across the extremum dominant pieces, $\pmax(\cC(\MM)) = \cup_{i=1}^k \pmax(\cJ(\MM_i))$.
+path decompositions across the extremum dominant pieces, $\pmax(\cC(\MM)) = \cup_{i=1}^k \pmax(\cJ(\MM_i))$.
 Since all procedures besides computing the join trees take linear time in the size of the input complex, we can therefore 
 compute the contour tree in time
 \InSoCGVer{
@@ -3066,27 +3019,24 @@ be labeled with the corresponding vertices of the terrain.
 \begin{lemma}
 \label{lem:pathDecomp}
 Fix any path decomposition $P$. There is a family of terrains, $\bF_P$, all with the same triangulation, 
-such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ define the same join tree.
+such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ define the same labeled join tree.
 \end{lemma}
 
 
 \begin{proof}
-% We describe a simple triangulation, with heights specified for all vertices except for the saddles.  
- 
-%The main idea is that 
-% this triangulation will be flexible enough to allow almost any assignment of heights to the saddles, thus defining a class of join trees 
-% whose size is that described in the lemma statement. 
  We describe the basic building block of these terrains, which corresponds to a fixed path $p\in P$.  
  Informally, a \emph{tent} is an upside down cone with $m$ triangular faces (see \Fig{diamond}). 
  Construct a slightly tilted cycle 
  of length $m$ with the two antipodal points at heights $1$ and $0$. These are called the anchor and trap of the tent, respectively.
  The remaining $m-2$ vertices are evenly spread around the cycle and heights decrease monotonically when going from the anchor to the trap.
  Next, create an apex vertex at some appropriately large height, and add an edge to each vertex in the cycle. 
-
+ Note that in order to obtain a terrain, a cycle here means the vertices lie on a circle 
+ but are connected with straight line segments rather than by the curved edges of the circle.
 
  Now we describe how to attach two different tents.  In this process, we glue the base of a scaled down ``child'' tent on to a triangular cone face of the larger  ``parent'' tent (see \Fig{diamond}).
  Specifically, the anchor of the child tent is attached directly to a face of the parent tent at some height $h$. The remainder of the base of the child cone is then 
  extended down (at a slight angle) until it hits the face of the parent.
+ Note that this gluing process introduces some non-triangular faces, and so these must be triangulated in order to maintain a proper triangulated terrain.
  
  The full terrain is obtained by repeatedly gluing tents. For each path $p_i\in P$, we create a tent of size $|p_i|+1$.
  The two faces adjacent to the anchor are always empty, and the remaining faces are for gluing on other tents.
@@ -3110,12 +3060,8 @@ such that $|\bF_P| = \Pi_{p_i\in P} (|p_i|-1)!$, and no two terrains in $\bF_P$ 
  So, any permutation of the heights on a given tent corresponds to a permutation of the vertices along a path in $P$.
 \end{proof}
 
-Two path decompositions $P_1$ and $P_2$ (of potentially different complexes and/or height functions) are equivalent 
-if: there is a 1-1 correspondence between the sizes of the constituent paths, and the shrubs are isomorphic.
-%
-%
-%if their respective shrubs, $S_1$ and $S_2$, which has the property that for any node $v\in S_1$ corresponding to a path of 
-%size $|v|$, $f(v)$ also corresponds to a path of size $|v|$. Note that for equivalent decompositions, $\sum_{p\in P_1} |p|\log|p| = \sum_{p\in P_2} |p|\log|p|$.
+% Two path decompositions $P_1$ and $P_2$ (of potentially different complexes and/or height functions) are equivalent 
+% if: there is a 1-1 correspondence between the sizes of the constituent paths, and the shrubs are isomorphic.
 
 \begin{lemma}
 \label{lem:cost}
