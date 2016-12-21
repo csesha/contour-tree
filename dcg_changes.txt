@@ -74,26 +74,25 @@ More specific comments
 * P8 last line: “all incident edges” should be those with v as a lower vertex.
 --->Rewrote sentece to include this change
 * P9 example: when blue merges with other colors it is not blue anymore.
-++++Not sure what the issue is here.  When red/blue merge we first describe them as mixing to create a new color purple, to ilustrate the intuition that this really acts as a new maximum.  However, this repainting is not actually done as it is too expensive. An extra sentence was added for clarity after the reference to union-find: "So the red and blue mounds are not actually recolored purple, and instead say red now points to blue in the union find data structure."
-
+--->When red/blue merge we first describe them as mixing to create a new color purple, to ilustrate the intuition that this really acts as a new maximum.  However, this repainting is not actually done as it is too expensive. An extra sentence was added for clarity after the reference to union-find: "So the red and blue mounds are not actually recolored purple, and instead say red now points to blue in the union find data structure."
 * P9 last line before subsection: “all edges” should be all incident from above.
 --->Changed
 * P10 par2: “it will merge into …” the saddle does not merge.
 --->Rewrote the senetence
 * P10 last par: it is much easier globally to identify all the vertices of the cut contour in the complex, hence replacing them with one vertex.
-???? We know joining all together is a bad idea, but maybe something else is being said here?
+++++We are not sure exactly what is meant by "replacing them with one vertex". The current phrasing is used as naively introducing a new vertex could cause a number of issues we wish to avoid. 
 
 * P12 Def 5.1: the definition is for a simplicial complex and a given map.
-????The simplicial complexes is the lifted R^{d+1} complex and so includes the map.
+--->Added "with a height function"
 
 * P12 Claim 5.3: each non-empty component
-???? How can a component be empty?
+--->Added "non-empty".
 
 * P13 line (b) in algorithm rain: “maximum” is not correct since it can be a “minimum” as well.
-???? Shouldn't it always be a maximum?
+---> It is always a maximum, as we always reorient so that rain is done from a maximum. This is stated explicitly in line (b) of rain, and discussed in the paragraph before rain.
 
 * P14 proof of Lemma 5.5: the same issue as previous comment.
-???? Again it should be just maxima here.  However, the final sentence did require a rewrite for another reason.
+--->See the response to the previous comment.
 
 * P16 the first line of proof of 6.4 seems to have problems.
 --->Agreed that sentence has issues as stated.  It was removed as it is not needed for the proof. 
@@ -331,7 +330,7 @@ in the full version [RS14].”
 
 p. 22-27: Theorem 8.1, Lemmas 8.3, 8.12 and 8.14, Claim 8.5 and 8.18, Corol-
 laries 8.6, 8.12, and 8.13 : “= O(...).”
-***O(...) is a set. This should be “∈ O(...).”
+****O(...) is a set. This should be “∈ O(...).”
 ???? We agree it is an abuse of notation, but it is the standard usage within the algorithms community.  
 See for example chapter 3.1 of "Introduction to Algorithms" by Cormen Leiserson Rivest and Stein (the standard algorithms textbook).
 Thus we prefer to keep this notation.
