@@ -35,6 +35,7 @@
 \usepackage{xspace}
 \usepackage{prettyref}
 %\usepackage[dvipsnames,usenames]{color}
+\usepackage{caption}
 \usepackage{color}
 \usepackage{graphics}
 %\usepackage[pagebackref,colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=BrickRed,pdfstartview=FitH]{hyperref}
@@ -265,8 +266,9 @@
       Department of Computer Science; %
       University of Texas at Dallas; %
       Richardson, TX, 75080, USA; %
-      \texttt{\si{benjamin.raichel}@\si{utdallas}.\si{edu}} %
-  }
+      \texttt{\si{benjamin.raichel}@\si{utdallas}.\si{edu}}.
+  The work was done when this author was an intern
+  at Sandia National Laboratories, Livermore.}
   \and
   C. Seshadhri\thanks{%
         Department of Computer Science; %
@@ -279,7 +281,7 @@
 \title{%A Mountaintop View Requires Minimal Sorting:
 Avoiding the Global Sort: 
 \break A Faster Contour Tree Algorithm%
-\footnote{The full updated version of this paper is available on the arXiv \cite{rs-mvrms-14}}%
+% \footnote{The full updated version of this paper is available on the arXiv \cite{rs-mvrms-14}}%
 }
 \date{}
 
@@ -325,13 +327,14 @@ with the last coordinate (i.e.\ height) given by $f$. Imagine sweeping the hyper
 with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection of this plane 
 with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
 proceeds various events occur: new contours are created or destroyed, contours merge into each other or
-split into new components, contours acquire or lose handles. 
-The contour tree is a concise representation of all these events.
+split into new components. 
+The contour tree is a concise representation of these events.
 Throughout we follow the definition of contour trees from \cite{kobps-ctsssit-97} which includes all changes in topology.  
 For $d>2$, some subsequent works, such as \cite{csa-cctad-03}, only include changes in the number of components.
 
 If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
-These points are the ``events" where the contour topology changes and form the vertices of the contour tree. 
+These points are the ``events" where the contour topology changes and form the vertices of the contour tree. (This is formally incorrect,
+but gives the right intuition.)
 An edge of the contour tree connects two critical points if one event immediately ``follows"
 the other as the sweep plane makes its pass. We provide formal definitions later. 
 \Fig{relative} and \Fig{sorting} 
@@ -347,8 +350,9 @@ and internal nodes are either ``joins" or ``splits".
 % For example, these could be events where contours gain or lose handles.
 
 Consider $f: \MM \to \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points. 
-(We assume that $f:\MM \to \RR$ a linear interpolant over distinct valued vertices, where the contour tree
-$T$ has maximum degree $3$. The degree assumption simplifies the presentation, and is commonly made~\cite{kobps-ctsssit-97}.)
+(We assume that $f:\MM \to \RR$ a linear interpolant over distinct valued vertices, with Morse degree at most $3$. We define this formally 
+later, but it suffices to think of this as a general position assumption.
+The degree assumption is standard in this literature~\cite{kobps-ctsssit-97}.)
 % \Ben{It is standard to assume that $f$ has distinct values on the vertices of $\MM$ and the value at interior points is linearly interpolated.}
 %It is standard to assume that $f$ is PL-Morse (a well-behaved input assumption) and that the maximum degree in the contour tree is $3$. 
 A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
@@ -404,7 +408,9 @@ the contour tree as directed from top to bottom. For any node $v$ in the tree, l
 longest directed path passing through $v$. 
 
 \begin{theorem} \label{thm:main-corr} Consider a simplicial complex $f:\MM \to \RR$, described as above, and denote
-the contour tree by $T$ with vertex set (the critical points) $C(T)$. There exists an algorithm to compute $T$
+the contour tree by $T$ with vertex set (the critical points) $C(T)$. 
+Let the Morse degree of $f$ at any point be at most $3$.
+There exists an algorithm to compute $T$
 in $O(\sum_{v \in C(T)} \log \ell_v + t\alpha(t) + N)$ time. Moreover, this algorithm only
 compares function values at pairs of vertices that are ancestor-descendant in $T$ or adjacent in $\MM$.
 \end{theorem}
@@ -513,7 +519,7 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 We detail the basic definitions about contour trees, following the terminology of Chapter 6 of Carr's thesis \cite{c-tmi-04}.
 All our assumptions and definitions
 are standard for results in this area, though there is some variability in notation.
-The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex in $\RR^d$,
+The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex of a ball in $\RR^d$,
 except for specially designated \emph{boundary facets}. We assume that all vertices of $\MM$ have distinct function values, 
 and that $f$ is only explicitly defined on the vertices, and all other values are obtained by linear interpolation. 
 
@@ -543,7 +549,8 @@ A \emph{contour} is a connected component of a level set. An \emph{$h$-contour} 
 Note that a contour that does not contain a boundary is itself a simplicial complex of one dimension lower, and is represented (in our algorithms) as such.
 We let $\delta$ and $\eps$ denote infinitesimals. Let $B_\eps(x)$ denote a ball of radius $\eps$ around $x$, and let 
 $f|B_\eps(x)$ be the restriction of $f$ to $B_\eps(x)$.
-
+The following definition of a critical point is not standard,
+but is convenient for our presentation.
 
 \begin{definition} \label{def:deg} The \emph{Morse up-degree} of $x$ is the number of $(f(x) + \delta)$-contours of $f|B_\eps(x)$
 as $\delta, \eps \rightarrow 0^+$. The \emph{Morse down-degree} is the number of $(f(x) - \delta)$-contours of $f|B_\eps(x)$
@@ -574,7 +581,8 @@ Because $f$ is piecewise-linear, all critical points are vertices in $\MM$.
 A value $h$ is called \emph{critical}, if $f(v) = h$, for some $v \in \cV(f)$. 
 A contour is called \emph{critical}, if it contains a critical point, and it is called \emph{regular} otherwise.
 
-The critical points are exactly where the topology of level sets change.
+The critical points are where certain topological properties
+ of level sets change.
 By assuming that our simplicial complex is boundary critical, the vertices on a given boundary are either collectively all maxima or all minima.  
 We abuse notation and refer to this entire set of vertices as a maximum or minimum.
 
@@ -602,6 +610,26 @@ It is not immediately obvious that this graph is a tree, but alternative definit
 in~\cite{csa-cctad-03} imply this is a tree. 
 Since this tree has height values associated with the vertices, we can talk about up-degrees and down-degrees in $\reeb(\MM)$.
 %
+
+We assume that the Morse up (or down) degree of any point
+in $\MM$ is at most $2$, and that the total Morse degree
+is at most $3$. This immediately implies analogous bounds
+on the up and down-degrees in $\reeb(\MM)$. This
+is standard in the literature
+among others, though it can be challenging to enforce in 
+practice. Theoretically, a manifold with points of higher Morse degree
+can be converted to one with the degree condition through
+a process of \emph{vertex unfolding} (refer to
+Section 6.3 in~\cite{HaEd10}). This effectively converts
+a multi-saddle to a set of ordinary saddles.
+A detailed discussion is provided in the end
+of Section 2 and beginning of Section 3 in~\cite{BaKr+98}.
+ For 2D manifolds,
+this conversion does not increase the surface complexity.
+In higher dimensions, the unfolding can increase complexity if
+$\MM$ has vertices of non-constant degree.
+
+
 Similar to \cite{kobps-ctsssit-97} (among others), multi-saddles are treated as a set of ordinary saddles, which can be realized 
 via vertex unfolding (which can increase surface complexity if multi-saddle degrees are allowed to be super-constant).
 Therefore, to simplify the presentation, for the remainder of the paper up and down-degrees are at most $2$, and total degree is at most $3$.
@@ -620,7 +648,6 @@ Alternatively, one can define the up-degree (as opposed to \emph{Morse} up-degre
 that intersect $B_\eps(x)$, a potentially smaller number. This up-degree
 is exactly the up-degree of $x$ in $\reeb(\MM)$. (Analogously, for down-degree.)
 When the Morse up-degree is $2$ but the up-degree is $1$, the topology of the level set changes but not by the number of connected components changing.
-For example, when $d=3$ this is equivalent to the contour gaining a handle.
 When $d=2$, this distinction is not necessary, since any point with Morse degree strictly greater than $1$ will have degree strictly greater than $1$ in $\reeb(\MM)$.
 
 As Carr points out in Chapter 6 of his thesis, the term contour tree can be used for a family of related structures.
@@ -630,8 +657,8 @@ to as augmenting the contour tree, and it is common to augment $\reeb(\MM)$ with
 Alternatively, one can smooth out all vertices of up-degree and down-degree $1$ to get the
 unaugmented contour tree. (For $d=2$, there are no such vertices in $\reeb(\MM)$.) 
 The contour tree of \Def{tree} is the typical definition in all results on output-sensitive
-contour trees, and is the smallest tree that contains all the topological changes
-of level sets. \Thm{main-alg} is applicable for any augmentation of $\reeb(\MM)$ with a predefined
+contour trees.
+\Thm{main-alg} is applicable for any augmentation of $\reeb(\MM)$ with a predefined
 set of vertices, though we will not delve into these aspects in this paper.
 
 
@@ -1278,7 +1305,9 @@ An \emph{initial} painting also requires that the restriction $\chi:X \to [|X|]$
 
 \begin{definition} \label{def:color-set} Fix a painting $\chi$ and vertex $v$.
 \begin{asparaitem}
-	 \item An \emph{up-star} of $v$ is the set of edges that all connected to a fixed component of $\MM^+_v$.
+	 \item For every maximal connected component $Y$
+     of $\MM^+_v$, the set of all edges connecting $v$ to $Y$
+     is called an \emph{up-star}.
 	 \item A vertex $v$ is \emph{touched by color $c$} if $v$ is incident to a $c$-colored
 	 edge with $v$ at the lower endpoint. For $v$, $\col(v)$ is the set of colors that touch $v$.
 	 \item A color $c \in \col(v)$ \emph{fully touches} $v$ if all edges in an up-star are colored $c$.
@@ -1286,8 +1315,42 @@ An \emph{initial} painting also requires that the restriction $\chi:X \to [|X|]$
 \end{asparaitem}
 \end{definition}
 
+\subsection{The algorithm} \label{sec:algo}
 
-\subsection{The data structures} \label{sec:struct}
+We first give an informal description of the algorithm.
+
+\medskip
+
+\begin{compactenum}
+    \item Construct a painting of $\MM$ by a descending BFS 
+    from maxima. This partitions the edges (into various colored
+    sets), and each vertex is incident to at most $2$ colors.
+    \item For each color, construct a (binomial) max-heap
+    indexed by height of all critical points touched by that color.
+    \item Repeat until all heaps are empty:
+    \begin{compactenum}
+        \item Find a critical point $w$ that is at the top
+        of all heaps containing $w$.
+        \item Add $w$ to the join tree. 
+        \item Delete $w$ from all these heaps, and merge them.
+    \end{compactenum}
+\end{compactenum}
+
+\medskip
+
+\noindent
+This motivates the definition of \emph{ripe} vertices.
+
+\begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \col(v)$, $v$
+is present in $T(\rep(c))$ and is also the highest vertex in this heap. 
+%Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(\rep(c))$ is empty.
+\end{definition} 
+
+For a fast running time, we need to find ripe vertices
+quickly. Thus, the formal algorithm requires a 
+number of data structures, described below. 
+
+\subsubsection{The data structures} \label{sec:struct}
 \noindent
 {\bf The binomial heaps $\touch(c)$:} For each color $c$, $\touch(c)$ is a subset of vertices touched by $c$,
 This is stored as a \emph{binomial max-heap} keyed by vertex heights. Abusing notation, $\touch(c)$ refers
@@ -1334,16 +1397,11 @@ the following invariants.
 We will maintain the guarantee that the portion of the join tree above (and including) $\h(c)$ has already been constructed.
 %This is initialized to the maximum corresponding to $c$.
 
-\subsection{The algorithm} \label{sec:algo}
+\subsubsection{The formal algorithm} \label{sec:algorithm}
 
-We formally describe the algorithm below. 
-We require the following definition of \emph{ripe} vertices.
-
-
-\begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \col(v)$, $v$
-is present in $T(\rep(c))$ and is also the highest vertex in this heap. 
-%Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(\rep(c))$ is empty.
-\end{definition} 
+We now give a detailed description of the main algorithm.
+The primary challenge to use the data structures to rapidly find
+ripe vertices.
 
 \smallskip
 \fbox{
@@ -1402,14 +1460,17 @@ is present in $T(\rep(c))$ and is also the highest vertex in this heap.
 		\item Push the highest of $T(\rep(c))$ onto $\stack$, and update head $h$.
 	\end{compactenum}
 \end{compactenum}
-\end{minipage}}
+\end{minipage}
+}
 
 \bigskip
 
 A few simple facts:
 \begin{compactitem}
 	\item At all times, the colors form a valid painting.
-	\item Each vertex is present in at most $2$ heaps. After processing, it is removed from all heaps.
+	\item Each vertex is present in at most $2$ heaps. This is
+    because the Morse up-degree of every point is at most $2$.
+    After processing, it is removed from all heaps.
 	\item After $v$ is processed, all edges incident to $v$ from above have the same (representative) color. %(more technically, the same representative). 
 %	\item When $\update(\stack)$ terminates, the head $h$ is ripe. 
 	\item Vertices on the stack are in increasing height order. 
@@ -1725,6 +1786,12 @@ reduce computing the contour tree to computing the join tree, as discussed in \S
 Specifically, in this section we first describe our basic cutting tool, which we call contour surgery.
 In \Sec{rain} we then describe how we use this tool to cut the surface into so called extremum dominant pieces 
 where computing the contour tree reduces to computing the join tree, and this equivalence is proven in \Sec{extreme}. 
+The pieces were create are technically not simplicial complices,
+in that each piece may have facets that not simplices. We may
+create facets of larger size than the dimension. These can
+easily be completeed into simplicial complices, though we do not
+explicitly need this. For ease of exposition, we do not explicitly
+perform this step in our algorithm.
 
 {\bf The cutting operation:} We define a ``cut" operation on $f:\MM \rightarrow \RR$ that cuts along a regular contour to create
 a new simplicial complex with an added boundary. Given a contour $\phi$, roughly speaking, this constructs the simplicial complex $\MM \setminus \phi$. 
@@ -2209,8 +2276,9 @@ We adopt all notation already defined in \Sec{runTime}.  From here forward we wi
 (this assumption simplifies the presentation but is not necessary).
 
 Let $\chi$ be some fixed leaf assignment to a rooted binary tree $T$, which in turn fixes all the heaps $H_v$. 
-We choose a special path decomposition that is best defined as a subset of edges in $T$ such that each internal
-vertex has degree at most $2$. This naturally gives a path decomposition.
+We partition the edges of $T$ into a \emph{path decomposition}, where each set of the partition (a path) 
+is a subset of edges in $T$ with each internal
+vertex of degree at most $2$. This naturally gives a path decomposition.
 For each internal vertex $v\in T$, add the edge from $v$ to $\arg \max_{v_l, v_r} \{|H_{v_l}|, |H_{v_r}|\}$ 
  where $v_l$ and $v_r$ are the children of $v$ (if $|H_{v_l}|=|H_{v_r}|$ then pick one arbitrarily).
 This is called the \emph{maximum} path decomposition, denoted by $\pmax(T)$.
@@ -2825,7 +2893,7 @@ tree algorithms in terms of path decompositions.
 
 \begin{theorem}
 %Consider a PL-Morse $f:\MM \to \RR$, where the join tree $\cJ(\MM)$ has maximum degree $3$.
-Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the join tree $\cJ(\MM)$ has maximum degree $3$.
+Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the Morse degree of any point is at most $3$.
 There is an algorithm to compute the join tree whose running time is $O(\sum_{p \in \pmax(\cJ)} |p|\log |p| + t\alpha(t) + N)$.
 \end{theorem}
 \begin{proof}
@@ -2839,7 +2907,7 @@ This result for join trees easily implies our main result, \Thm{main-alg}, which
 
 \begin{theorem}
 %Consider a PL-Morse $f:\MM \to \RR$, where the contour tree $\cC=\cC(\MM)$ has maximum degree $3$. 
-Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the contour tree $\cC=\cC(\MM)$ has maximum degree $3$. 
+Let $f:\MM \to \RR$ be the linear interpolant over distinct valued vertices, where the Morse degree of any point is at most $3$. 
 There is an algorithm to compute $\cC$ whose running time is $O(\sum_{p \in P(\cC)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(\cC)$ is a specific path decomposition (constructed implicitly by the algorithm).
 \end{theorem}
