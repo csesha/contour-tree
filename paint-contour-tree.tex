@@ -333,8 +333,8 @@ Throughout we follow the definition of contour trees from \cite{kobps-ctsssit-97
 For $d>2$, some subsequent works, such as \cite{csa-cctad-03}, only include changes in the number of components.
 
 If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
-These points are the ``events" where the contour topology changes and form the vertices of the contour tree. (This is formally incorrect,
-but gives the right intuition.)
+These points are the ``events" where the contour topology changes and form the vertices of the contour tree. 
+(This is formally incorrect, but gives the right intuition.)
 An edge of the contour tree connects two critical points if one event immediately ``follows"
 the other as the sweep plane makes its pass. We provide formal definitions later. 
 \Fig{relative} and \Fig{sorting} 
@@ -1305,9 +1305,9 @@ An \emph{initial} painting also requires that the restriction $\chi:X \to [|X|]$
 
 \begin{definition} \label{def:color-set} Fix a painting $\chi$ and vertex $v$.
 \begin{asparaitem}
-	 \item For every maximal connected component $Y$
+	 \item For each maximal connected component $Y$
      of $\MM^+_v$, the set of all edges connecting $v$ to $Y$
-     is called an \emph{up-star}.
+     is called an \emph{up-star}. (Note $v$ has at most two up-stars, as Morse up-degree is at most 2 by assumption.)
 	 \item A vertex $v$ is \emph{touched by color $c$} if $v$ is incident to a $c$-colored
 	 edge with $v$ at the lower endpoint. For $v$, $\col(v)$ is the set of colors that touch $v$.
 	 \item A color $c \in \col(v)$ \emph{fully touches} $v$ if all edges in an up-star are colored $c$.
@@ -1786,11 +1786,11 @@ reduce computing the contour tree to computing the join tree, as discussed in \S
 Specifically, in this section we first describe our basic cutting tool, which we call contour surgery.
 In \Sec{rain} we then describe how we use this tool to cut the surface into so called extremum dominant pieces 
 where computing the contour tree reduces to computing the join tree, and this equivalence is proven in \Sec{extreme}. 
-The pieces were create are technically not simplicial complices,
-in that each piece may have facets that not simplices. We may
+The pieces we create are technically not simplicial complexes,
+in that each piece may have facets that are not simplices. We may
 create facets of larger size than the dimension. These can
-easily be completeed into simplicial complices, though we do not
-explicitly need this. For ease of exposition, we do not explicitly
+easily be completed into simplicial complexes, though as we do not
+need this, for ease of exposition, we do not explicitly
 perform this step in our algorithm.
 
 {\bf The cutting operation:} We define a ``cut" operation on $f:\MM \rightarrow \RR$ that cuts along a regular contour to create
