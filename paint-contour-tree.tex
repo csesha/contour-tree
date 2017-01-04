@@ -328,9 +328,9 @@ with $h$ going from $+\infty$ to $-\infty$. At every instance, the intersection 
 with $f$ gives a set of connected components, the \emph{contours} at height $h$. As the sweeping 
 proceeds various events occur: new contours are created or destroyed, contours merge into each other or
 split into new components. 
-The contour tree is a concise representation of these events.
-Throughout we follow the definition of contour trees from \cite{kobps-ctsssit-97} which includes all changes in topology.  
-For $d>2$, some subsequent works, such as \cite{csa-cctad-03}, only include changes in the number of components.
+The contour tree is a concise representation of these events \cite{kobps-ctsssit-97,csa-cctad-03}.
+%Throughout we follow the definition of contour trees from \cite{kobps-ctsssit-97} which includes all changes in topology.  
+%For $d>2$, some subsequent works, such as \cite{csa-cctad-03}, only include changes in the number of components.
 
 If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
 These points are the ``events" where the contour topology changes and form the vertices of the contour tree. 
@@ -519,7 +519,7 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 We detail the basic definitions about contour trees, following the terminology of Chapter 6 of Carr's thesis \cite{c-tmi-04}.
 All our assumptions and definitions
 are standard for results in this area, though there is some variability in notation.
-The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex of a ball in $\RR^d$,
+The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex of a topological ball in $\RR^d$,
 except for specially designated \emph{boundary facets}. We assume that all vertices of $\MM$ have distinct function values, 
 and that $f$ is only explicitly defined on the vertices, and all other values are obtained by linear interpolation. 
 
@@ -532,9 +532,12 @@ neighbors of vertices in $F$, which are not also in $F$ itself,
 either have all function values strictly greater than or all function values strictly less than the function value at $F$.
 \end{definition}
 
-This is convenient, as we can now assume that $f$ is defined on $\RR^d$. Any point inside a boundary facet
-has a well-defined height, including the infinite facet, which is required to be a boundary facet.  However, 
-we allow for other boundary facets, to capture the resulting surface pieces after our algorithm makes a horizontal cut. 
+% This is convenient, as we can now assume that $f$ is defined on $\RR^d$. Any point inside a boundary facet
+% has a well-defined height, including the infinite facet, which is required to be a boundary facet.  However, 
+% we allow for other boundary facets, to capture the resulting surface pieces after our algorithm makes a horizontal cut. 
+
+Boundary facets allow us to capture the resulting surface pieces after our algorithm makes a horizontal cut. 
+The above definition is convenient, as any point within a given facet has a well-defined height, including the boundary facets.
 
 We think of the dimension $d$, as constant, and assume that $\MM$ is represented in a data structure that allows constant-time access to neighboring simplices
 in $\MM$ (e.g. incidence graphs~\cite{Ed87}). (This is analogous to a doubly connected edge list, but for higher dimensions.)
@@ -622,17 +625,17 @@ can be converted to one with the degree condition through
 a process of \emph{vertex unfolding} (refer to
 Section 6.3 in~\cite{HaEd10}). This effectively converts
 a multi-saddle to a set of ordinary saddles.
-A detailed discussion is provided in the end
-of Section 2 and beginning of Section 3 in~\cite{BaKr+98}.
- For 2D manifolds,
+%A detailed discussion is provided in the end
+%of Section 2 and beginning of Section 3 in~\cite{BaKr+98}.
+For 2D manifolds,
 this conversion does not increase the surface complexity.
 In higher dimensions, the unfolding can increase complexity if
 $\MM$ has vertices of non-constant degree.
 
 
-Similar to \cite{kobps-ctsssit-97} (among others), multi-saddles are treated as a set of ordinary saddles, which can be realized 
-via vertex unfolding (which can increase surface complexity if multi-saddle degrees are allowed to be super-constant).
-Therefore, to simplify the presentation, for the remainder of the paper up and down-degrees are at most $2$, and total degree is at most $3$.
+% Similar to \cite{kobps-ctsssit-97} (among others), multi-saddles are treated as a set of ordinary saddles, which can be realized 
+% via vertex unfolding (which can increase surface complexity if multi-saddle degrees are allowed to be super-constant).
+% Therefore, to simplify the presentation, for the remainder of the paper up and down-degrees are at most $2$, and total degree is at most $3$.
 %
 %We assume there are no ``multi-saddles", so up and down-degrees are at most $2$, and the total degree is at most $3$. 
 %This is again a standard assumption in topological algorithms and can be achieved by vertex unfolding (Section 6.3 in~\cite{HaEd10}).
@@ -1317,21 +1320,30 @@ An \emph{initial} painting also requires that the restriction $\chi:X \to [|X|]$
 
 \subsection{The algorithm} \label{sec:algo}
 
-We first give an informal description of the algorithm.
+We first give an informal, idealized description of the algorithm. 
+That is, in the actual algorithm the details differ slightly
+and additional data structures are used to improve the running time.
 
 \medskip
 
 \begin{compactenum}
-    \item Construct a painting of $\MM$ by a descending BFS 
-    from maxima. This partitions the edges (into various colored
-    sets), and each vertex is incident to at most $2$ colors.
-    \item For each color, construct a (binomial) max-heap
-    indexed by height of all critical points touched by that color.
+%     \item Construct a painting of $\MM$ by a descending BFS 
+%     from maxima. This partitions the edges (into various colored
+%     sets), and each vertex is incident to at most $2$ colors.
+%     \item For each color, construct a (binomial) max-heap
+%     indexed by height of all critical points touched by that color.
+    \item Construct a painting of $\MM$ by a descending BFS from each maximum. 
+    This partitions the edges into colored sets, 
+    and assigns each vertex to the color classes of the edges that touch it.
+    \item For each color, construct a (binomial) max-heap of the critical points touched by that color, 
+          indexed by the heights of the critical points.
+    \item Initialize the join tree to consists of a set of isolated vertices, one for each color class.\\
+          (We now iteratively fill in the rest of the join tree from the leaves towards the root.)
     \item Repeat until all heaps are empty:
     \begin{compactenum}
-        \item Find a critical point $w$ that is at the top
-        of all heaps containing $w$.
-        \item Add $w$ to the join tree. 
+        \item Find a critical point $w$ that is at the top of all heaps containing $w$.
+        \item Add $w$ to the join tree by connecting it to the lowest vertex 
+              of each component of the join tree that contains a maximum whose color matches one of the heaps containing $w$.
         \item Delete $w$ from all these heaps, and merge them.
     \end{compactenum}
 \end{compactenum}
@@ -1341,14 +1353,23 @@ We first give an informal description of the algorithm.
 \noindent
 This motivates the definition of \emph{ripe} vertices.
 
-\begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \col(v)$, $v$
-is present in $T(\rep(c))$ and is also the highest vertex in this heap. 
-%Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(\rep(c))$ is empty.
+\begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \col(v)$, 
+%$v$ is present in $T(\rep(c))$ and is also the highest vertex in this heap. 
+if $v$ is in heap of $c$ then it is the highest vertex in that heap (using notation from \Sec{struct}, if $v\in T(\rep(c))$, then it is the highest in $T(\rep(c))$).
+%%Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(\rep(c))$ is empty.
 \end{definition} 
 
-For a fast running time, we need to find ripe vertices
-quickly. Thus, the formal algorithm requires a 
-number of data structures, described below. 
+To efficiently implement the above, we need a number of data structures.  
+Namely, binomial heaps for efficient merges, union-find to avoid explicit recoloring, 
+and a stack to hold unripe (though ripening) vertices, which is used to effectively amortize the cost of 
+the otherwise expensive operation of finding ripe vertices. 
+Note we also later show it suffices to assign each vertex to only a single color from each adjacent up-star, 
+rather than the colors of all the edges which touch it.
+  
+
+% For a fast running time, we need to find ripe vertices
+% quickly. Thus, the formal algorithm requires a 
+% number of data structures, described below. 
 
 \subsubsection{The data structures} \label{sec:struct}
 \noindent
@@ -1759,7 +1780,7 @@ For any critical point $v$ let $\ell_v$ denote the length of the longest directe
 As $|H_v|$ only counts vertices in a $v$ to root path, trivially $|H_v|\leq \ell_v$, immediately implying the analog of \Thm{main-corr} for join trees.
 Note however that there is fair amount of slack in this argument as $|H_v|$ may be significantly smaller than $\ell_v$.  
 This slack allows for the more refined upper and lower bounds mentioned in \Sec{more-refined}.  Quantifying this slack however is quite challenging, 
-and requires a significantly more sophisticated analysis involving path decompositions, which is the subject of \Sec{lb}.
+and requires a significantly more sophisticated analysis involving path decompositions, which is the subject of \Sec{pathDecomp}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1982,13 +2003,13 @@ Any path from $x$ to $\NN'$ must intersect $\lift(\phi)$, which is dry. Hence $\
 \end{proof}
 
 We describe the main partitioning procedure that cuts a simplicial complex $\NN$ into extremum
-dominant complexes. It takes an additional input of a maximum $x$. To initialize,
+dominant complexes, shown below as $\rain(x,\NN)$. It takes an additional input of a maximum $x$. To initialize,
 we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum. 
 % One of the critical aspects
 % of the procedure is that the rain alternately flows downwards and upwards, 
 % since otherwise faces may be cut a super constant number of times (see \Fig{order}\InSoCGVer{ in \Sec{approach}}).
 When we start, rain flows downwards. In each recursive call, the direction of rain is \emph{switched} to the 
-opposite direction. This is crucial to ensure a linear running time, and \Fig{order} shows how failing to switch 
+opposite direction. This is crucial to ensure linear running time, and \Fig{order} shows how failing to switch 
 directions can lead to a blow up in complexity. 
 The switching is easily implemented by inverting a complex $\NN'$, achieved by negating the height values.
 % While one can implement $\rain$ this way, it is conceptually easier

@@ -5,12 +5,12 @@ various comments, we made a number of larger changes. Section 3 was dramatically
 shortened and parts rewritten, and is now less than half the previous size. What 
 was section 7 is now section 4, which required making a number of minor changes 
 in the text, and this section was also given some added explanation. There are 
-also number of changes and added explanations to clarify issues regarding input 
+also a number of changes and added explanations to clarify issues regarding input 
 assumptions and topological statements. Below we have annotated the reviewers 
 comments to provide more specific details of the changes.
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 Reviewer 1:
@@ -85,8 +85,9 @@ p. 4: “Similar to [vKvOB+97] (among others), multi-saddles are treated as
 ordinary saddles.”
 ****I did not find a discussion of multi-saddles in [vKvOB+97]. 
 Are you sure this is the correct reference?
----> Unfortunately, this is in the tech report version [BKO+98]. 
-We have updated the text.
+---> We removed this sentence. [CSA03] mentions in section "3.4 previous work" that 
+in [vKvOB+97] "Mutli-saddle points are treated as a set of ordinary saddle points", 
+however we agree that [vKvOB+97] does clearly and precisely discuss this matter. 
 
 p. 5: Section 3 is an attempt to help in the exposition by giving an overview
 of the algorithm but I found it more confusing than helpful. Section 3 had too
@@ -97,7 +98,7 @@ Here is a suggestion at an overview of the algorithm:
 2. Construct the join or split tree of each extremum dominant piece.
 3. Connect the constructed join and split trees to form the contour tree.
 The details of contour surgery should not be part of an overview.
----> We cut it down to less than half the size, and restructured the paper.
+---> We cut it down to less than half the size, and restructured it.
 
 p. 17, Definition 7.2: “An up-star of v is the set of edges that (are) all 
 connected to a fixed component of M v + .”
@@ -124,9 +125,12 @@ heaps containing w.
 (c) Delete w from all heaps containing w and merge those heaps.
 The paper should also include the more detailed pseudocode in Section 7.2, since
 the details (use of the stack K) are necessary to get the tight running time.
----> We have restructured this section to incorporate this discussion. We begin 
-with the informal description, explain the data structures, and finally give 
-the full description.
+---> We have restructured this section to incorporate this discussion. We begin with 
+the informal description and overview, explain the data structures, and finally give 
+the full description. Thanks to your suggestion of moving section 7 to section 4,
+the examples and intuition already contained in section 3 of the issues which
+necessitate and motivate the pieces of our algorithm, flow naturally into section 4, 
+making their purpose clearer.
 
 p. 18: “Each vertex is present in at most 2 heaps.”
 ****I believe, this follows from the assumption that there are no multi-saddles so 
@@ -138,7 +142,7 @@ p. 21: “Quantifying this slack however is quite challenging, and requires a
 significantly more sophisticated analysis involving path decompositions, detailed
 in the full version [RS14].”
 ****This line is left over from the conference version of the paper. Delete it.
---->Removed, and changed to "which is provided in the next section"
+--->Removed.
 
 p. 22-27: Theorem 8.1, Lemmas 8.3, 8.12 and 8.14, Claim 8.5 and 8.18, Corol-
 laries 8.6, 8.12, and 8.13 : “= O(...).”
@@ -150,7 +154,7 @@ Algorithms" by Cormen Leiserson Rivest and Stein explicitly mentions this
 
 Moreover, notation +O(...) in the proof of Claim 8.18 is an abuse of the O(...) notation.
 ****Use “≤ ... + cΣ p∈H Σ v∈p ... for some c”, not “= ... + O(Σ p∈H Σ v∈p ...)”.
----> Again, this is fairly standard, and allows for more compact notation. 
+---> Again, this is fairly standard, and is preferable as it allows for more compact notation. 
 In this case, we feel that the meaning is quite clear. Thus, we prefer to keep it.
 
 
@@ -168,19 +172,19 @@ Since this paper is already accepted in SoCG I don't talk about relevance etc.
 
 General issues
 * The most important concern about this paper is how it tries to sell the result. Though it is a new and interesting algorithm, in order to sell it as a faster algorithm the authors push some details under the carpet. First of all, there is always an additive factor of O(N) in running-times that the authors do not mention in the abstract. This factor prevents the algorithm to be output-sensitive in many cases. The authors must be clear about the running time everywhere.
----> We feel it is unfair to say that we "pushed it under the carpet". All our theorem statements included N. We explicitly refer to the N in the third paragraph. We unfortunately did not mention it in the abstract, but as far as we see, it is the only place when N was missing. This has been fixed.
+---> We feel it is unfair to say that we "pushed it under the carpet". All our theorem statements included N. We explicitly refer to the N in the third paragraph. We unfortunately did not mention it in the abstract, but as far as we see, it is the only place where N was missing. This has been fixed.
 
 * The second important issue is the crucial restrictiction on input complexes. For the algorithm to work correctly the so called Morse up and down degrees have to be at most two, and not only the degrees in the contour tree. This is a more strict condition that the one stated by the authors often as “contour trees having degree 3”. The reason for this is the line 4 of init algorithm. Essentially, this is what is meant usually by computing a merge tree, that is, how the edges in an upper star of a vertex are divided into sets in different components of the super-level set. The authors can again assume this by the “vertex unfolding” process, but they do not make it clear how this process affects the size of the input complex. The authors must be clear about these assumptions. This is mentioned vaguely in the line before subsection 2.1.
 ---> Thank you for pointing this out. Yes, you are right, and we have updated our statements appropriately. We have added this assumption to the main theorem statement. We have added a paragraph explaining this just before Section 2.1. 
  
 * The authors must be clear that M is a triangulation of R^d (or a ball) or not. In general the contour tree is not a tree so paragraph 2 of the introduction would not be correct. Also, in general there will be no “infinite facet”. I guess the authors want M to be a triangulation of some ball in R^d. This point must be cleared.
----> We have clarified in Section 2.1.
+---> We have clarified this in Section 2.1.
 
 * The definition of a critical point is not standard, even when the input is a manifold. This point should be mentioned.
 ---> Fixed.
 
 * The authors should refer to the algorithm boxes in the text.
----> The algorithm boxes are not really figures that carry labels.  They are basically portions of text that are boxed off, and follow the flow of the paper. We do not reference them elsewhere, and prefer to keep this format.  
+---> The algorithm boxes are not floating figures that carry labels, but rather inline portions of the text, boxed for emphasis. (Note we feel it is clearer to refer to the algorithms by name rather than a float label.) To address the reviewers comment, we made sure that in the paragraph immediately preceeding each box, the algorithm is referenced. For example "rain(x,N)" and "merge(J,S)" are now referenced in the text before the box, and were not previously.
 
 * I suggest to use the term “technical” less frequently.
 ---> Removed more than half of the instances of this word.
@@ -189,41 +193,32 @@ General issues
 ---> We have left things as is, as we feel it is more appropriate. 
 
 * In general it is better to have constants in place of the big-O notation. This is because when a non-constant number of big-O’s are summed together one has to make sure that the constants do not depend on the number of summands or anything else. This however does not make a problem in this paper.
----> Formally speaking, you are right, but this is standard practice in the algorithms community. Introducing all the extra notation we feel would be a detriment to the paper, as it would make it messier and harder to read. Thus in the interest of clarity we kept the big-O notation, since as you mention, this is not a problem in this paper.
+---> Formally speaking, you are right. However introducing all the extra notation we feel would be a detriment to the paper, as it would make it messier and harder to read. Thus in the interest of clarity we kept the big-O notation, since as you mention, this is not a problem in this paper.
 
 * The spaces built in this paper are not simplicial complexes, though it is easy to make them simplicial complex. The authors should address this point.
 ---> We make this clear in the beginning of the contour surgery section (Section 5).
 
 * I suggest the authors make the main lemma of the paper more clear and give it a name. That is, they show that the bound that is true for contiguous coloring is essentially true for non-contiguous coloring of binary trees.
----> BEN: I'm not sure which lemma is being mentioned here.
+---> The main lemma (which we assume the reviewer means theorem 8.1 but are not certain), is explicitly stated as the "main goal" of section 8.  This lemma was not named and discussed in the intro as it requires technical definitions (of the heap etc.) to be stated, which we did not feel was appropriate for the intro. However, we are open to suggestions from the reviewer on how to accomplish this if the reviewer still wants this change.
 
 
 More specific comments
 * Put the O(N) factor in the abstract.
 --->Changed
 * P1 par(agraph)1 : the contour tree does not represent all handle changes, with the definition of critical point in this paper. The same about “topological changes”. The claim is true for d=3 perhaps.
---->This is an informal discussion, to motivate contour trees for
-a reader who may be unfamiliar with them. We have removed the word 
-"all" but kept the sentence the same.
---->Ben
-
+---> The sentences at the end of paragraph 1 were not necessary, and hence were removed to address the comment
 * P1 par2: Again by the definition of the critical points in the paper some of the classic critical points are regular, those that change the >1-handles of the contours. 
----> Again, while we agree this is technically incorrect, it is
-useful for providing intuition. We have added a sentence saying so.
---->Ben
-
+---> We agree this is technically incorrect, and we have added a sentence saying so. We still kept the earlier sentence for intuition though.
 * P1 par2 l2: there is no need for parentheses here.
 ---> Removed parentheses from par2 (was not on l2 so not sure if this was what you were referencing).
 * The authors should mention the definition of the critical point before Theorem 1.1.
----> The definitions of critical points are too complicated to be introduced here. 
-We feel it is better to give a general sense of the main result before explaining formalism.
+---> The definitions of critical points are too complicated to be introduced here. We feel it is better to give a general sense of the main result before explaining formalism.
 * P2 l1: directed diameter
 --->Added "directed"
 * P2 last lines: the number of comparisons is c t log t for a constant c.
 --->Fixed, and also added constant \alpha for \gamma.
 * P3 one to last par: what is infinite face?
---->Ben
-
+---> The reference to the infinite facet was removed (and the paragraph rewritten).
 * P4 Def 2.2: x \in M.
 --->Added
 * P4 par4: for the critical points to be vertices one needs also vertex values to be distinct.
@@ -249,36 +244,27 @@ We feel it is better to give a general sense of the main result before explainin
 * P8 last line: “all incident edges” should be those with v as a lower vertex.
 --->Rewrote sentece to include this change
 * P9 example: when blue merges with other colors it is not blue anymore.
---->When red/blue merge we first describe them as mixing to create a new color purple, 
-to ilustrate the intuition that this really acts as a new maximum.  However, this 
-repainting is not actually done as it is too expensive. An extra sentence was added for 
-clarity after the reference to union-find: "So the red and blue mounds are not actually 
-recolored purple, and instead say red now points to blue in the union find data structure."
+--->When red/blue merge we first describe them as mixing to create a new color purple, to ilustrate the intuition that this really acts as a new maximum.  However, this repainting is not actually done as it is too expensive. An extra sentence was added for clarity after the reference to union-find: "So the red and blue mounds are not actually recolored purple, and instead say red now points to blue in the union find data structure."
 * P9 last line before subsection: “all edges” should be all incident from above.
 --->Changed
 * P10 par2: “it will merge into …” the saddle does not merge.
 --->Rewrote the senetence
 * P10 last par: it is much easier globally to identify all the vertices of the cut contour in the complex, hence replacing them with one vertex.
----> We are not sure exactly what is meant by "replacing them with one vertex". 
-The current phrasing is used as naively introducing a new vertex could cause a 
-number of issues we wish to avoid. 
+---> We are not sure exactly what is meant by "replacing them with one vertex". The current phrasing is used as naively introducing a new vertex could cause a number of issues we wish to avoid. 
 * P12 Def 5.1: the definition is for a simplicial complex and a given map.
 --->Added "with a height function"
 * P12 Claim 5.3: each non-empty component
 --->Added "non-empty".
 * P13 line (b) in algorithm rain: “maximum” is not correct since it can be a “minimum” as well.
----> It is always a maximum, as we always reorient so that rain is done from a maximum. 
-This is stated explicitly in line (b) of rain, and discussed in the paragraph before rain.
+---> It is always a maximum, as we always reorient so that rain is done from a maximum. This is stated explicitly in line (b) of rain, and discussed in the paragraph before rain.
 * P14 proof of Lemma 5.5: the same issue as previous comment.
 --->See the response to the previous comment.
 * P16 the first line of proof of 6.4 seems to have problems.
---->Agreed that sentence has issues as stated.  It was removed as it is not needed for the proof. 
-Also, a number of other minor changes were made in and around theorem 6.4.
+--->Agreed that sentence has issues as stated.  It was removed as it is not needed for the proof. Also, a number of other minor changes were made in and around theorem 6.4.
 * P17 Color list: “for each point” should be “for each vertex”.
 --->Changed
 * P18 algorithm build line (e): the resulting color is rep(c’).
----> We agree this was not quite correct, so we added the word "representative" 
-(using c' would not be quite correct either as c' is not a specific color)
+---> We agree this was not quite correct, so we added the word "representative" (using c' would not be quite correct either as c' is not a specific color)
 * P18 third point after the boxes: incident from above to v.
 ---> Changed.
 * P18 proof of Lemma 7.5: “c-colored and touched by c” everywhere should be preceded by “currently”.
@@ -294,11 +280,9 @@ Also, a number of other minor changes were made in and around theorem 6.4.
 * P20 Def 7.10: color is not yet defined.
 --->Changed
 * P20 Definition 7.11 should be a remark or note.
----> We feel this should not be a remark or note as 7.11 defines "initial coloring" 
-and is cited repeatedly later. Instead we changed the wording a little. 
+---> We feel this should not be a remark or note as 7.11 defines "initial coloring" and is cited repeatedly later. Instead we changed the wording a little. 
 * Lemma 7.12: the lemma actually computes the running time of the whole algorithm not only the build routine as the lemma statement says.
---->Build is the algorithm so it was correct as stated.  For clarity we added ", 
-including the subroutine call to $\init(\MM)$ and all calls to $\update$, "
+--->Build is the algorithm so it was correct as stated.  For clarity we added ", including the subroutine call to $\init(\MM)$ and all calls to $\update$, "
 * P21 l1: “as so” is a typo.
 --->Changed to "and so"
 * P21 top of the page: here is where it is necessary to have Morse up degree two rather than degree three in the contour tree. The runtime of init will not be linear otherwise.
@@ -313,12 +297,11 @@ the degree condition throughout the text.
 * P22 par3: what is p?
 --->Added "a path"
 * P22 subsection 8.1 par2: here the constants in the big-O notation have to be independent of everything. So if one is strict the reasoning here is not correct.
----> We think the argument is clear enough. Adding explicit constants
-everywhere would make things unreadable.
+---> We think the argument is clear enough. Adding explicit constants everywhere would make things unreadable.
 * P22 paragraph before Def 8.4: it seems to me that in the parenthesis should be tall paths.
 --->  Added "tall", but it is fine either way, as the parenthesis are just clarifying why the word "chain" was used.
 * P22 last line: notation which will be …
---->Change "we" to "will"
+--->Changed "we" to "will"
 * P22 footnote: this is not overloading the term “tree”, since it is used with the same meaning.
 --->Changed wording of the footnote.
 * P25 l3: \lambda(p) should be \lambda(q).
@@ -330,17 +313,11 @@ everywhere would make things unreadable.
 * P25 Cor 8.13: a log is missing from the relation.
 --->Added the log
 * P26 last par of proof of Claim 8.15: the first q \neq p is a typo and the last \lambda(p) should be \lambda(q).
----> We don't see why "the first q \neq p" is a typo. In the previous paragraph, 
-the deleted vertices are \lambda(q) where q must be a child of some internal node p. 
-Thus, we need the first q \neq p. Changed lambda(p) to lambda(q). 
+---> We don't see why "the first q \neq p" is a typo. In the previous paragraph, the deleted vertices are \lambda(q) where q must be a child of some internal node p. Thus, we need the first q \neq p. Changed lambda(p) to lambda(q). 
 * P26 last line: \alpha_p should be \alpha_q.
 --->Changed
-* P27 proof of claim 8.17: the proof is actually not correct since the 
-base of the induction is when q’ is a leaf not the case mentioned. 
-This case should be handled separately.
---->The lemma statement was modified so that the induction can be done on q instead of q'. 
-Note that the induction can be done on q here, as the induction step just needs to be able to 
-apply claim 8.16, which holds regardless of whether there are any parent child q,q' pairs or not. 
+* P27 proof of claim 8.17: the proof is actually not correct since the base of the induction is when q’ is a leaf not the case mentioned. This case should be handled separately.
+--->The lemma statement was modified so that the induction can be done on q instead of q'. Note that the induction can be done on q here, as the induction step just needs to be able to apply claim 8.16, which holds regardless of whether there are any parent child q,q' pairs or not. 
 * P28: in the statements of Theorems 8.19 and 8.20 the condition of degree 3 has to be strengthened to Morse up degree 3, per the comments in the top of the review.
 ---> Fixed.
 * P28 par before section 9: decompositions (plural)
@@ -354,10 +331,9 @@ apply claim 8.16, which holds regardless of whether there are any parent child q
 * In the references HWW10 and Par12 must be big O.
 --->Fixed
 * The paper title in PCM02 seems wrong.
---->Changes "set" to "sets"
+--->Changed "set" to "sets"
 * The references vKvOB+97 and BKO+98 seem to be versions of the same paper.
----> vKvOB+97 is the socg version, and BKO+98 is a tech report. We prefer to cite the more well known 97 paper, 
-but the lower bound appears to only be in the tech report and hence we cite it in that one instance.
+--->vKvOB+97 is the socg version, and BKO+98 is a tech report. We prefer to cite the more well known 97 paper, but the lower bound appears to only be in the tech report and hence we cite it in that one instance.
 
 
 
