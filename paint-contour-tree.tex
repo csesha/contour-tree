@@ -1355,7 +1355,7 @@ This motivates the definition of \emph{ripe} vertices.
 
 \begin{definition} \label{def:ripe} A vertex $v$ is \emph{ripe} if: for all $c \in \col(v)$, 
 %$v$ is present in $T(\rep(c))$ and is also the highest vertex in this heap. 
-if $v$ is in heap of $c$ then it is the highest vertex in that heap (using notation from \Sec{struct}, if $v\in T(\rep(c))$, then it is the highest in $T(\rep(c))$).
+if $v$ is in the heap of $c$ then it is the highest vertex in that heap (using notation from \Sec{struct}, if $v\in T(\rep(c))$, then it is highest in $T(\rep(c))$).
 %%Also, for all $c \in \col(v) \setminus \fcol(v)$, $T(\rep(c))$ is empty.
 \end{definition} 
 
@@ -2002,6 +2002,16 @@ Any path from $x$ to $\NN'$ must intersect $\lift(\phi)$, which is dry. Hence $\
 %contradicting the fact that $\phi$ is dry.
 \end{proof}
 
+\begin{figure}[h]\centering
+    \includegraphics[width=.172\linewidth]{figs/tent2}%
+    \hspace{1.2in}
+    \includegraphics[width=.172\linewidth]{figs/tent1}
+    \caption{On left, downward rain spilling only (each shade of gray represents a piece created by each different spilling), producing a grid.  
+    Note we are assuming raining was done in sorted order of the maxima (i.e.\ lowest to highest).  
+    On right, flipping the direction of rain spilling.}
+    \label{fig:order}
+\end{figure}
+
 We describe the main partitioning procedure that cuts a simplicial complex $\NN$ into extremum
 dominant complexes, shown below as $\rain(x,\NN)$. It takes an additional input of a maximum $x$. To initialize,
 we begin with $\NN$ set to $\MM$ and $x$ as an arbitrary maximum. 
@@ -2017,16 +2027,6 @@ The switching is easily implemented by inverting a complex $\NN'$, achieved by n
 % is easily achieved by just negating the height values. (From a running time standpoint, it suffices
 % to maintain a single bit associated with $\NN'$ that determines whether heights are inverted or not.)
 We can now let rain flow downwards, as it usually does in our world.
-
-\begin{figure}[h]\centering
-    \includegraphics[width=.172\linewidth]{figs/tent2}%
-    \hspace{1.2in}
-    \includegraphics[width=.172\linewidth]{figs/tent1}
-    \caption{On left, downward rain spilling only (each shade of gray represents a piece created by each different spilling), producing a grid.  
-    Note we are assuming raining was done in sorted order of the maxima (i.e.\ lowest to highest).  
-    On right, flipping the direction of rain spilling.}
-    \label{fig:order}
-\end{figure}
 
 \medskip
 \fbox{

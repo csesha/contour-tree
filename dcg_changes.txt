@@ -159,7 +159,7 @@ In this case, we feel that the meaning is quite clear. Thus, we prefer to keep i
 
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -334,23 +334,6 @@ the degree condition throughout the text.
 --->Changed "set" to "sets"
 * The references vKvOB+97 and BKO+98 seem to be versions of the same paper.
 --->vKvOB+97 is the socg version, and BKO+98 is a tech report. We prefer to cite the more well known 97 paper, but the lower bound appears to only be in the tech report and hence we cite it in that one instance.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
