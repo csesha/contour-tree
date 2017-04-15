@@ -297,7 +297,7 @@ the evolution of level sets of $f$ and
 has numerous applications in data analysis and visualization.
 
 All existing algorithms begin with a global sort of at least all critical values of $f$,
-which can require (roughly) $\Omega(n\log n)$ time.
+which can require (roughly) $\Omega(n\log n)$ time, where $n$ is the number of vertices of the mesh.
 Existing lower bounds show that there are pathological instances where this sort is required.
 We present the first algorithm whose time complexity depends
 on the contour tree structure, and avoids the global sort for non-pathological inputs.
@@ -350,9 +350,10 @@ and internal nodes are either ``joins" or ``splits".
 % For example, these could be events where contours gain or lose handles.
 
 Consider $f: \MM \to \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points. 
-(We assume that $f:\MM \to \RR$ a linear interpolant over distinct valued vertices, with Morse degree at most $3$. We define this formally 
-later, but it suffices to think of this as a general position assumption.
-The degree assumption is standard in this literature~\cite{kobps-ctsssit-97}.)
+(We assume that $f:\MM \to \RR$ is a linear interpolant over distinct valued vertices, with Morse degree at most $3$. 
+The degree assumption can be achieved via vertex unfolding, as discussed later,
+%We define this formally later, but it suffices to think of this as a general position assumption.
+and is standard in this literature~\cite{kobps-ctsssit-97}.)
 % \Ben{It is standard to assume that $f$ has distinct values on the vertices of $\MM$ and the value at interior points is linearly interpolated.}
 %It is standard to assume that $f$ is PL-Morse (a well-behaved input assumption) and that the maximum degree in the contour tree is $3$. 
 A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
@@ -485,7 +486,7 @@ the contour tree on all of $\bF_\thmConst$ has a worst case running time of $\Om
 % at the relationship between sorting and the contour tree problem. 
 % 
 
-\subsection{Previous Work}
+\subsection{Previous work}
 
 Contour trees were first used to study terrain maps by Boyell and Ruston, and Freeman and Morse~\cite{BoRu63,FrMo67}.
 Contour trees have been applied in analysis of fluid mixing, combustion simulations,
@@ -494,7 +495,7 @@ applications of contour trees for data visualization and is an excellent referen
 
 The first formal result was an $O(N\log N)$ time algorithm for functions over 2D 
 meshes and an $O(N^2)$ algorithm for higher dimensions, by van Kreveld \etal \cite{kobps-ctsssit-97}. 
-Tarasov and Vyalya \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case.
+Tarasov and Vyalyi \cite{tv-cct-98} improved the running time to $O(N\log N)$ for the 3D case.
 The influential paper of Carr \etal \cite{csa-cctad-03} improved the running time for all dimensions to $O(n\log n + N\alpha(N))$.
 Pascucci and Cole-McLaughlin \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
 $3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} provide an unconditional $O(N+t\log t)$ algorithm.
@@ -520,7 +521,7 @@ We detail the basic definitions about contour trees, following the terminology o
 All our assumptions and definitions
 are standard for results in this area, though there is some variability in notation.
 The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex of a topological ball in $\RR^d$,
-except for specially designated \emph{boundary facets}. We assume that all vertices of $\MM$ have distinct function values, 
+except for specially designated \emph{boundary facets}. We assume that all pairs of vertices from $\MM$ have distinct function values, except for pairs from the same boundary facet,
 and that $f$ is only explicitly defined on the vertices, and all other values are obtained by linear interpolation. 
 
 We assume that the boundary values satisfy a special property. This is mainly for convenience
@@ -645,14 +646,16 @@ $\MM$ has vertices of non-constant degree.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Some remarks}
+{\bf 1)}
 Note that if one intersects $\MM$ with a given ball $B$, then a single contour in $\MM$ might be split into more than one contour in the intersection. 
 In particular, two $(f(x)+\delta)$-contours of $f|_{B_\eps(x)}$, given by \Def{deg}, might actually be the same contour in $\MM$. 
 Alternatively, one can define the up-degree (as opposed to \emph{Morse} up-degree) as the number of $(f(x)+\delta)$-contours (in the full $\MM$)
 that intersect $B_\eps(x)$, a potentially smaller number. This up-degree
 is exactly the up-degree of $x$ in $\reeb(\MM)$. (Analogously, for down-degree.)
 When the Morse up-degree is $2$ but the up-degree is $1$, the topology of the level set changes but not by the number of connected components changing.
-When $d=2$, this distinction is not necessary, since any point with Morse degree strictly greater than $1$ will have degree strictly greater than $1$ in $\reeb(\MM)$.
+When $d=2$, this distinction is not necessary, since any point with Morse degree strictly greater than $1$ will have degree strictly greater than $1$ in $\reeb(\MM)$.\\
 
+\noindent{\bf 2)}
 As Carr points out in Chapter 6 of his thesis, the term contour tree can be used for a family of related structures.
 Every regular vertex in $\MM$ is associated with an edge in $\reeb(\MM)$, and sometimes the
 vertex is explicitly placed in $\reeb(\MM)$ (by subdividing the respective edge). This is referred
@@ -839,7 +842,7 @@ at most $2$ colors, because of all the color merges that previously occurred.
  Thus as we get closer to the root the competition for which two colors a vertex gets assigned to grows, since the number of descendant leaf colors grows. 
  This means for some vertices the size of the heap will be significantly smaller during an associated heap operation. 
  
-The intuition is that the paint spilling from the maxmima in the simplicial complex, corresponds to paint spilling from the leaves in 
+The intuition is that the paint spilling from the maxima in the simplicial complex, corresponds to paint spilling from the leaves in 
 the join tree, which decomposes the join tree into a set of colored paths.  Unfortunately, the situation is more complex since 
 while a given color class is confined to a single leaf to root path, it may \emph{not} appear contiguously on this path, as the right part of \Fig{colors} shows. 
 Specifically, in this figure the far left saddle (labeled $i$) is hit by blue paint.  However, there is another 
@@ -1264,7 +1267,7 @@ we get $\prod_{p \in P(T)} |p|!$ terrains each with a distinct contour tree.
 \label{sec:paint}
 
 We now present the main algorithmic contribution, which is a new algorithm for computing join trees of any triangulated simplicial
-complex $\MM$.  In subsequent sections we then show how to reduce computing the contour to computing join by using contour surgery.
+complex $\MM$.  In subsequent sections we then show how to reduce computing the contour tree to computing the join tree by using contour surgery.
 
 We now formally define the \emph{join} and \emph{split} trees as given by~\cite{csa-cctad-03}.
 Conventionally, all edges are directed from higher to lower function value. 
@@ -1337,7 +1340,7 @@ and additional data structures are used to improve the running time.
     and assigns each vertex to the color classes of the edges that touch it.
     \item For each color, construct a (binomial) max-heap of the critical points touched by that color, 
           indexed by the heights of the critical points.
-    \item Initialize the join tree to consists of a set of isolated vertices, one for each color class.\\
+    \item Initialize the join tree to consist of a set of isolated vertices, one for each color class.\\
           (We now iteratively fill in the rest of the join tree from the leaves towards the root.)
     \item Repeat until all heaps are empty:
     \begin{compactenum}
@@ -1680,7 +1683,7 @@ as $v$ is the lowest processed vertex of this merged color (as by induction $\h(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Running Time}
+\subsection{Running time}
 \label{sec:runTime}
 
 We now bound the running time of the algorithm of \Sec{algo}.  
@@ -2594,7 +2597,7 @@ and hence only one such path can count $v$ in $\loss(\cdot)$.
 
 
 \newcommand{\pruned}{\cU'}
-\subsection{Paying for Pruned Shrubs: the root is everything} \label{sec:weight}
+\subsection{Paying for pruned shrubs: the root is everything} \label{sec:weight}
 
 We focus attention on the remaining shrub left by \Lem{split-buff}: this is 
 a shrub $\cU$ such that no subtree of $\cU$ is buffered. Refer to such
@@ -2906,7 +2909,7 @@ where the last equality follows by \Clm{above} (via the same argument as in \Cor
 
 
 
-\subsection{Our Main Result}
+\subsection{Our main result}
 \label{sec:implications}
 
 We now show that \Thm{runtime} allows us to upper bound the running time for our join tree and contour 
@@ -2979,14 +2982,14 @@ O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\cJ(\MM_i))} |p|\log |p|} + t_i\alp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{Lower Bound by Path Decomposition}
+\section{Lower bound by path decomposition}
 \label{sec:lb}
 We first prove a lower bound for join trees, and then generalize to contour trees.
 Note that the form of the theorem statements in this section differ from \Thm{main-lb}, 
 as they are stated directly in terms of path decompositions.  \Thm{main-lb} 
 is an immediate corollary of the final theorem of this section, \Thm{path-main-lb}.
 
-\subsection{Join Trees}
+\subsection{Join trees}
 
  
 We focus on terrains, so $d=2$.
@@ -3128,7 +3131,7 @@ must distinguish all inputs in this family. By Stirling's approximation, the dep
 % have $\Pi_{p_i\in P} |p_i|!$ leaves.  Hence by Stirling's approximation, the average depth in this tree is $\Omega(\sum_{p_i\in P} |p_i|\log|p_i|)$.
 \end{proof}
 
-\subsection{Contour Trees}
+\subsection{Contour trees}
 We first generalize previous terms to the case of contour trees.
 In this section $T$ will denote an arbitrary contour tree with every internal vertex of degree $3$.
 %and the height function defined over the vertex set is such that every internal vertex in either a split or join 
@@ -3238,6 +3241,8 @@ Laboratories is a multi-program laboratory managed and operated
 by Sandia Corporation, a wholly owned subsidiary of Lockheed
 Martin Corporation, for the U.S. Department of Energy's National
 Nuclear Security Administration under contract DE-AC04-94AL85000.
+Work on this paper by Benjamin Raichel was also partially supported
+by NSF CRII Award 1566137.
 
 \bibliographystyle{alpha}
 \bibliography{contour}
