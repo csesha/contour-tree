@@ -1,0 +1,99 @@
+
+
+Review #1:
+
+The authors have updated the paper and fixed many issues. They have addressed my concerns. However, these additions have caused some new minor issues, and, in my opinion, still the the paper is not mature enough to be published as it is, as will be seen in the comments below. I will mention several more important points in the following, but I was unable to list all the typos.
+
+Global issues:
+1. Since the paper uses the results of CSA03 for merging a split tree with a merge tree to form a contour tree, it is crucial to have the same type of domains. So I suggest that the authors define their initial domain to be the triangulation of a ball, and again crucially, they should mention that the pieces that they break the domain into, i.e. extremum dominant complexes, are also triangulations of topological balls, so that they can always use the results of CSA03. This is the case since the pieces are formed by raining. Please verify this condition to use the theorems from CSA03. In doing so, the authors can update Theorem 5.4 to say that the outputs of cut are triangulated balls. Again, this is necessary since at each recursive step that the results of CSA03 are used the domains must be triangulated topological balls.
+The current wording of definition of M is not good. When defined as in CSA03 to be a triangulated ball, then the simply-connectedness assumption is not needed and they can remove it.
+--->We have fixed the wording in Theorem 1.1, 1.3, and Theorem 5.4. We have verified that this is consistent with all our previous wording and with the results of CSA03.
+(OLD--->We explicitly did not want to triangulate the boundary faces, since we were worried about situations like a double walled hollow upside bowl (i.e. there is another maximum poking through the boundary facet).  However, I am not entirely sure that is possible given we are lifting the input complex one dimension higher?  At this point I am fine just doing what the reviewer says though.  Can you figure this out?
+Also small side note, I added "except for pairs from the same boundary facet," to section 2, first paragraph, last sentence:
+)
+
+2. Make sure that all headings have the same uppercase lowercase convention, see for example 1.2, 4.4 etc.
+--->All section and subsection heading now have the same lowercase convention, except for the leading word being capitalized.
+
+3. I suggest that the authors go through the updated sections more carefully and correct any typos.
+---> We went through the updated sections again as suggested to check for and correct typos.
+
+
+Smaller issues, typos:
+1. In the abstract please define n.
+---> Defined.
+
+2. In the previous work it seems that Vyalya should be Vyalyi.
+--->Corrected
+
+3. In the second par. of the Introduction, the sentence in the parenthesis is very strange indeed. They should remove it and correct the sentence before it. Not all critical points appear in the contour tree. They can simply say some of these critical points affect the connected components of the contour, and those correspond to vertices of the contour tree. Indeed the contour tree is a simple construct and explaining it does not need more complex definitions.
+--->We fixed this paragraph.
+
+4. In the third paragraph of the Introduction, the assumption on Morse degree 3 cannot be thought of as general position assumption. Please remove this. You might want to mention that it is possible to do "vertex unfolding" in the domain.
+--->We removed this sentence.
+(OLD--->I commented out the general position sentence and added "The degree assumption can be achieved via vertex unfolding, as discussed later,". Please take a look.)
+
+5. In 2.1 it is perhaps good to number the remarks 1) and 2).
+---> The remarks are now numbered.
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+Second review:
+The changes and the reorganization of the paper by the authors are all accept-
+able. There is a typo and a grammatical error (listed below) which need to be
+fixed. I have two other comments, one a required inclusion and one a strong
+suggestion.
+
+a. The authors added to Theorem 1.1, the statement ”Let the Morse degree
+of f at any point be at most 3.” They should also state this condition in
+Theorem 1.3 and in the Abstract. While they note that assuming Morse
+degree three ”is a standard assumption in the literature”, this is standard
+only for algorithms constructing Morse complexes. I don’t believe that the
+algorithms in either CSA03 or CLLR05 make or require this assumption.
+This is a real difference so the assumption about Morse degree should be
+in the abstract and Theorem 1.3. (The authors also should also add ”See
+Definition 2.3 for a definition of Morse Degree” after using the term Morse
+Degree in Theorem 1.1.)
+--->We updated the abstract. We put a sentence in Theorem 1.3 referring to the conditions in Theorem 1.1.
+
+b. The authors followed my suggestion of moving the join tree algorithm
+earlier and adding a higher level description. However, I repeat my rec-
+ommendation that they provide a simplicial complex illustration of the
+algorithm in Section 4.2.2 The illustration in Figure 3 is good, but it does
+not illustrate the details of the algorithm in 4.2.2. If an illustration is
+added, the authors should explain in the text how the algorithm operates
+on that illustration.
+An illustration of a specific simplicial complex and the application of the
+algorithm to this complex would greatly help readers of this paper. The
+algorithm in Section 4.2 is understandable without an illustration, so the
+paper is publishable without this change, but such an addition would
+strengthen the paper and increase the likelihood of it being read.
+--->We have provided a detailed example in the Appendix.
+
+As long as the authors add the restriction on Morse degree to Theorem 1.3 and
+the Abstract (noted in a. above), and correct the typo and grammatical errors
+below, I believe the paper is ready for publication.
+
+Typo & grammatical errors:
+p. 8, line 4: ”maxmima” - Typo. Should be ”maxima”.
+--->Fixed.
+p. 9, Algorithm setp 3: ”Initialize the join tree to consists...”
+Grammatical error. Should be ”to consist”.
+--->Fixed.
+
+
+
+

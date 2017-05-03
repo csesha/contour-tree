@@ -291,7 +291,8 @@ Avoiding the Global Sort:
 
 \begin{abstract}
 We revisit the classical problem of computing the \emph{contour tree}
-of a scalar field $f:\MM \to \RR$, where $\MM$ is a triangulated simplicial mesh in $\RR^d$. 
+of a scalar field $f:\MM \to \RR$, where $\MM$ 
+is a triangulations of a ball in $\RR^d$.
 The contour tree is a fundamental topological structure that tracks
 the evolution of level sets of $f$ and 
 has numerous applications in data analysis and visualization.
@@ -300,7 +301,10 @@ All existing algorithms begin with a global sort of at least all critical values
 which can require (roughly) $\Omega(n\log n)$ time, where $n$ is the number of vertices of the mesh.
 Existing lower bounds show that there are pathological instances where this sort is required.
 We present the first algorithm whose time complexity depends
-on the contour tree structure, and avoids the global sort for non-pathological inputs.
+on the contour tree structure, and avoids the global sort for non-pathological inputs. (We assume
+that the Morse degree of the function $f$ at any
+point is 
+at most $3$.)
 If $C$ denotes the set of critical points in $\MM$, the running time is
 roughly $O(N+\sum_{v \in C} \log \ell_v)$, where $\ell_v$ is the depth of $v$ in the contour tree and $N$ is the total complexity of $\MM$.
 This matches all existing upper bounds, but is a significant asymptotic improvement when the contour tree is short and fat.
@@ -333,10 +337,11 @@ The contour tree is a concise representation of these events \cite{kobps-ctsssit
 %For $d>2$, some subsequent works, such as \cite{csa-cctad-03}, only include changes in the number of components.
 
 If $f$ is smooth, all points where the gradient of $f$ is zero are \emph{critical points}.
-These points are the ``events" where the contour topology changes and form the vertices of the contour tree. 
-(This is formally incorrect, but gives the right intuition.)
-An edge of the contour tree connects two critical points if one event immediately ``follows"
-the other as the sweep plane makes its pass. We provide formal definitions later. 
+These points are the ``events" where the contour topology changes. The contour tree tracks a specific
+subset of events, called ``joins" and ``splits".
+We provide formal definitions later.
+An edge of the contour tree connects two such critical points if one event immediately ``follows"
+the other as the sweep plane makes its pass.  
 \Fig{relative} and \Fig{sorting} 
 show examples of simplicial complexes, with heights and their contour trees.
 Think of the contour tree edges as pointing downwards. Leaves are either maxima or minima,
@@ -349,7 +354,7 @@ and internal nodes are either ``joins" or ``splits".
 % In dimensions $d \geq 3$, we may have internal vertices of both up and down-degree $1$. 
 % For example, these could be events where contours gain or lose handles.
 
-Consider $f: \MM \to \RR$, where $\MM$ is a triangulated mesh with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points. 
+Consider $f: \MM \to \RR$, where $\MM$ is the triangulation of a $d$-dimensional ball with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points. 
 (We assume that $f:\MM \to \RR$ is a linear interpolant over distinct valued vertices, with Morse degree at most $3$. 
 The degree assumption can be achieved via vertex unfolding, as discussed later,
 %We define this formally later, but it suffices to think of this as a general position assumption.
@@ -408,9 +413,12 @@ Our main result gives an affirmative answer. Remember that we can consider
 the contour tree as directed from top to bottom. For any node $v$ in the tree, let $\ell_v$ denote the length of the 
 longest directed path passing through $v$. 
 
-\begin{theorem} \label{thm:main-corr} Consider a simplicial complex $f:\MM \to \RR$, described as above, and denote
-the contour tree by $T$ with vertex set (the critical points) $C(T)$. 
+\begin{theorem} \label{thm:main-corr} Consider a simplicial complex $f:\MM \to \RR$, where $\MM$
+is a triangulation of a $d$-dimensional ball.
+Let $N$ be the number of facets in $\MM$.
 Let the Morse degree of $f$ at any point be at most $3$.
+Denote
+the contour tree by $T$ with vertex set (the critical points) $C(T)$. 
 There exists an algorithm to compute $T$
 in $O(\sum_{v \in C(T)} \log \ell_v + t\alpha(t) + N)$ time. Moreover, this algorithm only
 compares function values at pairs of vertices that are ancestor-descendant in $T$ or adjacent in $\MM$.
@@ -443,6 +451,7 @@ Then a \emph{path decomposition}, $P(T)$, is a partition of the vertices of $T$ 
 \label{thm:main-alg} 
 %Consider a PL-Morse\footnote{This is a standard ``well-behaved" input assumption that implies that all critical points have distinct values. 
 %Our algorithm does not need this, but it simplifies the proof and presentation.} 
+(Consider the input setting of \Thm{main-corr}.)
 There is a deterministic algorithm to compute the contour tree, $T$, whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
 The number of comparisons made is $O(\sum_{p \in P(T)} |p|\log |p| + N)$.
@@ -1908,7 +1917,8 @@ A useful corollary of this lemma shows that a contour actually splits the simpli
 two disconnected complexes.
 
 \begin{theorem} \label{thm:jordan} $\cut(\MM,\phi)$ consists of two
-disconnected simplicial complexes.
+disconnected simplicial complexes, each of which
+is the triangulation of $d$-dimensional ball.
 \end{theorem}
 
 \begin{proof} Denote (as in \Lem{cut}) the edge containing $\phi$ to be $(u,v)$. Suppose for contradiction that there is a path between vertices $u$ and $v$
