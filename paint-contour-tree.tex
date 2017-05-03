@@ -23,7 +23,7 @@
 
 
 
-
+\usepackage{subcaption}
 \usepackage{amsfonts,amsmath,amssymb,amsthm,mathtools}
 \usepackage{paralist}
 \usepackage{algorithmic,algorithm}
@@ -3247,6 +3247,178 @@ by NSF CRII Award 1566137.
 \bibliographystyle{alpha}
 \bibliography{contour}
 
+
+\pagebreak
+\appendix
+
+\section{ \Sec{algo} Algorithm Example }
+
+\textcolor{red}{
+In the example below, I assumed that the maxima are already considered ``processed'', so that there are not additional trivial steps.  
+This actually makes more sense since the $att()$ should really only ever point to already processed vertex.  Therefore, I suggest 
+changing line 3 of init to ``Mark all maxima as processed.  Mark all other critical $v$ as unprocessed.''
+Perhaps line 4 needs to be changed also?
+}
+
+ \begin{figure}[h]\centering
+    \includegraphics[width=.3\linewidth,page=1]{figs/mesh1}
+    \caption{A piece of a potentially larger mesh, with maxima $m_1,m_2,m_3$, saddles $s_1,s_2$, and regular vertices $r_1,r_2,r_3,r_4$.
+             An initial painting is shown where green `g' is spilled from $m_1$, then red `r' from $m_2$, and finally blue `b' from $m_3$.
+             Arrows are directed from higher to lower function value.}
+    \label{fig:mesh1}
+\end{figure} 
+%
+\begin{figure}[h]
+   \begin{subfigure}{.33\textwidth}
+     \centering
+     \includegraphics[width=.7\linewidth,page=1]{figs/mesh2}
+     \caption{}
+     \label{fig:tree1}
+   \end{subfigure}%
+   \begin{subfigure}{.33\textwidth}
+     \centering
+     \includegraphics[width=.7\linewidth,page=2]{figs/mesh2}
+     \caption{}
+     \label{fig:tree2}
+   \end{subfigure}
+   \begin{subfigure}{.33\textwidth}
+     \centering
+     \includegraphics[width=.7\linewidth,page=3]{figs/mesh2}
+     \caption{}
+     \label{fig:tree3}
+   \end{subfigure}
+ \caption{Snapshots of the join tree.}
+ \label{fig:mesh2}
+\end{figure}
+%
+\begin{figure*}[h]%
+    \centerline{%
+       \begin{tabular}{|l|c|c|c|c|c|c|c|c|}%
+         \hline
+         Stage%
+         &%
+           $att(r)$
+         &%
+           $att(g)$
+         &%
+           $att(b)$
+         &%
+           $T(r)$
+         &%
+           $T(g)$
+         &%
+           $T(b)$
+         &%
+           $K$
+         &%
+          Current tree\\
+         \hline%
+         \hline%
+         Initial
+         &%
+           $m_2$
+         &%
+           $m_1$
+         &%
+           $m_3$
+         &%
+           $\{s_2\}$
+         &%
+           $\{s_1\}$
+         &%
+           $\{s_1,s_2\}$
+         &%
+           $()$
+         &%
+           \Fig{tree1}
+         \\%
+         \hline%
+         % 
+         1%
+         &%
+           $m_2$          
+         &%
+           $m_1$
+         &%
+           $m_3$
+         &%
+           $\{s_2\}$
+         &%
+           $\{s_1\}$
+         &%
+           $\{s_1,s_2\}$
+         &%
+           $(s_1)$
+         &%
+           \Fig{tree1}
+         \\%
+         \hline%
+         %
+         2
+         &%
+           $m_2$
+         &%
+           $m_1$
+         &%
+           $m_3$
+         &%
+           $\{s_2\}$
+         &%
+           $\{s_1\}$
+         &%
+           $\{s_1,s_2\}$
+         &%
+           $(s_1,s_2)$
+         &%
+           \Fig{tree1}
+         \\%
+         \hline%
+         %
+         3
+         &%
+           NA
+         &%
+           $m_1$
+         &%
+           $s_2$
+         &%
+           NA
+         &%
+           $\{s_1\}$
+         &%
+           $\{s_1\}$
+         &%
+           $(s_1)$
+         &%
+           \Fig{tree2}
+         \\%
+         \hline%
+         %
+         4
+         &%
+           NA
+         &%
+           NA
+         &%
+           $s_1$
+         &%
+           NA
+         &%
+           NA
+         &%
+           $\{\}$
+         &%
+           $()$
+         &%
+           \Fig{tree3}
+         \\%
+         \hline
+       \end{tabular}%
+    }
+    \caption{Stages of the algorithm run on the initial painting shown in \Fig{mesh1}.
+    The above table assumes that in the stack update, $s_1$ is the first arbitrary unprocessed critical point selected.}
+    \label{fig:exec}
+\end{figure*}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
