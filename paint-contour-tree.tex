@@ -355,7 +355,7 @@ and internal nodes are either ``joins" or ``splits".
 % For example, these could be events where contours gain or lose handles.
 
 Consider $f: \MM \to \RR$, where $\MM$ is the triangulation of a $d$-dimensional ball with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points. 
-(We assume that $f:\MM \to \RR$ is a linear interpolant over distinct valued vertices, with Morse degree at most $3$. 
+(We assume that $f:\MM \to \RR$ is a linear interpolant over distinct valued vertices, with Morse degree at most $3$, see \Def{deg}. 
 The degree assumption can be achieved via vertex unfolding, as discussed later,
 %We define this formally later, but it suffices to think of this as a general position assumption.
 and is standard in this literature~\cite{kobps-ctsssit-97}.)
@@ -1433,8 +1433,9 @@ We will maintain the guarantee that the portion of the join tree above (and incl
 \subsubsection{The formal algorithm} \label{sec:algorithm}
 
 We now give a detailed description of the main algorithm.
-The primary challenge to use the data structures to rapidly find
+The primary challenge is to use the data structures to rapidly find
 ripe vertices.
+An simple example of the execution of the algorithm is given in \Sec{example}.
 
 \smallskip
 \fbox{
@@ -3261,14 +3262,25 @@ by NSF CRII Award 1566137.
 \pagebreak
 \appendix
 
-\section{ \Sec{algo} Algorithm Example }
+\section{ \Sec{algo} Algorithm Example }\label{sec:example}
 
-\textcolor{red}{
-In the example below, I assumed that the maxima are already considered ``processed'', so that there are not additional trivial steps.  
-This actually makes more sense since the $att()$ should really only ever point to already processed vertex.  Therefore, I suggest 
-changing line 3 of init to ``Mark all maxima as processed.  Mark all other critical $v$ as unprocessed.''
-Perhaps line 4 needs to be changed also?
-}
+% \textcolor{red}{
+% In the example below, I assumed that the maxima are already considered ``processed'', so that there are not additional trivial steps.  
+% This actually makes more sense since the $att()$ should really only ever point to already processed vertex.  Therefore, I suggest 
+% changing line 3 of init to ``Mark all maxima as processed.  Mark all other critical $v$ as unprocessed.''
+% Perhaps line 4 needs to be changed also?
+% }
+
+Here we provide a simple example of the execution of the main algorithm from \Sec{algo}.  
+An example input mesh is shown in \Fig{mesh1}, followed by the different steps of the join construction in \Fig{mesh2}, 
+and finally a table showing the states of the data structures and how they are modified in \Fig{exec}.
+
+Note that in \Fig{exec} a ``stage'' refers to any time at which one of the data structures is modified.  
+For simplicity, the trivial stages where the maxima are removed from their corresponding heaps are not shown. 
+(Alternatively the algorithm in \Sec{algo} could be modified to exclude the maxima from the heaps, 
+but we wanted to keep the algorithm description simple.)
+
+
 
  \begin{figure}[h]\centering
     \includegraphics[width=.3\linewidth,page=1]{figs/mesh1}
