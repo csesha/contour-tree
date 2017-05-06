@@ -529,7 +529,7 @@ two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
 We detail the basic definitions about contour trees, following the terminology of Chapter 6 of Carr's thesis \cite{c-tmi-04}.
 All our assumptions and definitions
 are standard for results in this area, though there is some variability in notation.
-The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a simply connected and fully triangulated simplicial complex of a topological ball in $\RR^d$,
+The input is a continuous piecewise-linear function $f:\MM \to \RR$, where $\MM$ is a fully triangulated simplicial complex of a topological ball in $\RR^d$,
 except for specially designated \emph{boundary facets}. We assume that all pairs of vertices from $\MM$ have distinct function values, except for pairs from the same boundary facet,
 and that $f$ is only explicitly defined on the vertices, and all other values are obtained by linear interpolation. 
 
@@ -1435,7 +1435,7 @@ We will maintain the guarantee that the portion of the join tree above (and incl
 We now give a detailed description of the main algorithm.
 The primary challenge is to use the data structures to rapidly find
 ripe vertices.
-An simple example of the execution of the algorithm is given in \Sec{example}.
+A simple example of the algorithm execution is given in \Sec{example}.
 
 \smallskip
 \fbox{
@@ -1821,9 +1821,8 @@ Specifically, in this section we first describe our basic cutting tool, which we
 In \Sec{rain} we then describe how we use this tool to cut the surface into so called extremum dominant pieces 
 where computing the contour tree reduces to computing the join tree, and this equivalence is proven in \Sec{extreme}. 
 The pieces we create are technically not simplicial complexes,
-in that each piece may have facets that are not simplices. We may
-create facets of larger size than the dimension. These can
-easily be completed into simplicial complexes, though as we do not
+in that each piece may have facets that are not simplices, that is facets of larger size than the dimension.
+These can easily be completed into simplicial complexes, though as we do not
 need this, for ease of exposition, we do not explicitly
 perform this step in our algorithm.
 
