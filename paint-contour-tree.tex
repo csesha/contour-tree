@@ -14,13 +14,10 @@
 
 %\newcommand{\CiteFullVer}{\cite{rs-mvrms-14}\xspace}%
 
-
   \documentclass[11pt]{article}
   \usepackage[margin=2.54cm]{geometry}
 
    \newcommand{\myparagraph}[1]{\paragraph{#1}}
-
-
 
 
 \usepackage{subcaption}
@@ -267,8 +264,7 @@
       University of Texas at Dallas; %
       Richardson, TX, 75080, USA; %
       \texttt{\si{benjamin.raichel}@\si{utdallas}.\si{edu}}.
-  The work was done when this author was an intern
-  at Sandia National Laboratories, Livermore.}
+}
   \and
   C. Seshadhri\thanks{%
         Department of Computer Science; %
@@ -290,31 +286,11 @@ Avoiding the Global Sort:
 
 
 \begin{abstract}
-We revisit the classical problem of computing the \emph{contour tree}
-of a scalar field $f:\MM \to \RR$, where $\MM$ 
-is a triangulations of a ball in $\RR^d$.
-The contour tree is a fundamental topological structure that tracks
-the evolution of level sets of $f$ and 
-has numerous applications in data analysis and visualization.
+We revisit the classical problem of computing the \emph{contour tree} of a scalar field $f:\MM \to \RR$, where $\MM$ is a triangulations of a ball in $\RR^d$. The contour tree is a fundamental topological structure that tracks the evolution of level sets of $f$ and has numerous applications in data analysis and visualization.
 
-All existing algorithms begin with a global sort of at least all critical values of $f$,
-which can require (roughly) $\Omega(n\log n)$ time, where $n$ is the number of vertices of the mesh.
-Existing lower bounds show that there are pathological instances where this sort is required.
-We present the first algorithm whose time complexity depends
-on the contour tree structure, and avoids the global sort for non-pathological inputs. (We assume
-that the Morse degree of the function $f$ at any
-point is 
-at most $3$.)
-If $C$ denotes the set of critical points in $\MM$, the running time is
-roughly $O(N+\sum_{v \in C} \log \ell_v)$, where $\ell_v$ is the depth of $v$ in the contour tree and $N$ is the total complexity of $\MM$.
-This matches all existing upper bounds, but is a significant asymptotic improvement when the contour tree is short and fat.
-Specifically, our approach ensures that any comparison made is between nodes that are either adjacent in $\MM$ 
-or in the same descending path in the contour tree,
-allowing us to argue strong optimality properties of our algorithm.
+All existing algorithms begin with a global sort of at least all critical values of $f$, which can require (roughly) $\Omega(n\log n)$ time, where $n$ is the number of vertices of the mesh. Existing lower bounds show that there are pathological instances where this sort is required. We present the first algorithm whose time complexity depends on the contour tree structure, and avoids the global sort for non-pathological inputs. (We assume that the Morse degree of the function $f$ at any point is at most $3$.) If $C$ denotes the set of critical points in $\MM$, the running time is roughly $O(N+\sum_{v \in C} \log \ell_v)$, where $\ell_v$ is the depth of $v$ in the contour tree and $N$ is the total complexity of $\MM$. This matches all existing upper bounds, but is a significant asymptotic improvement when the contour tree is short and fat. Specifically, our approach ensures that any comparison made is between nodes that are either adjacent in $\MM$ or in the same descending path in the contour tree, allowing us to argue strong optimality properties of our algorithm.
 
-Our algorithm requires several novel ideas: partitioning $\MM$ in well-behaved portions, 
-a local growing procedure to iteratively build contour trees, and the use of heavy path 
-decompositions for the time complexity analysis. 
+Our algorithm requires several novel ideas: partitioning $\MM$ in well-behaved portions, a local growing procedure to iteratively build contour trees, and the use of heavy path decompositions for the time complexity analysis. 
 \end{abstract}
 
 \newpage
@@ -357,10 +333,7 @@ and internal nodes are either ``joins" or ``splits".
 Consider $f: \MM \to \RR$, where $\MM$ is the triangulation of a $d$-dimensional ball with $n$ vertices, $N$ faces in total, and $t \leq n$ critical points. 
 (We assume that $f:\MM \to \RR$ is a linear interpolant over distinct valued vertices, with Morse degree at most $3$, see \Def{deg}. 
 The degree assumption can be achieved via vertex unfolding, as discussed later,
-%We define this formally later, but it suffices to think of this as a general position assumption.
 and is standard in this literature~\cite{kobps-ctsssit-97}.)
-% \Ben{It is standard to assume that $f$ has distinct values on the vertices of $\MM$ and the value at interior points is linearly interpolated.}
-%It is standard to assume that $f$ is PL-Morse (a well-behaved input assumption) and that the maximum degree in the contour tree is $3$. 
 A fundamental result in this area is the algorithm of Carr, Snoeyink, and Axen to compute contour trees,
 which runs in $O(n\log n + N\alpha(N))$ time~\cite{csa-cctad-03} (where $\alpha(\cdot)$ denotes the inverse
 Ackermann function). In practical applications, $N$ is typically $\Theta(n)$
@@ -371,23 +344,12 @@ Common applications for contour trees involve turbulent combustion or noisy data
 There is a worst-case
 lower bound of $\Omega(t\log t)$ by Chiang \etal \cite{cllr-sooscctmp-05}, based on a construction of Bajaj \etal \cite{BaKr+98}.
 
-% \Sesh{Almost everything below is new/reordered. Please read through.}
 All previous algorithms begin by sorting (at least) the critical points. Can we beat this sorting bound for certain instances,
 and can we characterize which inputs are hard? Intuitively, points that are incomparable in the contour tree
 do not need to be compared. Look at \Fig{relative} to see such an example. All previous algorithms waste time
 sorting all the maxima. Also consider the surface of \Fig{sorting}. The final contour tree is basically two binary
 trees joined at their roots, and we do not need the entire sorted order of critical points
 to construct the contour tree. 
-
-% \begin{figure}[h]\centering
-%     \includegraphics[width=.26\linewidth]{figs/spikey1}%
-%     \hspace{.35in}
-%     \includegraphics[width=.26\linewidth]{figs/spikey2}%
-%     \hspace{.4in}
-%     \includegraphics[width=.215\linewidth]{figs/spikeyTree}
-%     \caption{Two surfaces with different orderings of the maxima, but the same contour tree.}
-%     \label{fig:relative}
-% \end{figure}
 
 \begin{figure}[h]\centering
     \includegraphics[width=.23\linewidth]{figs/spikey1}%
@@ -398,7 +360,6 @@ to construct the contour tree.
     \caption{Two surfaces with different orderings of the maxima, but the same contour tree.}
     \label{fig:relative}
 \end{figure}
-
 
 \begin{figure}[h]\centering
     \includegraphics[width=.35\linewidth,height=.15\linewidth]{figs/balanced4}
@@ -435,11 +396,6 @@ Even if $T$ contains a long path of length $O(t/\log t)$, but is otherwise short
 
 \Thm{main-corr} is a direct corollary of a stronger but more cumbersome theorem.
 
-% First, we require some technical definitions.
-
-% In a contour tree $T$, a \emph{leaf path} is simply a path in $T$
-% containing a leaf, which is also monotonic in the height values of its vertices. 
-
 \begin{definition}
 \label{def:path} 
 For a contour tree $T$, a \emph{leaf path} is any path in $T$ containing a leaf, 
@@ -449,8 +405,6 @@ Then a \emph{path decomposition}, $P(T)$, is a partition of the vertices of $T$ 
 
 \begin{theorem} 
 \label{thm:main-alg} 
-%Consider a PL-Morse\footnote{This is a standard ``well-behaved" input assumption that implies that all critical points have distinct values. 
-%Our algorithm does not need this, but it simplifies the proof and presentation.} 
 (Consider the input setting of \Thm{main-corr}.)
 There is a deterministic algorithm to compute the contour tree, $T$, whose running time is $O(\sum_{p \in P(T)} |p|\log |p| + t\alpha(t) + N)$,
 where $P(T)$ is a specific path decomposition (constructed implicitly by the algorithm).
@@ -508,14 +462,11 @@ Tarasov and Vyalyi \cite{tv-cct-98} improved the running time to $O(N\log N)$ fo
 The influential paper of Carr \etal \cite{csa-cctad-03} improved the running time for all dimensions to $O(n\log n + N\alpha(N))$.
 Pascucci and Cole-McLaughlin \cite{pc-ectls-02} provided an $O(n+t\log n)$ time algorithm for 
 $3$-dimensional structured meshes. Chiang \etal \cite{cllr-sooscctmp-05} provide an unconditional $O(N+t\log t)$ algorithm.
-% Carr's thesis shows relationships between monotone paths
-% in $\MM$ and its contour tree $\cC(\MM)$.
 
 Contour trees are a special case of Reeb graphs, a general topological representation for real-valued functions
 on any manifold. Algorithms for computing Reeb graphs
 is an active topic of research~\cite{sk-crgacs-91,cehnp-lrbm-03,PaScBr07,DoNa09,HaWaWe10,Pa12}, where
 two results explicitly reduce to computing contour trees~\cite{TiGySi09,DoNa13}.
-
 
 % \paragraph{Organization.}  
 % \Sec{basics} contains basic definition for contour trees.  In \Sec{approach} we give a high level overview and intuition for our approach 
@@ -541,10 +492,6 @@ Consider a boundary facet $F$. All vertices of $F$ have the same function value.
 neighbors of vertices in $F$, which are not also in $F$ itself, 
 either have all function values strictly greater than or all function values strictly less than the function value at $F$.
 \end{definition}
-
-% This is convenient, as we can now assume that $f$ is defined on $\RR^d$. Any point inside a boundary facet
-% has a well-defined height, including the infinite facet, which is required to be a boundary facet.  However, 
-% we allow for other boundary facets, to capture the resulting surface pieces after our algorithm makes a horizontal cut. 
 
 Boundary facets allow us to capture the resulting surface pieces after our algorithm makes a horizontal cut. 
 The above definition is convenient, as any point within a given facet has a well-defined height, including the boundary facets.
@@ -574,21 +521,6 @@ a \emph{minimum} has Morse down-degree $0$. A \emph{Morse Join} has Morse up-deg
 while a \emph{Morse Split} has Morse down-degree strictly greater than $1$. Non-regular points are called \emph{critical}.
 \end{definition}
 
-% We categorize points depending on the local changes in topology.
-% 
-% \begin{definition} \label{def:points} A point $x$ is categorized as follows.
-% \begin{asparaitem}
-% 	\item \emph{Regular:} Both Morse up-degree and down-degrees are $1$.
-% 	\item \emph{Maximum:} Morse up-degree is $0$.
-% 	\item \emph{Minimum:} Morse down-degree is $0$.
-% 	\item \emph{Morse Join:} Morse up-degree is strictly greater than $1$.
-% 	\item \emph{Morse Split:} Morse down-degree is strictly greater than $1$.
-% \end{asparaitem}
-% Non-regular points are \emph{critical}. Morse joins and splits are \emph{saddles}.
-% Maxima and minima are \emph{extrema}.
-% \end{definition}
-% 
-
 The set of critical points is denoted by $\cV(f)$.
 Because $f$ is piecewise-linear, all critical points are vertices in $\MM$. 
 A value $h$ is called \emph{critical}, if $f(v) = h$, for some $v \in \cV(f)$. 
@@ -599,15 +531,12 @@ The critical points are where certain topological properties
 By assuming that our simplicial complex is boundary critical, the vertices on a given boundary are either collectively all maxima or all minima.  
 We abuse notation and refer to this entire set of vertices as a maximum or minimum.
 
-
 \begin{definition} \label{def:equiv} Two regular contours $\psi$ and $\psi'$ are \emph{equivalent} 
 if there exists an $f$-monotone path $p$ connecting a point in $\psi$ to $\psi'$,
 such that no $x \in p$ belongs to a critical contour.
 \end{definition}
 
 This equivalence relation gives a set of \emph{contour classes}. 
-%By continuity, a regular point is present on a single contour,
-%and we can partition the regular contours into these classes. 
 Every such class maps to intervals
 of the form $(f(x_i),f(x_j))$, where $x_i, x_j$ are critical points. Such a class is said
 to be created at $x_i$ and destroyed at $x_j$. 
@@ -622,7 +551,6 @@ by $\reeb(\MM)$. The corresponding node and edge sets are denoted as $\cV(\cdot)
 It is not immediately obvious that this graph is a tree, but alternative definitions of the contour tree
 in~\cite{csa-cctad-03} imply this is a tree. 
 Since this tree has height values associated with the vertices, we can talk about up-degrees and down-degrees in $\reeb(\MM)$.
-%
 
 We assume that the Morse up (or down) degree of any point
 in $\MM$ is at most $2$, and that the total Morse degree
@@ -641,7 +569,6 @@ For 2D manifolds,
 this conversion does not increase the surface complexity.
 In higher dimensions, the unfolding can increase complexity if
 $\MM$ has vertices of non-constant degree.
-
 
 % Similar to \cite{kobps-ctsssit-97} (among others), multi-saddles are treated as a set of ordinary saddles, which can be realized 
 % via vertex unfolding (which can increase surface complexity if multi-saddle degrees are allowed to be super-constant).
@@ -686,7 +613,6 @@ set of vertices, though we will not delve into these aspects in this paper.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\pagebreak
 \section{A tour of the new contour tree algorithm} \label{sec:approach}
 We provide a high-level description of the main ideas of subsequent sections.  
 
@@ -736,13 +662,6 @@ to \emph{watershed} algorithms used for image segmentation~\cite{RoMe00}. The we
 can be shown to be extremum dominant. We can cut along the interface of the wet and dry, remove
 the wet part, and recurse on the dry parts. This is carefully done to ensure that the total complexity
 of the pieces is linear (see \Sec{rain} for details).
-% 
-% 
-% Each additional cut increases the complexity of the surface,
-% so care is required to keep the total complexity linear. This is achieved by alternately ``raining"
-% upwards and downwards.  We finally get a collection of extremum dominant pieces.
-% We prove a simple contour surgery theorem that builds the contour tree of $\MM$
-% from the contour trees of the various pieces created.
 
 We now have carved $\MM$ up into a collection of extremum dominant pieces. 
 In \Sec{surgery} we prove a simple contour surgery theorem allowing us to build the contour tree of $\MM$
@@ -754,7 +673,6 @@ Ultimately, the reason for cutting $\MM$ into extremum dominant pieces is that s
 Specifically, using ideas from~\cite{csa-cctad-03}, in \Sec{extreme} we prove that the contour tree of an extremum dominant complex is (basically) just the join tree. 
 Thus there is no longer a disconnect between the amount of sorting required for the contour tree versus the join tree, 
 and so the problem of computing contour trees efficiently reduces to that for join trees.
-
 
 \myparagraph{Join trees from painted mountaintops:} Our main result is a faster algorithm for join trees.
 The key idea is \emph{paint spilling}. Start with each maximum having a large can of paint, with distinct
@@ -863,7 +781,6 @@ This non-contiguous complication along with the fact that heap sizes keep changi
 We employ a variant of \emph{heavy path decompositions}, first used by Sleator and Tarjan for analyzing link/cut trees~\cite{st-dsdt-83}.
 The final analysis charges expensive heap operations to long paths in the decomposition, resulting in the bound stated in \Thm{main-alg}.
  
- 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -872,16 +789,6 @@ The final analysis charges expensive heap operations to long paths in the decomp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 \newcommand{\newintuitionSection}{
 \section{A tour of the new contour tree algorithm} \label{sec:approach}
@@ -1379,10 +1286,6 @@ Note we also later show it suffices to assign each vertex to only a single color
 rather than the colors of all the edges which touch it.
   
 
-% For a fast running time, we need to find ripe vertices
-% quickly. Thus, the formal algorithm requires a 
-% number of data structures, described below. 
-
 \subsubsection{The data structures} \label{sec:struct}
 \noindent
 {\bf The binomial heaps $\touch(c)$:} For each color $c$, $\touch(c)$ is a subset of vertices touched by $c$,
@@ -1795,16 +1698,6 @@ Note however that there is fair amount of slack in this argument as $|H_v|$ may 
 This slack allows for the more refined upper and lower bounds mentioned in \Sec{more-refined}.  Quantifying this slack however is quite challenging, 
 and requires a significantly more sophisticated analysis involving path decompositions, which is the subject of \Sec{pathDecomp}.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1918,7 +1811,7 @@ two disconnected complexes.
 
 \begin{theorem} \label{thm:jordan} $\cut(\MM,\phi)$ consists of two
 disconnected simplicial complexes, each of which
-is the triangulation of $d$-dimensional ball.
+is the triangulation of a $d$-dimensional ball.
 \end{theorem}
 
 \begin{proof} Denote (as in \Lem{cut}) the edge containing $\phi$ to be $(u,v)$. Suppose for contradiction that there is a path between vertices $u$ and $v$
@@ -1928,15 +1821,6 @@ all the edges of this path are in $\cE(\cC(\MM)) \setminus (u,v)$. So we get a c
 To show that there are exactly two connected components in $\cut(\MM,\phi)$, it suffices
 to see that $\cC(\MM')$ has two connected components (by \Lem{cut}) and then applying \Thm{carr-path}.
 \end{proof}
-
-% 
-% \begin{lemma} \label{lem:blahblah}
-%  Testing 123 \RefProofInAppendix{blahblah}
-% \end{lemma}
-% 
-% \begin{proof:in:appendix:e}{\ref{lem:blahblah}}{blahblah}
-%  blah balh
-% \end{proof:in:appendix:e}
 
 
 
@@ -2564,22 +2448,6 @@ there are exactly $|p|$ tokens on $p$. Thus, $\sum_{w \in p} \log |H_w|$
 is $O(V_p)$, where $V_p$ is the sum of token values in $K_p$. 
 Thus summing over all $p$ in $\buff$ completes the proof. 
 Specifically, $\sum_{p\in \buff} \sum_{w \in p} \log |H_w| = O(\sum_{p\in \buff} V_p) = O(\sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| )$
-
-% \textcolor{red}{\huge Proof missing. Potentially useful observations below}
-%  
-%  Let $r$ be the root of $\buff$. First observe that $\loss(r) \geq |r|/100$.  Suppose otherwise, then in order for the first condition of \Def{buff} to be satisfied for $\buff$, the rooted subtree of some child of $r$, call it $\buff'$, must satisfy $\sum_{p\in \buff'} \loss(p) \geq \frac{1}{100} \sum_{p\in \buff'} |p|$.  However, this would contradict the second condition of \Def{buff}.
-%  
-%  Consider any node $q\in \buff$.  Then for any vertex $v\in \loss(q)$, we have $|H_v| = \Omega(|H_q|)$, since $q$ is unsupported and hence by definition less than $|H_q|/100$ vertices of $H_q$ appear in $\loss(q)$.
-%  
-%  \begin{align*}
-%   \sum_{p\in \buff}\sum_{v\in p} \log |H_v| &=  O\left( \sum_{p\in \buff}\sum_{v\in p} \log |H_p| \right)   &\mbox{definition of short} \\
-%   &= O\left( \sum_{p\in \buff} |p| \log |H_p| \right)   &\mbox{} \\
-%   &= ????   &\mbox{buffered is not sufficient to get to next line} \\
-%   &= O\left( \sum_{p\in \buff} |\loss(p)| \log |H_p| \right)   &\mbox{} \\
-%   &= O\left( \sum_{p\in \buff}\sum_{v\in \loss(p)} \log |H_v| \right)
-%  \end{align*}
-%  
-%  \Cor{geometric} should be used somewhere.
 \end{proof}
 
 For any fixed vertex $v$ on a tall path, there are at most two unsupported short paths such that $v$ is contained in $\loss(\cdot)$. Specifically, 
@@ -2620,7 +2488,6 @@ a shrub as \emph{buffer-pruned}.
 % \end{definition}
 % 
 The goal of this section is to prove the following lemma.
-% , which ultimately allows us to pay for pruned shrubs.
 
 \begin{lemma} \label{lem:cu-root} Let $\pruned$ denote a buffer-pruned sub-shrub of a shrub in $\cF$ and let $r$
 be the root of $\pruned$. (i) For any $v \in p$ such that $p \in \pruned$,
@@ -2712,131 +2579,6 @@ Summing this over the children, $\sum_{p \in \pruned, p \neq r} |p| \leq A_r/20$
 By \Clm{weights}, $|H_r| \geq 17A_r/20 - 3|r|$. Since $r$ represented a short path, 
 we have the bound $|r| \leq \sqrt{|H_r|}/100$. Thus, $|H_r| = \Omega(A_r)$.
 We combine these bounds to show that $\sum_{p \in \pruned} |p| = O(|H_r|)$.
-% 
-% 
-% 
-% \begin{proof}[Proof of \Lem{cu-root}] We first pro 
-% We use $r$ for $r(\cU)$. %Our aim is to simply apply \Clm{charge} from $r(\cU)$. 
-% Suppose $W_q \geq (4/3)W_{q'}$ (for any choice in $\cU\setminus\{r\}$ of $q$ parent of $q'$), 
-% then by \Cor{chargeCor}, $\sum_{p \in \cU} |p| \leq W_{r}/20+|r|$.
-% By \Clm{loss}, $|\redH_r| \geq W_r - 2\sum_{p \in \cU} |p|$, and so combining these inequalities gives,
-% \[
-% % \sum_{p \in \cU} |p| \leq \pth{|\redH_r|+2\sum_{p \in \cU} |p|}/20+|r| \Rightarrow 
-%  \sum_{p \in \cU} |p|\leq \frac{10}{9} \pth{|\redH_r|/20+|r|} \leq 
-%  \frac{10}{9}\pth{|H_r|/20+\sqrt{|H_r|}/100} \leq |H_r|/10.
-% \]
-% 
-% We now prove that for any $q$ parent of $q'$ (other than $r$), $W_q \geq (4/3)W_{q'}$.
-% Suppose not. Let $p, p'$ be the counterexample furthest from the root,
-% where $p$ is the parent of $p'$. 
-% Note that for $q$ and child $q'$ in $\cU_{p'}$, $W_q \geq (4/3)W_{q'}$.
-% We will apply \Clm{charge} for $\cU_{p'}$ to deduce that $\sum_{q \in \cU_{p'}} |q| \leq W_{p'}/20$.
-% Combining this with \Clm{loss} gives, $|\redH_{p'}| \geq 19W_{p'}/20$. By \Lem{geometric}, $|\redH_p| \geq (3/2)|\redH_{p'}|$.
-% Noting that $W_p \geq |\redH_p|$, we deduce that $W_p \geq (4/3)W_{p'}$.
-% Hence, $p, p'$ is not a counterexample, and more generally, there is no counterexample.
-% That completes the whole proof.
-% \end{proof}
-% 
-% 
-% \textcolor{red}{\huge The rest of this subsection needs updating}
-% 
-% We define a \emph{residue} $R_p$ for each $p \in \cU$. Suppose $p$ has children
-% $q_1, q_2, \ldots, q_k$ in $\cU$. Then $R_p = |\redH_p| - \sum_i |\redH_{q_i}|$. 
-% By definition, $|\redH_p| = \sum_{q \in \cU_p} R_q$. 
-% Note that $R_p$ can be negative. 
-% Now, define $R^+_p = \max(R_p,0)$, and set $W_p = \sum_{q \in \cU_p} R^+_q$, 
-% where $\cU_p$ is the subtree of $\cU$ rooted at $p$.
-% Observe that $W_p \geq |\redH_p|$. We also get an approximate converse.
-% 
-% 
-% \begin{claim} \label{clm:loss} For any path $p\in \cU$, $|\redH_p| \geq W_p - 2\sum_{q \in \cU_p} |q|$.
-% \end{claim}
-% 
-% \begin{proof} We write $W_p - |\redH_p| = \sum_{q \in \cU_p} (R^+_q - R_q)$ $= -\sum_{q \in \cU_p: R_q < 0} R_q$.
-% Consider $q \in \cU_p$ and denote the children in $\cU_p$ by $q'_1, q'_2, \ldots$.
-% Note that $R_q$ is negative exactly when $|\redH_q| < \sum_i |\redH_{q'_i}|$.
-% Traverse $\pmax(T)$ from $q'_i$ to $q$.
-% Other than $q$, all other nodes encountered are in the tall support chain of $q'_i$ and hence
-% do not affect its reduced heap.
-% The vertices of $\redH_{q'_i}$ that are deleted
-% are exactly those present in the path $q$. 
-% Any vertex in $q$ can be deleted from at most two of the reduced heaps (of the children of $q$ in $\cU_p$), since 
-% theses reduced heaps do not have an ancestor-descendant relationship.
-% Therefore when $R_q$ is negative, it is at most by $2|q|$.
-% We sum over all $q$ to complete the proof.
-% \end{proof}
-% 
-% \ignore{Let $D_q = H_q \setminus \bigcup_i H_{q'_i}$. In other words, as we traverse $\cU$,
-% $D_q$ is the set of vertices ``added" at $q$. Suppose we traverse $\pmax(T)$ from $q'_i$
-% to $q$. All vertices of $H_{q'_i}$ that lie on these paths are removed.
-% 
-% 
-%  and traverse $\pmax(T)$ up to $p$. Suppose we encounter
-% the paths $q_0 = q, q_1, q_2, \ldots, q_k = p$. The vertices in the residue $R_q$ that 
-% are removed from $H_p$ are exactly the vertices that lie in these paths. 
-% We split this contribution into tall and short paths, observing that the latter
-% are all unsupported. Hence, we can (crudely) upper bound the number of vertices
-% removed by $\sum_{q \in \cU_p} |q| + \sum_{q \in \cU_p} \sum_{h \in \cH} |h \cap q|$.
-% Each vertex can be removed from at most two distinct $R_q$'s, completing the proof.
-% }
-% 
-% 
-% The main challenge of the entire proof is bounding the sum of path lengths, which is done next.
-% We stress that the all the previous work is mostly the setup for this claim.
-% 
-% 
-% \begin{corollary} \label{cor:chargeCor}
-%  Let $r$ be the root of $\cU$, and suppose that for any paths $q,q' \in \cU\setminus \{r\}$, where $q$ is a parent of $q'$ in $\cU$, $W_q \geq (4/3)W_{q'}$.
-%  Then $\sum_{p \in \cU} |p| \leq W_r/20+|r|$.
-% \end{corollary}
-% \begin{proof}
-%  Let $c_1, \dots, c_m$ be the children of $r$ in $\cU$.  By definition, $W_r = \sum_i W_{c_i}+R^+_r \geq \sum_i W_{c_i}$.
-%  By \Clm{charge}, for each $c_i$ we have $W_{c_i}/20\geq \sum_{p \in \cU_{c_i}} |p|$.  Combining these to facts yields the claim.
-% \end{proof}
-% 
-% 
-
-
-% \begin{claim} \label{clm:charge} Fix $p \in \cU$. Suppose for any $q,q' \in \cU_p$
-% where $q$ is a parent of $q'$ in $\cU_p$, $W_q \geq (4/3)W_{q'}$. Then $\sum_{q \in \cU_p} |q| \leq W_p/20$.
-% \end{claim}
-% 
-% \begin{proof} Since $q$ is an unsupported short path, $|q| < \sqrt{|H_q|}/100 \leq \sqrt{|\redH_q|}/99 \leq \sqrt{|W_q|}/99$.
-% We prove that $\sum_{q \in \cU_p} \sqrt{|W_q|}/99 \leq W_p/20$
-% by a charge redistribution scheme. Assume that each $q \in \cU_p$
-% starts with $\sqrt{W_p}/99$ units of charge. We redistribute this charge over all
-% nodes in $\cU_p$, and then calculate the total charge. For $q \in \cU_p$, spread
-% its charge to all nodes in $\cU_q$ proportional to $R^+$ values. In other words,
-% give $(\sqrt{W_q}/99)\cdot(R^+_{q'}/W_q)$ units of charge to each $q' \in \cU_q$.
-% 
-% After the redistribution, let us compute the charge deposited at $q$. Every ancestor in $\cU_p$ 
-% $q = a_0, a_1, a_2, \ldots, a_k$ contributes to the charge at $q$. The charge is expressed in the following
-% equation. We use the assumption that $W_{a_i} \geq (4/3) W_{a_{i-1}}$ and hence $W_{a_i} \geq (4/3)^i W_{a_0} \geq (4/3)^i$, 
-% as $a_0$ is an unsupported short path and hence $W_{a_0}\geq 1$. 
-% $$ ({R^+_q}/99)\sum_{a_i} 1/\sqrt{W_{a_i}} \leq ({R^+_q}/99)\sum_{a_i} (3/4)^{i/2} \leq R^+_q/20 $$
-% The total charge is $\sum_{q \in \cU_p} R^+_p/20 = W_p/20$. 
-% \end{proof}
-
-% We wrap it all up by proving part (ii) of \Lem{cu-root}.
-%
-% \begin{claim} $\sum_{p \in \cU} |p| \leq |H_{r(\cU)}|/10$.
-% \end{claim}
-% 
-% % \begin{proof} We use $r$ for $r(\cU)$. Our aim is to simply apply \Clm{charge} from $r(\cU)$. 
-% % Suppose $W_q \geq (4/3)W_{q'}$ (for any choice in $\cU$ of $q$ parent of $q'$). By \Clm{charge}, $\sum_{p \in \cU} |p| \leq W_{r}/20$.
-% % By \Clm{loss}, $|\redH_r| \geq W_r - 2\sum_{p \in \cU} |p|$. By simple algebra, we deduce, $\sum_{p \in \cU} |p| \leq |\redH_r|/10 = |H_r|/10$.
-% % 
-% % We now prove that for any $q$ parent of $q'$, $W_q \geq (4/3)W_{q'}$.
-% % Suppose not. Let $p, p'$ be the counterexample furthest from the root,
-% % where $p$ is the parent of $p'$. 
-% % Note that for $q$ and child $q'$ in $\cU_{p'}$, $W_q \geq (4/3)W_{q'}$.
-% % We will apply \Clm{charge} for $\cU_{p'}$ to deduce that $\sum_{q \in \cU_{p'}} |q| \leq W_{p'}/20$.
-% % By \Clm{loss}, $|\redH_{p'}| \geq 19W_{p'}/20$. By \Lem{geometric}, $|\redH_p| \geq (3/2)|\redH_{p'}|$.
-% % Noting that $W_p \geq |\redH_p|$, we deduce that $W_p \geq (4/3)W_{p'}$.
-% % Hence, $p, p'$ is not a counterexample, and more generally, this is no counterexample.
-% % That completes the whole proof.
-% % \end{proof}
-
 
 
 
@@ -2855,35 +2597,6 @@ We split the summation into tall, supported short, and unsupported short paths.
 By \Cor{supported} and \Lem{pathBounds}, the second and last term can be bounded by $O(\sum_{p \in \pmax(T)} |p|\log |p|)$.
 The following claim applies the results of the previous two subsections to give the same bound on the first term, 
 thus completing the proof of \Thm{runtime}.
-
-% \begin{claim} \label{clm:above} $\sum_{p \in \cL'} |H_p| \log |H_p| = O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
-% \end{claim}
-% 
-% \begin{proof} 
-% Pick $p \in \cL'$. 
-% As we traverse the tall support chain of $p$, there
-% are at least $|H_p|/100$ vertices of $H_p$ that lie in these paths. These are encountered in
-% a fixed order. Let $H'_p$ be the first $|H_p|/200$ of these vertices. When $v \in H'_p$
-% is encountered, there are $|H_p|/200$ vertices of $H_p$ not yet encountered. Hence,
-% $|H_v| \geq |H_p|/200$. Hence, $|H_p|\log |H_p| = O(\sum_{v \in H'_p} \log |H_v|)$.
-% Since all the vertices lie in tall paths,
-% we can write this as $O(\sum_{q \in \cH} \sum_{v \in H'_p \cap q} \log |H_v|)$.
-% Summing over all $p$, the expression is $\sum_{q \in \cH} \sum_{p \in \cL'} \sum_{v \in H'_p \cap q} \log |H_v|$.
-% %and $\sum_{p \in \cL'} |H_p|\log |H_p| = O(\sum_{p \in \cL'} \sum_{v \in H'_p} \log |H_v|)$.
-% 
-% Consider any $v \in H'_p$.  Let $S$ be the set of paths $\widetilde{p}\in \cL'$ such that 
-% $v\in H'_{\widetilde{p}}$.  We now show $|S|\leq 2$ (i.e.\ it contains at most one path other than $p$).
-% First observe that any two paths in $S$ must be unrelated (i.e.\ $S$ is an anti-chain), 
-% since paths which have an ancestor-descendant relationship have disjoint tall support chains.  
-% However, any vertex $v$ receives exactly one color from each of its two subtrees (in $T$), and therefore $|S|\leq 2$ since any two 
-% paths which share descendant leaves in $T$ (i.e.\ their heaps are tracking the same color) must have an ancestor-descendant relationship.
-% 
-% In other words, any $\log |H_v|$ appears at most twice in the above triple summation.
-% Hence, we can bound it by $O(\sum_{q \in \cH} \sum_{v \in q} \log |H_v|)$.
-% \end{proof}
-
-% The first term (unsupported short paths) can be charged to the second term (supported short paths).
-% This is where the critical \Lem{cu-root} plays a role.
 
 \begin{claim} \label{clm:first} 
 $\sum_{p \in \cL \setminus \cL'} \sum_{v \in p} \log |H_v| = O(\sum_{p\in \pmax} |p|\log |p|)$.%= O(\sum_{p \in \cL'} |H_p| \log |H_p|)$.
@@ -2967,14 +2680,6 @@ compute the contour tree in time
 O\pth{N+ \sum_{i=1}^k \pth{\sum_{p \in \pmax(\cJ(\MM_i))} |p|\log |p|} + t_i\alpha(t_i) + N_i}
 =\break O\pth{\pth{\sum_{p \in \pmax(\cC(\MM))} |p|\log |p|} + t\alpha(t) + N}
 \]
-
-%\Thm{rain-time} proves that $\rain$ takes $O(|\MM|)$ time
-
-%\Lem{rain-1} proves that output of $\rain$ are extemum dominant.
-
-%\Clm{rain-reeb} shows that given the contour trees of the output manifolds of $\rain$, the full contour tree can be constructed in $O(|\MM|)$ time:
-
-%\Thm{contour-tree} implies that given an $\jc(\MM)$ for an etremum dominant $\MM$, we can obtain $\cC(\MM)$ in by simply sticking on the non-dominant minima at their respective splits (which can easily be done in linear time). 
 \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3263,13 +2968,6 @@ by NSF CRII Award 1566137.
 
 \section{ \Sec{algo} Algorithm Example }\label{sec:example}
 
-% \textcolor{red}{
-% In the example below, I assumed that the maxima are already considered ``processed'', so that there are not additional trivial steps.  
-% This actually makes more sense since the $att()$ should really only ever point to already processed vertex.  Therefore, I suggest 
-% changing line 3 of init to ``Mark all maxima as processed.  Mark all other critical $v$ as unprocessed.''
-% Perhaps line 4 needs to be changed also?
-% }
-
 Here we provide a simple example of the execution of the main algorithm from \Sec{algo}.  
 An example input mesh is shown in \Fig{mesh1}, followed by the different steps of the join construction in \Fig{mesh2}, 
 and finally a table showing the states of the data structures and how they are modified in \Fig{exec}.
@@ -3278,7 +2976,6 @@ Note that in \Fig{exec} a ``stage'' refers to any time at which one of the data 
 For simplicity, the trivial stages where the maxima are removed from their corresponding heaps are not shown. 
 (Alternatively the algorithm in \Sec{algo} could be modified to exclude the maxima from the heaps, 
 but we wanted to keep the algorithm description simple.)
-
 
 
  \begin{figure}[h]\centering
