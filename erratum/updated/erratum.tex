@@ -309,9 +309,50 @@ The issue, however, is that while we know locally whether a given vertex $v$ is 
 %
 So suppose $v$ is critical with one dry up-star, but that it is not a join. Then one can still walk around the contour from the dry up-star and rain down. However, if we do this for all such $v$ it may no longer be true that the edge sets crossed by the contours are disjoint. Thus depending on the order in which vertices are handled, this could lead to edges being traversed a super-constant number of times. 
 
-In summary, while the actual cutting can be performed in linear time, it is not clear how long it takes to determine where to make the cuts. Specifically, it is not clear how long it takes to determine the interface of the wet complex, namely the first step in the {\tt rain} procedure of section Section 6, and thus it is unclear whether Theorem 6.7 holds.
-At the most basic level, the issue boils down to efficiently determining which critical points are joins. There does not exist an efficient procedure
-for finding all joins.  
+
+\begin{figure}[h]\centering
+    \includegraphics[width=0.45\linewidth]{../figs/volcano}
+    \hspace{0.5in}
+    \includegraphics[width=0.45\linewidth]{../figs/volcano-top}
+    \caption{The ``volcano" example: the left figure gives a side view and the right figure
+    gives a top view. The dark lines gives the outline of the mountain and the crater rim. The light
+    lines on the right show the triangles on the surface.}
+    \label{fig:volcano}
+\end{figure}
+
+Let us give a concrete example. Consider the surface showing in \Fig{volcano}. It is a 2D-manifold
+in 3D, which we think of as a ``volcano" with a crater. There are two maxima $x, x'$ on the rim of the
+crater, and a critical point $y$ that is the minimum of the rim. Observer that $y$ 
+has Morse up-degree $2$, but has an up-degree of one. Meaning, there is only one contour just above $y$, but locally, it looks like
+there are two contours. So $y$ is critical point, but we cannot locally determine it is \emph{not} a join. (The point $y$
+will appear in the contour tree as a vertex.) One can think of $y$ as a ``false saddle". Consider the top view given in the right of \Fig{volcano}. The rim 
+also a true saddle point, $z$.
+
+Consider raining from the maximum $x$. Note that the contour above $y$ is not part of the interface, since all sides/neighbors of $y$ are reachable
+from $y$ by downward monotone paths from $x$. On the other hand, the only way to \emph{locally} determine this seems to actually construct
+the contour (which would cut all the triangles show in the figure). More precisely, consider the raining procedure from $x$. The rain
+will reach both critical points $y$ and $z$. Yet, to determine that $y$ is not on interface, we would need to first cut the contour
+at $z$ (that encloses the maximum $x'$) and send rain from that contour. This process would ensure that rain reaches $y$ from ``both" sides,
+confirming that $y$ is not at the interface. 
+
+This example suggests that we need to process critical points that are reached from $x$ in a specific order. Unfortunately,
+our current algorithm processes critical points in an arbitrary order, to achieve linear running time. In the above example,
+if $y$ is processed before $z$, then we would cut a contour only to realize that it is not in the interface. It appears
+that our current procedure would only work if Morse up-degrees and up-degrees were identical.
+
+At a higher level, this example suggests that it might not be possible to perform contour surgery in linear time,
+since we need to process critical points in order. Such a processing will likely require a priority queue, which
+will introduce further overhead. It is possible that this overhead will be subsumed by the subsequent join/merge
+tree construction. Moreover, it is quite believable that any process that constructs contour trees
+would need to sort (the heights of) $x, y, z$. We think that an optimal algorithm is still possible
+with the current ideas. But as it stands, our current algorithm and proof are incorrect.
+
+% 
+% 
+% 
+% In summary, while the actual cutting can be performed in linear time, it is not clear how long it takes to determine where to make the cuts. Specifically, it is not clear how long it takes to determine the interface of the wet complex, namely the first step in the {\tt rain} procedure of section Section 6, and thus it is unclear whether Theorem 6.7 holds.
+% At the most basic level, the issue boils down to efficiently determining which critical points are joins. There does not exist an efficient procedure
+% for finding all joins.  
 
 We note that that the algorithm and analysis of computing the join tree still hold (Sections 4 and 8 of~\cite{rs-17}) .
 
