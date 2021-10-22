@@ -1,0 +1,7 @@
+We thank the reviewers for their comments.
+
+We have made two updates to the erratum based on their comments.
+
+ - We have now included an explicit example where the Morse up-degree and up-degree are different. Using this example, we show where the running time analysis of our algorithm fails.
+ - We had added more explanation of what parts of the paper are still correct.
+

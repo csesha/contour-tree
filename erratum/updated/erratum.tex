@@ -354,7 +354,13 @@ with the current ideas. But as it stands, our current algorithm and proof are in
 % At the most basic level, the issue boils down to efficiently determining which critical points are joins. There does not exist an efficient procedure
 % for finding all joins.  
 
-We note that that the algorithm and analysis of computing the join tree still hold (Sections 4 and 8 of~\cite{rs-17}) .
+We note that that the algorithm and analysis of computing the join tree still hold (Sections 4 and 8 of~\cite{rs-17}). 
+Unfortunately, there is no explicit theorem that states the running time bound of computing the join tree. The current
+proof merges various arguments directly into an argument for the final theorem. Theorem 8.1 bounds the running time 
+of the join tree construction, and is still correct. Section 7 (which is not affected by the errors above)
+proves that computing the contour tree of a minimum dominant complex is equivalent to computing
+the join tree. Hence, the main theorem (Theorem 1.1)
+is true if $f$ is a minimum (or maximum) dominant complex.
 
 \bibliographystyle{alpha}
 \bibliography{contour}
